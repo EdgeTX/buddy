@@ -2553,6 +2553,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/w3c-web-usb@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@types/w3c-web-usb@npm:1.0.5"
+  checksum: 6f324d8c3b5f29f97a75f1328f997c8fbe2e8f103264f58458476037e761e3eecc2b68f4581ecccbd4a1306fc506110c43630f1dc31f0f2c232ad32d64aba2ed
+  languageName: node
+  linkType: hard
+
 "@types/webpack-sources@npm:*":
   version: 2.1.0
   resolution: "@types/webpack-sources@npm:2.1.0"
@@ -5531,6 +5538,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dfu@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "dfu@npm:0.1.5"
+  dependencies:
+    nanoevents: ^6.0.0
+  checksum: 7fa8aa1578518be4eb8981f67878ecb6f68e64ccf91ed278f35708a6d4e3f6e822e68ab8653c6b3d69e08ddf105c550698b88db363bdab8f8c2a7a582ac96001
+  languageName: node
+  linkType: hard
+
 "diff-sequences@npm:^26.6.2":
   version: 26.6.2
   resolution: "diff-sequences@npm:26.6.2"
@@ -5767,6 +5783,9 @@ __metadata:
     "@types/node": ^12.0.0
     "@types/react": ^17.0.0
     "@types/react-dom": ^17.0.0
+    "@types/w3c-web-usb": ^1.0.5
+    dfu: ^0.1.5
+    ky: ^0.28.7
     react: ^17.0.2
     react-dom: ^17.0.2
     react-scripts: 4.0.3
@@ -9286,6 +9305,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ky@npm:^0.28.7":
+  version: 0.28.7
+  resolution: "ky@npm:0.28.7"
+  checksum: ff38c9c5a5b9c0354b9db167662cdb1fc48c91803a580807a1d18a1fccc024953cba3708e7bcbd9c7a27670c68631d4806e2c5a169ebc586e573a7c5802a6086
+  languageName: node
+  linkType: hard
+
 "language-subtag-registry@npm:~0.3.2":
   version: 0.3.21
   resolution: "language-subtag-registry@npm:0.3.21"
@@ -10028,6 +10054,13 @@ __metadata:
   dependencies:
     node-gyp: latest
   checksum: 7a269139b66a7d37470effb7fb36a8de8cc3b5ffba6e40bb8e0545307911fe5ebf94797ec62f655ecde79c237d169899f8bd28256c66a32cbc8284faaf94c3f4
+  languageName: node
+  linkType: hard
+
+"nanoevents@npm:^6.0.0":
+  version: 6.0.2
+  resolution: "nanoevents@npm:6.0.2"
+  checksum: 73d8c8f584b850bae6705820710a20c19be61145a4a6ad3b157caf1fea52d46f48e0d1f1c1452019c0e84869f226debad2245218f0b0c3f9dffb7afc9b42e663
   languageName: node
   linkType: hard
 
