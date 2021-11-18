@@ -1,10 +1,6 @@
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import IconArrowRight from "@mui/icons-material/ArrowRight";
 import React from "react";
 import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -28,7 +24,7 @@ const SelectFirmware: React.FC<Props> = ({
   version,
 }) => {
   return (
-    <Box sx={{ height: "100%" }}>
+    <Box>
       <Typography variant="h2">Select firmware</Typography>
       <Grid container spacing={2} sx={{ p: 2 }}>
         <Grid item xs={4}>
@@ -73,6 +69,7 @@ const SelectFirmware: React.FC<Props> = ({
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               label="Version"
+              value={version}
               onChange={(e) => onVersionSelected(e.target.value as string)}
             >
               <MenuItem value="1.25.0">v1.25.0</MenuItem>
@@ -84,20 +81,13 @@ const SelectFirmware: React.FC<Props> = ({
               labelId="demo-simple-select-label-2"
               id="demo-simple-select-2"
               label="Target"
+              value={target}
               onChange={(e) => onTargetSelected(e.target.value as string)}
             >
               <MenuItem value="nv14">Flysky Nirvana</MenuItem>
             </Select>
           </FormControl>
         </Grid>
-      </Grid>
-      <Grid
-        container
-        direction="column"
-        alignItems="flex-end"
-        justifyContent="flex-end"
-      >
-        <Button endIcon={<IconArrowRight />}>Next</Button>
       </Grid>
     </Box>
   );
