@@ -38,13 +38,15 @@ const ConnectionOptions: React.FC<Props> = ({
           <Button
             variant="contained"
             onClick={async () => {
-              const device = await navigator.usb.requestDevice().catch((e) => {
-                console.log(e);
-                return undefined;
-              });
+              const device = await navigator.usb
+                .requestDevice({ filters: [] })
+                .catch((e) => {
+                  console.log(e);
+                  return undefined;
+                });
               if (device) {
                 onDeviceSelected(
-                  `${device.vendorId.toString()}":"${device.productId.toString()}`
+                  `${device.vendorId.toString()}:${device.productId.toString()}`
                 );
               }
             }}

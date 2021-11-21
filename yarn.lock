@@ -6161,6 +6161,7 @@ __metadata:
     react-scripts: 4.0.3
     typescript: ^4.1.2
     web-vitals: ^1.0.1
+    xstate: ^4.26.0
   languageName: unknown
   linkType: soft
 
@@ -15960,6 +15961,13 @@ __metadata:
   version: 2.2.0
   resolution: "xmlchars@npm:2.2.0"
   checksum: 8c70ac94070ccca03f47a81fcce3b271bd1f37a591bf5424e787ae313fcb9c212f5f6786e1fa82076a2c632c0141552babcd85698c437506dfa6ae2d58723062
+  languageName: node
+  linkType: hard
+
+"xstate@npm:^4.26.0":
+  version: 4.26.0
+  resolution: "xstate@npm:4.26.0"
+  checksum: f27eedcd785b21a77bd040d035533d97bac803cf1a59962dcd839b52a3f628c40766c027a2d6c1ff7c3c4148151eb61c6c006009084c1d861ab311f60813918d
   languageName: node
   linkType: hard
 

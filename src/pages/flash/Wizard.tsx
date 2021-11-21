@@ -41,6 +41,9 @@ const extractParam = <
 const stages = ["firmware", "connection", "flash"] as const;
 type Stage = typeof stages[number];
 
+
+const useFlash = (firmware: string, device: string, settings: string)
+
 const FlashingWizard: React.FC = () => {
   const [stage, setStage] = useState<Stage>(stages[0]);
   const [params, setParams] = useSearchParams();
