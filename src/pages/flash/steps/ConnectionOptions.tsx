@@ -21,42 +21,44 @@ const ConnectionOptions: React.FC<Props> = ({
 }) => (
   <Box>
     <Typography variant="h2">Configure connection</Typography>
+    <Box sx={{ p: 2 }}>
     <FormControl fullWidth sx={{ m: 1 }}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={unprotectedFlashing}
-            onChange={(_, checked) => onSetForceUnprotectedFlashing(checked)}
-          />
-        }
-        label="Force unprotect flashing"
-      />
-    </FormControl>
-    <FormControl fullWidth sx={{ m: 1 }}>
-      <FormControlLabel
-        control={
-          <Button
-            variant="contained"
-            onClick={async () => {
-              const device = await navigator.usb
-                .requestDevice({ filters: [] })
-                .catch((e) => {
-                  console.log(e);
-                  return undefined;
-                });
-              if (device) {
-                onDeviceSelected(
-                  `${device.vendorId.toString()}:${device.productId.toString()}`
-                );
-              }
-            }}
-          >
-            Select device
-          </Button>
-        }
-        label={deviceId ?? ""}
-      />
-    </FormControl>
+        <FormControlLabel
+          control={
+            <Button
+              variant="contained"
+              onClick={async () => {
+                const device = await navigator.usb
+                  .requestDevice({ filters: [] })
+                  .catch((e) => {
+                    console.log(e);
+                    return undefined;
+                  });
+                if (device) {
+                  onDeviceSelected(
+                    device.serialNumber ?? `${device.vendorId.toString()}:${device.productId.toString()}`
+                  );
+                }
+              }}
+            >
+              Select device
+            </Button>
+          }
+          label={deviceId ?? ""}
+        />
+      </FormControl>
+      <FormControl fullWidth sx={{ m: 1 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={unprotectedFlashing}
+              onChange={(_, checked) => onSetForceUnprotectedFlashing(checked)}
+            />
+          }
+          label="Force unprotect flashing"
+        />
+      </FormControl>
+    </Box>
   </Box>
 );
 

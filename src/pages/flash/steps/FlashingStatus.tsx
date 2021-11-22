@@ -7,23 +7,10 @@ import React from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
-
-type Status = {
-  progress: number;
-  started: boolean;
-  completed: boolean;
-  error?: string;
-};
+import { FlashingState, FlashingStageStatus } from "../../../flashing/flash";
 
 type Props = {
-  connection: {
-    connected: boolean;
-    connecting: boolean;
-    error?: string;
-  };
-  downloading?: Status;
-  erasing: Status;
-  flashing: Status;
+  state: FlashingState;
 };
 
 const LinearProgressWithLabel: React.FC<
@@ -35,26 +22,30 @@ const LinearProgressWithLabel: React.FC<
         <LinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value
-        )}%`}</Typography>
+        <Typography variant="body2" color="text.secondary">{`${(
+          Math.round(props.value * 10) / 10
+        ).toFixed(1)}%`}</Typography>
       </Box>
     </Box>
   );
 };
 
 const StatusCard: React.FC<{
+  preTitle: string;
   title: string;
   doneTitle: string;
-  status: Status;
-}> = ({ title, doneTitle, status }) => (
+  status: FlashingStageStatus;
+}> = ({ title, preTitle, doneTitle, status }) => (
   <Accordion expanded={status.started && !status.completed}>
     <AccordionSummary>
       <Typography
         variant="h5"
-        color={status.completed ? "text.secondary" : undefined}
+        color={
+          status.completed || !status.started ? "text.secondary" : undefined
+        }
       >
-        {status.completed ? doneTitle : title}
+        {!status.started && preTitle}
+        {status.started && (status.completed ? doneTitle : title)}
       </Typography>
     </AccordionSummary>
     <AccordionDetails>
@@ -64,14 +55,12 @@ const StatusCard: React.FC<{
 );
 
 const ConnectionStatus: React.FC<{
-  connecting: boolean;
-  connected: boolean;
-  error?: string;
-}> = ({ connecting, connected, error }) => (
-  <Accordion expanded={!!(connecting || error)}>
+  status: FlashingStageStatus;
+}> = ({ status: { started, completed, error } }) => (
+  <Accordion expanded={(started || !!error) && !completed}>
     <AccordionSummary>
-      <Typography variant="h5" color={connected ? "text.secondary" : undefined}>
-        {connected ? "Connected" : "Connecting"}
+      <Typography variant="h5" color={completed ? "text.secondary" : undefined}>
+        {completed ? "Connected" : "Connecting"}
       </Typography>
     </AccordionSummary>
     <AccordionDetails>{error}</AccordionDetails>
@@ -79,27 +68,37 @@ const ConnectionStatus: React.FC<{
 );
 
 const FlashingStatus: React.FC<Props> = ({
-  downloading,
-  erasing,
-  flashing,
-  connection,
+  state: { downloading, erasing, flashing, connection },
 }) => (
   <Box>
     <Typography variant="h2">Progress</Typography>
-    <ConnectionStatus {...connection} />
-    {downloading && (
-      <StatusCard
-        title="Downloading"
-        doneTitle="Downloaded"
-        status={downloading}
-      />
-    )}
-    {erasing && (
-      <StatusCard title="Erasing" doneTitle="Erased" status={erasing} />
-    )}
-    {flashing && (
-      <StatusCard title="Flashing" doneTitle="Flashed" status={flashing} />
-    )}
+    <Box sx={{ p: 2 }}>
+      <ConnectionStatus status={connection} />
+      {downloading && (
+        <StatusCard
+          preTitle="Download"
+          title="Downloading"
+          doneTitle="Downloaded"
+          status={downloading}
+        />
+      )}
+      {erasing && (
+        <StatusCard
+          preTitle="Erase"
+          title="Erasing"
+          doneTitle="Erased"
+          status={erasing}
+        />
+      )}
+      {flashing && (
+        <StatusCard
+          preTitle="Flash"
+          title="Flashing"
+          doneTitle="Flashed"
+          status={flashing}
+        />
+      )}
+    </Box>
   </Box>
 );
 
