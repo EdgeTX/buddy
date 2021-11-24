@@ -1,7 +1,6 @@
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -14,10 +13,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
+import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 
 const drawerWidth = 240;
 
-const LINKS = [{ name: "Flash firmware", icon: <CodeIcon />, to: "/flash" }];
+const LINKS = [
+  { name: "Flash firmware", icon: <CodeIcon />, to: "/flash" },
+  { name: "Setup SD Card", icon: <DriveFileMoveIcon />, to: "/sdcard" },
+];
 
 const Layout: React.FC = ({ children }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -47,8 +50,7 @@ const Layout: React.FC = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
+    <Box sx={{ display: "flex" }} height="100%">
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -87,6 +89,7 @@ const Layout: React.FC = ({ children }) => {
       </Box>
       <Box
         component="main"
+        height="100%"
         sx={{
           flexGrow: 1,
           p: 5,

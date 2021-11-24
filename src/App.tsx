@@ -1,21 +1,9 @@
 import ky from "ky";
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { flash } from "./dfu";
 import Layout from "./Layout";
 import FlashingWizard from "./pages/flash/Wizard";
-
-const useFirmware = (): Buffer | undefined => {
-  const [buffer, setBuffer] = useState<Buffer>();
-
-  useEffect(() => {
-    ky.get("/nv14.bin").then(async (res) => {
-      setBuffer(Buffer.from(await res.arrayBuffer()));
-    });
-  }, []);
-
-  return buffer;
-};
+import SdcardWizard from "./pages/sdcard/Wizard";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +11,7 @@ const App: React.FC = () => {
       <Layout>
         <Routes>
           <Route path="/flash" element={<FlashingWizard />} />
+          <Route path="/sdcard" element={<SdcardWizard />} />
           <Route path="*" element={<>Wow, first new app</>} />
         </Routes>
       </Layout>

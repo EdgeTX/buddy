@@ -7,7 +7,7 @@ import React from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
-import { FlashingState, FlashingStageStatus } from "../../../flashing/flash";
+import { FlashingState, FlashingStageStatus } from "../flashing/flash";
 
 type Props = {
   state: FlashingState;

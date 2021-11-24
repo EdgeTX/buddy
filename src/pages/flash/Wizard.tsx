@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import IconArrowRight from "@mui/icons-material/ArrowRight";
 import IconArrowLeft from "@mui/icons-material/ArrowLeft";
 import FlashingStatus from "./steps/FlashingStatus";
-import { useFlasher } from "../../flashing/flash";
+import { useFlasher } from "./flashing/flash";
 import CompletePage from "./steps/Complete";
 import ArrowCircleUp from "@mui/icons-material/ArrowCircleUp";
 
