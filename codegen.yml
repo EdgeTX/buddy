@@ -1,0 +1,19 @@
+overwrite: true
+schema: ".github-schema-loader.js"
+generates:
+  ./schema.graphql:
+    plugins:
+      - schema-ast
+    config:
+      includeDirectives: true
+
+  ./src/__generated__/tag/:
+    documents:
+      - "src/**/*.{ts,tsx}":
+          noRequire: true
+      - "!**/__generated__/*.ts"
+
+    preset: gql-tag-operations
+    presetConfig:
+      # define which module you want to import your gql function from
+      augmentedModuleName: "@apollo/client"

@@ -96,6 +96,7 @@ const FlashingWizard: React.FC = () => {
             onVersionSelected={(newVersion) =>
               updateParams({ version: newVersion })
             }
+            onIncludePrereleases={() => {}}
             version={version ?? undefined}
             target={target ?? undefined}
           />

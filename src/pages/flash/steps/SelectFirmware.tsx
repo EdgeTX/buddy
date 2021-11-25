@@ -4,37 +4,124 @@ import FormControl from "@mui/material/FormControl";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import FormHelperText from "@mui/material/FormHelperText";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
+import { gql, useQuery } from "@apollo/client";
+import githubClient from "../../../gql/github";
+import { isNotNullOrUndefined } from "type-guards";
 
 type Props = {
   onFirmwareProvided: (firmware: Buffer) => void;
+  onIncludePrereleases: (enabled: boolean) => void;
   onVersionSelected: (version: string) => void;
   onTargetSelected: (target: string) => void;
+  includePrereleases?: boolean;
   target?: string;
   version?: string;
 };
 
 type FirmwareType = "releases" | "branch" | "commit" | "pull-request" | "local";
 
-const SelectFirmware: React.FC<Props> = ({
-  onFirmwareProvided,
-  onVersionSelected,
+const FirmwarePicker: React.FC<
+  Pick<
+    Props,
+    | "onTargetSelected"
+    | "onVersionSelected"
+    | "onIncludePrereleases"
+    | "target"
+    | "version"
+    | "includePrereleases"
+  >
+> = ({
   onTargetSelected,
   target,
+  onVersionSelected,
   version,
+  onIncludePrereleases,
+  includePrereleases,
 }) => {
+  const { data, error, loading } = useQuery(
+    gql(/* GraphQL */ `
+      query Releases {
+        repository(name: "edgetx", owner: "EdgeTX") {
+          releases(first: 100) {
+            nodes {
+              tagName
+              name
+              description
+              isPrerelease
+            }
+          }
+        }
+      }
+    `),
+    {
+      client: githubClient,
+    }
+  );
+
+  const releases = data?.repository?.releases.nodes
+    ?.filter(isNotNullOrUndefined)
+    .filter((release) => includePrereleases || !release.isPrerelease);
+
+  const selectedFirmware = releases?.find(
+    (release) => release.tagName === version
+  );
+  console.log(selectedFirmware);
+
+  return (
+    <>
+      <FormControl
+        fullWidth
+        sx={{ m: 1 }}
+        error={!!error}
+        disabled={loading || !!error}
+      >
+        <InputLabel id="demo-simple-select-label">Select version</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          label="Select version"
+          value={version}
+          onChange={(e) => onVersionSelected(e.target.value as string)}
+        >
+          {releases?.map((release) => (
+            <MenuItem key={release.tagName} value={release.tagName}>
+              {release.name ?? release.tagName}
+            </MenuItem>
+          ))}
+        </Select>
+        {error && <FormHelperText>Could not load releases</FormHelperText>}
+      </FormControl>
+      <FormControl fullWidth sx={{ m: 1 }} disabled={!selectedFirmware}>
+        <InputLabel id="demo-simple-select-label-2">Select radio type</InputLabel>
+        <Select
+          labelId="demo-simple-select-label-2"
+          id="demo-simple-select-2"
+          label="Select radio type"
+          value={target}
+          onChange={(e) => onTargetSelected(e.target.value as string)}
+        >
+          <MenuItem value="nv14">Flysky Nirvana</MenuItem>
+        </Select>
+      </FormControl>
+    </>
+  );
+};
+
+const SelectFirmware: React.FC<Props> = (props) => {
   const [firmwareType, setFirmwareType] = useState<FirmwareType>("releases");
 
   useEffect(() => {
-    if (target === "local") {
+    if (props.target === "local") {
       setFirmwareType("local");
     }
-  }, [target]);
+  }, [props.target]);
 
   return (
     <Box>
@@ -80,34 +167,7 @@ const SelectFirmware: React.FC<Props> = ({
           </FormControl>
         </Grid>
         <Grid item xs={8}>
-          {firmwareType === "releases" && (
-            <>
-              <FormControl fullWidth sx={{ m: 1 }}>
-                <InputLabel id="demo-simple-select-label">Version</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Version"
-                  value={version}
-                  onChange={(e) => onVersionSelected(e.target.value as string)}
-                >
-                  <MenuItem value="1.25.0">v1.25.0</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl fullWidth sx={{ m: 1 }}>
-                <InputLabel id="demo-simple-select-label-2">Target</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label-2"
-                  id="demo-simple-select-2"
-                  label="Target"
-                  value={target}
-                  onChange={(e) => onTargetSelected(e.target.value as string)}
-                >
-                  <MenuItem value="nv14">Flysky Nirvana</MenuItem>
-                </Select>
-              </FormControl>
-            </>
-          )}
+          {firmwareType === "releases" && <FirmwarePicker {...props} />}
           {firmwareType === "local" && (
             <Button variant="contained" component="label">
               Select firmware file
@@ -115,7 +175,7 @@ const SelectFirmware: React.FC<Props> = ({
                 type="file"
                 hidden
                 onChange={async (event) => {
-                  onFirmwareProvided(
+                  props.onFirmwareProvided(
                     Buffer.from(await event.target.files![0]!.arrayBuffer())
                   );
                 }}
