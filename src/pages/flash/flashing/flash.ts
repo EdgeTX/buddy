@@ -1,6 +1,10 @@
 import { WebDFU } from "dfu";
 import { useRef, useState } from "react";
 import md5 from "md5";
+import githubClient from "../../../gql/github";
+import { gql } from "@apollo/client";
+import { isNotNullOrUndefined } from "type-guards";
+import { fetchFirmware } from "../../../store/firmware";
 
 export type FlashingStageStatus = {
   progress: number;
@@ -83,7 +87,6 @@ export const useFlasher = (): Result => {
       await dfu.init();
 
       if (dfu.interfaces.length === 0) {
-        console.log("wtf");
         throw new Error("Device does not have any USB DFU interfaces.");
       }
 
@@ -216,6 +219,82 @@ export const useFlasher = (): Result => {
     }
   };
 
+  const download = async (
+    target: string,
+    version: string
+  ): Promise<Buffer | undefined> => {
+    try {
+      updateState({
+        downloading: {
+          started: true,
+          completed: false,
+          progress: 0,
+        },
+      });
+      const firmwareUrlQuery = await githubClient.query({
+        query: gql(/* GraphQL */ `
+          query ReleaseAssets($tagName: String!) {
+            repository(name: "edgetx", owner: "EdgeTX") {
+              id
+              release(tagName: $tagName) {
+                id
+                releaseAssets(first: 100) {
+                  nodes {
+                    id
+                    name
+                    url
+                  }
+                }
+              }
+            }
+          }
+        `),
+        variables: {
+          tagName: version,
+        },
+      });
+
+      const firmwareBundleUrl =
+        firmwareUrlQuery.data.repository?.release?.releaseAssets?.nodes
+          ?.filter(isNotNullOrUndefined)
+          .find((release) => release.name.indexOf("firmware") > -1)?.url;
+
+      if (!firmwareBundleUrl) {
+        throw new Error("Could not find specified firmware");
+      }
+
+      updateState({
+        downloading: {
+          started: true,
+          completed: false,
+          progress: 20,
+        },
+      });
+
+      const firmware = await fetchFirmware(firmwareBundleUrl, target);
+      updateState({
+        downloading: {
+          started: true,
+          completed: true,
+          progress: 100,
+        },
+      });
+
+      return firmware;
+    } catch (e) {
+      updateState({
+        downloading: {
+          started: true,
+          completed: false,
+          progress: 0,
+          error: (e as Error).message,
+        },
+      });
+
+      return undefined;
+    }
+  };
+
   return {
     state,
     loadFirmware: async (data) => {
@@ -224,12 +303,18 @@ export const useFlasher = (): Result => {
       return md5(data);
     },
     flash: async (target, version, deviceId) => {
+      let firmware: Buffer | undefined;
       cancelledState.current = false;
       if (target === "local") {
         if (!localFirmware) {
           throw new Error("No local firmware set");
         }
-        console.log("setting state");
+        firmware = localFirmware;
+      }
+
+      // If we already have the firmware we don't need to download
+      // So start the state off assuming no download step
+      if (firmware) {
         setState({
           connection: {
             started: false,
@@ -247,17 +332,46 @@ export const useFlasher = (): Result => {
             progress: 0,
           },
         });
+      } else {
+        setState({
+          downloading: {
+            started: false,
+            completed: false,
+            progress: 0,
+          },
+          connection: {
+            started: false,
+            completed: false,
+            progress: 0,
+          },
+          erasing: {
+            started: false,
+            completed: false,
+            progress: 0,
+          },
+          flashing: {
+            started: false,
+            completed: false,
+            progress: 0,
+          },
+        });
+      }
 
-        const dfu = await connect(deviceId);
-        dfuConnection.current = dfu;
+      const dfu = await connect(deviceId);
+      dfuConnection.current = dfu;
 
-        if (!dfu || cancelledState.current) {
+      if (!dfu || cancelledState.current) {
+        return false;
+      }
+
+      if (!firmware) {
+        firmware = await download(target, version);
+        if (!firmware) {
           return false;
         }
-
-        return await flash(dfu, localFirmware);
       }
-      return false;
+
+      return flash(dfu, firmware);
     },
     cancel: async () => {
       cancelledState.current = true;
