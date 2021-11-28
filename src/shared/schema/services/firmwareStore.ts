@@ -1,4 +1,4 @@
-import ky from "ky-universal";
+import ky from "ky";
 import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
 
 class HTTPRangeReader implements Reader {

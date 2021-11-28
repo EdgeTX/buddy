@@ -1,5 +1,5 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown from "markdown-to-jsx";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import Table from "@mui/material/Table";
@@ -79,19 +79,54 @@ const MarkdownTableHead: React.FC = (props) => {
 const Markdown: typeof ReactMarkdown = ((props) => {
   return (
     <ReactMarkdown
-      components={
-        {
-          heading: MarkdownHeading,
-          paragraph: MarkdownParagraph,
-          link: Link,
-          listItem: MarkdownListItem,
+      options={{
+        overrides: {
+          h1: {
+            component: MarkdownHeading,
+            props: {
+              level: 1
+            },
+          },
+          h2: {
+            component: MarkdownHeading,
+            props: {
+              level: 2
+            },
+          },
+          h3: {
+            component: MarkdownHeading,
+            props: {
+              level: 3
+            },
+          },
+          h4: {
+            component: MarkdownHeading,
+            props: {
+              level: 4
+            },
+          },
+          h5: {
+            component: MarkdownHeading,
+            props: {
+              level: 5
+            },
+          },
+          h6: {
+            component: MarkdownHeading,
+            props: {
+              level: 6
+            },
+          },
+          p: MarkdownParagraph,
+          a: Link,
+          li: MarkdownListItem,
           table: MarkdownTable,
-          tableHead: MarkdownTableHead,
-          tableBody: MarkdownTableBody,
-          tableRow: MarkdownTableRow,
-          tableCell: MarkdownTableCell,
-        } as any
-      }
+          th: MarkdownTableHead,
+          tbody: MarkdownTableBody,
+          tr: MarkdownTableRow,
+          td: MarkdownTableCell,
+        },
+      }}
       {...props}
     />
   );

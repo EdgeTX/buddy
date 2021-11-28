@@ -10,7 +10,6 @@ import Typography from "@mui/material/Typography";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { isNotNullOrUndefined } from "type-guards";
 import { unzipRaw } from "unzipit";
-import githubClient from "../../gql/github";
 
 const radios = [
   { name: "FlySky Nirvana", target: "nv14.zip" },
@@ -56,7 +55,6 @@ const SdcardWizard: React.FC = () => {
         }
       }
     `),
-    { client: githubClient }
   );
 
   const sdCardAssets =

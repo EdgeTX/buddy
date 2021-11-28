@@ -1,7 +1,7 @@
 overwrite: true
 
 generates:
-  ./src/main/schema/graph/__generated__/index.ts:
+  ./src/shared/schema/graph/__generated__/index.ts:
     schema:
       - "./src/**/graph/**/*.ts"
       - "!**/__generated__/*.ts"
@@ -22,13 +22,13 @@ generates:
     config:
       includeDirectives: true
 
-  ./src/__generated__/tag/:
+  ./src/renderer/__generated__/tag/:
     schema: 
       - ".github-schema-loader.js"
       - "./src/**/graph/**/*.ts"
       - "!**/__generated__/*.ts"
     documents:
-      - "src/**/*.{ts,tsx}":
+      - "src/renderer/**/*.{ts,tsx}":
           noRequire: true
       - "!**/__generated__/*.ts"
 

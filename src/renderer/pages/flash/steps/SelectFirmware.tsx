@@ -11,11 +11,9 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
-import { ApolloError, gql, useQuery } from "@apollo/client";
-import githubClient from "../../../gql/github";
-import { isNotNullOrUndefined } from "type-guards";
-import { firmwareTargets, Target } from "../../../store/firmware";
+import { gql, useQuery } from "@apollo/client";
 import Markdown from "../../../components/Markdown";
+import LinearProgress from "@mui/material/LinearProgress";
 
 type Props = {
   onFirmwareProvided: (firmware: Buffer) => void;
@@ -28,83 +26,6 @@ type Props = {
 };
 
 type FirmwareType = "releases" | "branch" | "commit" | "pull-request" | "local";
-
-// TODO, this will be a resolver on our graphql server
-// with a targets resolver
-const useFirmwareTargets = (
-  tagName?: string
-): { targets?: Target[]; error?: ApolloError | Error; loading: boolean } => {
-  const currentTagName = useRef<string>();
-  currentTagName.current = tagName;
-  const [targetsError, setTargetsError] = useState<Error>();
-  const [targets, setTargets] = useState<Target[]>();
-
-  const { data, error, loading } = useQuery(
-    gql(/* GraphQL */ `
-      query ReleaseAssets($tagName: String!) {
-        repository(name: "edgetx", owner: "EdgeTX") {
-          id
-          release(tagName: $tagName) {
-            id
-            releaseAssets(first: 100) {
-              nodes {
-                id
-                name
-                url
-              }
-            }
-          }
-        }
-      }
-    `),
-    {
-      skip: !tagName,
-      variables: {
-        tagName: tagName ?? "",
-      },
-      client: githubClient,
-    }
-  );
-
-  const fetchTargets = (firmwareBundleUrl: string) => {
-    firmwareTargets(firmwareBundleUrl)
-      .then((targets) => {
-        if (tagName === currentTagName.current) {
-          setTargets(targets);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        if (tagName === currentTagName.current) {
-          setTargetsError(error);
-        }
-      });
-  };
-
-  useEffect(() => {
-    if (data && !loading) {
-      setTargets(undefined);
-      setTargetsError(undefined);
-      const firmwareBundleUrl = data.repository?.release?.releaseAssets?.nodes
-        ?.filter(isNotNullOrUndefined)
-        .find((asset) => asset.name.indexOf("firmware") > -1)?.url;
-
-      if (!firmwareBundleUrl) {
-        setTargetsError(new Error("Release doesn't have firmware bundle"));
-        return;
-      }
-
-      fetchTargets(firmwareBundleUrl);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, loading]);
-
-  return {
-    loading,
-    error: error ?? targetsError,
-    targets: !loading && data && !error ? targets : undefined,
-  };
-};
 
 const FirmwarePicker: React.FC<
   Pick<
@@ -124,43 +45,49 @@ const FirmwarePicker: React.FC<
   onIncludePrereleases,
   includePrereleases,
 }) => {
-  const { data, error, loading } = useQuery(
+  const releasesQuery = useQuery(
     gql(/* GraphQL */ `
       query Releases {
-        repository(name: "edgetx", owner: "EdgeTX") {
+        edgeTxReleases {
           id
-          releases(first: 100) {
-            nodes {
+          name
+          isPrerelease
+        }
+      }
+    `)
+  );
+
+  const releaseTargetsQuery = useQuery(
+    gql(/* GraphQL */ `
+      query ReleaseTargets($tagName: ID!) {
+        edgeTxRelease(id: $tagName) {
+          id
+          firmware {
+            id
+            targets {
               id
-              tagName
               name
-              isPrerelease
             }
           }
         }
       }
     `),
     {
-      client: githubClient,
+      skip: !version,
+      variables: {
+        tagName: version ?? "",
+      },
     }
   );
 
-  const releases = data?.repository?.releases.nodes
-    ?.filter(isNotNullOrUndefined)
-    .filter((release) => includePrereleases || !release.isPrerelease);
-
-  const selectedFirmware = releases?.find(
-    (release) => release.tagName === version
+  const releases = releasesQuery.data?.edgeTxReleases.filter(
+    (release) => includePrereleases || !release.isPrerelease
   );
 
-  const {
-    targets,
-    error: errorLoadingTargets,
-    loading: loadingTargets,
-  } = useFirmwareTargets(selectedFirmware?.tagName);
-
+  const selectedFirmware = releases?.find((release) => release.id === version);
+  const targets = releaseTargetsQuery.data?.edgeTxRelease?.firmware.targets;
   useEffect(() => {
-    if (targets && target && !targets.find((t) => t.code === target)) {
+    if (targets && target && !targets.find((t) => t.id === target)) {
       onTargetSelected(undefined);
     }
   }, [targets, target, onTargetSelected]);
@@ -170,8 +97,8 @@ const FirmwarePicker: React.FC<
       <FormControl
         fullWidth
         sx={{ m: 1 }}
-        error={!!error}
-        disabled={loading || !!error}
+        error={!!releasesQuery.error}
+        disabled={releasesQuery.loading || !!releasesQuery.error}
       >
         <InputLabel id="select-version-label">Select version</InputLabel>
         <Select
@@ -182,18 +109,25 @@ const FirmwarePicker: React.FC<
           onChange={(e) => onVersionSelected(e.target.value as string)}
         >
           {releases?.map((release) => (
-            <MenuItem key={release.tagName} value={release.tagName}>
-              {release.name ?? release.tagName}
+            <MenuItem key={release.id} value={release.id}>
+              {release.name ?? release.id}
             </MenuItem>
           ))}
         </Select>
-        {error && <FormHelperText>Could not load releases</FormHelperText>}
+        {releasesQuery.error && (
+          <FormHelperText>Could not load releases</FormHelperText>
+        )}
       </FormControl>
       <FormControl
         fullWidth
         sx={{ m: 1 }}
-        error={!!errorLoadingTargets}
-        disabled={!selectedFirmware || loadingTargets || !!errorLoadingTargets}
+        color="secondary"
+        error={!!releaseTargetsQuery.error}
+        disabled={
+          !selectedFirmware ||
+          releaseTargetsQuery.loading ||
+          !!releaseTargetsQuery.error
+        }
       >
         <InputLabel id="select-target-label">Select radio type</InputLabel>
         <Select
@@ -204,11 +138,16 @@ const FirmwarePicker: React.FC<
           onChange={(e) => onTargetSelected(e.target.value as string)}
         >
           {targets?.map((t) => (
-            <MenuItem value={t.code}>{t.name}</MenuItem>
+            <MenuItem value={t.id}>{t.name}</MenuItem>
           ))}
         </Select>
-        {errorLoadingTargets && (
+        {releaseTargetsQuery.error && (
           <FormHelperText>Could not load targets</FormHelperText>
+        )}
+        {releaseTargetsQuery.loading && (
+          <FormHelperText>
+            <LinearProgress />
+          </FormHelperText>
         )}
       </FormControl>
     </>
@@ -218,13 +157,10 @@ const FirmwarePicker: React.FC<
 const FirmwareDescription: React.FC<{ version: string }> = ({ version }) => {
   const { data } = useQuery(
     gql(/* GraphQL */ `
-      query ReleaseDescription($tagName: String!) {
-        repository(name: "edgetx", owner: "EdgeTX") {
+      query ReleaseDescription($tagName: ID!) {
+        edgeTxRelease(id: $tagName) {
           id
-          release(tagName: $tagName) {
-            id
-            description
-          }
+          description
         }
       }
     `),
@@ -232,11 +168,10 @@ const FirmwareDescription: React.FC<{ version: string }> = ({ version }) => {
       variables: {
         tagName: version,
       },
-      client: githubClient,
     }
   );
 
-  const description = data?.repository?.release?.description;
+  const description = data?.edgeTxRelease?.description;
 
   if (!description) {
     return null;

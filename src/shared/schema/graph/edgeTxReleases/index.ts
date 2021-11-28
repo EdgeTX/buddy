@@ -5,12 +5,14 @@ import { EdgeTxFirmwareRelease, Resolvers } from "../__generated__";
 const typeDefs = gql`
   type Query {
     edgeTxReleases: [EdgeTxRelease!]!
+    edgeTxRelease(id: ID!): EdgeTxRelease
   }
 
   type EdgeTxRelease {
     id: ID!
+    isPrerelease: Boolean!
     name: String!
-    description: String!
+    description: String
     firmware: EdgeTxFirmwareRelease!
     assets: [EdgeTxReleaseAsset!]!
   }
@@ -51,6 +53,8 @@ const resolvers: Resolvers = {
       return releasesRequest.data.map((release) => ({
         id: release.tag_name,
         name: release.name ?? release.tag_name,
+        description: release.body_text,
+        isPrerelease: release.prerelease,
         firmware: {} as EdgeTxFirmwareRelease,
         assets: release.assets.map((asset) => ({
           id: asset.id.toString(),
@@ -58,6 +62,39 @@ const resolvers: Resolvers = {
           url: asset.browser_download_url,
         })),
       }));
+    },
+    edgeTxRelease: async (_, { id }, { github }) => {
+      const releaseRequest = await github(
+        "GET /repos/{owner}/{repo}/releases/tags/{tag}",
+        {
+          owner: "EdgeTX",
+          repo: "edgetx",
+          tag: id,
+        }
+      ).catch((e: { status?: number } | Error) => {
+        if ("status" in e && e.status && e.status === 404) {
+          return undefined;
+        }
+        throw e;
+      });
+
+      if (!releaseRequest) {
+        return null;
+      }
+      const release = releaseRequest.data;
+
+      return ({
+        id: release.tag_name,
+        name: release.name ?? release.tag_name,
+        description: release.body_text,
+        isPrerelease: release.prerelease,
+        firmware: {} as EdgeTxFirmwareRelease,
+        assets: release.assets.map((asset) => ({
+          id: asset.id.toString(),
+          name: asset.name,
+          url: asset.browser_download_url,
+        })),
+      });
     },
   },
 

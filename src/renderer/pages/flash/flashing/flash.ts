@@ -1,10 +1,10 @@
 import { WebDFU } from "dfu";
 import { useRef, useState } from "react";
 import md5 from "md5";
-import githubClient from "../../../gql/github";
 import { gql } from "@apollo/client";
 import { isNotNullOrUndefined } from "type-guards";
 import { fetchFirmware } from "../../../store/firmware";
+import client from "../../../gql/client";
 
 export type FlashingStageStatus = {
   progress: number;
@@ -231,7 +231,7 @@ export const useFlasher = (): Result => {
           progress: 0,
         },
       });
-      const firmwareUrlQuery = await githubClient.query({
+      const firmwareUrlQuery = await client.query({
         query: gql(/* GraphQL */ `
           query ReleaseAssets($tagName: String!) {
             repository(name: "edgetx", owner: "EdgeTX") {
