@@ -1,13 +1,32 @@
 overwrite: true
-schema: ".github-schema-loader.js"
+
 generates:
+  ./src/main/schema/graph/__generated__/index.ts:
+    schema:
+      - "./src/**/graph/**/*.ts"
+      - "!**/__generated__/*.ts"
+    config:
+      overwrite: true
+      contextType: ../../context#Context
+    plugins:
+      - typescript
+      - typescript-resolvers
+
   ./schema.graphql:
+    schema: 
+      - ".github-schema-loader.js"
+      - "./src/**/graph/**/*.ts"
+      - "!**/__generated__/*.ts"
     plugins:
       - schema-ast
     config:
       includeDirectives: true
 
   ./src/__generated__/tag/:
+    schema: 
+      - ".github-schema-loader.js"
+      - "./src/**/graph/**/*.ts"
+      - "!**/__generated__/*.ts"
     documents:
       - "src/**/*.{ts,tsx}":
           noRequire: true
