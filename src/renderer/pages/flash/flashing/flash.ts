@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import md5 from "md5";
 import { gql } from "@apollo/client";
 import { isNotNullOrUndefined } from "type-guards";
-import { fetchFirmware } from "../../../store/firmware";
+import { fetchFirmware } from "../../store/firmware";
 import client from "../../../gql/client";
 
 export type FlashingStageStatus = {

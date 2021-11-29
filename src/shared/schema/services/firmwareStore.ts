@@ -1,4 +1,5 @@
 import ky from "ky";
+import md5 from "md5";
 import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
 
 class HTTPRangeReader implements Reader {
@@ -103,3 +104,19 @@ export const fetchFirmware = async (
 
   return Buffer.from(await firmwareFile.arrayBuffer());
 };
+
+const maxNumFirmwares = 4;
+const uploadedFirmware: { id: string; data: Buffer }[] = [];
+
+export const registerFirmware = (firmwareBuffer: Buffer): string => {
+  const hash = md5(firmwareBuffer);
+  uploadedFirmware.push({ id: hash, data: firmwareBuffer });
+
+  if (uploadedFirmware.length > maxNumFirmwares) {
+    uploadedFirmware.shift();
+  }
+  return hash;
+};
+
+export const getLocalFirmwareById = (id: string): Buffer | undefined =>
+  uploadedFirmware.find((firmware) => firmware.id === id)?.data;

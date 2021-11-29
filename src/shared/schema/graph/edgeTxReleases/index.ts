@@ -83,7 +83,7 @@ const resolvers: Resolvers = {
       }
       const release = releaseRequest.data;
 
-      return ({
+      return {
         id: release.tag_name,
         name: release.name ?? release.tag_name,
         description: release.body_text,
@@ -94,14 +94,14 @@ const resolvers: Resolvers = {
           name: asset.name,
           url: asset.browser_download_url,
         })),
-      });
+      };
     },
   },
 
   EdgeTxRelease: {
     firmware: async (release, _) => {
-      const firmwareAsset = release.assets.find(
-        (asset) => asset.name.indexOf("firmware") > -1
+      const firmwareAsset = release.assets.find((asset) =>
+        asset.name.includes("firmware")
       );
       if (!firmwareAsset) {
         throw new GraphQLError("Error");
