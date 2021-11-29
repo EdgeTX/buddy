@@ -1,11 +1,16 @@
 import gql from "gql-tag";
 import { GraphQLError } from "graphql";
-import { EdgeTxFirmwareRelease, Resolvers } from "../__generated__";
+import { EdgeTxFirmwareBundle, Resolvers } from "../__generated__";
 
 const typeDefs = gql`
   type Query {
     edgeTxReleases: [EdgeTxRelease!]!
     edgeTxRelease(id: ID!): EdgeTxRelease
+    localFirmware(byId: ID!): LocalEdgeTxFirmware
+  }
+
+  type Mutation {
+    registerLocalFirmware(firmwareBase64Data: String!): ID!
   }
 
   type EdgeTxRelease {
@@ -13,7 +18,7 @@ const typeDefs = gql`
     isPrerelease: Boolean!
     name: String!
     description: String
-    firmware: EdgeTxFirmwareRelease!
+    firmwareBundle: EdgeTxFirmwareBundle!
     assets: [EdgeTxReleaseAsset!]!
   }
 
@@ -26,9 +31,16 @@ const typeDefs = gql`
   type EdgeTxFirmwareTarget {
     id: ID!
     name: String!
+    bundleUrl: String!
+    base64Data: String!
   }
 
-  type EdgeTxFirmwareRelease {
+  type LocalEdgeTxFirmware {
+    id: ID!
+    base64Data: String!
+  }
+
+  type EdgeTxFirmwareBundle {
     id: ID!
     url: String!
     targets: [EdgeTxFirmwareTarget!]!
@@ -55,7 +67,7 @@ const resolvers: Resolvers = {
         name: release.name ?? release.tag_name,
         description: release.body_text,
         isPrerelease: release.prerelease,
-        firmware: {} as EdgeTxFirmwareRelease,
+        firmwareBundle: {} as EdgeTxFirmwareBundle,
         assets: release.assets.map((asset) => ({
           id: asset.id.toString(),
           name: asset.name,
@@ -88,7 +100,8 @@ const resolvers: Resolvers = {
         name: release.name ?? release.tag_name,
         description: release.body_text,
         isPrerelease: release.prerelease,
-        firmware: {} as EdgeTxFirmwareRelease,
+        // Will be resolved
+        firmwareBundle: {} as EdgeTxFirmwareBundle,
         assets: release.assets.map((asset) => ({
           id: asset.id.toString(),
           name: asset.name,
@@ -96,10 +109,25 @@ const resolvers: Resolvers = {
         })),
       };
     },
-  },
+    localFirmware: (_, { byId }, { firmwareStore }) => {
+      const firmwareData = firmwareStore.getLocalFirmwareById(byId);
 
+      if (!firmwareData) {
+        return null;
+      }
+
+      return {
+        id: byId,
+        base64Data: firmwareData.toString("base64"),
+      };
+    },
+  },
+  Mutation: {
+    registerLocalFirmware: (_, { firmwareBase64Data }, { firmwareStore }) =>
+      firmwareStore.registerFirmware(Buffer.from(firmwareBase64Data, "base64")),
+  },
   EdgeTxRelease: {
-    firmware: async (release, _) => {
+    firmwareBundle: async (release, _) => {
       const firmwareAsset = release.assets.find((asset) =>
         asset.name.includes("firmware")
       );
@@ -115,14 +143,27 @@ const resolvers: Resolvers = {
       };
     },
   },
-  EdgeTxFirmwareRelease: {
-    targets: (firmware, _, { firmwareStore }) =>
-      firmwareStore.firmwareTargets(firmware.url).then((firmwareTargets) =>
-        firmwareTargets.map((target) => ({
-          id: target.code,
-          name: target.name,
-        }))
-      ),
+  EdgeTxFirmwareBundle: {
+    targets: (firmwareBundle, _, { firmwareStore }) =>
+      firmwareStore
+        .firmwareTargets(firmwareBundle.url)
+        .then((firmwareTargets) =>
+          firmwareTargets.map((target) => ({
+            id: target.code,
+            bundleUrl: firmwareBundle.url,
+            base64Data: "",
+            name: target.name,
+          }))
+        ),
+  },
+  EdgeTxFirmwareTarget: {
+    base64Data: async (target, _, { firmwareStore }) => {
+      const firmware = await firmwareStore.fetchFirmware(
+        target.bundleUrl,
+        target.id
+      );
+      return firmware.toString("base64");
+    },
   },
 };
 

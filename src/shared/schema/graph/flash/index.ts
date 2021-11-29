@@ -11,7 +11,6 @@ const typeDefs = gql`
   type Mutation {
     createFlashJob(firmware: FlashFirmwareType!, deviceId: ID!): FlashJob!
     cancelFlashJob(jobId: ID!): Boolean
-    registerFirmware(firmwareBuffer: String!): ID!
   }
 
   type Query {
@@ -132,7 +131,7 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     flashJobStatusUpdates: {
-      async * subscribe(_, { jobId }) {
+      async *subscribe(_, { jobId }) {
         yield jobUpdates.asyncIterator<FlashJob>(jobId);
       },
       resolve: (value: FlashJob) => value,
@@ -140,6 +139,9 @@ const resolvers: Resolvers = {
   },
 };
 
+/**
+ * TODO: Move all this to a context service
+ */
 const jobUpdates = new PubSub();
 
 const jobs: Record<string, FlashJob> = {};

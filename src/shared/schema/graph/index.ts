@@ -1,6 +1,5 @@
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
-import edgeTxReleases from "./edgeTxReleases";
-
+import edgeTxReleases from "./firmware";
 
 export default {
   typeDefs: mergeTypeDefs([edgeTxReleases.typeDefs]),

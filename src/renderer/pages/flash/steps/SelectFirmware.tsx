@@ -62,7 +62,7 @@ const FirmwarePicker: React.FC<
       query ReleaseTargets($tagName: ID!) {
         edgeTxRelease(id: $tagName) {
           id
-          firmware {
+          firmwareBundle {
             id
             targets {
               id
