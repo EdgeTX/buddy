@@ -103,6 +103,7 @@ module.exports = (_, { mode }) => ({
   plugins: [
     new webpack.ProvidePlugin({
       process: "process/browser",
+      Buffer: ['buffer', 'Buffer'],
     }),
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({}),

@@ -7,7 +7,21 @@ import React from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
-import { FlashingState, FlashingStageStatus } from "../flashing/flash";
+
+type FlashingStageStatus = {
+  progress: number;
+  started: boolean;
+  completed: boolean;
+  error?: string | null;
+};
+
+type FlashingState = {
+  connect: FlashingStageStatus;
+  build?: FlashingStageStatus | null;
+  download?: FlashingStageStatus | null;
+  erase: FlashingStageStatus;
+  flash: FlashingStageStatus;
+};
 
 type Props = {
   state: FlashingState;
@@ -49,7 +63,11 @@ const StatusCard: React.FC<{
       </Typography>
     </AccordionSummary>
     <AccordionDetails>
-      <LinearProgressWithLabel value={status.progress} />
+      {status.error ? (
+        status.error
+      ) : (
+        <LinearProgressWithLabel value={status.progress} />
+      )}
     </AccordionDetails>
   </Accordion>
 );
@@ -68,36 +86,36 @@ const ConnectionStatus: React.FC<{
 );
 
 const FlashingStatus: React.FC<Props> = ({
-  state: { downloading, erasing, flashing, connection },
+  state: { download, erase, flash, connect },
 }) => (
   <Box>
     <Typography variant="h2">Progress</Typography>
     <Box sx={{ p: 2 }}>
-      <ConnectionStatus status={connection} />
-      {downloading && (
+      <ConnectionStatus status={connect} />
+      {download && (
         <StatusCard
           preTitle="Download"
           title="Downloading"
           doneTitle="Downloaded"
-          status={downloading}
+          status={download}
         />
       )}
-      {erasing && (
+      {
         <StatusCard
           preTitle="Erase"
           title="Erasing"
           doneTitle="Erased"
-          status={erasing}
+          status={erase}
         />
-      )}
-      {flashing && (
+      }
+      {
         <StatusCard
           preTitle="Flash"
           title="Flashing"
           doneTitle="Flashed"
-          status={flashing}
+          status={flash}
         />
-      )}
+      }
     </Box>
   </Box>
 );

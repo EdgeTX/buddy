@@ -9,7 +9,7 @@ import { GraphQLError } from "graphql";
 
 const typeDefs = gql`
   type Mutation {
-    createFlashJob(firmware: FlashFirmwareType!, deviceId: ID!): FlashJob!
+    createFlashJob(firmware: FlashFirmwareInput!, deviceId: ID!): FlashJob!
     cancelFlashJob(jobId: ID!): Boolean
   }
 
@@ -42,7 +42,7 @@ const typeDefs = gql`
     error: String
   }
 
-  input FlashFirmwareType {
+  input FlashFirmwareInput {
     version: ID!
     target: ID!
   }
@@ -131,9 +131,11 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     flashJobStatusUpdates: {
-      async *subscribe(_, { jobId }) {
-        yield jobUpdates.asyncIterator<FlashJob>(jobId);
-      },
+      subscribe: (_, { jobId }) => ({
+        [Symbol.asyncIterator]() {
+          return jobUpdates.asyncIterator<FlashJob>(jobId);
+        },
+      }),
       resolve: (value: FlashJob) => value,
     },
   },
@@ -164,6 +166,7 @@ const createJob = (
       ])
     ) as unknown as FlashStages,
   };
+  jobs[id] = job;
   return job;
 };
 
@@ -184,7 +187,10 @@ const updateStageStatus = (
     return;
   }
 
-  updateJob(jobId, { ...job, [stage]: { ...job.stages[stage], ...status } });
+  updateJob(jobId, {
+    ...job,
+    stages: { ...job.stages, [stage]: { ...job.stages[stage], ...status } },
+  });
 };
 
 const cancelJob = async (jobId: string) => {
@@ -364,4 +370,9 @@ const download = async (
 
     return undefined;
   }
+};
+
+export default {
+  typeDefs,
+  resolvers,
 };

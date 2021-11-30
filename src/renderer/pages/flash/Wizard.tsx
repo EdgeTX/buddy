@@ -1,16 +1,14 @@
 import Grid from "@mui/material/Grid";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import ConnectionOptions from "./steps/ConnectionOptions";
 import SelectFirmware from "./steps/SelectFirmware";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import IconArrowRight from "@mui/icons-material/ArrowRight";
 import IconArrowLeft from "@mui/icons-material/ArrowLeft";
-import FlashingStatus from "./steps/FlashingStatus";
-import { useFlasher } from "./flashing/flash";
-import CompletePage from "./steps/Complete";
 import ArrowCircleUp from "@mui/icons-material/ArrowCircleUp";
+import { gql, useMutation } from "@apollo/client";
 
 type Param = "version" | "target" | "deviceId" | "unprotectedFlash";
 
@@ -41,13 +39,33 @@ const extractParam = <
   return undefined;
 };
 
-const stages = ["firmware", "connection", "flash", "complete"] as const;
+const stages = ["firmware", "connection"] as const;
 type Stage = typeof stages[number];
 
 const FlashingWizard: React.FC = () => {
   const [stage, setStage] = useState<Stage>(stages[0]);
   const [params, setParams] = useSearchParams();
-  const { flash, state: flashState, cancel, loadFirmware } = useFlasher();
+  const navigate = useNavigate();
+
+  const [registerFirmware] = useMutation(
+    gql(/* GraphQL */ `
+      mutation RegisterLocalFirmware($data: String!) {
+        registerLocalFirmware(firmwareBase64Data: $data) {
+          id
+        }
+      }
+    `)
+  );
+
+  const [createFlashJob] = useMutation(
+    gql(/* GraphQL */ `
+      mutation CreateFlashJob($firmware: FlashFirmwareInput!, $deviceId: ID!) {
+        createFlashJob(firmware: $firmware, deviceId: $deviceId) {
+          id
+        }
+      }
+    `)
+  );
 
   const version = extractParam(params, "version");
   const target = extractParam(params, "target");
@@ -87,8 +105,16 @@ const FlashingWizard: React.FC = () => {
         {stage === "firmware" && (
           <SelectFirmware
             onFirmwareProvided={async (firmwareData) => {
-              const firmwareHash = await loadFirmware(firmwareData);
-              updateParams({ target: "local", version: firmwareHash });
+              const registerFirmwareResponse = await registerFirmware({
+                variables: { data: firmwareData.toString("base64") },
+              });
+              if (registerFirmwareResponse.data) {
+                updateParams({
+                  version: "local",
+                  target:
+                    registerFirmwareResponse.data.registerLocalFirmware.id,
+                });
+              }
             }}
             onTargetSelected={(newTarget) =>
               updateParams({ target: newTarget })
@@ -113,78 +139,56 @@ const FlashingWizard: React.FC = () => {
             unprotectedFlashing={unprotectedFlashing}
           />
         )}
-        {stage === "flash" && flashState && (
-          <FlashingStatus state={flashState} />
-        )}
-        {stage === "complete" && <CompletePage />}
       </Box>
       <Grid container direction="row" justifyContent="flex-end" height="30px">
-        {stage !== "complete" && (
-          <Box>
-            <Button
-              sx={{
-                visibility: stages.indexOf(stage) === 0 ? "hidden" : undefined,
-              }}
-              startIcon={stage !== "flash" && <IconArrowLeft />}
-              onClick={() => {
-                const previousStage = stages[stages.indexOf(stage) - 1];
-                if (previousStage) {
-                  if (previousStage === "connection") {
-                    cancel().then(() => {
-                      setStage("firmware");
-                    });
-                  }
-                  setStage(previousStage as Stage);
-                }
-              }}
-            >
-              {stage === "flash" ? "Cancel" : "Back"}
-            </Button>
-            {stage !== "flash" && (
-              <Button
-                endIcon={stage !== "connection" && <IconArrowRight />}
-                disabled={stages.indexOf(stage) === stages.length - 1}
-                onClick={() => {
-                  if (stage === "firmware" && (!version || !target)) {
-                    return;
-                  }
-
-                  const nextStage = stages[stages.indexOf(stage) + 1];
-
-                  if (nextStage === "flash" && deviceId && target && version) {
-                    flash(target, version, deviceId)
-                      .then((completed) => {
-                        if (completed) {
-                          setStage((currentStage) => {
-                            if (currentStage === "flash") {
-                              return stages[stages.indexOf(currentStage) + 1];
-                            }
-                            return currentStage;
-                          });
-                        }
-                      })
-                      .catch((e) => {
-                        console.error("Error", e);
-                      });
-                  }
-                  setStage(nextStage);
-                }}
-              >
-                {stage === "connection" ? "Start" : "Next"}
-              </Button>
-            )}
-          </Box>
-        )}
-        {stage === "complete" && (
+        <Box>
           <Button
-            endIcon={<ArrowCircleUp />}
+            sx={{
+              visibility: stages.indexOf(stage) === 0 ? "hidden" : undefined,
+            }}
+            startIcon={<IconArrowLeft />}
             onClick={() => {
-              setStage(stages[0]);
+              const previousStage = stages[stages.indexOf(stage) - 1];
+              if (previousStage) {
+                setStage(previousStage as Stage);
+              }
             }}
           >
-            Start again
+            Back
           </Button>
-        )}
+          <Button
+            endIcon={stage !== "connection" && <IconArrowRight />}
+            onClick={() => {
+              if (stage === "firmware" && (!version || !target)) {
+                return;
+              } else if (
+                stage === "connection" &&
+                deviceId &&
+                target &&
+                version
+              ) {
+                createFlashJob({
+                  variables: { firmware: { target, version }, deviceId },
+                })
+                  .then((jobCreateResult) => {
+                    if (jobCreateResult.data) {
+                      navigate(
+                        `/flash/${jobCreateResult.data.createFlashJob.id}`
+                      );
+                    } else {
+                      console.error("Error", jobCreateResult.errors);
+                    }
+                  })
+                  .catch((e) => {
+                    console.error("Error", e);
+                  });
+              }
+              setStage("connection");
+            }}
+          >
+            {stage === "connection" ? "Start" : "Next"}
+          </Button>
+        </Box>
       </Grid>
     </Box>
   );

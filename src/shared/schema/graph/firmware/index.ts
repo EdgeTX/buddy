@@ -10,7 +10,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    registerLocalFirmware(firmwareBase64Data: String!): ID!
+    registerLocalFirmware(firmwareBase64Data: String!): LocalEdgeTxFirmware!
   }
 
   type EdgeTxRelease {
@@ -123,8 +123,12 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    registerLocalFirmware: (_, { firmwareBase64Data }, { firmwareStore }) =>
-      firmwareStore.registerFirmware(Buffer.from(firmwareBase64Data, "base64")),
+    registerLocalFirmware: (_, { firmwareBase64Data }, { firmwareStore }) => ({
+      id: firmwareStore.registerFirmware(
+        Buffer.from(firmwareBase64Data, "base64")
+      ),
+      base64Data: firmwareBase64Data,
+    }),
   },
   EdgeTxRelease: {
     firmwareBundle: async (release, _) => {

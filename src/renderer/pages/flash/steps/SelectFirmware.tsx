@@ -85,7 +85,8 @@ const FirmwarePicker: React.FC<
   );
 
   const selectedFirmware = releases?.find((release) => release.id === version);
-  const targets = releaseTargetsQuery.data?.edgeTxRelease?.firmware.targets;
+  const targets =
+    releaseTargetsQuery.data?.edgeTxRelease?.firmwareBundle.targets;
   useEffect(() => {
     if (targets && target && !targets.find((t) => t.id === target)) {
       onTargetSelected(undefined);
@@ -184,14 +185,14 @@ const SelectFirmware: React.FC<Props> = (props) => {
   const [firmwareType, setFirmwareType] = useState<FirmwareType>("releases");
 
   useEffect(() => {
-    if (props.target === "local") {
+    if (props.version === "local") {
       setFirmwareType("local");
     }
   }, [props.target]);
 
   useEffect(() => {
     if (firmwareType === "local") {
-      props.onVersionSelected(undefined);
+      props.onTargetSelected(undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firmwareType]);

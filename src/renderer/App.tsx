@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import FlashingWizard from "./pages/flash/Wizard";
+
+import FlashingExecution from "./pages/flash/Execution";
 import SdcardWizard from "./pages/sdcard/Wizard";
 
 const App: React.FC = () => {
@@ -11,6 +13,7 @@ const App: React.FC = () => {
       <Layout>
         <Routes>
           <Route path="/flash" element={<FlashingWizard />} />
+          <Route path="/flash/:jobId" element={<FlashingExecution />} />
           <Route path="/sdcard" element={<SdcardWizard />} />
           <Route path="*" element={<>Wow, first new app</>} />
         </Routes>
