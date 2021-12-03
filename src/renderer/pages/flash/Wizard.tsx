@@ -9,42 +9,18 @@ import IconArrowRight from "@mui/icons-material/ArrowRight";
 import IconArrowLeft from "@mui/icons-material/ArrowLeft";
 import ArrowCircleUp from "@mui/icons-material/ArrowCircleUp";
 import { gql, useMutation } from "@apollo/client";
-
-type Param = "version" | "target" | "deviceId" | "unprotectedFlash";
-
-const extractParam = <
-  T extends typeof String | typeof Boolean | typeof Number = typeof String
->(
-  params: URLSearchParams,
-  key: Param,
-  type?: T
-): ReturnType<T> | undefined => {
-  const value = params.get(key);
-
-  if (type === Number) {
-    const parsedValue = Number(value);
-    if (!Number.isNaN(parsedValue)) {
-      return parsedValue as ReturnType<T> | undefined;
-    }
-  }
-
-  if (type === Boolean && value !== null) {
-    return (value === "true") as ReturnType<T> | undefined;
-  }
-
-  if (value !== null) {
-    return value as ReturnType<T> | undefined;
-  }
-
-  return undefined;
-};
+import useQueryParams from "../../hooks/useQueryParams";
 
 const stages = ["firmware", "connection"] as const;
 type Stage = typeof stages[number];
 
 const FlashingWizard: React.FC = () => {
   const [stage, setStage] = useState<Stage>(stages[0]);
-  const [params, setParams] = useSearchParams();
+  const { parseParam, updateParams } = useQueryParams([
+    "version",
+    "target",
+    "deviceId",
+  ]);
   const navigate = useNavigate();
 
   const [registerFirmware] = useMutation(
@@ -67,28 +43,9 @@ const FlashingWizard: React.FC = () => {
     `)
   );
 
-  const version = extractParam(params, "version");
-  const target = extractParam(params, "target");
-  const deviceId = extractParam(params, "deviceId");
-  const unprotectedFlashing = extractParam(params, "unprotectedFlash", Boolean);
-
-  const updateParams = (params: Record<string, string | undefined>) => {
-    const newObject = {
-      version,
-      target,
-      deviceId,
-      unprotectedFlashing,
-      ...params,
-    };
-    setParams(
-      Object.fromEntries(
-        Object.entries(newObject).filter(
-          ([, value]) => value !== null && value !== undefined
-        ) as [string, string][]
-      ),
-      { replace: true }
-    );
-  };
+  const version = parseParam("version");
+  const target = parseParam("target");
+  const deviceId = parseParam("deviceId");
 
   useEffect(() => {
     if (!version || !target) {
@@ -132,11 +89,7 @@ const FlashingWizard: React.FC = () => {
             onDeviceSelected={(newDeviceId) =>
               updateParams({ deviceId: newDeviceId })
             }
-            onSetForceUnprotectedFlashing={(newForceUnprotected) =>
-              updateParams({ unprotectedFlash: newForceUnprotected.toString() })
-            }
             deviceId={deviceId}
-            unprotectedFlashing={unprotectedFlashing}
           />
         )}
       </Box>
