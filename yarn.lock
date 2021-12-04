@@ -1866,16 +1866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/graphql-schema@npm:^10.73.0":
-  version: 10.73.0
-  resolution: "@octokit/graphql-schema@npm:10.73.0"
-  dependencies:
-    graphql: ^15.0.0
-    graphql-tag: ^2.10.3
-  checksum: 54f8200a3968f791ab63e8302abcf5e63b50fa38147460779b9f66179cd2e5e660fa10a0993f46d4206c8092644740f32202e5c503a4b68db2c1770c6d980671
-  languageName: node
-  linkType: hard
-
 "@octokit/graphql@npm:^4.5.8":
   version: 4.8.0
   resolution: "@octokit/graphql@npm:4.8.0"
@@ -4657,7 +4647,6 @@ __metadata:
     "@mui/icons-material": ^5.1.1
     "@mui/material": ^5.1.1
     "@octokit/core": ^3.5.1
-    "@octokit/graphql-schema": ^10.73.0
     "@testing-library/jest-dom": ^5.11.4
     "@testing-library/react": ^11.1.0
     "@testing-library/user-event": ^12.1.10
@@ -4685,7 +4674,6 @@ __metadata:
     md5: ^2.3.0
     native-file-system-adapter: ^2.0.1
     p-limit: ^3.1.0
-    p-map: ^4
     react: ^17.0.2
     react-dev-utils: ^11.0.4
     react-dom: ^17.0.2
@@ -5950,7 +5938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.10.3, graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.3":
+"graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.3":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:
@@ -5967,13 +5955,6 @@ __metadata:
   peerDependencies:
     graphql: ">=0.11 <=16"
   checksum: bdb77b3e44be53d2d8d0c395066e62e74efe1123d9b5be7cc69b60d28229974e32abc79c5997095d038d169d4135cb2bcb98f0e666aa8cfeb3bb9857b960d803
-  languageName: node
-  linkType: hard
-
-"graphql@npm:^15.0.0":
-  version: 15.7.2
-  resolution: "graphql@npm:15.7.2"
-  checksum: eacb746e2981d0c346ef7365601873963af5356f64ce4d890ab89d213c67bf5bc1ae957b93c3902198798774c842b55dff219f38bad858691765e4debc265750
   languageName: node
   linkType: hard
 
@@ -8535,7 +8516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-map@npm:^4, p-map@npm:^4.0.0":
+"p-map@npm:^4.0.0":
   version: 4.0.0
   resolution: "p-map@npm:4.0.0"
   dependencies:
