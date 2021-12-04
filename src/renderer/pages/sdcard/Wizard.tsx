@@ -8,23 +8,37 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 import React, { useLayoutEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 
 const SdcardWizard: React.FC = () => {
-  const [selectedTarget, setSelectedTarget] = useState<string>();
+  const navigate = useNavigate();
   const { updateParams, parseParam } = useQueryParams([
     "target",
-    "directory",
+    "sounds",
+    "folder",
     "erase",
   ]);
 
   const target = parseParam("target");
-  const directory = parseParam("directory");
+  const folder = parseParam("folder");
+  const sounds = parseParam("sounds");
 
   const sdcardTargetsQuery = useQuery(
     gql(/* GraphQL */ `
       query SdcardTargets {
         sdcardTargets {
+          id
+          name
+          tag
+        }
+      }
+    `)
+  );
+  const sdcardSoundsQuery = useQuery(
+    gql(/* GraphQL */ `
+      query SdcardSounds {
+        sdcardSounds {
           id
           name
           tag
@@ -49,7 +63,7 @@ const SdcardWizard: React.FC = () => {
       mutation CreateSdcardWriteJob(
         $folderId: ID!
         $target: ID!
-        $sounds: String!
+        $sounds: ID!
         $clean: Boolean
       ) {
         createSdcardWriteJob(
@@ -65,10 +79,11 @@ const SdcardWizard: React.FC = () => {
   );
 
   const targets = sdcardTargetsQuery.data?.sdcardTargets;
-  const selectedFolder = pickFolderMutation.data?.pickSdcardFolder?.id;
+  const availableSounds = sdcardSoundsQuery.data?.sdcardSounds;
 
-  const selectedTargetExists = !!targets?.find(
-    (target) => target.id === selectedTarget
+  const selectedTargetExists = !!targets?.find(({ id }) => id === target);
+  const selectedSoundsExists = !!availableSounds?.find(
+    ({ id }) => id === sounds
   );
 
   return (
@@ -85,11 +100,11 @@ const SdcardWizard: React.FC = () => {
           labelId="select-radio-label"
           id="select-radio"
           label="Select radio"
-          value={selectedTarget}
+          value={target}
           onChange={(e) => updateParams({ target: e.target.value as string })}
         >
           {targets?.map((radio) => (
-            <MenuItem key={radio.name} value={radio.name}>
+            <MenuItem key={radio.id} value={radio.id}>
               {radio.name}
             </MenuItem>
           ))}
@@ -98,11 +113,36 @@ const SdcardWizard: React.FC = () => {
           <FormHelperText>Could not load targets</FormHelperText>
         )}
       </FormControl>
+      <FormControl
+        fullWidth
+        sx={{ m: 1 }}
+        color="secondary"
+        error={!!sdcardSoundsQuery.error}
+        disabled={sdcardSoundsQuery.loading || !!sdcardSoundsQuery.error}
+      >
+        <InputLabel id="select-language">Select language</InputLabel>
+        <Select
+          labelId="select-language-label"
+          id="select-languaget"
+          label="Select language"
+          value={sounds}
+          onChange={(e) => {
+            updateParams({ sounds: e.target.value as string });
+          }}
+        >
+          {availableSounds?.map((s) => (
+            <MenuItem value={s.id}>{s.name}</MenuItem>
+          ))}
+        </Select>
+        {sdcardSoundsQuery.error && (
+          <FormHelperText>Could not load sounds</FormHelperText>
+        )}
+      </FormControl>
       <Button
         onClick={() =>
           pickFolder().then((result) => {
             if (result.data?.pickSdcardFolder) {
-              updateParams({ directory: result.data.pickSdcardFolder.id });
+              updateParams({ folder: result.data.pickSdcardFolder.id });
             }
           })
         }
@@ -110,13 +150,22 @@ const SdcardWizard: React.FC = () => {
         Select directory
       </Button>
       <Button
-        disabled={!selectedTargetExists}
+        disabled={!selectedTargetExists || !selectedSoundsExists}
         onClick={() => {
-          createWriteJob({
-            variables: {
-              target,
-            },
-          });
+          if (folder && target && sounds)
+            createWriteJob({
+              variables: {
+                folderId: folder,
+                target,
+                sounds,
+              },
+            }).then((result) => {
+              if (result.data?.createSdcardWriteJob.id) {
+                navigate(`/sdcard/${result.data?.createSdcardWriteJob.id}`);
+              } else {
+                console.log(result);
+              }
+            });
         }}
       >
         Make SD

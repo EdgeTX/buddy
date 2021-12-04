@@ -6,6 +6,7 @@ import { PubSub } from "graphql-subscriptions";
 import { FlashJob, FlashStage, FlashStages, Resolvers } from "../__generated__";
 import { Context } from "../../context";
 import { GraphQLError } from "graphql";
+import debounce from "debounce";
 
 const typeDefs = gql`
   type Mutation {
@@ -172,9 +173,11 @@ const createJob = (
 
 const getJob = (jobId: string): FlashJob | undefined => jobs[jobId];
 
+const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
+
 const updateJob = (jobId: string, updatedJob: FlashJob) => {
   jobs[jobId] = updatedJob;
-  jobUpdates.publish(jobId, updatedJob);
+  debouncedPublish(jobId, updatedJob);
 };
 
 const updateStageStatus = (

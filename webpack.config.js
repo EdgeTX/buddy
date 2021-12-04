@@ -21,6 +21,7 @@ module.exports = (_, { mode }) => ({
   externals: {
     "node-fetch": {},
     "supports-color": "commonjs supports-color",
+    "fs/promises": "commonjs fs/promises"
   },
   resolve: {
     extensions: [".ts", ".tsx", ".mjs", ".js"],
@@ -30,6 +31,7 @@ module.exports = (_, { mode }) => ({
       path: false,
       process: false,
       url: false,
+      os: false
       //   zlib: false,
       //   https: false,
       //   http: false,

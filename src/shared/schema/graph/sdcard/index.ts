@@ -10,6 +10,8 @@ import { GraphQLError } from "graphql";
 import ky, { DownloadProgress } from "ky";
 import { unzipRaw, ZipEntry } from "unzipit";
 import { PubSub } from "graphql-subscriptions";
+import { debounce } from "debounce";
+import pLimit from "p-limit";
 
 const targetsToAssets = [
   { name: "FlySky Nirvana", asset: "nv14.zip" },
@@ -36,7 +38,7 @@ const nameToId = (name: string): string =>
 const typeDefs = gql`
   type Query {
     sdcardTargets: [SdcardTarget!]!
-    sdcardSounds: [String!]!
+    sdcardSounds: [SdcardSoundsAsset!]!
     folderInfo(id: ID!): FileSystemFolder
     sdcardWriteJobStatus(jobId: ID!): SdcardWriteJob
   }
@@ -46,7 +48,7 @@ const typeDefs = gql`
     createSdcardWriteJob(
       folderId: ID!
       target: ID!
-      sounds: String!
+      sounds: ID!
       clean: Boolean
     ): SdcardWriteJob!
     cancelSdcardWriteJob(jobId: ID!): Boolean
@@ -85,8 +87,8 @@ const typeDefs = gql`
 
   type SdcardWriteFileStatus {
     name: String!
-    startTime: Int
-    completedTime: Int
+    startTime: String
+    completedTime: String
   }
 
   type FileSystemFolder {
@@ -95,6 +97,12 @@ const typeDefs = gql`
   }
 
   type SdcardTarget {
+    id: ID!
+    name: String!
+    tag: String!
+  }
+
+  type SdcardSoundsAsset {
     id: ID!
     name: String!
     tag: String!
@@ -123,21 +131,23 @@ const resolvers: Resolvers = {
       );
     },
     sdcardSounds: async (_, __, { github }) => {
-      const assets = (
+      const soundsRelease = (
         await github("GET /repos/{owner}/{repo}/releases/latest", {
           owner: "EdgeTX",
           repo: "edgetx-sdcard-sounds",
         })
-      ).data.assets;
+      ).data;
 
-      return assets
+      return soundsRelease.assets
         .filter((asset) => asset.name.includes("edgetx-sdcard-sounds-"))
-        .map((asset) =>
-          asset.name
-            .split("edgetx-sdcard-sounds-")[1]
-            .split("-")[0]
-            .toUpperCase()
-        );
+        .map(
+          (asset) => asset.name.split("edgetx-sdcard-sounds-")[1].split("-")[0]
+        )
+        .map((name) => ({
+          id: name,
+          name: name.toUpperCase(),
+          tag: soundsRelease.tag_name,
+        }));
     },
     folderInfo: (_, { id }) => {
       const handle = directories.find(
@@ -252,6 +262,7 @@ const resolvers: Resolvers = {
       );
 
       (async () => {
+        console.log("downloading");
         const zipEntries = await download(job.id, [
           sdcardAssetUrl,
           soundsAssetUrl,
@@ -262,6 +273,7 @@ const resolvers: Resolvers = {
         }
 
         if (clean && directory.path) {
+          console.log("cleaning");
           await erase(job.id, directory.path);
         }
 
@@ -269,8 +281,13 @@ const resolvers: Resolvers = {
           return;
         }
 
+        console.log("writing");
+
         await writeAssets(job.id, directory.handle, zipEntries);
-      })();
+      })().catch((e) => {
+        console.error(e);
+        cancelSdcardJob(job.id);
+      });
 
       return job;
     },
@@ -303,7 +320,7 @@ const createSdcardJob = (
           started: false,
           completed: false,
           progress: 0,
-          ...(stage === "download" ? { writes: [] } : undefined),
+          ...(stage === "write" ? { writes: [] } : undefined),
         },
       ])
     ) as unknown as SdcardWriteJobStages,
@@ -315,9 +332,11 @@ const createSdcardJob = (
 const getSdcardJob = (jobId: string): SdcardWriteJob | undefined =>
   sdcardJobs[jobId];
 
+const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
+
 const updateSdcardJob = (jobId: string, updatedJob: SdcardWriteJob) => {
   sdcardJobs[jobId] = updatedJob;
-  jobUpdates.publish(jobId, updatedJob);
+  debouncedPublish(jobId, updatedJob);
 };
 
 const updateStageStatus = <
@@ -455,6 +474,8 @@ const writeAssets = async (
   const total = zipEntries.reduce((acc, entity) => acc + entity.size, 0);
   let progress = 0;
 
+  const writeLimiter = pLimit(10);
+
   await Promise.all(
     zipEntries.map(async (file) => {
       if (isCancelled(jobId)) {
@@ -464,11 +485,13 @@ const writeAssets = async (
       const started = new Date().getTime();
       const path = file.name.split("/");
       const fileName = path[path.length - 1];
-
-      updateSdcardWriteFileStatus(jobId, {
-        name: file.name,
-        startTime: started,
-      });
+      const isFolder = fileName.length === 0;
+      if (isFolder) {
+        updateSdcardWriteFileStatus(jobId, {
+          name: file.name,
+          startTime: started.toString(),
+        });
+      }
 
       // ensure the path exists
       // and recursively head down the tree
@@ -492,30 +515,46 @@ const writeAssets = async (
       }
 
       // Only need to save a file if there was something after the folder
-      if (fileName.length > 0) {
+      if (!isFolder) {
         const fileHandle = await fileDirectory.getFileHandle(fileName, {
           create: true,
         });
-        await file.blob().then(async (blob) => {
+        const blob = await file.blob();
+        await writeLimiter(async () => {
+          console.log("unpacked", file.name);
+          updateSdcardWriteFileStatus(jobId, {
+            name: file.name,
+            startTime: started.toString(),
+          });
           // Compat for electron main and the browser
           const stream = blob.stream() as
             | NodeJS.ReadableStream
             | ReadableStream;
-          const pipeFunc = "pipe" in stream ? stream.pipe : stream.pipeTo;
-          return pipeFunc(
+          const pipeFunc =
+            "pipe" in stream
+              ? stream.pipe.bind(stream)
+              : stream.pipeTo.bind(stream);
+          const result = pipeFunc(
             (await fileHandle.createWritable()) as unknown as NodeJS.WritableStream &
               WritableStream
           );
+
+          if ("end" in result) {
+            return new Promise<void>((resolve) => result.end(resolve));
+          } else {
+            return result;
+          }
         });
 
         progress += file.size;
       }
 
+      console.log("written", file.name);
       updateStageStatus(jobId, "write", { progress: (progress / total) * 100 });
       updateSdcardWriteFileStatus(jobId, {
         name: file.name,
-        startTime: started,
-        completedTime: new Date().getTime(),
+        startTime: started.toString(),
+        completedTime: new Date().getTime().toString(),
       });
     })
   );
