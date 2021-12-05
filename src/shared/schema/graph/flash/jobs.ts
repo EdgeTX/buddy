@@ -70,70 +70,64 @@ export const flash = async (
   jobId: string,
   connection: WebDFU,
   firmware: Buffer
-): Promise<boolean> => {
-  try {
-    const process = connection.write(
-      connection.properties?.TransferSize ?? 1024,
-      firmware,
-      true
-    );
+): Promise<void> => {
+  const process = connection.write(
+    connection.properties?.TransferSize ?? 1024,
+    firmware,
+    true
+  );
 
-    await new Promise<void>((resolve, reject) => {
-      let stage: "erase" | "flash" = "erase";
-      process.events.on("error", (err: Error) => {
-        if (stage === "erase") {
-          updateStageStatus(jobId, "erase", {
-            error: err.message,
-          });
-        } else {
-          updateStageStatus(jobId, "flash", {
-            error: err.message,
-          });
-        }
-        reject(err);
-      });
-
-      process.events.on("erase/start", () => {
+  await new Promise<void>((resolve, reject) => {
+    let stage: "erase" | "flash" = "erase";
+    process.events.on("error", (err: Error) => {
+      if (stage === "erase") {
         updateStageStatus(jobId, "erase", {
-          started: true,
+          error: err.message,
         });
-      });
-      process.events.on("erase/process", (progress) => {
-        updateStageStatus(jobId, "erase", {
-          progress: (progress / firmware.byteLength) * 100,
+      } else {
+        updateStageStatus(jobId, "flash", {
+          error: err.message,
         });
-      });
-      process.events.on("erase/end", () => {
-        updateStageStatus(jobId, "erase", {
-          progress: 100,
-          completed: true,
-        });
-      });
+      }
+      reject(err);
+    });
 
-      process.events.on("write/start", () => {
-        stage = "flash";
-        updateStageStatus(jobId, "flash", {
-          started: true,
-        });
+    process.events.on("erase/start", () => {
+      updateStageStatus(jobId, "erase", {
+        started: true,
       });
-      process.events.on("write/process", (progress) => {
-        updateStageStatus(jobId, "flash", {
-          progress: (progress / firmware.byteLength) * 100,
-        });
+    });
+    process.events.on("erase/process", (progress) => {
+      updateStageStatus(jobId, "erase", {
+        progress: (progress / firmware.byteLength) * 100,
       });
-
-      process.events.on("end", () => {
-        updateStageStatus(jobId, "flash", {
-          completed: true,
-        });
-        resolve();
+    });
+    process.events.on("erase/end", () => {
+      updateStageStatus(jobId, "erase", {
+        progress: 100,
+        completed: true,
       });
     });
 
-    return true;
-  } catch (error) {
-    return false;
-  }
+    process.events.on("write/start", () => {
+      stage = "flash";
+      updateStageStatus(jobId, "flash", {
+        started: true,
+      });
+    });
+    process.events.on("write/process", (progress) => {
+      updateStageStatus(jobId, "flash", {
+        progress: (progress / firmware.byteLength) * 100,
+      });
+    });
+
+    process.events.on("end", () => {
+      updateStageStatus(jobId, "flash", {
+        completed: true,
+      });
+      resolve();
+    });
+  });
 };
 
 export const startExecution = async (
@@ -199,6 +193,7 @@ export const startExecution = async (
       }
       updateStageStatus(jobId, "download", {
         completed: true,
+        progress: 100,
       });
     }
 

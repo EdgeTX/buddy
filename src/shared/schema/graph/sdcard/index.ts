@@ -453,12 +453,19 @@ const erase = async (
     entries.push(entry);
   }
 
+  console.log(entries)
   await Promise.all(
     entries.map(async (entry) => {
       await rootHandle.removeEntry(
         entry.name,
         entry.kind === "directory" ? { recursive: true } : undefined
-      );
+      ).catch(e => {
+        // Some weird macos folder
+        if ((e as Error).message.includes('An operation that depends on state cached in an interface object')) {
+          return;
+        }
+        throw e;
+      });
       progress += 1;
       updateStageStatus(jobId, "erase", {
         progress: (progress / entries.length) * 100,
@@ -554,7 +561,6 @@ const writeAssets = async (
         progress += file.size;
       }
 
-      console.log("written", file.name);
       updateStageStatus(jobId, "write", { progress: (progress / total) * 100 });
       updateSdcardWriteFileStatus(jobId, {
         name: file.name,
