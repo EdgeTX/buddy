@@ -3,7 +3,13 @@ import * as uuid from "uuid";
 
 import gql from "gql-tag";
 import { PubSub } from "graphql-subscriptions";
-import { FlashJob, FlashStage, FlashStages, Resolvers } from "../__generated__";
+import {
+  FlashableDevice,
+  FlashJob,
+  FlashStage,
+  FlashStages,
+  Resolvers,
+} from "../__generated__";
 import { Context } from "../../context";
 import { GraphQLError } from "graphql";
 import debounce from "debounce";
@@ -12,14 +18,21 @@ const typeDefs = gql`
   type Mutation {
     createFlashJob(firmware: FlashFirmwareInput!, deviceId: ID!): FlashJob!
     cancelFlashJob(jobId: ID!): Boolean
+    requestFlashableDevice: FlashableDevice
   }
 
   type Query {
     flashJobStatus(jobId: ID!): FlashJob
+    flashableDevices: [FlashableDevice!]!
   }
 
   type Subscription {
     flashJobStatusUpdates(jobId: ID!): FlashJob!
+  }
+
+  type FlashableDevice {
+    id: String!
+    name: String
   }
 
   type FlashJob {
@@ -49,20 +62,54 @@ const typeDefs = gql`
   }
 `;
 
+const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
+  id:
+    device.serialNumber ??
+    `${device.vendorId.toString()}:${device.productId.toString()}`,
+  name: device.productName,
+});
+
 const resolvers: Resolvers = {
   Mutation: {
-    createFlashJob: async (
-      _,
-      { firmware, deviceId },
-      { firmwareStore, github }
-    ) => {
+    createFlashJob: async (_, { firmware, deviceId }, { usb, firmwareStore, github }) => {
       let firmwareData: Buffer | undefined;
+      let firmwareBundleUrl: string | undefined;
       if (firmware.version === "local") {
-        firmwareData = firmwareStore.getLocalFirmwareById(firmware.target);
+        firmwareData = firmwareStore.getLocalFirmwareById(
+          firmware.target
+        );
 
         if (!firmwareData) {
           throw new GraphQLError("Specified firmware not found");
         }
+      } else {
+        firmwareBundleUrl = (
+          await github(
+            "GET /repos/{owner}/{repo}/releases/tags/{tag}",
+            {
+              owner: "EdgeTX",
+              repo: "edgetx",
+              tag: firmware.version,
+            }
+          )
+        ).data.assets.find((asset) =>
+          asset.name.includes("firmware")
+        )?.browser_download_url;
+
+        if (!firmwareBundleUrl) {
+          throw new GraphQLError("Could not find specified firmware");
+        }
+      }
+
+      const device = (await usb.deviceList()).find(
+        ({ vendorId, productId, serialNumber }) =>
+          deviceId.includes(":")
+            ? `${vendorId}:${productId}` === deviceId
+            : deviceId === serialNumber
+      );
+
+      if (!device) {
+        throw new GraphQLError("Device not found");
       }
 
       // If we already have the firmware we don't need to download
@@ -89,20 +136,45 @@ const resolvers: Resolvers = {
 
       // Run job
       (async () => {
-        dfu = await connect(job.id, deviceId);
+        updateStageStatus(job.id, "connect", {
+          started: true,
+        });
+
+        dfu = await usb.dfuConnect(device).catch((e: Error) => {
+          updateStageStatus(job.id, "connect", {
+            error: e.message,
+          });
+          return undefined;
+        });
+
+        updateStageStatus(job.id, "connect", {
+          completed: true,
+        });
+
         if (!dfu || cancelled) {
           return;
         }
 
         if (!firmwareData) {
-          firmwareData = await download(job.id, firmware, {
-            firmwareStore,
-            github,
+          updateStageStatus(job.id, "download", {
+            started: true,
           });
+
+          firmwareData = await firmwareStore
+            .fetchFirmware(firmwareBundleUrl!, firmware.target)
+            .catch((e: Error) => {
+              updateStageStatus(job.id, "download", {
+                error: e.message,
+              });
+              return undefined;
+            });
 
           if (!firmwareData || cancelled) {
             return;
           }
+          updateStageStatus(job.id, "download", {
+            completed: true,
+          });
         }
 
         await flash(job.id, dfu, firmwareData);
@@ -126,9 +198,15 @@ const resolvers: Resolvers = {
 
       return null;
     },
+    requestFlashableDevice: async (_, __, { usb }) => {
+      const device = await usb.requestDevice();
+      return device ? usbDeviceToFlashDevice(device) : null;
+    },
   },
   Query: {
     flashJobStatus: (_, { jobId }) => getJob(jobId) ?? null,
+    flashableDevices: (_, __, { usb }) =>
+      usb.deviceList().then((devices) => devices.map(usbDeviceToFlashDevice)),
   },
   Subscription: {
     flashJobStatusUpdates: {
@@ -205,60 +283,6 @@ const cancelJob = async (jobId: string) => {
   updateJob(jobId, { ...job, cancelled: true });
 };
 
-const connect = async (
-  jobId: string,
-  deviceId: string
-): Promise<WebDFU | undefined> => {
-  try {
-    updateStageStatus(jobId, "connect", {
-      started: true,
-    });
-
-    const device = (await navigator.usb.getDevices()).find(
-      ({ vendorId, productId, serialNumber }) =>
-        deviceId.includes(":")
-          ? `${vendorId}:${productId}` === deviceId
-          : deviceId === serialNumber
-    );
-
-    if (!device) {
-      throw new Error("Device not found");
-    }
-
-    const dfu = new WebDFU(
-      device,
-      { forceInterfacesName: true },
-      { info: console.log, progress: console.log, warning: console.log }
-    );
-
-    console.log("Initialising");
-
-    await dfu.init();
-
-    if (dfu.interfaces.length === 0) {
-      throw new Error("Device does not have any USB DFU interfaces.");
-    }
-
-    console.log("connecting");
-    await dfu.connect(0);
-    console.log("configuring");
-    if (await dfu.isError()) {
-      await dfu.clearStatus();
-    }
-
-    updateStageStatus(jobId, "connect", {
-      completed: true,
-    });
-
-    return dfu;
-  } catch (e) {
-    updateStageStatus(jobId, "connect", {
-      error: (e as Error).message,
-    });
-    return undefined;
-  }
-};
-
 const flash = async (
   jobId: string,
   connection: WebDFU,
@@ -326,52 +350,6 @@ const flash = async (
     return true;
   } catch (error) {
     return false;
-  }
-};
-
-const download = async (
-  jobId: string,
-  firmware: { target: string; version: string },
-  { firmwareStore, github }: Context
-): Promise<Buffer | undefined> => {
-  try {
-    updateStageStatus(jobId, "download", {
-      started: true,
-    });
-
-    const firmwareBundleUrl = (
-      await github("GET /repos/{owner}/{repo}/releases/tags/{tag}", {
-        owner: "EdgeTX",
-        repo: "edgetx",
-        tag: firmware.version,
-      })
-    ).data.assets.find((asset) =>
-      asset.name.includes("firmware")
-    )?.browser_download_url;
-
-    if (!firmwareBundleUrl) {
-      throw new Error("Could not find specified firmware");
-    }
-
-    updateStageStatus(jobId, "download", {
-      progress: 20,
-    });
-
-    const firmwareData = await firmwareStore.fetchFirmware(
-      firmwareBundleUrl,
-      firmware.target
-    );
-    updateStageStatus(jobId, "download", {
-      completed: true,
-    });
-
-    return firmwareData;
-  } catch (e) {
-    updateStageStatus(jobId, "download", {
-      error: (e as Error).message,
-    });
-
-    return undefined;
   }
 };
 
