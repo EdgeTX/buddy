@@ -144,7 +144,6 @@ const SdcardWriteExecution: React.FC = () => {
     return stage && !stage.completed;
   });
 
-  console.log(activeStep);
   return (
     <Box sx={{ maxWidth: 400 }}>
       <Stepper activeStep={activeStep} orientation="vertical">

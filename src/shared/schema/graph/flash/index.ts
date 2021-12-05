@@ -66,26 +66,27 @@ const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
 
 const resolvers: Resolvers = {
   Mutation: {
-    createFlashJob: async (
-      _,
-      { firmware, deviceId },
-      { usb, firmwareStore, github }
-    ) => {
+    createFlashJob: async (_, { firmware, deviceId }, context) => {
       let firmwareData: Buffer | undefined;
       let firmwareBundleUrl: string | undefined;
       if (firmware.version === "local") {
-        firmwareData = firmwareStore.getLocalFirmwareById(firmware.target);
+        firmwareData = context.firmwareStore.getLocalFirmwareById(
+          firmware.target
+        );
 
         if (!firmwareData) {
           throw new GraphQLError("Specified firmware not found");
         }
       } else {
         firmwareBundleUrl = (
-          await github("GET /repos/{owner}/{repo}/releases/tags/{tag}", {
-            owner: "EdgeTX",
-            repo: "edgetx",
-            tag: firmware.version,
-          })
+          await context.github(
+            "GET /repos/{owner}/{repo}/releases/tags/{tag}",
+            {
+              owner: "EdgeTX",
+              repo: "edgetx",
+              tag: firmware.version,
+            }
+          )
         ).data.assets.find((asset) =>
           asset.name.includes("firmware")
         )?.browser_download_url;
@@ -95,7 +96,7 @@ const resolvers: Resolvers = {
         }
       }
 
-      const device = (await usb.deviceList()).find(
+      const device = (await context.usb.deviceList()).find(
         ({ vendorId, productId, serialNumber }) =>
           deviceId.includes(":")
             ? `${vendorId}:${productId}` === deviceId
@@ -116,7 +117,7 @@ const resolvers: Resolvers = {
         job.id,
         device,
         { data: firmwareData, url: firmwareBundleUrl, target: firmware.target },
-        { usb, firmwareStore, github }
+        context
       );
 
       return job;

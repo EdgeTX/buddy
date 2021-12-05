@@ -182,9 +182,9 @@ const resolvers: Resolvers = {
 
       return null;
     },
-    pickSdcardFolder: async () => {
-      const handle = await window
-        .showDirectoryPicker({
+    pickSdcardFolder: async (_, __, { fileSystem }) => {
+      const handle = await fileSystem
+        .requestWritableFolder({
           id: "edgetx-sdcard",
         })
         .catch(() => undefined);
@@ -272,9 +272,9 @@ const resolvers: Resolvers = {
           return;
         }
 
-        if (clean && directory.path) {
+        if (clean) {
           console.log("cleaning");
-          await erase(job.id, directory.path);
+          await erase(job.id, directory.handle);
         }
 
         if (isCancelled(job.id)) {
@@ -298,9 +298,6 @@ const maxDirectoriesHandles = 5;
 const directories: {
   handle: FileSystemDirectoryHandle;
   id: string;
-  // when in a node environment (electron main),
-  // we will know the path and can use it for erasing
-  path?: string;
 }[] = [];
 
 const jobUpdates = new PubSub();
@@ -443,17 +440,25 @@ const download = async (
   );
 };
 
-const erase = async (jobId: string, path: string): Promise<void> => {
+const erase = async (
+  jobId: string,
+  rootHandle: FileSystemDirectoryHandle
+): Promise<void> => {
   updateStageStatus(jobId, "erase", { started: true });
-
-  // Only used in electron
-  const { default: fs } = await import("fs/promises");
-  const entries = await fs.readdir(path);
   let progress = 0;
 
+  const entries: FileSystemHandle[] = [];
+
+  for await (const entry of rootHandle.values()) {
+    entries.push(entry);
+  }
+
   await Promise.all(
-    entries.map(async (entry, i) => {
-      await fs.unlink(`${path}/${entry}`);
+    entries.map(async (entry) => {
+      await rootHandle.removeEntry(
+        entry.name,
+        entry.kind === "directory" ? { recursive: true } : undefined
+      );
       progress += 1;
       updateStageStatus(jobId, "erase", {
         progress: (progress / entries.length) * 100,
