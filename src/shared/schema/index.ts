@@ -3,3 +3,4 @@ import graph from "./graph";
 
 export const schema = makeExecutableSchema(graph);
 export { createContext } from "./context";
+export * from "./types";

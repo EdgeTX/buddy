@@ -136,7 +136,7 @@ const resolvers: Resolvers = {
       return null;
     },
     requestFlashableDevice: async (_, __, { usb }) => {
-      const device = await usb.requestDevice();
+      const device = await usb.requestDevice().catch(() => undefined);
       return device ? usbDeviceToFlashDevice(device) : null;
     },
   },

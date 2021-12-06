@@ -1,18 +1,16 @@
 import { Octokit } from "@octokit/core";
-import ky from "ky";
+import ky from "ky-universal";
 import * as firmwareStore from "./services/firmwareStore";
-import * as usb from "./services/usb";
+import * as dfu from "./services/dfu";
+import { FileSystemApi, UsbApi } from "./types";
 
 const TEST = atob("Z2hwX2phMzJ1RUNDbmZsUzR1d05jY2FIRzR2N2s0Z1k1QTJwMDVRVQ==");
-
-type FileSystemApi = {
-  requestWritableFolder: typeof window.showDirectoryPicker;
-};
 
 export type Context = {
   github: Octokit["request"];
   firmwareStore: typeof firmwareStore;
-  usb: typeof usb;
+  dfu: typeof dfu;
+  usb: UsbApi;
   fileSystem: FileSystemApi;
 };
 
@@ -24,9 +22,9 @@ const octokit = new Octokit({
 });
 
 export const createContext =
-  (extras: { fileSystem: FileSystemApi }) => (): Context => ({
+  (extras: { fileSystem: FileSystemApi; usb: UsbApi }) => (): Context => ({
     github: octokit.request,
     firmwareStore,
-    usb,
+    dfu,
     ...extras,
   });

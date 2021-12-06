@@ -134,10 +134,10 @@ export const startExecution = async (
   jobId: string,
   device: USBDevice,
   firmware: { data?: Buffer; url?: string; target: string },
-  { usb, firmwareStore }: Context
+  { dfu, firmwareStore }: Context
 ) => {
   let firmwareData = firmware.data;
-  let dfu: WebDFU | undefined;
+  let dfuProcess: WebDFU | undefined;
   let cancelled = false;
 
   const cancelledListener = await jobUpdates.subscribe(
@@ -145,8 +145,8 @@ export const startExecution = async (
     async (updatedJob: FlashJob) => {
       if (updatedJob.cancelled) {
         cancelled = true;
-        if (dfu) {
-          await dfu.close();
+        if (dfuProcess) {
+          await dfuProcess.close();
         }
         jobUpdates.unsubscribe(cancelledListener);
       }
@@ -159,7 +159,7 @@ export const startExecution = async (
       started: true,
     });
 
-    dfu = await usb.dfuConnect(device).catch((e: Error) => {
+    dfuProcess = await dfu.connect(device).catch((e: Error) => {
       updateStageStatus(jobId, "connect", {
         error: e.message,
       });
@@ -170,7 +170,7 @@ export const startExecution = async (
       completed: true,
     });
 
-    if (!dfu || cancelled) {
+    if (!dfuProcess || cancelled) {
       return;
     }
 
@@ -197,7 +197,7 @@ export const startExecution = async (
       });
     }
 
-    await flash(jobId, dfu, firmwareData);
+    await flash(jobId, dfuProcess, firmwareData);
   })().catch((e) => {
     console.error(e);
     cancelJob(jobId);

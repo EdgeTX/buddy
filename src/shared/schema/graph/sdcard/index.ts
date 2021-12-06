@@ -7,7 +7,7 @@ import {
 } from "../__generated__";
 import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
-import ky, { DownloadProgress } from "ky";
+import ky, { DownloadProgress } from "ky-universal";
 import { unzipRaw, ZipEntry } from "unzipit";
 import { PubSub } from "graphql-subscriptions";
 import { debounce } from "debounce";
@@ -420,11 +420,16 @@ const download = async (
     assetUrls.map((assetUrl, i) =>
       ky(`http://localhost:8080/${assetUrl}`, {
         onDownloadProgress: (progress) => {
+          console.log(progress);
           onDownloadProgress(i, progress);
         },
+        fetch: (url, opts) =>
+          fetch(url, { highWaterMark: 1000 * 1000 * 20, ...opts } as any),
       }).then((res) => res.blob())
     )
   );
+
+  console.log(assets);
 
   const unzippedAssets = await Promise.all(
     assets.map((asset) => unzipRaw(asset))
@@ -453,19 +458,25 @@ const erase = async (
     entries.push(entry);
   }
 
-  console.log(entries)
+  console.log(entries);
   await Promise.all(
     entries.map(async (entry) => {
-      await rootHandle.removeEntry(
-        entry.name,
-        entry.kind === "directory" ? { recursive: true } : undefined
-      ).catch(e => {
-        // Some weird macos folder
-        if ((e as Error).message.includes('An operation that depends on state cached in an interface object')) {
-          return;
-        }
-        throw e;
-      });
+      await rootHandle
+        .removeEntry(
+          entry.name,
+          entry.kind === "directory" ? { recursive: true } : undefined
+        )
+        .catch((e) => {
+          // Some weird macos folder
+          if (
+            (e as Error).message.includes(
+              "An operation that depends on state cached in an interface object"
+            )
+          ) {
+            return;
+          }
+          throw e;
+        });
       progress += 1;
       updateStageStatus(jobId, "erase", {
         progress: (progress / entries.length) * 100,

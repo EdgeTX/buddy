@@ -9,21 +9,24 @@ import { createContext, schema } from "../shared/schema";
 import { createCrossBoundryWindowFunction } from "./crossBoundary";
 
 const fileSystem = {
-  requestWritableFolder:
-    createCrossBoundryWindowFunction("showDirectoryPicker").call,
+  requestWritableFolder: createCrossBoundryWindowFunction("showDirectoryPicker")
+    .call,
+};
+
+const usb = {
+  requestDevice: () => navigator.usb.requestDevice({ filters: [] }),
+  deviceList: () => navigator.usb.getDevices(),
 };
 
 const backend = createBusLinkBackend({
   registerBus: webWorkerBus(self),
-  createExecutor: async () => {
-    const executor = createSchemaExecutor({
-      schema,
-      context: createContext({
-        fileSystem,
-      }),
-    });
-    return executor;
-  },
+  executor: createSchemaExecutor({
+    schema,
+    context: createContext({
+      fileSystem,
+      usb,
+    }),
+  }),
 });
 
 backend.listen();

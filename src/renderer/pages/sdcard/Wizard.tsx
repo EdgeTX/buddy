@@ -159,7 +159,7 @@ const SdcardWizard: React.FC = () => {
                 target,
                 sounds,
                 // TODO: don't clean
-                clean: true
+                clean: false,
               },
             }).then((result) => {
               if (result.data?.createSdcardWriteJob.id) {

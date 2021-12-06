@@ -1,14 +1,6 @@
 import { WebDFU } from "dfu";
 
-// Not used in electron
-export const requestDevice = (): Promise<USBDevice | undefined> =>
-  navigator.usb.requestDevice({ filters: [] }).catch((e) => undefined);
-
-// Return a full list in electon, or saved devices in browser
-export const deviceList = (): Promise<USBDevice[]> =>
-  navigator.usb.getDevices();
-
-export const dfuConnect = async (
+export const connect = async (
   device: USBDevice
 ): Promise<WebDFU | undefined> => {
   const dfu = new WebDFU(

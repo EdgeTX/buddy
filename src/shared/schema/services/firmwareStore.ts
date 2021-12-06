@@ -1,6 +1,7 @@
-import ky from "ky";
+import ky from "ky-universal";
 import md5 from "md5";
 import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
+import axios from "axios";
 
 class HTTPRangeReader implements Reader {
   private url: string;
@@ -12,15 +13,20 @@ class HTTPRangeReader implements Reader {
 
   async getLength() {
     if (this.length === undefined) {
-      const req = await ky(this.url, { method: "HEAD" });
-      if (!req.ok) {
-        throw new Error(
-          `failed http request ${this.url}, status: ${req.status}: ${req.statusText}`
-        );
-      }
-      this.length = parseInt(req.headers.get("content-length")!);
-      if (Number.isNaN(this.length)) {
-        throw Error("could not get length");
+      try {
+        const req = await axios(this.url, { method: "HEAD" });
+
+        this.length = parseInt(req.headers["content-length"]);
+        if (Number.isNaN(this.length)) {
+          throw Error("could not get length");
+        }
+      } catch (e) {
+        if (axios.isAxiosError(e)) {
+          throw new Error(
+            `failed http request ${this.url}, status: ${e.response?.status}: ${e.response?.statusText}`
+          );
+        }
+        throw e;
       }
     }
     return this.length;
@@ -30,18 +36,26 @@ class HTTPRangeReader implements Reader {
     if (size === 0) {
       return new Uint8Array(0);
     }
-    const req = await ky(this.url, {
-      headers: {
-        Range: `bytes=${offset}-${offset + size - 1}`,
-      },
-    });
-    if (!req.ok) {
-      throw new Error(
-        `failed http request ${this.url}, status: ${req.status} offset: ${offset} size: ${size}: ${req.statusText}`
-      );
+    try {
+      const req = await axios.get(this.url, {
+        headers: {
+          Range: `bytes=${offset}-${offset + size - 1}`,
+        },
+        responseType: "arraybuffer",
+      });
+
+      const buffer = (await req.data) as ArrayBuffer;
+      console.log("read", buffer.byteLength);
+      return new Uint8Array(buffer);
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(
+          `failed http request ${this.url}, status: ${e.response?.status} offset: ${offset} size: ${size}: ${e.response?.statusText}`
+        );
+      }
+
+      throw e;
     }
-    const buffer = await req.arrayBuffer();
-    return new Uint8Array(buffer);
   }
 }
 
