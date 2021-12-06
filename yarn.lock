@@ -3340,15 +3340,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.24.0":
-  version: 0.24.0
-  resolution: "axios@npm:0.24.0"
-  dependencies:
-    follow-redirects: ^1.14.4
-  checksum: 468cf496c08a6aadfb7e699bebdac02851e3043d4e7d282350804ea8900e30d368daa6e3cd4ab83b8ddb5a3b1e17a5a21ada13fc9cebd27b74828f47a4236316
-  languageName: node
-  linkType: hard
-
 "babel-plugin-dynamic-import-node@npm:^2.3.3":
   version: 2.3.3
   resolution: "babel-plugin-dynamic-import-node@npm:2.3.3"
@@ -5427,7 +5418,6 @@ __metadata:
     "@types/wicg-file-system-access": ^2020.9.4
     apollo-bus-link: ^0.4.2
     apollo-link-logger: ^2.0.0
-    axios: ^0.24.0
     cors-anywhere: ^0.4.4
     debounce: ^1.2.1
     dfu: ^0.1.5
@@ -5437,6 +5427,7 @@ __metadata:
     electron-rebuild: ^3.2.5
     esbuild-loader: ^2.16.0
     fork-ts-checker-webpack-plugin: ^6.4.2
+    get-stream: ^6.0.1
     got: ^11.8.3
     gql-tag: ^1.0.1
     graphql: ^16.0.1
@@ -5458,10 +5449,8 @@ __metadata:
     source-map-support: ^0.5.21
     type-guards: ^0.15.0
     typescript: ^4.5.2
-    undici: ^4.11.0
     unzipit: ^1.3.6
     uuid: ^8.3.2
-    web-streams-polyfill: ^3.2.0
     webpack: ^5.64.4
     webpack-bundle-analyzer: ^4.5.0
     webpack-cli: ^4.9.1
@@ -6456,7 +6445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.4":
+"follow-redirects@npm:^1.0.0":
   version: 1.14.5
   resolution: "follow-redirects@npm:1.14.5"
   peerDependenciesMeta:
@@ -6723,7 +6712,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-stream@npm:^6.0.0":
+"get-stream@npm:^6.0.0, get-stream@npm:^6.0.1":
   version: 6.0.1
   resolution: "get-stream@npm:6.0.1"
   checksum: e04ecece32c92eebf5b8c940f51468cd53554dcbb0ea725b2748be583c9523d00128137966afce410b9b051eb2ef16d657cd2b120ca8edafcf5a65e81af63cad
@@ -12466,13 +12455,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^4.11.0":
-  version: 4.11.0
-  resolution: "undici@npm:4.11.0"
-  checksum: 523e3f74aa9de6f99b5ce401c6f645a706c9b0c3971c3384349c708de595252cc760f9fdd4da817b1535d0a51f2c79ba06b0202e26e69c57e3e962a4e980751d
-  languageName: node
-  linkType: hard
-
 "undici@npm:^4.9.3":
   version: 4.10.3
   resolution: "undici@npm:4.10.3"
@@ -12811,7 +12793,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-streams-polyfill@npm:^3.0.3, web-streams-polyfill@npm:^3.1.1, web-streams-polyfill@npm:^3.2.0":
+"web-streams-polyfill@npm:^3.0.3, web-streams-polyfill@npm:^3.1.1":
   version: 3.2.0
   resolution: "web-streams-polyfill@npm:3.2.0"
   checksum: e23ad0649392fa0159dbfc6bb27474c308c3f332d9078cfef3c06c154165bef18732c5814126147c6c712f604216ddc950c171c854e3821f020e0d2d721a5958

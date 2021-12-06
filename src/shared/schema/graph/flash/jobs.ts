@@ -132,11 +132,13 @@ export const flash = async (
 
 export const startExecution = async (
   jobId: string,
-  device: USBDevice,
-  firmware: { data?: Buffer; url?: string; target: string },
+  args: {
+    device: USBDevice;
+    firmware: { data?: Buffer; url?: string; target: string };
+  },
   { dfu, firmwareStore }: Context
 ) => {
-  let firmwareData = firmware.data;
+  let firmwareData = args.firmware.data;
   let dfuProcess: WebDFU | undefined;
   let cancelled = false;
 
@@ -159,7 +161,7 @@ export const startExecution = async (
       started: true,
     });
 
-    dfuProcess = await dfu.connect(device).catch((e: Error) => {
+    dfuProcess = await dfu.connect(args.device).catch((e: Error) => {
       updateStageStatus(jobId, "connect", {
         error: e.message,
       });
@@ -180,7 +182,7 @@ export const startExecution = async (
       });
 
       firmwareData = await firmwareStore
-        .fetchFirmware(firmware.url!, firmware.target)
+        .fetchFirmware(args.firmware.url!, args.firmware.target)
         .catch((e: Error) => {
           updateStageStatus(jobId, "download", {
             error: e.message,

@@ -115,8 +115,14 @@ const resolvers: Resolvers = {
 
       await startExecution(
         job.id,
-        device,
-        { data: firmwareData, url: firmwareBundleUrl, target: firmware.target },
+        {
+          device,
+          firmware: {
+            data: firmwareData,
+            url: firmwareBundleUrl,
+            target: firmware.target,
+          },
+        },
         context
       );
 

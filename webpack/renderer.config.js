@@ -20,6 +20,8 @@ module.exports = (_, { mode }) => ({
   },
   externals: {
     "node-fetch": {},
+    "got": "commonjs got",
+    "get-stream": "commonjs get-stream",
     "supports-color": "commonjs supports-color",
   },
   resolve: {
@@ -31,6 +33,7 @@ module.exports = (_, { mode }) => ({
       process: false,
       url: false,
       os: false,
+      buffer: false,
       //   zlib: false,
       //   https: false,
       //   http: false,

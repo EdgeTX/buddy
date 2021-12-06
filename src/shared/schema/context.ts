@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/core";
 import ky from "ky-universal";
 import * as firmwareStore from "./services/firmwareStore";
 import * as dfu from "./services/dfu";
+import * as sdcardAssets from "./services/sdcardAssets";
 import { FileSystemApi, UsbApi } from "./types";
 
 const TEST = atob("Z2hwX2phMzJ1RUNDbmZsUzR1d05jY2FIRzR2N2s0Z1k1QTJwMDVRVQ==");
@@ -12,6 +13,7 @@ export type Context = {
   dfu: typeof dfu;
   usb: UsbApi;
   fileSystem: FileSystemApi;
+  sdcardAssets: typeof sdcardAssets;
 };
 
 const octokit = new Octokit({
@@ -26,5 +28,6 @@ export const createContext =
     github: octokit.request,
     firmwareStore,
     dfu,
+    sdcardAssets,
     ...extras,
   });

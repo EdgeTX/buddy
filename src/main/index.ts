@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import "web-streams-polyfill/es2018";
+import "./polyfills";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import electron, { app, dialog, BrowserWindow, ipcMain } from "electron";
@@ -113,15 +113,7 @@ const createWindow = (): void => {
   const searchQuery = ``;
   if (!PRODUCTION) {
     console.log("loading renderer in development");
-    mainWindow.loadURL(
-      url.format({
-        protocol: "http:",
-        host: "localhost:8080",
-        pathname: "index.html",
-        search: searchQuery,
-        slashes: true,
-      })
-    );
+    mainWindow.loadURL(`http://localhost:8081/index.html`);
   } else {
     console.log("loading renderer");
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {

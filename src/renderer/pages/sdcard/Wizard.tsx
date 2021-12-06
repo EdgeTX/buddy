@@ -1,13 +1,16 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
 import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 
@@ -17,12 +20,13 @@ const SdcardWizard: React.FC = () => {
     "target",
     "sounds",
     "folder",
-    "erase",
+    "clean",
   ]);
 
   const target = parseParam("target");
   const folder = parseParam("folder");
   const sounds = parseParam("sounds");
+  const clean = parseParam("clean", Boolean);
 
   const sdcardTargetsQuery = useQuery(
     gql(/* GraphQL */ `
@@ -138,6 +142,21 @@ const SdcardWizard: React.FC = () => {
           <FormHelperText>Could not load sounds</FormHelperText>
         )}
       </FormControl>
+      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!clean}
+                onChange={(e) => {
+                  updateParams({ clean: e.target.checked });
+                }}
+              />
+            }
+            label="Erase before flashing"
+          />
+        </FormGroup>
+      </FormControl>
       <Button
         onClick={() =>
           pickFolder().then((result) => {
@@ -158,8 +177,7 @@ const SdcardWizard: React.FC = () => {
                 folderId: folder,
                 target,
                 sounds,
-                // TODO: don't clean
-                clean: false,
+                clean: !!clean,
               },
             }).then((result) => {
               if (result.data?.createSdcardWriteJob.id) {
