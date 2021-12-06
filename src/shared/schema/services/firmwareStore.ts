@@ -2,6 +2,9 @@ import ky from "ky-universal";
 import md5 from "md5";
 import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
 
+const fakeUserAgent =
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36";
+
 class HTTPRangeReader implements Reader {
   private url: string;
   private length?: number;
@@ -12,7 +15,15 @@ class HTTPRangeReader implements Reader {
 
   async getLength() {
     if (this.length === undefined) {
-      const req = await ky(this.url, { method: "HEAD" });
+      const req = await ky(this.url, {
+        method: "HEAD",
+        headers: {
+          "user-agent": fakeUserAgent,
+          // This really doesn't matter, we are just using something which might
+          // help with slow requests
+          Referer: "https://github.com/",
+        },
+      });
       if (!req.ok) {
         throw new Error(
           `failed http request ${this.url}, status: ${req.status}: ${req.statusText}`
@@ -33,7 +44,10 @@ class HTTPRangeReader implements Reader {
     const req = await ky(this.url, {
       headers: {
         Range: `bytes=${offset}-${offset + size - 1}`,
+        "user-agent": fakeUserAgent,
+        Referer: "https://github.com/",
       },
+      timeout: 60000,
     });
     if (!req.ok) {
       throw new Error(
@@ -70,22 +84,27 @@ export const firmwareTargets = async (
 ): Promise<Target[]> => {
   if (!firmwareTargetsCache[firmwareBundleUrl]) {
     firmwareTargetsCache[firmwareBundleUrl] = (async () => {
-      const { entries } = await firmwareBundle(firmwareBundleUrl);
-      const firmwareFile = entries.find((entry) =>
-        entry.name.endsWith("fw.json")
-      );
+      try {
+        const { entries } = await firmwareBundle(firmwareBundleUrl);
+        const firmwareFile = entries.find((entry) =>
+          entry.name.endsWith("fw.json")
+        );
 
-      if (!firmwareFile) {
+        if (!firmwareFile) {
+          delete firmwareTargetsCache[firmwareBundleUrl];
+          throw new Error("Could not find firmware metadata file");
+        }
+
+        const data = (await firmwareFile.json()) as FirmwareFile;
+
+        return data.targets.map(([name, code]) => ({
+          name,
+          code: code.slice(0, code.length - 1),
+        }));
+      } catch (e) {
         delete firmwareTargetsCache[firmwareBundleUrl];
-        throw new Error("Could not find firmware metadata file");
+        throw e;
       }
-
-      const data = (await firmwareFile.json()) as FirmwareFile;
-
-      return data.targets.map(([name, code]) => ({
-        name,
-        code: code.slice(0, code.length - 1),
-      }));
     })();
   }
 

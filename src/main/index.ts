@@ -15,6 +15,7 @@ import * as backend from "../shared/schema";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import { USB } from "webusb";
+import { Device as NativeUSBDevice } from "usb";
 import { FileSystemApi, UsbApi } from "../shared/schema";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -22,6 +23,8 @@ import { FileSystemApi, UsbApi } from "../shared/schema";
 let mainWindow: BrowserWindow | undefined;
 
 const usbApi = (): UsbApi => {
+  // Some operations can take longer for stem boards
+  NativeUSBDevice.prototype.timeout = 60000;
   let availableDevices: USBDevice[] = [];
 
   const usb = new USB({
@@ -34,7 +37,10 @@ const usbApi = (): UsbApi => {
   return {
     requestDevice: usb.requestDevice.bind(usb),
     deviceList: async () => {
-      await usb.requestDevice({ filters: [] });
+      // No device will be returned, so ignore errors from this
+      await usb
+        .requestDevice({ filters: [{ vendorId: 0x483 }] })
+        .catch(() => {});
       return availableDevices;
     },
   };
@@ -121,32 +127,6 @@ const createWindow = (): void => {
     });
   }
 
-  // Don't show until we react has fully loaded
-  ipcMain.once("paint", async () => {
-    if (process.env.HEADLESS !== "true") {
-      mainWindow?.show();
-    }
-
-    // Open the DevTools automatically if developing
-    if (!PRODUCTION && !E2E) {
-      const {
-        default: installExtension,
-        REACT_DEVELOPER_TOOLS,
-        APOLLO_DEVELOPER_TOOLS,
-        // eslint-disable-next-line import/no-extraneous-dependencies
-      } = await import("electron-devtools-installer");
-      installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log("Error loading React DevTools: ", err)
-      );
-      installExtension(APOLLO_DEVELOPER_TOOLS).catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log("Error loading Apollo DevTools: ", err)
-      );
-      mainWindow?.webContents.openDevTools();
-    }
-  });
-
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
     // Dereference the window object, usually you would store windows
@@ -177,7 +157,28 @@ app.on("activate", () => {
   await app.whenReady();
   startBackend();
   createWindow();
-  mainWindow?.once("ready-to-show", () => {
-    mainWindow?.show();
+  mainWindow?.once("ready-to-show", async () => {
+    if (process.env.HEADLESS !== "true") {
+      mainWindow?.show();
+    }
+
+    // Open the DevTools automatically if developing
+    if (!PRODUCTION && !E2E) {
+      const {
+        default: installExtension,
+        REACT_DEVELOPER_TOOLS,
+        APOLLO_DEVELOPER_TOOLS,
+        // eslint-disable-next-line import/no-extraneous-dependencies
+      } = await import("electron-devtools-installer");
+      installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
+        // eslint-disable-next-line no-console
+        console.log("Error loading React DevTools: ", err)
+      );
+      installExtension(APOLLO_DEVELOPER_TOOLS).catch((err) =>
+        // eslint-disable-next-line no-console
+        console.log("Error loading Apollo DevTools: ", err)
+      );
+      mainWindow?.webContents.openDevTools();
+    }
   });
 })();

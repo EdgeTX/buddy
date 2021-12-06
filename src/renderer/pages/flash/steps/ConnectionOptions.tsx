@@ -5,13 +5,19 @@ import Typography from "@mui/material/Typography";
 import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import { gql, useMutation, useQuery } from "@apollo/client";
+import config from "../../../../shared/config";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormHelperText from "@mui/material/FormHelperText";
+import LinearProgress from "@mui/material/LinearProgress";
 
 type Props = {
   deviceId?: string;
   onDeviceSelected: (id?: string) => void;
 };
 
-const AvailableDevicesQuery = gql(/* GraphQL */ `
+const AvailableDevicesQueryDocument = gql(/* GraphQL */ `
   query AvailableDevices {
     flashableDevices {
       id
@@ -21,8 +27,8 @@ const AvailableDevicesQuery = gql(/* GraphQL */ `
 `);
 
 const ConnectionOptions: React.FC<Props> = ({ deviceId, onDeviceSelected }) => {
-  const { data, loading } = useQuery(AvailableDevicesQuery);
-  const devices = data?.flashableDevices;
+  const availableDevicesQuery = useQuery(AvailableDevicesQueryDocument);
+  const availableDevices = availableDevicesQuery.data?.flashableDevices;
 
   const [requestDevice] = useMutation(
     gql(/* GraphQL */ `
@@ -33,41 +39,75 @@ const ConnectionOptions: React.FC<Props> = ({ deviceId, onDeviceSelected }) => {
       }
     `),
     {
-      refetchQueries: [AvailableDevicesQuery],
+      refetchQueries: [AvailableDevicesQueryDocument],
     }
   );
 
   useEffect(() => {
     if (
       deviceId &&
-      !loading &&
-      !devices?.find((device) => device.id === deviceId)
+      !availableDevicesQuery.loading &&
+      !availableDevices?.find((device) => device.id === deviceId)
     ) {
       onDeviceSelected(undefined);
     }
-  }, [devices, loading, deviceId]);
+  }, [availableDevices, availableDevicesQuery.loading, deviceId]);
   return (
     <Box>
       <Typography variant="h2">Configure connection</Typography>
       <Box sx={{ p: 2 }}>
-        <FormControl fullWidth sx={{ m: 1 }}>
-          <FormControlLabel
-            control={
-              <Button
-                variant="contained"
-                onClick={async () => {
-                  const result = await requestDevice();
-                  if (result.data?.requestFlashableDevice) {
-                    onDeviceSelected(result.data.requestFlashableDevice.id);
-                  }
-                }}
-              >
-                Select device
-              </Button>
+        {!config.isElectron ? (
+          /** For the browser, we have to select the device by clicking a button */
+          <FormControl fullWidth sx={{ m: 1 }}>
+            <FormControlLabel
+              control={
+                <Button
+                  variant="contained"
+                  onClick={async () => {
+                    const result = await requestDevice();
+                    if (result.data?.requestFlashableDevice) {
+                      onDeviceSelected(result.data.requestFlashableDevice.id);
+                    }
+                  }}
+                >
+                  Select device
+                </Button>
+              }
+              label={deviceId ?? ""}
+            />
+          </FormControl>
+        ) : (
+          /** But in electron we can select from a list */
+          <FormControl
+            fullWidth
+            sx={{ m: 1 }}
+            error={!!availableDevicesQuery.error}
+            disabled={
+              availableDevicesQuery.loading || !!availableDevicesQuery.error
             }
-            label={deviceId ?? ""}
-          />
-        </FormControl>
+          >
+            <InputLabel id="select-device-label">Select device</InputLabel>
+            <Select
+              labelId="select-device-label"
+              id="select-device"
+              label="Select device"
+              value={deviceId}
+              onChange={(e) => onDeviceSelected(e.target.value as string)}
+            >
+              {availableDevices?.map((device) => (
+                <MenuItem value={device.id}>{device.name}</MenuItem>
+              ))}
+            </Select>
+            {availableDevicesQuery.error && (
+              <FormHelperText>Could not load usb device list</FormHelperText>
+            )}
+            {availableDevicesQuery.loading && (
+              <FormHelperText>
+                <LinearProgress />
+              </FormHelperText>
+            )}
+          </FormControl>
+        )}
       </Box>
     </Box>
   );

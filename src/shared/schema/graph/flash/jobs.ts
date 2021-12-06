@@ -32,6 +32,84 @@ export const createJob = (
   return job;
 };
 
+export const startExecution = async (
+  jobId: string,
+  args: {
+    device: USBDevice;
+    firmware: { data?: Buffer; url?: string; target: string };
+  },
+  { dfu, firmwareStore }: Context
+) => {
+  let firmwareData = args.firmware.data;
+  let dfuProcess: WebDFU | undefined;
+  let cancelled = false;
+
+  const cancelledListener = await jobUpdates.subscribe(
+    jobId,
+    async (updatedJob: FlashJob) => {
+      if (updatedJob.cancelled) {
+        cancelled = true;
+        if (dfuProcess) {
+          console.log("Cancelling dfu process");
+          await dfuProcess.close();
+          await args.device.close();
+        }
+        jobUpdates.unsubscribe(cancelledListener);
+      }
+    }
+  );
+
+  // Run job
+  (async () => {
+    updateStageStatus(jobId, "connect", {
+      started: true,
+    });
+
+    dfuProcess = await dfu.connect(args.device).catch((e: Error) => {
+      updateStageStatus(jobId, "connect", {
+        error: e.message,
+      });
+      return undefined;
+    });
+
+    updateStageStatus(jobId, "connect", {
+      completed: true,
+    });
+
+    if (!dfuProcess || cancelled) {
+      return;
+    }
+
+    if (!firmwareData) {
+      updateStageStatus(jobId, "download", {
+        started: true,
+      });
+
+      firmwareData = await firmwareStore
+        .fetchFirmware(args.firmware.url!, args.firmware.target)
+        .catch((e: Error) => {
+          updateStageStatus(jobId, "download", {
+            error: e.message,
+          });
+          return undefined;
+        });
+
+      if (!firmwareData || cancelled) {
+        return;
+      }
+      updateStageStatus(jobId, "download", {
+        completed: true,
+        progress: 100,
+      });
+    }
+
+    await flash(jobId, dfuProcess, firmwareData);
+  })().catch((e) => {
+    console.error(e);
+    cancelJob(jobId);
+  });
+};
+
 export const getJob = (jobId: string): FlashJob | undefined => jobs[jobId];
 
 const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
@@ -127,81 +205,5 @@ export const flash = async (
       });
       resolve();
     });
-  });
-};
-
-export const startExecution = async (
-  jobId: string,
-  args: {
-    device: USBDevice;
-    firmware: { data?: Buffer; url?: string; target: string };
-  },
-  { dfu, firmwareStore }: Context
-) => {
-  let firmwareData = args.firmware.data;
-  let dfuProcess: WebDFU | undefined;
-  let cancelled = false;
-
-  const cancelledListener = await jobUpdates.subscribe(
-    jobId,
-    async (updatedJob: FlashJob) => {
-      if (updatedJob.cancelled) {
-        cancelled = true;
-        if (dfuProcess) {
-          await dfuProcess.close();
-        }
-        jobUpdates.unsubscribe(cancelledListener);
-      }
-    }
-  );
-
-  // Run job
-  (async () => {
-    updateStageStatus(jobId, "connect", {
-      started: true,
-    });
-
-    dfuProcess = await dfu.connect(args.device).catch((e: Error) => {
-      updateStageStatus(jobId, "connect", {
-        error: e.message,
-      });
-      return undefined;
-    });
-
-    updateStageStatus(jobId, "connect", {
-      completed: true,
-    });
-
-    if (!dfuProcess || cancelled) {
-      return;
-    }
-
-    if (!firmwareData) {
-      updateStageStatus(jobId, "download", {
-        started: true,
-      });
-
-      firmwareData = await firmwareStore
-        .fetchFirmware(args.firmware.url!, args.firmware.target)
-        .catch((e: Error) => {
-          updateStageStatus(jobId, "download", {
-            error: e.message,
-          });
-          return undefined;
-        });
-
-      if (!firmwareData || cancelled) {
-        return;
-      }
-      updateStageStatus(jobId, "download", {
-        completed: true,
-        progress: 100,
-      });
-    }
-
-    await flash(jobId, dfuProcess, firmwareData);
-  })().catch((e) => {
-    console.error(e);
-    cancelJob(jobId);
   });
 };

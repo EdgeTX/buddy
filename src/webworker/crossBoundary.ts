@@ -78,8 +78,8 @@ export const createCrossBoundryWindowFunction = <
         if (isObject(request) && request.type === type) {
           try {
             const response = await (window[name](request.args.args) as Return);
-            await beforeReturnHook?.(response)
-            
+            await beforeReturnHook?.(response);
+
             worker.postMessage({
               type,
               args: {

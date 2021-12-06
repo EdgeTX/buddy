@@ -5,6 +5,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
+import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import InputLabel from "@mui/material/InputLabel";
@@ -13,7 +14,6 @@ import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import { gql, useQuery } from "@apollo/client";
 import Markdown from "../../../components/Markdown";
-import LinearProgress from "@mui/material/LinearProgress";
 
 type Props = {
   onFirmwareProvided: (firmware: Buffer) => void;

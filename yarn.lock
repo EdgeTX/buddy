@@ -5450,6 +5450,7 @@ __metadata:
     type-guards: ^0.15.0
     typescript: ^4.5.2
     unzipit: ^1.3.6
+    usb: ^1.9.2
     uuid: ^8.3.2
     webpack: ^5.64.4
     webpack-bundle-analyzer: ^4.5.0
@@ -12650,7 +12651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"usb@npm:^1.6.0":
+"usb@npm:^1.6.0, usb@npm:^1.9.2":
   version: 1.9.2
   resolution: "usb@npm:1.9.2"
   dependencies:
