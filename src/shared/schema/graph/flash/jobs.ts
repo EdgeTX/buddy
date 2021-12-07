@@ -73,13 +73,13 @@ export const startExecution = async (
       return undefined;
     });
 
-    updateStageStatus(jobId, "connect", {
-      completed: true,
-    });
-
     if (!dfuProcess || cancelled) {
       return;
     }
+
+    updateStageStatus(jobId, "connect", {
+      completed: true,
+    });
 
     if (!firmwareData) {
       updateStageStatus(jobId, "download", {
@@ -98,6 +98,7 @@ export const startExecution = async (
       if (!firmwareData || cancelled) {
         return;
       }
+
       updateStageStatus(jobId, "download", {
         completed: true,
         progress: 100,
