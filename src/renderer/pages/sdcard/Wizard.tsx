@@ -12,7 +12,7 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useQueryParams from "../../hooks/useQueryParams";
+import useQueryParams from "renderer/hooks/useQueryParams";
 
 const SdcardWizard: React.FC = () => {
   const navigate = useNavigate();

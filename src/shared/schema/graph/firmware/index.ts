@@ -1,6 +1,9 @@
 import gql from "gql-tag";
 import { GraphQLError } from "graphql";
-import { EdgeTxFirmwareBundle, Resolvers } from "../__generated__";
+import {
+  EdgeTxFirmwareBundle,
+  Resolvers,
+} from "shared/schema/graph/__generated__";
 
 const typeDefs = gql`
   type Query {

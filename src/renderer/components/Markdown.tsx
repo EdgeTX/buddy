@@ -5,7 +5,7 @@ import Link from "@mui/material/Link";
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
-import { TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import { Variant } from "@mui/material/styles/createTypography";
 
 const MarkdownParagraph: React.FC = ({ children }) => (

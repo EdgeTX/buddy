@@ -8,8 +8,8 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ProgressWithLabel from "../../components/ProgressWithLabel";
-import config from "../../../shared/config";
+import ProgressWithLabel from "renderer/components/ProgressWithLabel";
+import config from "shared/config";
 
 const SdcardWriteExecution: React.FC = () => {
   const { jobId } = useParams();

@@ -2,10 +2,10 @@
 /* eslint-disable no-restricted-globals */
 import {
   createBusLinkBackend,
-  webWorkerBus,
   createSchemaExecutor,
+  webWorkerBus,
 } from "apollo-bus-link";
-import { createContext, schema } from "../shared/schema";
+import { createContext, schema } from "shared/schema";
 import crossBoundary from "./crossBoundary";
 
 const fileSystem = {

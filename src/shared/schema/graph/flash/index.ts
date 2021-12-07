@@ -1,12 +1,16 @@
 import gql from "gql-tag";
 import { GraphQLError } from "graphql";
-import { FlashableDevice, FlashJob, Resolvers } from "../__generated__";
+import {
+  FlashJob,
+  FlashableDevice,
+  Resolvers,
+} from "shared/schema/graph/__generated__";
 import {
   cancelJob,
   createJob,
-  startExecution,
   getJob,
   jobUpdates,
+  startExecution,
 } from "./jobs";
 
 const typeDefs = gql`

@@ -1,3 +1,4 @@
+const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const openBrowser = require("react-dev-utils/openBrowser");
@@ -7,6 +8,7 @@ const WebpackBar = require("webpackbar");
 const webpack = require("webpack");
 const { spawn } = require("child_process");
 const tsconfig = require("../tsconfig.json");
+const path = require("path");
 
 module.exports = (_, { mode }) => ({
   target: "es2020",
@@ -38,6 +40,11 @@ module.exports = (_, { mode }) => ({
       os: false,
       buffer: false,
     },
+    plugins: [
+      new TsconfigPathsPlugin({
+        configFile: path.join(__dirname, "../tsconfig.json"),
+      }),
+    ],
   },
   module: {
     rules: [
@@ -111,7 +118,6 @@ module.exports = (_, { mode }) => ({
         // If the build env knows the proxy url, use that, otherwise
         // default to our local cors proxy
         PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
-        PRODUCTION: mode === production
       }),
     }),
     new HtmlWebpackPlugin({
@@ -136,12 +142,12 @@ module.exports = (_, { mode }) => ({
     }),
     ...(process.env.REPORT
       ? [
-        new BundleAnalyzerPlugin({
-          analyzerMode: "static",
-          reportFilename: "renderer-report.html",
-          openAnalyzer: false,
-        }),
-      ]
+          new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            reportFilename: "renderer-report.html",
+            openAnalyzer: false,
+          }),
+        ]
       : []),
   ],
   devtool: "source-map",

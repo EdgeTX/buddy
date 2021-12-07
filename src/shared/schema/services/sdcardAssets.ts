@@ -1,6 +1,6 @@
 import ky, { DownloadProgress } from "ky";
-import { unzipRaw, ZipEntry } from "unzipit";
-import config from "../../config";
+import { ZipEntry, unzipRaw } from "unzipit";
+import config from "shared/config";
 
 export const downloadContents = async (
   assetUrls: string[],

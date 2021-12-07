@@ -29,5 +29,6 @@ module.exports = {
       "<rootDir>/.*/__mocks__",
     ],
     testEnvironment: "node",
+    moduleDirectories: ["node_modules", "src"],
   },
 };

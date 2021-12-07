@@ -15,7 +15,7 @@ import Button from "@mui/material/Button";
 import { gql, useQuery } from "@apollo/client";
 import FormGroup from "@mui/material/FormGroup";
 import Checkbox from "@mui/material/Checkbox";
-import Markdown from "../../../components/Markdown";
+import Markdown from "renderer/components/Markdown";
 
 type Props = {
   onFirmwareProvided: (firmware: Buffer) => void;

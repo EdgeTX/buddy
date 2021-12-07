@@ -6,9 +6,9 @@ import Box from "@mui/material/Box";
 import IconArrowRight from "@mui/icons-material/ArrowRight";
 import IconArrowLeft from "@mui/icons-material/ArrowLeft";
 import { gql, useMutation } from "@apollo/client";
+import useQueryParams from "renderer/hooks/useQueryParams";
 import SelectFirmware from "./steps/SelectFirmware";
 import ConnectionOptions from "./steps/ConnectionOptions";
-import useQueryParams from "../../hooks/useQueryParams";
 
 const stages = ["firmware", "connection"] as const;
 type Stage = typeof stages[number];

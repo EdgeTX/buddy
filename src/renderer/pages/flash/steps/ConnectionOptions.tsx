@@ -10,7 +10,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import LinearProgress from "@mui/material/LinearProgress";
-import config from "../../../../shared/config";
+import config from "shared/config";
 
 type Props = {
   deviceId?: string;

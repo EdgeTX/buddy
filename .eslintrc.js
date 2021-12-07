@@ -80,7 +80,8 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": "off",
     "import/prefer-default-export": "off",
     "@typescript-eslint/return-await": "error",
-    "no-void": "off"
+    "no-void": "off",
+    "import/no-relative-parent-imports": "error",
   },
   parserOptions: {
     project: "./tsconfig.json",

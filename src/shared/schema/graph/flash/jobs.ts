@@ -2,9 +2,13 @@ import debounce from "debounce";
 import { WebDFU } from "dfu";
 import { PubSub } from "graphql-subscriptions";
 import * as uuid from "uuid";
-import { Context } from "../../context";
+import { Context } from "shared/schema/context";
 
-import { FlashJob, FlashStage, FlashStages } from "../__generated__";
+import {
+  FlashJob,
+  FlashStage,
+  FlashStages,
+} from "shared/schema/graph/__generated__";
 
 export const jobUpdates = new PubSub();
 

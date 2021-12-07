@@ -1,7 +1,9 @@
+const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const WebpackBar = require("webpackbar");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
 const tsconfig = require("../tsconfig.json");
+const path = require("path");
 
 module.exports = (_, { mode }) => ({
   mode: mode || "development",
@@ -12,6 +14,11 @@ module.exports = (_, { mode }) => ({
   target: "electron16.0-main",
   resolve: {
     extensions: [".ts", ".mjs", ".js", ".node"],
+    plugins: [
+      new TsconfigPathsPlugin({
+        configFile: path.join(__dirname, "../tsconfig.json"),
+      }),
+    ],
   },
   externals: {
     bufferutil: "commonjs bufferutil",

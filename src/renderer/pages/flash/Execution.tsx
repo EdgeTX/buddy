@@ -2,8 +2,8 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import React, { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import config from "../../../shared/config";
+import { useNavigate, useParams } from "react-router-dom";
+import config from "shared/config";
 import CompletePage from "./execution/Complete";
 import FlashingStatus from "./execution/FlashingStatus";
 

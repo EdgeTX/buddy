@@ -1,7 +1,7 @@
-import { ApolloClient, InMemoryCache, ApolloLink } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { createWebWorkerBusLink } from "apollo-bus-link/webworker";
 import { createElectronBusLink } from "apollo-bus-link/electron";
-import config from "../../shared/config";
+import config from "shared/config";
 
 const link = ApolloLink.from([
   // Only need the logger link in development mode
@@ -15,7 +15,7 @@ const link = ApolloLink.from([
   window.ipcRenderer
     ? createElectronBusLink(window.ipcRenderer)
     : createWebWorkerBusLink(
-        await import("../../webworker/webworker.bootstrap").then(
+        await import("webworker/webworker.bootstrap").then(
           ({ default: Worker }) => Worker
         )
       ),

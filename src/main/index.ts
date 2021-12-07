@@ -1,21 +1,21 @@
 import "source-map-support/register";
 import "./polyfills";
 
-import electron, { app, dialog, BrowserWindow, ipcMain } from "electron";
+import electron, { BrowserWindow, app, dialog, ipcMain } from "electron";
 import path from "path";
 
 import {
-  createSchemaExecutor,
   createBusLinkBackend,
+  createSchemaExecutor,
 } from "apollo-bus-link/core";
 import { electronBus } from "apollo-bus-link/electron";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import { USB } from "webusb";
 import { Device as NativeUSBDevice } from "usb";
-import * as backend from "../shared/schema";
-import { FileSystemApi, UsbApi } from "../shared/schema";
-import config from "../shared/config";
+import * as backend from "shared/schema";
+import type { FileSystemApi, UsbApi } from "shared/schema";
+import config from "shared/config";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.

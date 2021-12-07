@@ -1,6 +1,6 @@
 import md5 from "md5";
-import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
-import ZipHTTPRangeReader from "../utils/ZipHTTPRangeReader";
+import { Reader, ZipInfoRaw, unzipRaw } from "unzipit";
+import ZipHTTPRangeReader from "shared/schema/utils/ZipHTTPRangeReader";
 
 export type Target = {
   name: string;
