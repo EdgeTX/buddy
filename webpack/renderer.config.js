@@ -146,7 +146,7 @@ module.exports = (_, { mode }) => ({
   devServer: {
     hot: true,
     onAfterSetupMiddleware() {
-      openBrowser("http://localhost:8081");
+      openBrowser("http://localhost:8080");
       spawn("electron", ["./build/main/main.js"], {
         shell: true,
         env: {

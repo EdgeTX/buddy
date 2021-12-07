@@ -51,8 +51,9 @@ export const startExecution = async (
         cancelled = true;
         if (dfuProcess) {
           console.log("Cancelling dfu process");
-          await dfuProcess.close();
-          await args.device.close();
+          await dfuProcess.close().catch(() => {});
+          dfuProcess = undefined;
+          await args.device.close().catch(() => {});
         }
         jobUpdates.unsubscribe(cancelledListener);
       }

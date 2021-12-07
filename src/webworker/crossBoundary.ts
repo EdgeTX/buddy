@@ -1,11 +1,16 @@
+/**
+ * There are some browser requests which cannot be made inside web workers. So although
+ * our graphql context exists in the webworker, we need to be able to make calls back
+ * out to the window process to get the information we need.
+ */
 import { isObject } from "type-guards";
 
-export type FunctionResponseType<T> = {
+type FunctionResponseType<T> = {
   type: string;
   args: { id: number } & ({ data: T } | { error: Error });
 };
 
-export type FunctionRequestType<A extends unknown[]> = {
+type FunctionRequestType<A extends unknown[]> = {
   type: string;
   args: { id: number; args: A };
 };
@@ -42,26 +47,21 @@ const getCallId = (): number => {
   return incrementedId;
 };
 
-type KeysMatching<T, V> = {
-  [K in keyof T]-?: T[K] extends V ? K : never;
-}[keyof T];
-
 /**
- * Creates a handler for the given window function
+ * Creates a handler for the given function
  * so that it can be called cross boundary. The returned result
  * is sent back to the caller in the web worker
  */
-export const createCrossBoundryWindowFunction = <
-  F extends KeysMatching<typeof window, Function>
->(
-  name: F
+const createCrossBoundryFunction = <F extends (...args: any[]) => any>(
+  name: string
 ) => {
-  type Return = ReturnType<typeof window[F]>;
-  type Params = Parameters<typeof window[F]>;
+  type Return = ReturnType<F>;
+  type Params = Parameters<F>;
 
   const type = `call${name}`;
   return {
     call: (...params: Params) => {
+      console.log(params);
       const id = getCallId();
       self.postMessage({
         type,
@@ -69,16 +69,12 @@ export const createCrossBoundryWindowFunction = <
       } as FunctionRequestType<Params>);
       return waitForResponse<Return>(type, id);
     },
-    installHandler: (
-      worker: Worker,
-      beforeReturnHook?: (returnData: Awaited<Return>) => Promise<void>
-    ) => {
+    installHandler: (worker: Worker, caller: F) => {
       worker.addEventListener("message", async (event) => {
         const request = event.data as FunctionRequestType<Params>;
         if (isObject(request) && request.type === type) {
           try {
-            const response = await (window[name](request.args.args) as Return);
-            await beforeReturnHook?.(response);
+            const response = (await caller(...request.args.args)) as Return;
 
             worker.postMessage({
               type,
@@ -98,4 +94,16 @@ export const createCrossBoundryWindowFunction = <
       });
     },
   };
+};
+
+export default {
+  requestDevice:
+    createCrossBoundryFunction<
+      (
+        ...params: Parameters<typeof navigator.usb.requestDevice>
+      ) => Promise<Pick<USBDevice, "vendorId" | "productId">>
+    >("usb.requestDevice"),
+  showDirectoryPicker: createCrossBoundryFunction<
+    typeof window.showDirectoryPicker
+  >("showDirectoryPicker"),
 };

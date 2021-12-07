@@ -1,6 +1,7 @@
 import ky from "ky-universal";
 import md5 from "md5";
 import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
+import config from "../../config";
 
 const fakeUserAgent =
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36";
@@ -16,6 +17,7 @@ class HTTPRangeReader implements Reader {
   async getLength() {
     if (this.length === undefined) {
       const req = await ky(this.url, {
+        prefixUrl: config.proxyUrl,
         method: "HEAD",
         headers: {
           "user-agent": fakeUserAgent,
@@ -42,6 +44,7 @@ class HTTPRangeReader implements Reader {
       return new Uint8Array(0);
     }
     const req = await ky(this.url, {
+      prefixUrl: config.proxyUrl,
       headers: {
         Range: `bytes=${offset}-${offset + size - 1}`,
         "user-agent": fakeUserAgent,
@@ -71,11 +74,7 @@ type FirmwareFile = {
 const firmwareTargetsCache: Record<string, Promise<Target[]>> = {};
 
 const firmwareBundle = (url: string): Promise<ZipInfoRaw> => {
-  const reader = new HTTPRangeReader(
-    // Whilst we wait for a solution to cors, there
-    // will need to be some cors server in place
-    `http://localhost:8080/${url}`
-  );
+  const reader = new HTTPRangeReader(url);
   return unzipRaw(reader as Reader);
 };
 

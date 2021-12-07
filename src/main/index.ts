@@ -119,7 +119,7 @@ const createWindow = (): void => {
   const searchQuery = ``;
   if (!PRODUCTION) {
     console.log("loading renderer in development");
-    mainWindow.loadURL(`http://localhost:8081/index.html`);
+    mainWindow.loadURL(`http://localhost:8080/index.html`);
   } else {
     console.log("loading renderer");
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {

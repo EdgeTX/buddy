@@ -1,5 +1,6 @@
 import ky, { DownloadProgress } from "ky";
 import { unzipRaw, ZipEntry } from "unzipit";
+import config from "../../config";
 
 export const downloadContents = async (
   assetUrls: string[],
@@ -32,10 +33,10 @@ export const downloadContents = async (
   const assets = await Promise.all(
     assetUrls.map(async (assetUrl, i) => {
       // In browser, we can use ky, as it uses fetch under the hood
-      if (!!global.navigator) {
-        return ky(`http://localhost:8080/${assetUrl}`, {
+      if (!config.isElectron) {
+        return ky(assetUrl, {
+          prefixUrl: config.proxyUrl,
           onDownloadProgress: (progress) => {
-            console.log(progress);
             onDownloadProgress(i, progress);
           },
         }).then((res) => res.blob());
@@ -46,7 +47,7 @@ export const downloadContents = async (
         import("got"),
         import("get-stream"),
       ]);
-      const stream = got.stream(`http://localhost:8080/${assetUrl}`);
+      const stream = got.stream(assetUrl);
       stream.on("downloadProgress", () => {
         onDownloadProgress(i, {
           percent: stream.downloadProgress.percent,
