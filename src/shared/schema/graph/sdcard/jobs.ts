@@ -118,14 +118,12 @@ export const startExecution = async (
       () => !isCancelled(jobId),
       {
         onFileWriteStarted: (name) => {
-          updateSdcardWriteFileStatus(jobId, {
-            name: name,
+          updateSdcardWriteFileStatus(jobId, name, {
             startTime: new Date().getTime().toString(),
           });
         },
         onFileWriteCompleted: (name) => {
-          updateSdcardWriteFileStatus(jobId, {
-            name: name,
+          updateSdcardWriteFileStatus(jobId, name, {
             completedTime: new Date().getTime().toString(),
           });
         },
@@ -184,16 +182,28 @@ const updateStageStatus = <
 
 const updateSdcardWriteFileStatus = (
   jobId: string,
-  write: SdcardWriteFileStatus
+  fileName: string,
+  status: Partial<Pick<SdcardWriteFileStatus, "startTime" | "completedTime">>
 ) => {
   const job = getSdcardJob(jobId);
   const existing = job?.stages.write.writes.find(
-    ({ name }) => name !== write.name
+    ({ name }) => name === fileName
   );
+
+  if (!status.startTime && !existing?.startTime) {
+    throw new Error("invalid status update, write doesnt have a start time");
+  }
+
   updateStageStatus(jobId, "write", {
     writes: (
-      job?.stages.write.writes.filter(({ name }) => name !== write.name) ?? []
-    ).concat([{ ...existing, ...write }]),
+      job?.stages.write.writes.filter(({ name }) => name !== fileName) ?? []
+    ).concat([
+      {
+        ...existing,
+        ...(status as SdcardWriteFileStatus),
+        name: fileName,
+      },
+    ]),
   });
 };
 

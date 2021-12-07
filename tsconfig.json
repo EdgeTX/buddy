@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "esnext",
     "lib": ["dom", "es2018"],
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -10,7 +10,7 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
+    "module": "es2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "noEmit": true,

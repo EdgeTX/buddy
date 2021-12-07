@@ -138,16 +138,24 @@ const FlashingExecution: React.FC = () => {
       }
 
       return () => {
-        cancelJob({
-          variables: {
-            jobId,
-          },
-        }).catch(() => {});
         window.removeEventListener("beforeunload", beforeUnload);
       };
     }
     return undefined;
   }, [isRunning]);
+
+  useEffect(() => {
+    if (jobId) {
+      return () => {
+        cancelJob({
+          variables: {
+            jobId,
+          },
+        }).catch(() => {});
+      };
+    }
+    return undefined;
+  }, [jobId]);
 
   if (!data?.flashJobStatus) {
     return null;

@@ -43,7 +43,7 @@
   },
   "scripts": {
     "start": "yarn compile:main && yarn start:web",
-    "start:web": "webpack-dev-server --hot --mode development --config webpack/renderer.config.js",
+    "start:web": "WEB_ONLY=true webpack-dev-server --hot --mode development --config webpack/renderer.config.js",
     "start:cors": "node cors.js",
     "build": "react-scripts build",
     "test": "react-scripts test",

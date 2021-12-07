@@ -84,7 +84,7 @@ const typeDefs = gql`
 
   type SdcardWriteFileStatus {
     name: String!
-    startTime: String
+    startTime: String!
     completedTime: String
   }
 

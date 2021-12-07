@@ -20,9 +20,12 @@ module.exports = (_, { mode }) => ({
   },
   externals: {
     "node-fetch": {},
-    "got": "commonjs got",
+    got: "commonjs got",
     "get-stream": "commonjs get-stream",
     "supports-color": "commonjs supports-color",
+  },
+  experiments: {
+    topLevelAwait: true,
   },
   resolve: {
     extensions: [".ts", ".tsx", ".mjs", ".js"],
@@ -105,7 +108,9 @@ module.exports = (_, { mode }) => ({
     }),
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({
-        PROXY_URL: process.env.PROXY_URL
+        // If the build env knows the proxy url, use that, otherwise
+        // default to our local cors proxy
+        PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
       }),
     }),
     new HtmlWebpackPlugin({
@@ -143,17 +148,19 @@ module.exports = (_, { mode }) => ({
     hot: true,
     onAfterSetupMiddleware() {
       openBrowser("http://localhost:8080");
-      spawn("electron", ["./build/main/main.js"], {
-        shell: true,
-        env: {
-          NODE_ENV: "development",
-          ...process.env,
-        },
-        stdio: "inherit",
-      })
-        .on("close", () => process.exit(0))
-        // eslint-disable-next-line no-console
-        .on("error", (spawnError) => console.error(spawnError));
+      if (!process.env.WEB_ONLY) {
+        spawn("electron", ["./build/main/main.js"], {
+          shell: true,
+          env: {
+            NODE_ENV: "development",
+            ...process.env,
+          },
+          stdio: "inherit",
+        })
+          .on("close", () => process.exit(0))
+          // eslint-disable-next-line no-console
+          .on("error", (spawnError) => console.error(spawnError));
+      }
     },
   },
 });

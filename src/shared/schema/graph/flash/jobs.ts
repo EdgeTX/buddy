@@ -106,10 +106,15 @@ export const startExecution = async (
     }
 
     await flash(jobId, dfuProcess, firmwareData);
-  })().catch((e) => {
-    console.error(e);
-    cancelJob(jobId);
-  });
+  })()
+    .then(async () => {
+      await dfuProcess?.close().catch(() => {});
+      await args.device.close().catch(() => {});
+    })
+    .catch((e) => {
+      console.error(e);
+      cancelJob(jobId);
+    });
 };
 
 export const getJob = (jobId: string): FlashJob | undefined => jobs[jobId];
