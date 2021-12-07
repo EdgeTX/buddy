@@ -1,2 +1,2 @@
-.yarn/**/* linguist-vendored
-.webpack.lock.data/**/* linguist-vendored
+.yarn/* linguist-vendored
+webpack.lock.data/* linguist-vendored
