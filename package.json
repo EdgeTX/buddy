@@ -60,7 +60,15 @@
     "lint:all": "yarn lint src",
     "fmt": "prettier --write '**/*.{ts,tsx,js,jsx}'",
     "fmt:check": "prettier --check '**/*.{ts,tsx,js,jsx}'",
-    "postinstall": "yarn codegen"
+    "postinstall": "yarn codegen && husky install"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix"
+    ],
+    "**/*.{json,js,jsx,ts,tsx}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.3.0",
@@ -102,7 +110,9 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "fork-ts-checker-webpack-plugin": "^6.4.2",
     "html-webpack-plugin": "^5.5.0",
+    "husky": "^7.0.0",
     "jest": "^27.4.3",
+    "lint-staged": "^12.1.2",
     "prettier": "^2.5.1",
     "react-dev-utils": "^11.0.4",
     "react-svg-loader": "^3.0.3",
