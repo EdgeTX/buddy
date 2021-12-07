@@ -5,7 +5,7 @@ import {
   createSchemaExecutor,
   webWorkerBus,
 } from "apollo-bus-link";
-import { createContext, schema } from "shared/schema";
+import { createContext, schema } from "shared/backend";
 import crossBoundary from "./crossBoundary";
 
 const fileSystem = {

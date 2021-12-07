@@ -4,7 +4,7 @@ import {
   FlashJob,
   FlashableDevice,
   Resolvers,
-} from "shared/schema/graph/__generated__";
+} from "shared/backend/graph/__generated__";
 import {
   cancelJob,
   createJob,

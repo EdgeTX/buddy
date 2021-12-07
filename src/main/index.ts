@@ -13,8 +13,8 @@ import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginP
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import { USB } from "webusb";
 import { Device as NativeUSBDevice } from "usb";
-import * as backend from "shared/schema";
-import type { FileSystemApi, UsbApi } from "shared/schema";
+import * as backend from "shared/backend";
+import type { FileSystemApi, UsbApi } from "shared/backend";
 import config from "shared/config";
 
 // Keep a global reference of the window object, if you don't, the window will

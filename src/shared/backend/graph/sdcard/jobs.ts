@@ -7,8 +7,8 @@ import {
   SdcardWriteFileStatus,
   SdcardWriteJob,
   SdcardWriteJobStages,
-} from "shared/schema/graph/__generated__";
-import { Context } from "shared/schema/context";
+} from "shared/backend/graph/__generated__";
+import { Context } from "shared/backend/context";
 
 export const jobUpdates = new PubSub();
 const sdcardJobs: Record<string, SdcardWriteJob> = {};

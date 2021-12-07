@@ -3,7 +3,7 @@ import { GraphQLError } from "graphql";
 import {
   EdgeTxFirmwareBundle,
   Resolvers,
-} from "shared/schema/graph/__generated__";
+} from "shared/backend/graph/__generated__";
 
 const typeDefs = gql`
   type Query {

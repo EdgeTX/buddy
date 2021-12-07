@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
-import { Resolvers, SdcardWriteJob } from "shared/schema/graph/__generated__";
+import { Resolvers, SdcardWriteJob } from "shared/backend/graph/__generated__";
 import {
   cancelSdcardJob,
   createSdcardJob,
