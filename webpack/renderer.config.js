@@ -34,12 +34,6 @@ module.exports = (_, { mode }) => ({
       url: false,
       os: false,
       buffer: false,
-      //   zlib: false,
-      //   https: false,
-      //   http: false,
-      //   stream: false,
-      //   crypto: false,
-      //   util: false,
     },
   },
   module: {
@@ -110,7 +104,9 @@ module.exports = (_, { mode }) => ({
       Buffer: ["buffer", "Buffer"],
     }),
     new webpack.DefinePlugin({
-      "process.env": JSON.stringify({}),
+      "process.env": JSON.stringify({
+        PROXY_URL: process.env.PROXY_URL
+      }),
     }),
     new HtmlWebpackPlugin({
       template: "./src/renderer/index.html",

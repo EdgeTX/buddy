@@ -8,5 +8,5 @@ const isElectron =
 
 export default {
   isElectron: isElectron,
-  proxyUrl: isElectron ? "" : "http://localhost:12000",
+  proxyUrl: isElectron ? "" : process.env.PROXY_URL,
 };
