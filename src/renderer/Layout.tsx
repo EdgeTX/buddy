@@ -1,17 +1,11 @@
 import React from "react";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CodeIcon from "@mui/icons-material/Code";
-import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 
@@ -27,14 +21,14 @@ const Layout: React.FC = ({ children }) => {
 
   const location = useLocation();
 
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = (): void => {
     setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
     <div>
       <List>
-        {LINKS.map(({ name, icon, to }, index) => (
+        {LINKS.map(({ name, icon, to }) => (
           <ListItemButton
             selected={location.pathname.startsWith(to)}
             component={Link}

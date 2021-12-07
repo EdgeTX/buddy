@@ -1,21 +1,19 @@
 import "source-map-support/register";
 import "./polyfills";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import electron, { app, dialog, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import url from "url";
 
 import {
   createSchemaExecutor,
   createBusLinkBackend,
 } from "apollo-bus-link/core";
 import { electronBus } from "apollo-bus-link/electron";
-import * as backend from "../shared/schema";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import { USB } from "webusb";
 import { Device as NativeUSBDevice } from "usb";
+import * as backend from "../shared/schema";
 import { FileSystemApi, UsbApi } from "../shared/schema";
 import config from "../shared/config";
 
@@ -23,7 +21,7 @@ import config from "../shared/config";
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | undefined;
 
-const main = async () => {
+const main = async (): Promise<void> => {
   // Quit when all windows are closed.
   app.on("window-all-closed", () => {
     // On macOS it is common for applications and their menu bar
@@ -92,10 +90,10 @@ const createWindow = (): void => {
   const searchQuery = ``;
   if (!config.isProduction) {
     console.log("loading renderer in development");
-    mainWindow.loadURL(`http://localhost:8080/index.html`);
+    void mainWindow.loadURL(`http://localhost:8080/index.html`);
   } else {
     console.log("loading renderer");
-    mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {
+    void mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {
       search: searchQuery,
     });
   }
@@ -141,9 +139,9 @@ const usbApi = (): UsbApi => {
   let availableDevices: USBDevice[] = [];
 
   const usb = new USB({
-    devicesFound: async (devices) => {
+    devicesFound: (devices) => {
       availableDevices = devices;
-      return undefined;
+      return Promise.resolve(undefined);
     },
   });
 
@@ -159,27 +157,23 @@ const usbApi = (): UsbApi => {
   };
 };
 
-const fileSystemApi = (): FileSystemApi => {
-  return {
-    requestWritableFolder: async () => {
-      if (mainWindow) {
-        const result = await dialog.showOpenDialog(mainWindow, {
-          properties: ["openDirectory"],
-        });
+const fileSystemApi = (): FileSystemApi => ({
+  requestWritableFolder: async () => {
+    if (mainWindow) {
+      const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ["openDirectory"],
+      });
 
-        const path = result.filePaths[0];
-        console.log(path);
-        if (!path) {
-          throw new Error("Directory was not selected");
-        }
-
-        return getOriginPrivateDirectory(nodeAdapter, path);
-      } else {
-        // Should never be called
-        throw new Error("Main window was not available");
+      const filePath = result.filePaths[0];
+      if (!filePath) {
+        throw new Error("Directory was not selected");
       }
-    },
-  };
-};
+
+      return getOriginPrivateDirectory(nodeAdapter, filePath);
+    }
+    // Should never be called
+    throw new Error("Main window was not available");
+  },
+});
 
 void main();

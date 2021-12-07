@@ -15,9 +15,10 @@ type FunctionRequestType<A extends unknown[]> = {
   args: { id: number; args: A };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const waitForResponse = <T>(requestType: string, requestId: number) =>
   new Promise<T>((resolve, reject) => {
-    const listener = (message: MessageEvent<unknown>) => {
+    const listener = (message: MessageEvent<unknown>): void => {
       if (
         isObject(message.data) &&
         "type" in message.data &&
@@ -31,7 +32,7 @@ const waitForResponse = <T>(requestType: string, requestId: number) =>
             reject(response.args.error);
           }
 
-          self.removeEventListener("message", listener);
+          window.self.removeEventListener("message", listener);
         }
       }
     };
@@ -43,7 +44,7 @@ let incrementedId = 0;
 
 const getCallId = (): number => {
   incrementedId += 1;
-  incrementedId = incrementedId % 1000;
+  incrementedId %= 1000;
   return incrementedId;
 };
 
@@ -52,7 +53,10 @@ const getCallId = (): number => {
  * so that it can be called cross boundary. The returned result
  * is sent back to the caller in the web worker
  */
-const createCrossBoundryFunction = <F extends (...args: any[]) => any>(
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const createCrossBoundryFunction = <
+  F extends (...args: never[]) => unknown | Promise<unknown>
+>(
   name: string
 ) => {
   type Return = ReturnType<F>;
@@ -61,12 +65,12 @@ const createCrossBoundryFunction = <F extends (...args: any[]) => any>(
   const type = `call${name}`;
   return {
     call: (...params: Params) => {
-      console.log(params);
       const id = getCallId();
       self.postMessage({
         type,
         args: { args: params, id },
       } as FunctionRequestType<Params>);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return waitForResponse<Return>(type, id);
     },
     installHandler: (worker: Worker, caller: F) => {
@@ -84,7 +88,6 @@ const createCrossBoundryFunction = <F extends (...args: any[]) => any>(
               },
             } as FunctionResponseType<Return>);
           } catch (e) {
-            console.error(e);
             worker.postMessage({
               type,
               args: { id: request.args.id, error: e as Error },

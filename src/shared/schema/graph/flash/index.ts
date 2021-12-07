@@ -1,6 +1,6 @@
 import gql from "gql-tag";
-import { FlashableDevice, FlashJob, Resolvers } from "../__generated__";
 import { GraphQLError } from "graphql";
+import { FlashableDevice, FlashJob, Resolvers } from "../__generated__";
 import {
   cancelJob,
   createJob,
@@ -128,7 +128,7 @@ const resolvers: Resolvers = {
 
       return job;
     },
-    cancelFlashJob: async (_, { jobId }) => {
+    cancelFlashJob: (_, { jobId }) => {
       const job = getJob(jobId);
       if (!job) {
         throw new GraphQLError("Job doesnt exist");
@@ -137,7 +137,7 @@ const resolvers: Resolvers = {
       if (job.cancelled) {
         throw new GraphQLError("Job already cancelled");
       }
-      await cancelJob(jobId);
+      cancelJob(jobId);
 
       return null;
     },

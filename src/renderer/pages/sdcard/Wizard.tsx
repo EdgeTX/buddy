@@ -51,7 +51,7 @@ const SdcardWizard: React.FC = () => {
     `)
   );
 
-  const [pickFolder, pickFolderMutation] = useMutation(
+  const [pickFolder] = useMutation(
     gql(/* GraphQL */ `
       mutation PickSdcardFolder {
         pickSdcardFolder {
@@ -105,7 +105,7 @@ const SdcardWizard: React.FC = () => {
           id="select-radio"
           label="Select radio"
           value={target}
-          onChange={(e) => updateParams({ target: e.target.value as string })}
+          onChange={(e) => updateParams({ target: e.target.value })}
         >
           {targets?.map((radio) => (
             <MenuItem key={radio.id} value={radio.id}>
@@ -131,7 +131,7 @@ const SdcardWizard: React.FC = () => {
           label="Select language"
           value={sounds}
           onChange={(e) => {
-            updateParams({ sounds: e.target.value as string });
+            updateParams({ sounds: e.target.value });
           }}
         >
           {availableSounds?.map((s) => (
@@ -172,7 +172,7 @@ const SdcardWizard: React.FC = () => {
         disabled={!selectedTargetExists || !selectedSoundsExists}
         onClick={() => {
           if (folder && target && sounds)
-            createWriteJob({
+            void createWriteJob({
               variables: {
                 folderId: folder,
                 target,
@@ -181,7 +181,7 @@ const SdcardWizard: React.FC = () => {
               },
             }).then((result) => {
               if (result.data?.createSdcardWriteJob.id) {
-                navigate(`/sdcard/${result.data?.createSdcardWriteJob.id}`);
+                navigate(`/sdcard/${result.data.createSdcardWriteJob.id}`);
               } else {
                 console.log(result);
               }

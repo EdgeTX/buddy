@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
-import { Resolvers, SdcardWriteJob } from "../__generated__";
 import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
+import { Resolvers, SdcardWriteJob } from "../__generated__";
 import {
   cancelSdcardJob,
   createSdcardJob,
@@ -138,7 +138,10 @@ const resolvers: Resolvers = {
       return soundsRelease.assets
         .filter((asset) => asset.name.includes("edgetx-sdcard-sounds-"))
         .map(
-          (asset) => asset.name.split("edgetx-sdcard-sounds-")[1].split("-")[0]
+          (asset) =>
+            // We have just filtered for this, so should be ok
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            asset.name.split("edgetx-sdcard-sounds-")[1]!.split("-")[0]!
         )
         .map((name) => ({
           id: name,
@@ -210,9 +213,7 @@ const resolvers: Resolvers = {
       { folderId, target, clean, sounds },
       context
     ) => {
-      const directory = directories.find(
-        (directory) => directory.id === folderId
-      );
+      const directory = directories.find((d) => d.id === folderId);
 
       if (!directory) {
         throw new GraphQLError("Folder id doesnt exist");

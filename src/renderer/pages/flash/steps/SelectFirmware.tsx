@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FormControl from "@mui/material/FormControl";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
@@ -13,6 +13,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import { gql, useQuery } from "@apollo/client";
+import FormGroup from "@mui/material/FormGroup";
+import Checkbox from "@mui/material/Checkbox";
 import Markdown from "../../../components/Markdown";
 
 type Props = {
@@ -81,7 +83,7 @@ const FirmwarePicker: React.FC<
   );
 
   const releases = releasesQuery.data?.edgeTxReleases.filter(
-    (release) => includePrereleases || !release.isPrerelease
+    (release) => !!includePrereleases || !release.isPrerelease
   );
 
   const selectedFirmware = releases?.find((release) => release.id === version);
@@ -107,11 +109,11 @@ const FirmwarePicker: React.FC<
           id="select-version"
           label="Select version"
           value={version}
-          onChange={(e) => onVersionSelected(e.target.value as string)}
+          onChange={(e) => onVersionSelected(e.target.value)}
         >
           {releases?.map((release) => (
             <MenuItem key={release.id} value={release.id}>
-              {release.name ?? release.id}
+              {release.name}
             </MenuItem>
           ))}
         </Select>
@@ -136,7 +138,7 @@ const FirmwarePicker: React.FC<
           id="select-target"
           label="Select radio type"
           value={target}
-          onChange={(e) => onTargetSelected(e.target.value as string)}
+          onChange={(e) => onTargetSelected(e.target.value)}
         >
           {targets?.map((t) => (
             <MenuItem value={t.id}>{t.name}</MenuItem>
@@ -150,6 +152,21 @@ const FirmwarePicker: React.FC<
             <LinearProgress />
           </FormHelperText>
         )}
+      </FormControl>
+      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!includePrereleases}
+                onChange={(e) => {
+                  onIncludePrereleases(e.target.checked);
+                }}
+              />
+            }
+            label="Include prereleases"
+          />
+        </FormGroup>
       </FormControl>
     </>
   );
@@ -178,24 +195,24 @@ const FirmwareDescription: React.FC<{ version: string }> = ({ version }) => {
     return null;
   }
 
-  return <Markdown children={description} />;
+  return <Markdown>{description}</Markdown>;
 };
 
 const SelectFirmware: React.FC<Props> = (props) => {
+  const { version, target, onTargetSelected, onFirmwareProvided } = props;
   const [firmwareType, setFirmwareType] = useState<FirmwareType>("releases");
 
   useEffect(() => {
-    if (props.version === "local") {
+    if (version === "local") {
       setFirmwareType("local");
     }
-  }, [props.target]);
+  }, [version, setFirmwareType]);
 
   useEffect(() => {
-    if (firmwareType === "local") {
-      props.onTargetSelected(undefined);
+    if (firmwareType === "local" && target) {
+      onTargetSelected(undefined);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firmwareType]);
+  }, [firmwareType, target, onTargetSelected]);
 
   return (
     <Box>
@@ -241,6 +258,7 @@ const SelectFirmware: React.FC<Props> = (props) => {
           </FormControl>
         </Grid>
         <Grid item xs={8}>
+          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           {firmwareType === "releases" && <FirmwarePicker {...props} />}
           {firmwareType === "local" && (
             <Button variant="contained" component="label">
@@ -249,8 +267,12 @@ const SelectFirmware: React.FC<Props> = (props) => {
                 type="file"
                 hidden
                 onChange={async (event) => {
-                  props.onFirmwareProvided(
-                    Buffer.from(await event.target.files![0]!.arrayBuffer())
+                  if (!event.target.files?.[0]) {
+                    return;
+                  }
+
+                  onFirmwareProvided(
+                    Buffer.from(await event.target.files[0].arrayBuffer())
                   );
                 }}
               />
@@ -259,7 +281,7 @@ const SelectFirmware: React.FC<Props> = (props) => {
         </Grid>
       </Grid>
       <Box height="100%">
-        {props.version && <FirmwareDescription version={props.version} />}
+        {version && <FirmwareDescription version={version} />}
       </Box>
     </Box>
   );

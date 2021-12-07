@@ -10,6 +10,8 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
     "module": "es2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,

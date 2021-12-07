@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ApolloProvider } from "@apollo/client";
+import App from "./App";
 import client from "./gql/client";
 
 ReactDOM.render(

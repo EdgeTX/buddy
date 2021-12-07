@@ -2,7 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import React, { useEffect } from "react";
-import { useParams, useNavigate, UNSAFE_NavigationContext } from "react-router";
+import { useParams, useNavigate } from "react-router-dom";
 import config from "../../../shared/config";
 import CompletePage from "./execution/Complete";
 import FlashingStatus from "./execution/FlashingStatus";
@@ -88,16 +88,14 @@ const FlashingExecution: React.FC = () => {
           }
         `),
         variables: {
-          jobId: jobId ?? "",
+          jobId,
         },
-        onError: (error) => {
-          console.log(error);
+        onError: (subscriptionError) => {
+          console.log(subscriptionError);
         },
-        updateQuery: (_, { subscriptionData }) => {
-          return {
-            flashJobStatus: subscriptionData.data.flashJobStatusUpdates,
-          };
-        },
+        updateQuery: (_, { subscriptionData }) => ({
+          flashJobStatus: subscriptionData.data.flashJobStatusUpdates,
+        }),
       });
     }
   }, [jobId, subscribeToMore]);
@@ -111,7 +109,7 @@ const FlashingExecution: React.FC = () => {
       // this job doesn't exist
       navigate("/flash", { replace: true });
     }
-  }, [jobId, loading, jobExists, error, jobCancelled]);
+  }, [jobId, loading, jobExists, error, jobCancelled, navigate]);
 
   const [cancelJob] = useMutation(
     gql(/* GraphQL */ `
@@ -128,7 +126,7 @@ const FlashingExecution: React.FC = () => {
   // (outside of electron)
   useEffect(() => {
     if (isRunning) {
-      const beforeUnload = (e: BeforeUnloadEvent) => {
+      const beforeUnload = (e: BeforeUnloadEvent): void => {
         e.preventDefault();
         e.returnValue = "";
       };
@@ -155,7 +153,7 @@ const FlashingExecution: React.FC = () => {
       };
     }
     return undefined;
-  }, [jobId]);
+  }, [jobId, cancelJob]);
 
   if (!data?.flashJobStatus) {
     return null;
@@ -167,7 +165,7 @@ const FlashingExecution: React.FC = () => {
         <FlashingStatus state={data.flashJobStatus.stages} />
         <Button
           onClick={() => {
-            cancelJob({
+            void cancelJob({
               variables: {
                 jobId: jobId ?? "",
               },

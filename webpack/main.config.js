@@ -21,9 +21,9 @@ module.exports = (_, { mode }) => ({
     buildHttp: {
       allowedUris: [
         // allowed for web usb stream polyfill for node
-        "https://cdn.jsdelivr.net/"
-      ]
-    }
+        "https://cdn.jsdelivr.net/",
+      ],
+    },
   },
   node: {
     __filename: false,

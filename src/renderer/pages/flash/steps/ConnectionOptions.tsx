@@ -5,12 +5,12 @@ import Typography from "@mui/material/Typography";
 import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import config from "../../../../shared/config";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import LinearProgress from "@mui/material/LinearProgress";
+import config from "../../../../shared/config";
 
 type Props = {
   deviceId?: string;
@@ -51,7 +51,12 @@ const ConnectionOptions: React.FC<Props> = ({ deviceId, onDeviceSelected }) => {
     ) {
       onDeviceSelected(undefined);
     }
-  }, [availableDevices, availableDevicesQuery.loading, deviceId]);
+  }, [
+    availableDevices,
+    availableDevicesQuery.loading,
+    deviceId,
+    onDeviceSelected,
+  ]);
   return (
     <Box>
       <Typography variant="h2">Configure connection</Typography>
@@ -92,7 +97,7 @@ const ConnectionOptions: React.FC<Props> = ({ deviceId, onDeviceSelected }) => {
               id="select-device"
               label="Select device"
               value={deviceId}
-              onChange={(e) => onDeviceSelected(e.target.value as string)}
+              onChange={(e) => onDeviceSelected(e.target.value)}
             >
               {availableDevices?.map((device) => (
                 <MenuItem value={device.id}>{device.name}</MenuItem>

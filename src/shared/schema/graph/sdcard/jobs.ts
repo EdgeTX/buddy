@@ -2,12 +2,12 @@ import { ZipEntry } from "unzipit";
 import { PubSub } from "graphql-subscriptions";
 import { debounce } from "debounce";
 import pLimit from "p-limit";
+import * as uuid from "uuid";
 import {
   SdcardWriteFileStatus,
   SdcardWriteJob,
   SdcardWriteJobStages,
 } from "../__generated__";
-import * as uuid from "uuid";
 import { Context } from "../../context";
 
 export const jobUpdates = new PubSub();
@@ -15,7 +15,7 @@ const sdcardJobs: Record<string, SdcardWriteJob> = {};
 
 export const createSdcardJob = (
   stages: (keyof Omit<SdcardWriteJobStages, "__typename">)[]
-) => {
+): SdcardWriteJob => {
   const id = uuid.v1();
   const job: SdcardWriteJob = {
     id,
@@ -47,7 +47,10 @@ export const startExecution = async (
     clean: boolean;
   },
   { sdcardAssets }: Context
-): Promise<void> => {
+): // This may at some poit require async use, so ignore
+// this weird signature
+// eslint-disable-next-line @typescript-eslint/require-await
+Promise<void> => {
   (async () => {
     /** Download */
     updateStageStatus(jobId, "download", {
@@ -146,7 +149,7 @@ export const startExecution = async (
   });
 };
 
-export const cancelSdcardJob = (jobId: string) => {
+export const cancelSdcardJob = (jobId: string): void => {
   const job = getSdcardJob(jobId);
   if (!job) {
     return;
@@ -157,9 +160,9 @@ export const cancelSdcardJob = (jobId: string) => {
 
 const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
 
-const updateSdcardJob = (jobId: string, updatedJob: SdcardWriteJob) => {
+const updateSdcardJob = (jobId: string, updatedJob: SdcardWriteJob): void => {
   sdcardJobs[jobId] = updatedJob;
-  debouncedPublish(jobId, updatedJob);
+  void debouncedPublish(jobId, updatedJob);
 };
 
 const updateStageStatus = <
@@ -168,7 +171,7 @@ const updateStageStatus = <
   jobId: string,
   stage: S,
   status: Partial<Omit<NonNullable<SdcardWriteJobStages[S]>, "__typename">>
-) => {
+): void => {
   const job = getSdcardJob(jobId);
   if (!job) {
     return;
@@ -184,7 +187,7 @@ const updateSdcardWriteFileStatus = (
   jobId: string,
   fileName: string,
   status: Partial<Pick<SdcardWriteFileStatus, "startTime" | "completedTime">>
-) => {
+): void => {
   const job = getSdcardJob(jobId);
   const existing = job?.stages.write.writes.find(
     ({ name }) => name === fileName
@@ -207,9 +210,8 @@ const updateSdcardWriteFileStatus = (
   });
 };
 
-const isCancelled = (jobId: string): boolean => {
-  return getSdcardJob(jobId)?.cancelled ?? true;
-};
+const isCancelled = (jobId: string): boolean =>
+  getSdcardJob(jobId)?.cancelled ?? true;
 
 /**
  * Erase all the files and folders in the given directory
@@ -224,6 +226,9 @@ const erase = async (
 
   const entries: FileSystemHandle[] = [];
 
+  // This is only offered as an async interaor
+  // so we have to unpack :(
+  // eslint-disable-next-line no-restricted-syntax
   for await (const entry of rootHandle.values()) {
     if (shouldContinue && !shouldContinue()) {
       return;
@@ -283,7 +288,9 @@ const writeAssets = async (
       }
 
       const path = entry.name.split("/");
-      const fileName = path[path.length - 1];
+      // We know that the list will contain at least 1 item
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const fileName = path[path.length - 1]!;
       const isFolder = fileName.length === 0;
       if (isFolder) {
         updates?.onFileWriteStarted?.(entry.name);
@@ -299,8 +306,12 @@ const writeAssets = async (
         .reduce(
           async (prev, directory) =>
             prev.then(async (parentDirectory) => {
+              // We will eventually break or crash
+              // eslint-disable-next-line no-constant-condition
               while (true) {
                 try {
+                  // This has to be done in a while loop
+                  // eslint-disable-next-line no-await-in-loop
                   return await parentDirectory.getDirectoryHandle(directory, {
                     create: true,
                   });

@@ -17,11 +17,11 @@ const usb = {
     const pickedDevice = await crossBoundary.requestDevice.call({
       filters: [],
     });
-    const devices = await navigator.usb.getDevices();
-    const device = devices.find(
-      (device) =>
-        device.vendorId === pickedDevice.vendorId &&
-        device.productId === pickedDevice.productId
+    const devicesWithPermission = await navigator.usb.getDevices();
+    const device = devicesWithPermission.find(
+      ({ vendorId, productId }) =>
+        vendorId === pickedDevice.vendorId &&
+        productId === pickedDevice.productId
     );
 
     if (!device) {

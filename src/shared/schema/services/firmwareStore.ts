@@ -1,66 +1,6 @@
-import ky from "ky-universal";
 import md5 from "md5";
 import { unzipRaw, Reader, ZipInfoRaw } from "unzipit";
-import config from "../../config";
-
-const fakeUserAgent =
-  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36";
-
-class HTTPRangeReader implements Reader {
-  private url: string;
-  private length?: number;
-
-  constructor(url: string) {
-    this.url = url;
-  }
-
-  async getLength() {
-    if (this.length === undefined) {
-      const req = await ky(this.url, {
-        prefixUrl: config.proxyUrl,
-        method: "HEAD",
-        headers: {
-          "user-agent": fakeUserAgent,
-          // This really doesn't matter, we are just using something which might
-          // help with slow requests
-          Referer: "https://github.com/",
-        },
-      });
-      if (!req.ok) {
-        throw new Error(
-          `failed http request ${this.url}, status: ${req.status}: ${req.statusText}`
-        );
-      }
-      this.length = parseInt(req.headers.get("content-length")!);
-      if (Number.isNaN(this.length)) {
-        throw Error("could not get length");
-      }
-    }
-    return this.length;
-  }
-
-  async read(offset: number, size: number) {
-    if (size === 0) {
-      return new Uint8Array(0);
-    }
-    const req = await ky(this.url, {
-      prefixUrl: config.proxyUrl,
-      headers: {
-        Range: `bytes=${offset}-${offset + size - 1}`,
-        "user-agent": fakeUserAgent,
-        Referer: "https://github.com/",
-      },
-      timeout: 60000,
-    });
-    if (!req.ok) {
-      throw new Error(
-        `failed http request ${this.url}, status: ${req.status} offset: ${offset} size: ${size}: ${req.statusText}`
-      );
-    }
-    const buffer = await req.arrayBuffer();
-    return new Uint8Array(buffer);
-  }
-}
+import ZipHTTPRangeReader from "../utils/ZipHTTPRangeReader";
 
 export type Target = {
   name: string;
@@ -74,7 +14,7 @@ type FirmwareFile = {
 const firmwareTargetsCache: Record<string, Promise<Target[]>> = {};
 
 const firmwareBundle = (url: string): Promise<ZipInfoRaw> => {
-  const reader = new HTTPRangeReader(url);
+  const reader = new ZipHTTPRangeReader(url);
   return unzipRaw(reader as Reader);
 };
 
@@ -107,7 +47,9 @@ export const firmwareTargets = async (
     })();
   }
 
-  return firmwareTargetsCache[firmwareBundleUrl];
+  // We have to have just assigned this
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return firmwareTargetsCache[firmwareBundleUrl]!;
 };
 
 export const fetchFirmware = async (

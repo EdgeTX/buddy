@@ -81,22 +81,18 @@ const FlashingStatus: React.FC<Props> = ({
           status={download}
         />
       )}
-      {
-        <StatusCard
-          preTitle="Erase"
-          title="Erasing"
-          doneTitle="Erased"
-          status={erase}
-        />
-      }
-      {
-        <StatusCard
-          preTitle="Flash"
-          title="Flashing"
-          doneTitle="Flashed"
-          status={flash}
-        />
-      }
+      <StatusCard
+        preTitle="Erase"
+        title="Erasing"
+        doneTitle="Erased"
+        status={erase}
+      />
+      <StatusCard
+        preTitle="Flash"
+        title="Flashing"
+        doneTitle="Flashed"
+        status={flash}
+      />
     </Box>
   </Box>
 );

@@ -1,14 +1,13 @@
 import Grid from "@mui/material/Grid";
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import ConnectionOptions from "./steps/ConnectionOptions";
-import SelectFirmware from "./steps/SelectFirmware";
+import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import IconArrowRight from "@mui/icons-material/ArrowRight";
 import IconArrowLeft from "@mui/icons-material/ArrowLeft";
-import ArrowCircleUp from "@mui/icons-material/ArrowCircleUp";
 import { gql, useMutation } from "@apollo/client";
+import SelectFirmware from "./steps/SelectFirmware";
+import ConnectionOptions from "./steps/ConnectionOptions";
 import useQueryParams from "../../hooks/useQueryParams";
 
 const stages = ["firmware", "connection"] as const;
@@ -103,7 +102,7 @@ const FlashingWizard: React.FC = () => {
             onClick={() => {
               const previousStage = stages[stages.indexOf(stage) - 1];
               if (previousStage) {
-                setStage(previousStage as Stage);
+                setStage(previousStage);
               }
             }}
           >
@@ -114,12 +113,8 @@ const FlashingWizard: React.FC = () => {
             onClick={() => {
               if (stage === "firmware" && (!version || !target)) {
                 return;
-              } else if (
-                stage === "connection" &&
-                deviceId &&
-                target &&
-                version
-              ) {
+              }
+              if (stage === "connection" && deviceId && target && version) {
                 createFlashJob({
                   variables: { firmware: { target, version }, deviceId },
                 })

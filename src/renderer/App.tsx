@@ -7,20 +7,18 @@ import FlashingExecution from "./pages/flash/Execution";
 import SdcardWizard from "./pages/sdcard/Wizard";
 import SdcardWriteExecution from "./pages/sdcard/Execution";
 
-const App: React.FC = () => {
-  return (
-    <HashRouter>
-      <Layout>
-        <Routes>
-          <Route path="/flash" element={<FlashingWizard />} />
-          <Route path="/flash/:jobId" element={<FlashingExecution />} />
-          <Route path="/sdcard" element={<SdcardWizard />} />
-          <Route path="/sdcard/:jobId" element={<SdcardWriteExecution />} />
-          <Route path="*" element={<>Wow, first new app</>} />
-        </Routes>
-      </Layout>
-    </HashRouter>
-  );
-};
+const App: React.FC = () => (
+  <HashRouter>
+    <Layout>
+      <Routes>
+        <Route path="/flash" element={<FlashingWizard />} />
+        <Route path="/flash/:jobId" element={<FlashingExecution />} />
+        <Route path="/sdcard" element={<SdcardWizard />} />
+        <Route path="/sdcard/:jobId" element={<SdcardWriteExecution />} />
+        <Route path="*" element={<>Wow, first new app</>} />
+      </Routes>
+    </Layout>
+  </HashRouter>
+);
 
 export default App;

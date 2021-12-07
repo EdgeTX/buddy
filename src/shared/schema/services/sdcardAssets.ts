@@ -11,7 +11,10 @@ export const downloadContents = async (
     transferredBytes: 0,
   }));
 
-  const onDownloadProgress = (key: number, progress: DownloadProgress) => {
+  const onDownloadProgress = (
+    key: number,
+    progress: DownloadProgress
+  ): void => {
     downloadProgressTrackers[key] = progress;
     if (
       downloadProgressTrackers.filter(({ totalBytes }) => totalBytes > 0)

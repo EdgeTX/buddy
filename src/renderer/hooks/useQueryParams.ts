@@ -1,12 +1,7 @@
 import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<
-  infer ElementType
->
-  ? ElementType
-  : never;
-
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default <K extends string>(initalParamKeys: K[]) => {
   const [paramKeys] = useState(initalParamKeys);
   const [params, setParams] = useSearchParams();
@@ -47,13 +42,13 @@ export default <K extends string>(initalParamKeys: K[]) => {
         setParams(
           Object.fromEntries(
             Object.entries(newObject).filter(
-              ([, value]) => value !== null && value !== undefined
+              ([, value]) => value !== undefined
             ) as [string, string][]
           ),
           { replace: true }
         );
       },
-      [params, setParams]
+      [setParams, paramKeys, parseParam]
     ),
     setParams,
     parseParam,

@@ -111,6 +111,7 @@ module.exports = (_, { mode }) => ({
         // If the build env knows the proxy url, use that, otherwise
         // default to our local cors proxy
         PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
+        PRODUCTION: mode === production
       }),
     }),
     new HtmlWebpackPlugin({
@@ -135,12 +136,12 @@ module.exports = (_, { mode }) => ({
     }),
     ...(process.env.REPORT
       ? [
-          new BundleAnalyzerPlugin({
-            analyzerMode: "static",
-            reportFilename: "renderer-report.html",
-            openAnalyzer: false,
-          }),
-        ]
+        new BundleAnalyzerPlugin({
+          analyzerMode: "static",
+          reportFilename: "renderer-report.html",
+          openAnalyzer: false,
+        }),
+      ]
       : []),
   ],
   devtool: "source-map",

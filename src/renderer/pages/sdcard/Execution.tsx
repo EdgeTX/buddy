@@ -97,16 +97,14 @@ const SdcardWriteExecution: React.FC = () => {
           }
         `),
         variables: {
-          jobId: jobId ?? "",
+          jobId,
         },
-        onError: (error) => {
-          console.log(error);
+        onError: (subscriptionError) => {
+          console.log(subscriptionError);
         },
-        updateQuery: (_, { subscriptionData }) => {
-          return {
-            sdcardWriteJobStatus: subscriptionData.data.sdcardWriteJobUpdates,
-          };
-        },
+        updateQuery: (_, { subscriptionData }) => ({
+          sdcardWriteJobStatus: subscriptionData.data.sdcardWriteJobUpdates,
+        }),
       });
     }
   }, [jobId, subscribeToMore]);
@@ -120,7 +118,7 @@ const SdcardWriteExecution: React.FC = () => {
       // this job doesn't exist or has now been cancelled
       navigate("/sdcard", { replace: true });
     }
-  }, [jobId, loading, data, error]);
+  }, [jobId, loading, jobCancelled, error, jobExists, navigate]);
 
   const [cancelJob] = useMutation(
     gql(/* GraphQL */ `
@@ -137,7 +135,7 @@ const SdcardWriteExecution: React.FC = () => {
   // (outside of electron)
   useEffect(() => {
     if (isRunning) {
-      const beforeUnload = (e: BeforeUnloadEvent) => {
+      const beforeUnload = (e: BeforeUnloadEvent): void => {
         e.preventDefault();
         e.returnValue = "";
       };
@@ -164,7 +162,7 @@ const SdcardWriteExecution: React.FC = () => {
       };
     }
     return undefined;
-  }, [jobId]);
+  }, [jobId, cancelJob]);
 
   const writes = [
     ...(data?.sdcardWriteJobStatus?.stages.write.writes.filter(
@@ -178,7 +176,7 @@ const SdcardWriteExecution: React.FC = () => {
   }));
 
   useLayoutEffect(() => {
-    if (logBoxRef?.current) {
+    if (logBoxRef.current) {
       logBoxRef.current.scrollTop = logBoxRef.current.scrollHeight;
     }
   }, [logs]);
@@ -193,7 +191,7 @@ const SdcardWriteExecution: React.FC = () => {
     : (["download", "write"] as const);
 
   const activeStep = steps.findIndex((step) => {
-    const stage = data.sdcardWriteJobStatus!.stages[step];
+    const stage = data.sdcardWriteJobStatus?.stages[step];
 
     return stage && !stage.completed;
   });
@@ -250,7 +248,7 @@ const SdcardWriteExecution: React.FC = () => {
       ) : (
         <Button
           onClick={() => {
-            cancelJob({
+            void cancelJob({
               variables: {
                 jobId: jobId ?? "",
               },

@@ -58,10 +58,6 @@ const resolvers: Resolvers = {
         }
       );
 
-      if (releasesRequest.status !== 200) {
-        throw new Error("Oh noes");
-      }
-
       return releasesRequest.data.map((release) => ({
         id: release.tag_name,
         name: release.name ?? release.tag_name,
@@ -87,7 +83,7 @@ const resolvers: Resolvers = {
         if ("status" in e && e.status && e.status === 404) {
           return undefined;
         }
-        throw e;
+        throw e as Error;
       });
 
       if (!releaseRequest) {
@@ -131,7 +127,7 @@ const resolvers: Resolvers = {
     }),
   },
   EdgeTxRelease: {
-    firmwareBundle: async (release, _) => {
+    firmwareBundle: (release) => {
       const firmwareAsset = release.assets.find((asset) =>
         asset.name.includes("firmware")
       );

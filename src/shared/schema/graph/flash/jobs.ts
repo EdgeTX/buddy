@@ -1,8 +1,8 @@
 import debounce from "debounce";
 import { WebDFU } from "dfu";
 import { PubSub } from "graphql-subscriptions";
-import { Context } from "../../context";
 import * as uuid from "uuid";
+import { Context } from "../../context";
 
 import { FlashJob, FlashStage, FlashStages } from "../__generated__";
 
@@ -39,16 +39,14 @@ export const startExecution = async (
     firmware: { data?: Buffer; url?: string; target: string };
   },
   { dfu, firmwareStore }: Context
-) => {
+): Promise<void> => {
   let firmwareData = args.firmware.data;
   let dfuProcess: WebDFU | undefined;
-  let cancelled = false;
 
   const cancelledListener = await jobUpdates.subscribe(
     jobId,
     async (updatedJob: FlashJob) => {
       if (updatedJob.cancelled) {
-        cancelled = true;
         if (dfuProcess) {
           console.log("Cancelling dfu process");
           await dfuProcess.close().catch(() => {});
@@ -73,7 +71,7 @@ export const startExecution = async (
       return undefined;
     });
 
-    if (!dfuProcess || cancelled) {
+    if (!dfuProcess || isCancelled(jobId)) {
       return;
     }
 
@@ -87,6 +85,8 @@ export const startExecution = async (
       });
 
       firmwareData = await firmwareStore
+        // We are relying on this already being checked
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         .fetchFirmware(args.firmware.url!, args.firmware.target)
         .catch((e: Error) => {
           updateStageStatus(jobId, "download", {
@@ -95,7 +95,7 @@ export const startExecution = async (
           return undefined;
         });
 
-      if (!firmwareData || cancelled) {
+      if (!firmwareData || isCancelled(jobId)) {
         return;
       }
 
@@ -119,18 +119,20 @@ export const startExecution = async (
 
 export const getJob = (jobId: string): FlashJob | undefined => jobs[jobId];
 
+const isCancelled = (jobId: string): boolean => jobs[jobId]?.cancelled ?? true;
+
 const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
 
-export const updateJob = (jobId: string, updatedJob: FlashJob) => {
+export const updateJob = (jobId: string, updatedJob: FlashJob): void => {
   jobs[jobId] = updatedJob;
-  debouncedPublish(jobId, updatedJob);
+  void debouncedPublish(jobId, updatedJob);
 };
 
 export const updateStageStatus = (
   jobId: string,
   stage: keyof Omit<FlashStages, "__typename">,
   status: Partial<Omit<FlashStage, "__typename">>
-) => {
+): void => {
   const job = getJob(jobId);
   if (!job) {
     return;
@@ -142,7 +144,7 @@ export const updateStageStatus = (
   });
 };
 
-export const cancelJob = async (jobId: string) => {
+export const cancelJob = (jobId: string): void => {
   const job = getJob(jobId);
   if (!job) {
     return;
