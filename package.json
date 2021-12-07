@@ -51,6 +51,7 @@
     "compile": "yarn run compile:deps && webpack",
     "compile:production": "yarn compile --mode production",
     "compile:web": "webpack --config webpack/renderer.config.js",
+    "compile:web:production": "yarn compile:web --mode production",
     "compile:main": "yarn run compile:deps && webpack --config webpack/main.config.js",
     "compile:deps": "electron-rebuild",
     "codegen": "graphql-codegen --config codegen.yml",
