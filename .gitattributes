@@ -1,4 +1,4 @@
 webpack.lock.data/**/* linguist-vendored
 
 # Fix line endings on windows
-* text=auto
+* text eol=lf
