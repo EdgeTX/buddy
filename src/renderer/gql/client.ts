@@ -15,7 +15,7 @@ const link = ApolloLink.from([
   window.ipcRenderer
     ? createElectronBusLink(window.ipcRenderer)
     : createWebWorkerBusLink(
-        await import("webworker/webworker.bootstrap").then(
+        await import("webworker/backend.bootstrap").then(
           ({ default: Worker }) => Worker
         )
       ),

@@ -37,4 +37,7 @@ module.exports = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   moduleDirectories: ["node_modules", "src"],
+  transform: {
+    "^.+\\.worker.tsx?$": "workerloader-jest-transformer",
+  },
 };

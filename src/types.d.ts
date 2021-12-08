@@ -15,3 +15,10 @@ declare module "apollo-link-logger" {
 
   export default {} as ApolloLink;
 }
+
+declare module "*.worker.ts" {
+  class WebpackWorker extends Worker {
+    constructor();
+  }
+  export default WebpackWorker;
+}

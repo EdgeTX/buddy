@@ -54,10 +54,11 @@ const getCallId = (): number => {
  * is sent back to the caller in the web worker
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const createCrossBoundryFunction = <
+export const createCrossBoundryFunction = <
   F extends (...args: never[]) => unknown | Promise<unknown>
 >(
-  name: string
+  name: string,
+  handler: F
 ) => {
   type Return = ReturnType<F>;
   type Params = Parameters<F>;
@@ -73,12 +74,12 @@ const createCrossBoundryFunction = <
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return waitForResponse<Return>(type, id);
     },
-    installHandler: (worker: Worker, caller: F) => {
+    listen: (worker: Worker) => {
       worker.addEventListener("message", async (event) => {
         const request = event.data as FunctionRequestType<Params>;
         if (isObject(request) && request.type === type) {
           try {
-            const response = (await caller(...request.args.args)) as Return;
+            const response = (await handler(...request.args.args)) as Return;
 
             worker.postMessage({
               type,
@@ -97,16 +98,4 @@ const createCrossBoundryFunction = <
       });
     },
   };
-};
-
-export default {
-  requestDevice:
-    createCrossBoundryFunction<
-      (
-        ...params: Parameters<typeof navigator.usb.requestDevice>
-      ) => Promise<Pick<USBDevice, "vendorId" | "productId">>
-    >("usb.requestDevice"),
-  showDirectoryPicker: createCrossBoundryFunction<
-    typeof window.showDirectoryPicker
-  >("showDirectoryPicker"),
 };

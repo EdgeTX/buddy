@@ -52,7 +52,7 @@
     "@octokit/core": "^3.5.1",
     "abort-controller": "^3.0.0",
     "antd": "^4.17.2",
-    "apollo-bus-link": "^0.4.2",
+    "apollo-bus-link": "^0.4.4",
     "apollo-link-logger": "^2.0.0",
     "debounce": "^1.2.1",
     "dfu": "^0.1.5",
@@ -175,7 +175,8 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.6.0",
-    "webpackbar": "^5.0.2"
+    "webpackbar": "^5.0.2",
+    "workerloader-jest-transformer": "^0.0.5"
   },
   "resolutions": {
     "@graphql-codegen/cli@2.3.0": "patch:@graphql-codegen/cli@npm:2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79"

@@ -3842,16 +3842,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-bus-link@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "apollo-bus-link@npm:0.4.2"
+"apollo-bus-link@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "apollo-bus-link@npm:0.4.4"
   dependencies:
     iterall: ^1.3.0
     serialize-error: ^8.1.0
   peerDependencies:
     "@apollo/client": ^3
     graphql: ">=14"
-  checksum: 49e5a2a0f101a89baed32e7f8892864bcc1f2a80a8d48e64b09da1889e9e3650598d6b81034e86709e1c7a300d91ef621ae7968fb9f4a410b96e618d77491b59
+  checksum: 7f46d9c21f1bc7a1fd9507b90431ce4717c80e016671a85eb4e829a85a495577600b4e58621dc4f83cf56edb2b3fb0e5da981d8dde6a5a061be647918f43d628
   languageName: node
   linkType: hard
 
@@ -6568,7 +6568,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.6.0
     abort-controller: ^3.0.0
     antd: ^4.17.2
-    apollo-bus-link: ^0.4.2
+    apollo-bus-link: ^0.4.4
     apollo-link-logger: ^2.0.0
     confusing-browser-globals: ^1.0.10
     cors-anywhere: ^0.4.4
@@ -6637,6 +6637,7 @@ __metadata:
     webpack-dev-server: ^4.6.0
     webpackbar: ^5.0.2
     webusb: ^2.2.0
+    workerloader-jest-transformer: ^0.0.5
   languageName: unknown
   linkType: soft
 
@@ -11944,6 +11945,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mitt@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "mitt@npm:2.1.0"
+  checksum: 5b0f698cbff2e47cc3b81b991f1230fadd429bdf4a2d9051d936059ad8090e36932694f299dd52434365463e6c52075026fb2161adcfd52b234b6f5392a514d2
+  languageName: node
+  linkType: hard
+
 "mixin-deep@npm:^1.2.0":
   version: 1.3.2
   resolution: "mixin-deep@npm:1.3.2"
@@ -16960,6 +16968,17 @@ __metadata:
   dependencies:
     microevent.ts: ~0.1.1
   checksum: 8f8607506172f44c05490f3ccf13e5c1f430eeb9b6116a405919c186b8b17add13bbb22467a0dbcd18ec7fcb080709a15738182e0003c5fbe2144721ea00f357
+  languageName: node
+  linkType: hard
+
+"workerloader-jest-transformer@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "workerloader-jest-transformer@npm:0.0.5"
+  dependencies:
+    mitt: ^2.1.0
+  peerDependencies:
+    "@babel/core": ^7.11.5
+  checksum: 846bfa0275348910ceab2a77d9caa830f2d2a7815828871586b4579a6d1941bd684a93372f91d82920d44587d8cf1136f6c470861f916a54d9b530d65d931009
   languageName: node
   linkType: hard
 
