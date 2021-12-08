@@ -23,7 +23,8 @@ const octokit = new Octokit({
 });
 
 export const createContext =
-  (extras: { fileSystem: FileSystemApi; usb: UsbApi }) => (): Context => ({
+  (extras: { fileSystem: FileSystemApi; usb: UsbApi; dfu?: typeof dfu }) =>
+  (): Context => ({
     github: octokit.request,
     firmwareStore,
     dfu,

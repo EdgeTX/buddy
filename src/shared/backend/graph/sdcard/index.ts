@@ -196,7 +196,7 @@ const resolvers: Resolvers = {
         return null;
       }
 
-      const id = uuid.v1();
+      const id = uuid.v4();
       directories.push({
         id,
         handle,

@@ -121,6 +121,77 @@ describe("Query", () => {
       nockDone();
     });
   });
+
+  describe("sdcardSounds", () => {
+    it("should return the available sdcard assets", async () => {
+      const { nockDone } = await nock.back("sdcard-sounds.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            sdcardSounds {
+              id
+              name
+              tag
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.sdcardSounds).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "id": "cn",
+            "name": "CN",
+            "tag": "latest",
+          },
+          Object {
+            "id": "cz",
+            "name": "CZ",
+            "tag": "latest",
+          },
+          Object {
+            "id": "de",
+            "name": "DE",
+            "tag": "latest",
+          },
+          Object {
+            "id": "en",
+            "name": "EN",
+            "tag": "latest",
+          },
+          Object {
+            "id": "es",
+            "name": "ES",
+            "tag": "latest",
+          },
+          Object {
+            "id": "fr",
+            "name": "FR",
+            "tag": "latest",
+          },
+          Object {
+            "id": "it",
+            "name": "IT",
+            "tag": "latest",
+          },
+          Object {
+            "id": "pt",
+            "name": "PT",
+            "tag": "latest",
+          },
+          Object {
+            "id": "ru",
+            "name": "RU",
+            "tag": "latest",
+          },
+        ]
+      `);
+
+      nockDone();
+    });
+  });
 });
 
 describe("Mutation", () => {
@@ -146,6 +217,125 @@ describe("Mutation", () => {
         id: expect.any(String),
         name: "/some/folder/path",
       });
+    });
+
+    it("should allow the folder info to be queried after being picked", async () => {
+      requestWritableFolder.mockResolvedValue({
+        name: "/some/other/folder",
+      } as FileSystemDirectoryHandle);
+
+      const requestFolderResponse = await backend.mutate({
+        mutation: gql`
+          mutation RequestFolder {
+            pickSdcardFolder {
+              id
+              name
+            }
+          }
+        `,
+      });
+
+      const { id } = requestFolderResponse.data?.pickSdcardFolder as {
+        id: string;
+      };
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query FolderInfoQuery($id: ID!) {
+            folderInfo(id: $id) {
+              id
+              name
+            }
+          }
+        `,
+        variables: {
+          id,
+        },
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.folderInfo).toEqual({
+        id,
+        name: "/some/other/folder",
+      });
+    });
+
+    it("should only keep 5 folder handles", async () => {
+      const currentHandles = await Promise.all(
+        new Array(5).fill(1).map(async (_, i) => {
+          requestWritableFolder.mockResolvedValueOnce({
+            name: `/some/folder/folder${i}`,
+          } as FileSystemDirectoryHandle);
+
+          const requestFolderResponse = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardFolder {
+                  id
+                  name
+                }
+              }
+            `,
+          });
+
+          const { id } = requestFolderResponse.data?.pickSdcardFolder as {
+            id: string;
+          };
+
+          return id;
+        })
+      );
+
+      requestWritableFolder.mockResolvedValueOnce({
+        name: `/some/folder/folderlast`,
+      } as FileSystemDirectoryHandle);
+
+      // Request one more so the first should be gone
+      await backend.mutate({
+        mutation: gql`
+          mutation RequestFolder {
+            pickSdcardFolder {
+              id
+              name
+            }
+          }
+        `,
+      });
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query FolderInfoQuery($id: ID!) {
+            folderInfo(id: $id) {
+              id
+              name
+            }
+          }
+        `,
+        variables: {
+          id: currentHandles[0]!,
+        },
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.folderInfo).toBeNull();
+    });
+
+    it("should return null if the user doesnt select a folder", async () => {
+      requestWritableFolder.mockRejectedValue(new Error("some error"));
+
+      const { data, errors } = await backend.mutate({
+        mutation: gql`
+          mutation RequestFolder {
+            pickSdcardFolder {
+              id
+              name
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.pickSdcardFolder).toBeNull();
     });
   });
 });
