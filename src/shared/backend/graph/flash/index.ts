@@ -7,14 +7,6 @@ import {
 } from "shared/backend/graph/__generated__";
 import config from "shared/config";
 
-import {
-  cancelJob,
-  createJob,
-  getJob,
-  jobUpdates,
-  startExecution,
-} from "./jobs";
-
 const typeDefs = gql`
   type Mutation {
     createFlashJob(firmware: FlashFirmwareInput!, deviceId: ID!): FlashJob!
@@ -116,10 +108,15 @@ const resolvers: Resolvers = {
       // If we already have the firmware we don't need to download
       // So start the state off assuming no download step
       const job = firmwareData
-        ? createJob(["connect", "erase", "flash"])
-        : createJob(["connect", "download", "erase", "flash"]);
+        ? context.flashJobs.createJob(["connect", "erase", "flash"])
+        : context.flashJobs.createJob([
+            "connect",
+            "download",
+            "erase",
+            "flash",
+          ]);
 
-      await startExecution(
+      await context.flashJobs.startExecution(
         job.id,
         {
           device,
@@ -134,8 +131,8 @@ const resolvers: Resolvers = {
 
       return job;
     },
-    cancelFlashJob: (_, { jobId }) => {
-      const job = getJob(jobId);
+    cancelFlashJob: (_, { jobId }, { flashJobs }) => {
+      const job = flashJobs.getJob(jobId);
       if (!job) {
         throw new GraphQLError("Job doesnt exist");
       }
@@ -143,7 +140,7 @@ const resolvers: Resolvers = {
       if (job.cancelled) {
         throw new GraphQLError("Job already cancelled");
       }
-      cancelJob(jobId);
+      flashJobs.cancelJob(jobId);
 
       return null;
     },
@@ -153,15 +150,16 @@ const resolvers: Resolvers = {
     },
   },
   Query: {
-    flashJobStatus: (_, { jobId }) => getJob(jobId) ?? null,
+    flashJobStatus: (_, { jobId }, { flashJobs }) =>
+      flashJobs.getJob(jobId) ?? null,
     flashableDevices: (_, __, { usb }) =>
       usb.deviceList().then((devices) => devices.map(usbDeviceToFlashDevice)),
   },
   Subscription: {
     flashJobStatusUpdates: {
-      subscribe: (_, { jobId }) => ({
+      subscribe: (_, { jobId }, { flashJobs }) => ({
         [Symbol.asyncIterator]() {
-          return jobUpdates.asyncIterator<FlashJob>(jobId);
+          return flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
         },
       }),
       resolve: (value: FlashJob) => value,

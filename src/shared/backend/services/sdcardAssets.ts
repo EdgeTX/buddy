@@ -59,7 +59,7 @@ export const downloadContents = async (
         });
       });
 
-      return new Uint8Array(await getStream.buffer(stream)).buffer;
+      return new Blob([new Uint8Array(await getStream.buffer(stream)).buffer]);
     })
   );
 

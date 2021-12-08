@@ -1,16 +1,16 @@
-import "web-streams-polyfill/es2018";
 import { jest, beforeEach } from "@jest/globals";
 import nock from "nock";
 import isCI from "is-ci";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import { Blob } from "buffer";
 
 // Text Encoder doesn't existing on jsdom
 import { TextEncoder, TextDecoder } from "util";
 global.TextEncoder = TextEncoder as unknown as typeof global.TextEncoder;
 global.TextDecoder = TextDecoder as unknown as typeof global.TextDecoder;
 
-jest.mock("fs", () => jest.requireActual("mem-fs"));
+globalThis.Blob = Blob as unknown as typeof globalThis.Blob;
 
 jest.mock("dfu", () => ({
   WebDFU: () => {},

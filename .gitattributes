@@ -1,2 +1,5 @@
 # Fix line endings on windows
 * text eol=lf
+
+# Don't track individual changes in the __fixtures__ directory
+__fixtures__/** binary

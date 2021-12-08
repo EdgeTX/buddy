@@ -4,6 +4,9 @@ import config from "shared/config";
 import * as firmwareStore from "./services/firmwareStore";
 import * as dfu from "./services/dfu";
 import * as sdcardAssets from "./services/sdcardAssets";
+import * as sdcardJobs from "./services/sdcardJobs";
+import * as flashJobs from "./services/flashJobs";
+
 import { FileSystemApi, UsbApi } from "./types";
 
 export type Context = {
@@ -13,6 +16,8 @@ export type Context = {
   usb: UsbApi;
   fileSystem: FileSystemApi;
   sdcardAssets: typeof sdcardAssets;
+  sdcardJobs: typeof sdcardJobs;
+  flashJobs: typeof flashJobs;
 };
 
 const octokit = new Octokit({
@@ -29,5 +34,7 @@ export const createContext =
     firmwareStore,
     dfu,
     sdcardAssets,
+    flashJobs,
+    sdcardJobs,
     ...extras,
   });

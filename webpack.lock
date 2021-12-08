@@ -1,4 +1,0 @@
-{
-  "https://cdn.jsdelivr.net/npm/web-streams-polyfill@3/dist/ponyfill.es2018.mjs": { "integrity": "sha512-atTB8J0Cduj2bXKdfo5g4i6Us1vZF5NeURzc16iANGe+aQiZEKjNcrNZW0P3nYGq3qUvdhSAYwlfT4I61qi0aA==", "contentType": "application/javascript; charset=utf-8" },
-  "version": 1
-}

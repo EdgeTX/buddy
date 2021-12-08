@@ -1,8 +1,20 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import gql from "graphql-tag";
 import { MockedFunction } from "jest-mock";
 import nock from "nock";
 import { createExecutor } from "test-utils/backend";
+import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
+import nodeAdapter from "native-file-system-adapter/src/adapters/node";
+import { SdcardWriteJob } from "shared/backend/graph/__generated__";
+import tmp from "tmp-promise";
+import { directorySnapshot } from "test-utils/tools";
 
 const requestWritableFolder = jest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -337,5 +349,135 @@ describe("Mutation", () => {
       expect(errors).toBeFalsy();
       expect(data?.pickSdcardFolder).toBeNull();
     });
+  });
+});
+
+const waitForSdcardJobCompleted = async (jobId: string) => {
+  const queue =
+    backend.context.sdcardJobs.jobUpdates.asyncIterator<SdcardWriteJob>(jobId);
+  while (true) {
+    const update = await queue.next();
+    if (!update.done) {
+      const job = update.value;
+      if (job.stages.write.completed || job.cancelled) {
+        return;
+      }
+    }
+  }
+};
+
+describe("Sdcard Job", () => {
+  let tempDir: tmp.DirectoryResult;
+
+  beforeEach(async () => {
+    tempDir = await tmp.dir({ unsafeCleanup: true });
+  });
+
+  afterEach(async () => {
+    await tempDir.cleanup();
+  });
+
+  it("should extract the specified sdcard target and sounds to the desired sdcard", async () => {
+    requestWritableFolder.mockResolvedValue(
+      await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+    );
+
+    const folderRequest = await backend.mutate({
+      mutation: gql`
+        mutation RequestFolder {
+          pickSdcardFolder {
+            id
+            name
+          }
+        }
+      `,
+    });
+
+    const { id: folderId } = folderRequest.data?.pickSdcardFolder as {
+      id: string;
+    };
+
+    const { nockDone } = await nock.back("sdcard-job-jumper-t8.json");
+
+    const createJobRequest = await backend.mutate({
+      mutation: gql`
+        mutation CreateSdcardJob($folderId: ID!) {
+          createSdcardWriteJob(
+            folderId: $folderId
+            target: "jumper-t8"
+            sounds: "cn"
+          ) {
+            id
+          }
+        }
+      `,
+      variables: {
+        folderId,
+      },
+    });
+
+    const jobId = (
+      createJobRequest.data?.createSdcardWriteJob as { id: string } | null
+    )?.id;
+
+    expect(createJobRequest.errors).toBeFalsy();
+
+    expect(jobId).toBeTruthy();
+
+    await waitForSdcardJobCompleted(jobId!);
+    nockDone();
+
+    const { data, errors } = await backend.query({
+      query: gql`
+        query SdcardJobStatus($id: ID!) {
+          sdcardWriteJobStatus(jobId: $id) {
+            cancelled
+            stages {
+              download {
+                started
+                completed
+                progress
+              }
+              erase {
+                started
+                completed
+                progress
+              }
+              write {
+                started
+                completed
+                progress
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        id: jobId,
+      },
+    });
+
+    expect(errors).toBeFalsy();
+    expect(data).toMatchInlineSnapshot(`
+      Object {
+        "sdcardWriteJobStatus": Object {
+          "cancelled": false,
+          "stages": Object {
+            "download": Object {
+              "completed": true,
+              "progress": 100,
+              "started": true,
+            },
+            "erase": null,
+            "write": Object {
+              "completed": true,
+              "progress": 100,
+              "started": true,
+            },
+          },
+        },
+      }
+    `);
+    expect(directorySnapshot(tempDir.path)).toMatchSnapshot();
   });
 });

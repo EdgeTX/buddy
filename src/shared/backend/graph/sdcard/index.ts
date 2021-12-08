@@ -3,13 +3,6 @@ import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
 import { Resolvers, SdcardWriteJob } from "shared/backend/graph/__generated__";
 import config from "shared/config";
-import {
-  cancelSdcardJob,
-  createSdcardJob,
-  getSdcardJob,
-  jobUpdates,
-  startExecution,
-} from "./jobs";
 
 // TODO: Move SD card assets to own module
 
@@ -159,21 +152,22 @@ const resolvers: Resolvers = {
 
       return handle ? { id, name: handle.name } : null;
     },
-    sdcardWriteJobStatus: (_, { jobId }) => getSdcardJob(jobId) ?? null,
+    sdcardWriteJobStatus: (_, { jobId }, { sdcardJobs }) =>
+      sdcardJobs.getSdcardJob(jobId) ?? null,
   },
   Subscription: {
     sdcardWriteJobUpdates: {
-      subscribe: (_, { jobId }) => ({
+      subscribe: (_, { jobId }, { sdcardJobs }) => ({
         [Symbol.asyncIterator]() {
-          return jobUpdates.asyncIterator<SdcardWriteJob>(jobId);
+          return sdcardJobs.jobUpdates.asyncIterator<SdcardWriteJob>(jobId);
         },
       }),
       resolve: (value: SdcardWriteJob) => value,
     },
   },
   Mutation: {
-    cancelSdcardWriteJob: (_, { jobId }) => {
-      const job = getSdcardJob(jobId);
+    cancelSdcardWriteJob: (_, { jobId }, { sdcardJobs }) => {
+      const job = sdcardJobs.getSdcardJob(jobId);
       if (!job) {
         throw new GraphQLError("Job doesnt exist");
       }
@@ -181,7 +175,7 @@ const resolvers: Resolvers = {
       if (job.cancelled) {
         throw new GraphQLError("Job already cancelled");
       }
-      cancelSdcardJob(jobId);
+      sdcardJobs.cancelSdcardJob(jobId);
 
       return null;
     },
@@ -262,11 +256,11 @@ const resolvers: Resolvers = {
         throw new GraphQLError("Couldn't find sound assets url");
       }
 
-      const job = createSdcardJob(
+      const job = context.sdcardJobs.createSdcardJob(
         clean ? ["download", "erase", "write"] : ["download", "write"]
       );
 
-      await startExecution(
+      await context.sdcardJobs.startExecution(
         job.id,
         {
           directoryHandle: directory.handle,

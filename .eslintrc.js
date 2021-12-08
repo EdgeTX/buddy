@@ -57,7 +57,7 @@ module.exports = {
         devDependencies: [
           "**/*.spec.{ts,tsx}",
           "**/*.stories.{ts,tsx}",
-          "**/test-utils.{ts,tsx}",
+          "src/test-utils/**/*",
           "**/.jest/*.{ts,tsx,js}",
           "**/e2e/**/*.{ts,tsx,js}",
           "**/webpack/*.js",
@@ -109,7 +109,7 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.spec.{ts,tsx}", "**/__mocks__/**/*"],
+      files: ["**/*.spec.{ts,tsx}", "**/__mocks__/**/*", "src/test-utils/**/*"],
       env: {
         jest: true,
       },
