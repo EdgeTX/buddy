@@ -11,6 +11,8 @@ import {
   startExecution,
 } from "./jobs";
 
+// TODO: Move SD card assets to own module
+
 const targetsToAssets = [
   { name: "FlySky Nirvana", asset: "nv14.zip" },
   { name: "Jumper T16", asset: "horus.zip" },

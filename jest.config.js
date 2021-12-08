@@ -34,6 +34,6 @@ module.exports = {
   moduleNameMapper: {
     ky: "node-fetch",
   },
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   moduleDirectories: ["node_modules", "src"],
 };

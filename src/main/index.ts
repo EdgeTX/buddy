@@ -170,7 +170,12 @@ const fileSystemApi = (): FileSystemApi => ({
         throw new Error("Directory was not selected");
       }
 
-      return getOriginPrivateDirectory(nodeAdapter, filePath);
+      const handler = await getOriginPrivateDirectory(nodeAdapter, filePath);
+
+      // @ts-expect-error this is allowed because for some reason the name isn't being included in
+      // the node adapter
+      handler.name = filePath;
+      return handler;
     }
     // Should never be called
     throw new Error("Main window was not available");

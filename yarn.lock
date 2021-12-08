@@ -6592,6 +6592,7 @@ __metadata:
     husky: ^7.0.0
     is-ci: ^3.0.1
     jest: ^27.4.3
+    jest-mock: ^27.4.2
     ky: ^0.28.7
     lint-staged: ^12.1.2
     markdown-to-jsx: ^7.1.5

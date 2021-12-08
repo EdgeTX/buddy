@@ -66,7 +66,7 @@ const typeDefs = gql`
 const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
   id:
     device.serialNumber ??
-    `${device.vendorId.toString()}:${device.productId.toString()}`,
+    `${device.vendorId.toString(16)}:${device.productId.toString(16)}`,
   name: device.productName,
 });
 
