@@ -1,0 +1,201 @@
+name: pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        run: yarn --immutable
+
+      - name: Lint
+        run: yarn lint:all
+
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        run: yarn --immutable
+
+      - name: Format
+        run: yarn fmt:check
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        run: yarn --immutable
+
+      - name: Test
+        run: yarn test --coverage
+        env:
+          CI: true
+
+      - name: Publish Coverage
+        uses: codecov/codecov-action@v2
+
+  build:
+    runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: :0
+
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    needs: [test, lint, format]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Install build deps (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y libudev-dev
+
+      - name: Build
+        run: yarn build
+
+      - name: Output
+        uses: actions/upload-artifact@v2
+        if: "!startsWith(github.ref, 'refs/tags/@betaflight/configurator@')"
+        with:
+          path: |
+            packages/configurator/dist/*.snap
+            packages/configurator/dist/*.AppImage
+            packages/configurator/dist/*.msi
+            packages/configurator/dist/*.dmg
+
+      # - name: Setup xvfb (Linux)
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0
+      #     # start xvfb in the background
+      #     sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+      # - name: E2E
+      #   run: yarn e2e:production
+
+      # - name: Upload failure artifacts
+      #   if: ${{ failure() }}
+      #   uses: actions/upload-artifact@v2-preview
+      #   with:
+      #     name: diff
+      #     path: |
+      #       packages/configurator/e2e/output/*.png
+      #       packages/configurator/e2e/output/*.webm
+      #       packages/configurator/e2e/output/trace/*.zip
+      # - name: Preview demo
+      #   id: preview-demo
+      #   if: github.ref != 'refs/heads/master' && matrix.os == 'ubuntu-latest'
+      #   uses: netlify/actions/cli@master
+      #   with:
+      #     args: deploy --dir=packages/configurator/build/renderer
+      #   env:
+      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_ID }}
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+      # - name: Preview demo URL
+      #   if: github.ref != 'refs/heads/master' && matrix.os == 'ubuntu-latest'
+      #   uses: peter-evans/commit-comment@v1
+      #   with:
+      #     body: |
+      #       The configurator has been automatically deployed to Netlify.
+      #       🔍 Inspect: ${{ steps.preview-demo.outputs.NETLIFY_LOGS_URL }}
+      #       ✅ Preview: ${{ steps.preview-demo.outputs.NETLIFY_URL }}?mocked=true
+      # - name: Publish demo
+      #   if: github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest'
+      #   uses: netlify/actions/cli@master
+      #   with:
+      #     args: deploy --dir=packages/configurator/build/renderer --prod
+      #   env:
+      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_ID }}
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: yarn release
+        env:
+          GH_TOKEN: ${{ secrets.github_token }}
