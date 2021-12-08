@@ -1,4 +1,4 @@
-import ky, { DownloadProgress } from "ky";
+import ky, { DownloadProgress } from "ky-universal";
 import { ZipEntry, unzipRaw } from "unzipit";
 import config from "shared/config";
 

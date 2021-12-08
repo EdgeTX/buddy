@@ -1,4 +1,4 @@
-import gql from "gql-tag";
+import gql from "graphql-tag";
 import { GraphQLError } from "graphql";
 import {
   FlashJob,

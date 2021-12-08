@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/no-class */
-import ky from "ky";
+import ky from "ky-universal";
 import { Reader } from "unzipit";
 import config from "shared/config";
 

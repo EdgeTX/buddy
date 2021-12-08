@@ -5836,6 +5836,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"data-uri-to-buffer@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "data-uri-to-buffer@npm:3.0.1"
+  checksum: c59c3009686a78c071806b72f4810856ec28222f0f4e252aa495ec027ed9732298ceea99c50328cf59b151dd34cbc3ad6150bbb43e41fc56fa19f48c99e9fc30
+  languageName: node
+  linkType: hard
+
 "data-urls@npm:^2.0.0":
   version: 2.0.0
   resolution: "data-urls@npm:2.0.0"
@@ -6584,7 +6591,6 @@ __metadata:
     fork-ts-checker-webpack-plugin: ^6.4.2
     get-stream: ^6.0.1
     got: ^11.8.3
-    gql-tag: ^1.0.1
     graphql: ^16.0.1
     graphql-subscriptions: ^2.0.0
     graphql-tag: ^2.12.6
@@ -6594,6 +6600,7 @@ __metadata:
     jest: ^27.4.3
     jest-mock: ^27.4.2
     ky: ^0.28.7
+    ky-universal: ^0.9.1
     lint-staged: ^12.1.2
     markdown-to-jsx: ^7.1.5
     md5: ^2.3.0
@@ -8058,6 +8065,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fetch-blob@npm:^2.1.1":
+  version: 2.1.2
+  resolution: "fetch-blob@npm:2.1.2"
+  peerDependenciesMeta:
+    domexception:
+      optional: true
+  checksum: 22d4487ce78ea4e52b432b0057d8d42922d5d93c0374b0bc2692cebdcb11bf8fac4f6d141b31f1633db1e9212effd38385adbd765a2c7412a621307058499214
+  languageName: node
+  linkType: hard
+
 "fetch-blob@npm:^3.0.0":
   version: 3.1.3
   resolution: "fetch-blob@npm:3.1.3"
@@ -8718,13 +8735,6 @@ __metadata:
     to-readable-stream: ^1.0.0
     url-parse-lax: ^3.0.0
   checksum: 941807bd9704bacf5eb401f0cc1212ffa1f67c6642f2d028fd75900471c221b1da2b8527f4553d2558f3faeda62ea1cf31665f8b002c6137f5de8732f07370b0
-  languageName: node
-  linkType: hard
-
-"gql-tag@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "gql-tag@npm:1.0.1"
-  checksum: 7ae9c9b5170b9e47015f3dbc879374aca10a648aedb0ce8a30a1118539b4bf45b321af4d9211c204dc3bdade89a8138f4c185b8b588ef32e854535148d69ab52
   languageName: node
   linkType: hard
 
@@ -11052,6 +11062,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ky-universal@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "ky-universal@npm:0.9.1"
+  dependencies:
+    abort-controller: ^3.0.0
+    node-fetch: 3.0.0-beta.9
+  peerDependencies:
+    ky: ">=0.26.0"
+    web-streams-polyfill: ">=3.0.1"
+  peerDependenciesMeta:
+    web-streams-polyfill:
+      optional: true
+  checksum: 05f3cab617cc34e8fe93b188fbf71d2c710cccacfb8490a19c9dd4ae89655b389d3b1967a9d4cccdf8777055b03ef1323752fa625380eae3dbd169cd19c8f137
+  languageName: node
+  linkType: hard
+
 "ky@npm:^0.28.7":
   version: 0.28.7
   resolution: "ky@npm:0.28.7"
@@ -12160,6 +12186,16 @@ __metadata:
   version: 2.6.1
   resolution: "node-fetch@npm:2.6.1"
   checksum: 91075bedd57879117e310fbcc36983ad5d699e522edb1ebcdc4ee5294c982843982652925c3532729fdc86b2d64a8a827797a745f332040d91823c8752ee4d7c
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:3.0.0-beta.9":
+  version: 3.0.0-beta.9
+  resolution: "node-fetch@npm:3.0.0-beta.9"
+  dependencies:
+    data-uri-to-buffer: ^3.0.1
+    fetch-blob: ^2.1.1
+  checksum: 586af0910649cb62f1c044ddac41e71c0b0f48133fba406ad5e0fab51baff18f22cd187ea65ef690ceed7386a71910e904348105dc8eae55f907fa94df7e76ca
   languageName: node
   linkType: hard
 

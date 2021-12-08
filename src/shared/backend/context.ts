@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/core";
-import ky from "ky";
+import ky from "ky-universal";
 import config from "shared/config";
 import * as firmwareStore from "./services/firmwareStore";
 import * as dfu from "./services/dfu";

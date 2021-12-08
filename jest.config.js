@@ -1,5 +1,13 @@
 module.exports = {
-  preset: "ts-jest",
+  preset: "ts-jest/presets/default-esm", // or other ESM presets
+  globals: {
+    "ts-jest": {
+      useESM: true,
+    },
+  },
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
   resetMocks: true,
   setupFilesAfterEnv: ["./.jest/setupAfterEnv.ts"],
   testPathIgnorePatterns: [
@@ -19,11 +27,6 @@ module.exports = {
     "!**/*.d.ts",
     "!**/.storybook/**",
     "!src/test-utils/**",
-    // The boostrap worker files are not possible
-    // to compile due to `import.meta.url`
-    "!src/webworker/*.bootstrap.{ts,tsx}",
-    // Top level await import in here
-    "!src/renderer/gql/client.ts",
   ],
   modulePathIgnorePatterns: [
     "<rootDir>/e2e/",
@@ -31,9 +34,7 @@ module.exports = {
     "<rootDir>/dist/",
     "<rootDir>/.*/__mocks__",
   ],
-  moduleNameMapper: {
-    ky: "node-fetch",
-  },
+  coverageProvider: "v8",
   testEnvironment: "jsdom",
   moduleDirectories: ["node_modules", "src"],
 };

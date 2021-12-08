@@ -1,6 +1,6 @@
 import { ZipEntry } from "unzipit";
 import { PubSub } from "graphql-subscriptions";
-import { debounce } from "debounce";
+import debounce from "debounce";
 import pLimit from "p-limit";
 import * as uuid from "uuid";
 import {
