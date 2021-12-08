@@ -112,6 +112,7 @@ export const startExecution = async (
     await flash(jobId, dfuProcess, firmwareData);
   })()
     .then(async () => {
+      jobUpdates.unsubscribe(cancelledListener);
       await dfuProcess?.close().catch(() => {});
       await args.device.close().catch(() => {});
     })
