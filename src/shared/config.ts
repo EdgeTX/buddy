@@ -16,4 +16,14 @@ export default {
   proxyUrl: isElectron ? "" : process.env.PROXY_URL,
   isProduction: PRODUCTION,
   isE2e: E2E,
+  github: {
+    apiKey: process.env.GITHUB_API_KEY,
+    organization: "EdgeTX",
+    repos: {
+      firmware: "edgetx",
+      sdcard: "edgetx-sdcard",
+      sounds: "edgetx-sdcard-sounds",
+      themes: "edgetx-themes",
+    },
+  },
 };

@@ -1,10 +1,10 @@
 overwrite: true
 schema:
-  - "./src/**/graph/**/*.ts"
+  - "./src/shared/backend/graph/**/*.ts"
   - "!**/__generated__/*.ts"
 
 generates:
-  ./src/shared/schema/graph/__generated__/index.ts:
+  ./src/shared/backend/graph/__generated__/index.ts:
     config:
       overwrite: true
       contextType: ../../context#Context

@@ -3,6 +3,7 @@ const WebpackBar = require("webpackbar");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
 const tsconfig = require("../tsconfig.json");
+const webpack = require("webpack");
 const path = require("path");
 
 module.exports = (_, { mode }) => ({
@@ -80,6 +81,17 @@ module.exports = (_, { mode }) => ({
     new WebpackBar({
       name: "main",
       color: "yellow",
+    }),
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify({
+        // If the build env knows the proxy url, use that, otherwise
+        // default to our local cors proxy
+        PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
+        GITHUB_API_KEY: Buffer.from(
+          "Z2hwX2phMzJ1RUNDbmZsUzR1d05jY2FIRzR2N2s0Z1k1QTJwMDVRVQ==",
+          "base64"
+        ).toString(),
+      }),
     }),
     ...(process.env.REPORT
       ? [

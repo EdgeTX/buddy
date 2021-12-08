@@ -4,6 +4,7 @@ import {
   EdgeTxFirmwareBundle,
   Resolvers,
 } from "shared/backend/graph/__generated__";
+import config from "shared/config";
 
 const typeDefs = gql`
   type Query {
@@ -56,8 +57,8 @@ const resolvers: Resolvers = {
       const releasesRequest = await github(
         "GET /repos/{owner}/{repo}/releases",
         {
-          owner: "EdgeTX",
-          repo: "edgetx",
+          owner: config.github.organization,
+          repo: config.github.repos.firmware,
         }
       );
 
@@ -78,8 +79,8 @@ const resolvers: Resolvers = {
       const releaseRequest = await github(
         "GET /repos/{owner}/{repo}/releases/tags/{tag}",
         {
-          owner: "EdgeTX",
-          repo: "edgetx",
+          owner: config.github.organization,
+          repo: config.github.repos.firmware,
           tag: id,
         }
       ).catch((e: { status?: number } | Error) => {
@@ -97,7 +98,7 @@ const resolvers: Resolvers = {
       return {
         id: release.tag_name,
         name: release.name ?? release.tag_name,
-        description: release.body_text,
+        description: release.body,
         isPrerelease: release.prerelease,
         // Will be resolved
         firmwareBundle: {} as EdgeTxFirmwareBundle,

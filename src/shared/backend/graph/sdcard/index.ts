@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
 import { Resolvers, SdcardWriteJob } from "shared/backend/graph/__generated__";
+import config from "shared/config";
 import {
   cancelSdcardJob,
   createSdcardJob,
@@ -111,8 +112,8 @@ const resolvers: Resolvers = {
     sdcardTargets: async (_, __, { github }) => {
       const release = (
         await github("GET /repos/{owner}/{repo}/releases/latest", {
-          owner: "EdgeTX",
-          repo: "edgetx-sdcard",
+          owner: config.github.organization,
+          repo: config.github.repos.sdcard,
         })
       ).data;
 
@@ -130,8 +131,8 @@ const resolvers: Resolvers = {
     sdcardSounds: async (_, __, { github }) => {
       const soundsRelease = (
         await github("GET /repos/{owner}/{repo}/releases/latest", {
-          owner: "EdgeTX",
-          repo: "edgetx-sdcard-sounds",
+          owner: config.github.organization,
+          repo: config.github.repos.sounds,
         })
       ).data;
 
@@ -230,8 +231,8 @@ const resolvers: Resolvers = {
       const [sdcardAssetUrl, soundsAssetUrl] = await Promise.all([
         context
           .github("GET /repos/{owner}/{repo}/releases/latest", {
-            owner: "EdgeTX",
-            repo: "edgetx-sdcard",
+            owner: config.github.organization,
+            repo: config.github.repos.sdcard,
           })
           .then(
             ({ data }) =>
@@ -240,8 +241,8 @@ const resolvers: Resolvers = {
           ),
         context
           .github("GET /repos/{owner}/{repo}/releases/latest", {
-            owner: "EdgeTX",
-            repo: "edgetx-sdcard-sounds",
+            owner: config.github.organization,
+            repo: config.github.repos.sounds,
           })
           .then(
             ({ data }) =>

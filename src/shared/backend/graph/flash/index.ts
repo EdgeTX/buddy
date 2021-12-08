@@ -5,6 +5,8 @@ import {
   FlashableDevice,
   Resolvers,
 } from "shared/backend/graph/__generated__";
+import config from "shared/config";
+
 import {
   cancelJob,
   createJob,
@@ -86,8 +88,8 @@ const resolvers: Resolvers = {
           await context.github(
             "GET /repos/{owner}/{repo}/releases/tags/{tag}",
             {
-              owner: "EdgeTX",
-              repo: "edgetx",
+              owner: config.github.organization,
+              repo: config.github.repos.firmware,
               tag: firmware.version,
             }
           )

@@ -1,11 +1,10 @@
 import { Octokit } from "@octokit/core";
-import ky from "ky-universal";
+import ky from "ky";
+import config from "shared/config";
 import * as firmwareStore from "./services/firmwareStore";
 import * as dfu from "./services/dfu";
 import * as sdcardAssets from "./services/sdcardAssets";
 import { FileSystemApi, UsbApi } from "./types";
-
-const TEST = atob("Z2hwX2phMzJ1RUNDbmZsUzR1d05jY2FIRzR2N2s0Z1k1QTJwMDVRVQ==");
 
 export type Context = {
   github: Octokit["request"];
@@ -17,7 +16,7 @@ export type Context = {
 };
 
 const octokit = new Octokit({
-  auth: TEST,
+  auth: config.github.apiKey,
   request: {
     fetch: ky,
   },
