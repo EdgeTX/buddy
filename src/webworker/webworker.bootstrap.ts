@@ -6,8 +6,8 @@ crossBoundary.showDirectoryPicker.installHandler(worker, async (options) => {
   const handle = await window.showDirectoryPicker(options);
 
   // We can't request permission in the worker context, so do that here
-  await handle.getFileHandle("edgetxflasherpermissions.txt", { create: true });
-  await handle.removeEntry("edgetxflasherpermissions.txt");
+  await handle.getFileHandle(".edgetxbuddypermissions.txt", { create: true });
+  await handle.removeEntry(".edgetxbuddypermissions.txt");
 
   return handle;
 });

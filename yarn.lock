@@ -1298,9 +1298,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@patch:@graphql-codegen/cli@npm:2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79::locator=edgetx-flasher%40workspace%3A.":
+"@graphql-codegen/cli@patch:@graphql-codegen/cli@npm:2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79::locator=edgetx-buddy%40workspace%3A.":
   version: 2.3.0
-  resolution: "@graphql-codegen/cli@patch:@graphql-codegen/cli@npm%3A2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79::version=2.3.0&hash=521ec6&locator=edgetx-flasher%40workspace%3A."
+  resolution: "@graphql-codegen/cli@patch:@graphql-codegen/cli@npm%3A2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79::version=2.3.0&hash=521ec6&locator=edgetx-buddy%40workspace%3A."
   dependencies:
     "@graphql-codegen/core": 2.3.0
     "@graphql-codegen/plugin-helpers": ^2.3.0
@@ -6523,9 +6523,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"edgetx-flasher@workspace:.":
+"edgetx-buddy@workspace:.":
   version: 0.0.0-use.local
-  resolution: "edgetx-flasher@workspace:."
+  resolution: "edgetx-buddy@workspace:."
   dependencies:
     "@ant-design/icons": ^4.7.0
     "@apollo/client": ^3.5.5
