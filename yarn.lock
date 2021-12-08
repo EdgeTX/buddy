@@ -2486,31 +2486,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sozialhelden/fetch-cache@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@sozialhelden/fetch-cache@npm:2.0.1"
-  dependencies:
-    "@sozialhelden/hamster-cache": ^1.0.0
-  checksum: be23e18055e6027f2f255a86b1ea26f734108af3f000478863834536e7080aa89902f8e8bc641cf564577d8ecafbf1abae7e90cf3c4b5479775d7a6f237bd95b
-  languageName: node
-  linkType: hard
-
-"@sozialhelden/fetch-cache@patch:@sozialhelden/fetch-cache@npm:2.0.1#.yarn/patches/@sozialhelden-fetch-cache-npm-2.0.1-c0f4c4173c::locator=edgetx-buddy%40workspace%3A.":
-  version: 2.0.1
-  resolution: "@sozialhelden/fetch-cache@patch:@sozialhelden/fetch-cache@npm%3A2.0.1#.yarn/patches/@sozialhelden-fetch-cache-npm-2.0.1-c0f4c4173c::version=2.0.1&hash=6553d1&locator=edgetx-buddy%40workspace%3A."
-  dependencies:
-    "@sozialhelden/hamster-cache": ^1.0.0
-  checksum: df00fb74bd1592bb92ca1259ea5ef1f22267501c249f4a49d52546ee3a6be5d76502d5a7557b01929326e4afa4bb990656eaf8803e0ee83a5b92182e9ba13e65
-  languageName: node
-  linkType: hard
-
-"@sozialhelden/hamster-cache@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@sozialhelden/hamster-cache@npm:1.0.0"
-  checksum: 019aed8b4de71e87cd3a4a288e71f4010e33422fd243c09c1a20a66a82449c70ef329e7c871e80f25d22ec4d9094561b0d9abfe0d0cd9d0c4c58808d27111fbe
-  languageName: node
-  linkType: hard
-
 "@szmarczak/http-timer@npm:^1.1.2":
   version: 1.1.2
   resolution: "@szmarczak/http-timer@npm:1.1.2"
@@ -2858,6 +2833,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/make-fetch-happen@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@types/make-fetch-happen@npm:9.0.1"
+  dependencies:
+    "@types/node-fetch": ^2.5.12
+    "@types/retry": "*"
+    "@types/ssri": "*"
+  checksum: 464c3353189018e9e53b66c8cb04042a0e56532df6d3783c33bc0446510a46fc502f2decd2c075fa58283edc2bc8a793719b6a253609c88c6ccfac297ac91a55
+  languageName: node
+  linkType: hard
+
 "@types/md5@npm:^2.3.1":
   version: 2.3.1
   resolution: "@types/md5@npm:2.3.1"
@@ -3020,7 +3006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/retry@npm:^0.12.0":
+"@types/retry@npm:*, @types/retry@npm:^0.12.0":
   version: 0.12.1
   resolution: "@types/retry@npm:0.12.1"
   checksum: 5f46b2556053655f78262bb33040dc58417c900457cc63ff37d6c35349814471453ef511af0cec76a540c601296cd2b22f64bab1ab649c0dacc0223765ba876c
@@ -3031,6 +3017,15 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  languageName: node
+  linkType: hard
+
+"@types/ssri@npm:*":
+  version: 7.1.1
+  resolution: "@types/ssri@npm:7.1.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0327eb212a8d52e09f0fe4df5e0f580db9daaf2e03fc9dbbc5c1356c92fd870084588e5b0b9b58546e1a5cae9a825097a74100c463b241f38dafb49043569de3
   languageName: node
   linkType: hard
 
@@ -6553,12 +6548,12 @@ __metadata:
     "@mui/icons-material": ^5.1.1
     "@mui/material": ^5.1.1
     "@octokit/core": ^3.5.1
-    "@sozialhelden/fetch-cache": 2.0.1
     "@testing-library/jest-dom": ^5.11.4
     "@testing-library/react": ^11.1.0
     "@testing-library/user-event": ^12.1.10
     "@types/debounce": ^1.2.1
     "@types/is-ci": ^3.0.0
+    "@types/make-fetch-happen": ^9.0.1
     "@types/md5": ^2.3.1
     "@types/nock": ^11.1.0
     "@types/node": ^16.11.11
@@ -6580,6 +6575,7 @@ __metadata:
     debounce: ^1.2.1
     dfu: ^0.1.5
     directory-tree: ^3.0.1
+    dotenv: ^10.0.0
     electron: ^16.0.4
     electron-builder: ^22.14.5
     electron-devtools-installer: ^3.2.0

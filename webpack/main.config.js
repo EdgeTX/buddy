@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const WebpackBar = require("webpackbar");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -83,13 +84,11 @@ module.exports = (_, { mode }) => ({
       resourceRegExp:
         /cdn.jsdelivr.net\/npm\/web-streams-polyfill@3\/dist\/ponyfill.es2018.mjs/,
     }),
-    new webpack.DefinePlugin({
-      "process.env": JSON.stringify({
-        // If the build env knows the proxy url, use that, otherwise
-        // default to our local cors proxy
-        PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
-        GITHUB_API_KEY: process.env.GITHUB_API_KEY,
-      }),
+    new webpack.EnvironmentPlugin({
+      // If the build env knows the proxy url, use that, otherwise
+      // default to our local cors proxy
+      PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
+      GITHUB_API_KEY: process.env.GITHUB_API_KEY,
     }),
     ...(process.env.REPORT
       ? [

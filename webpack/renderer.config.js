@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -115,12 +116,13 @@ module.exports = (_, { mode }) => ({
       Buffer: ["buffer", "Buffer"],
     }),
     new webpack.DefinePlugin({
-      "process.env": JSON.stringify({
-        // If the build env knows the proxy url, use that, otherwise
-        // default to our local cors proxy
-        PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
-        GITHUB_API_KEY: process.env.GITHUB_API_KEY,
-      }),
+      "process.env": {},
+    }),
+    new webpack.EnvironmentPlugin({
+      // If the build env knows the proxy url, use that, otherwise
+      // default to our local cors proxy
+      PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
+      GITHUB_API_KEY: process.env.GITHUB_API_KEY,
     }),
     new HtmlWebpackPlugin({
       template: "./src/renderer/index.html",

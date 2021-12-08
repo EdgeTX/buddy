@@ -50,7 +50,6 @@
     "@mui/icons-material": "^5.1.1",
     "@mui/material": "^5.1.1",
     "@octokit/core": "^3.5.1",
-    "@sozialhelden/fetch-cache": "2.0.1",
     "abort-controller": "^3.0.0",
     "antd": "^4.17.2",
     "apollo-bus-link": "^0.4.2",
@@ -66,9 +65,7 @@
     "ky-universal": "^0.9.1",
     "markdown-to-jsx": "^7.1.5",
     "md5": "^2.3.0",
-    "native-ext-loader": "^2.3.0",
     "native-file-system-adapter": "^2.0.1",
-    "node-bindings-loader": "^1.5.0",
     "node-fetch": "^2.6.6",
     "p-limit": "^3.1.0",
     "react": "^17.0.2",
@@ -123,6 +120,7 @@
     "@testing-library/user-event": "^12.1.10",
     "@types/debounce": "^1.2.1",
     "@types/is-ci": "^3.0.0",
+    "@types/make-fetch-happen": "^9.0.1",
     "@types/md5": "^2.3.1",
     "@types/nock": "^11.1.0",
     "@types/node": "^16.11.11",
@@ -138,6 +136,7 @@
     "confusing-browser-globals": "^1.0.10",
     "cors-anywhere": "^0.4.4",
     "directory-tree": "^3.0.1",
+    "dotenv": "^10.0.0",
     "electron": "^16.0.4",
     "electron-builder": "^22.14.5",
     "electron-devtools-installer": "^3.2.0",
@@ -161,7 +160,9 @@
     "jest": "^27.4.3",
     "jest-mock": "^27.4.2",
     "lint-staged": "^12.1.2",
+    "native-ext-loader": "^2.3.0",
     "nock": "^13.2.1",
+    "node-bindings-loader": "^1.5.0",
     "prettier": "^2.5.1",
     "range-parser": "^1.2.1",
     "react-dev-utils": "^11.0.4",
@@ -177,7 +178,6 @@
     "webpackbar": "^5.0.2"
   },
   "resolutions": {
-    "@graphql-codegen/cli@2.3.0": "patch:@graphql-codegen/cli@npm:2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79",
-    "@sozialhelden/fetch-cache@2.0.1": "patch:@sozialhelden/fetch-cache@npm:2.0.1#.yarn/patches/@sozialhelden-fetch-cache-npm-2.0.1-c0f4c4173c"
+    "@graphql-codegen/cli@2.3.0": "patch:@graphql-codegen/cli@npm:2.3.0#.yarn/patches/@graphql-codegen-cli-npm-2.3.0-4b6eb70c79"
   }
 }
