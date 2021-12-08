@@ -1,6 +1,7 @@
 import "source-map-support/register";
 import "./polyfills";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import electron, { BrowserWindow, app, dialog, ipcMain } from "electron";
 import path from "path";
 

@@ -15,18 +15,3 @@ declare module "apollo-link-logger" {
 
   export default {} as ApolloLink;
 }
-
-declare module "node-fetch-cache" {
-  import fetch from "node-fetch";
-
-  export class MemoryCache {
-    constructor(args: { ttl: number });
-  }
-
-  export const fetchBuilder = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    withCache: (cache: MemoryCache) => fetch,
-  };
-
-  export default fetch;
-}

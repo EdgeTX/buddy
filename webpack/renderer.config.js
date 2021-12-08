@@ -95,6 +95,7 @@ module.exports = (_, { mode }) => ({
   },
   output: {
     path: `${__dirname}/../build/renderer`,
+    clean: true,
     chunkFormat: "array-push",
     chunkLoading: "jsonp",
     workerChunkLoading: "import-scripts",
@@ -118,10 +119,7 @@ module.exports = (_, { mode }) => ({
         // If the build env knows the proxy url, use that, otherwise
         // default to our local cors proxy
         PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
-        GITHUB_API_KEY: Buffer.from(
-          "Z2hwX2phMzJ1RUNDbmZsUzR1d05jY2FIRzR2N2s0Z1k1QTJwMDVRVQ==",
-          "base64"
-        ).toString(),
+        GITHUB_API_KEY: process.env.GITHUB_API_KEY,
       }),
     }),
     new HtmlWebpackPlugin({

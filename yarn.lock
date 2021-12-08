@@ -1403,18 +1403,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/introspection@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@graphql-codegen/introspection@npm:2.1.0"
-  dependencies:
-    "@graphql-codegen/plugin-helpers": ^2.1.0
-    tslib: ~2.3.0
-  peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: b13e769c4001801b74e5a6a125b7abeceed8b05dccbcb26931f3d85cde4a74d8915d5a0a557d925aaf02921bb87f9958e2b9c0e6f9de6cde854cfa6406a7b884
-  languageName: node
-  linkType: hard
-
 "@graphql-codegen/plugin-helpers@npm:^2.1.0, @graphql-codegen/plugin-helpers@npm:^2.3.0, @graphql-codegen/plugin-helpers@npm:^2.3.1":
   version: 2.3.1
   resolution: "@graphql-codegen/plugin-helpers@npm:2.3.1"
@@ -2498,12 +2486,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sozialhelden/fetch-cache@npm:^2.0.1":
+"@sozialhelden/fetch-cache@npm:2.0.1":
   version: 2.0.1
   resolution: "@sozialhelden/fetch-cache@npm:2.0.1"
   dependencies:
     "@sozialhelden/hamster-cache": ^1.0.0
   checksum: be23e18055e6027f2f255a86b1ea26f734108af3f000478863834536e7080aa89902f8e8bc641cf564577d8ecafbf1abae7e90cf3c4b5479775d7a6f237bd95b
+  languageName: node
+  linkType: hard
+
+"@sozialhelden/fetch-cache@patch:@sozialhelden/fetch-cache@npm:2.0.1#.yarn/patches/@sozialhelden-fetch-cache-npm-2.0.1-c0f4c4173c::locator=edgetx-buddy%40workspace%3A.":
+  version: 2.0.1
+  resolution: "@sozialhelden/fetch-cache@patch:@sozialhelden/fetch-cache@npm%3A2.0.1#.yarn/patches/@sozialhelden-fetch-cache-npm-2.0.1-c0f4c4173c::version=2.0.1&hash=6553d1&locator=edgetx-buddy%40workspace%3A."
+  dependencies:
+    "@sozialhelden/hamster-cache": ^1.0.0
+  checksum: df00fb74bd1592bb92ca1259ea5ef1f22267501c249f4a49d52546ee3a6be5d76502d5a7557b01929326e4afa4bb990656eaf8803e0ee83a5b92182e9ba13e65
   languageName: node
   linkType: hard
 
@@ -6534,7 +6531,6 @@ __metadata:
     "@graphql-codegen/cli": 2.3.0
     "@graphql-codegen/gql-tag-operations": ^1.2.4
     "@graphql-codegen/gql-tag-operations-preset": ^1.2.1
-    "@graphql-codegen/introspection": 2.1.0
     "@graphql-codegen/typescript": ^2.4.1
     "@graphql-codegen/typescript-resolvers": ^2.4.2
     "@graphql-tools/merge": ^8.2.1
@@ -6543,7 +6539,7 @@ __metadata:
     "@mui/icons-material": ^5.1.1
     "@mui/material": ^5.1.1
     "@octokit/core": ^3.5.1
-    "@sozialhelden/fetch-cache": ^2.0.1
+    "@sozialhelden/fetch-cache": 2.0.1
     "@testing-library/jest-dom": ^5.11.4
     "@testing-library/react": ^11.1.0
     "@testing-library/user-event": ^12.1.10
@@ -6561,6 +6557,7 @@ __metadata:
     "@types/wicg-file-system-access": ^2020.9.4
     "@typescript-eslint/eslint-plugin": ^5.6.0
     "@typescript-eslint/parser": ^5.6.0
+    abort-controller: ^3.0.0
     antd: ^4.17.2
     apollo-bus-link: ^0.4.2
     apollo-link-logger: ^2.0.0
