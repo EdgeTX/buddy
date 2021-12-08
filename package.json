@@ -79,6 +79,7 @@
     "unzipit": "^1.3.6",
     "usb": "^1.9.2",
     "uuid": "^8.3.2",
+    "web-streams-polyfill": "^3.2.0",
     "webusb": "^2.2.0"
   },
   "scripts": {
@@ -159,6 +160,7 @@
     "jest": "^27.4.3",
     "jest-mock": "^27.4.2",
     "lint-staged": "^12.1.2",
+    "mem-fs": "^2.2.1",
     "nock": "^13.2.1",
     "prettier": "^2.5.1",
     "range-parser": "^1.2.1",

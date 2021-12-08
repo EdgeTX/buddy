@@ -21,17 +21,13 @@ module.exports = (_, { mode }) => ({
       }),
     ],
   },
-  externals: {
-    bufferutil: "commonjs bufferutil",
-  },
+  externals: [
+    {
+      bufferutil: "commonjs bufferutil",
+    },
+  ],
   experiments: {
     topLevelAwait: true,
-    buildHttp: {
-      allowedUris: [
-        // allowed for web usb stream polyfill for node
-        "https://cdn.jsdelivr.net/",
-      ],
-    },
   },
   node: {
     __filename: false,
@@ -82,6 +78,10 @@ module.exports = (_, { mode }) => ({
     new WebpackBar({
       name: "main",
       color: "yellow",
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp:
+        /cdn.jsdelivr.net\/npm\/web-streams-polyfill@3\/dist\/ponyfill.es2018.mjs/,
     }),
     new webpack.DefinePlugin({
       "process.env": JSON.stringify({
