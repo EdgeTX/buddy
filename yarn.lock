@@ -3589,6 +3589,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"aggregate-error@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "aggregate-error@npm:4.0.0"
+  dependencies:
+    clean-stack: ^4.0.0
+    indent-string: ^5.0.0
+  checksum: 586397769e25fc5c2da5995c736f11ba83adf0bbc5f72c7101ea38e795458fd7b497f672318119218b4d3b1f8b8d3001417cebe9de55b5467af5cbcbff4befa3
+  languageName: node
+  linkType: hard
+
 "ajv-formats@npm:^2.1.1":
   version: 2.1.1
   resolution: "ajv-formats@npm:2.1.1"
@@ -5077,6 +5087,15 @@ __metadata:
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"
   checksum: 2ac8cd2b2f5ec986a3c743935ec85b07bc174d5421a5efc8017e1f146a1cf5f781ae962618f416352103b32c9cd7e203276e8c28241bbe946160cab16149fb68
+  languageName: node
+  linkType: hard
+
+"clean-stack@npm:^4.0.0":
+  version: 4.1.0
+  resolution: "clean-stack@npm:4.1.0"
+  dependencies:
+    escape-string-regexp: 5.0.0
+  checksum: 56fdca7a67a61528676eaddce35442824700b674cf882150ac416824966f65b5e15d4ea02d1d47f4d16ad50213718c1f00ae0f6cca46aeec3fd761b49cf7204f
   languageName: node
   linkType: hard
 
@@ -6608,12 +6627,14 @@ __metadata:
     lint-staged: ^12.1.2
     markdown-to-jsx: ^7.1.5
     md5: ^2.3.0
+    nanoevents: ^6.0.2
     native-ext-loader: ^2.3.0
     native-file-system-adapter: ^2.0.1
     nock: ^13.2.1
     node-bindings-loader: ^1.5.0
     node-fetch: ^2.6.6
     p-limit: ^3.1.0
+    p-map: ^5.3.0
     prettier: ^2.5.1
     range-parser: ^1.2.1
     react: ^17.0.2
@@ -7359,6 +7380,13 @@ __metadata:
   version: 2.0.0
   resolution: "escape-string-regexp@npm:2.0.0"
   checksum: 9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
+  languageName: node
+  linkType: hard
+
+"escape-string-regexp@npm:5.0.0":
+  version: 5.0.0
+  resolution: "escape-string-regexp@npm:5.0.0"
+  checksum: 20daabe197f3cb198ec28546deebcf24b3dbb1a5a269184381b3116d12f0532e06007f4bc8da25669d6a7f8efb68db0758df4cd981f57bc5b57f521a3e12c59e
   languageName: node
   linkType: hard
 
@@ -9404,6 +9432,13 @@ __metadata:
   version: 4.0.0
   resolution: "indent-string@npm:4.0.0"
   checksum: 824cfb9929d031dabf059bebfe08cf3137365e112019086ed3dcff6a0a7b698cb80cf67ccccde0e25b9e2d7527aa6cc1fed1ac490c752162496caba3e6699612
+  languageName: node
+  linkType: hard
+
+"indent-string@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "indent-string@npm:5.0.0"
+  checksum: e466c27b6373440e6d84fbc19e750219ce25865cb82d578e41a6053d727e5520dc5725217d6eb1cc76005a1bb1696a0f106d84ce7ebda3033b963a38583fb3b3
   languageName: node
   linkType: hard
 
@@ -12043,7 +12078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoevents@npm:^6.0.0":
+"nanoevents@npm:^6.0.0, nanoevents@npm:^6.0.2":
   version: 6.0.2
   resolution: "nanoevents@npm:6.0.2"
   checksum: 73d8c8f584b850bae6705820710a20c19be61145a4a6ad3b157caf1fea52d46f48e0d1f1c1452019c0e84869f226debad2245218f0b0c3f9dffb7afc9b42e663
@@ -12787,6 +12822,15 @@ __metadata:
   dependencies:
     aggregate-error: ^3.0.0
   checksum: cb0ab21ec0f32ddffd31dfc250e3afa61e103ef43d957cc45497afe37513634589316de4eb88abdfd969fe6410c22c0b93ab24328833b8eb1ccc087fc0442a1c
+  languageName: node
+  linkType: hard
+
+"p-map@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "p-map@npm:5.3.0"
+  dependencies:
+    aggregate-error: ^4.0.0
+  checksum: 744f47b110a8a4c0a302fcae901abcf4224f269239d14f5f1eb2bf790a96e68146ad1acba0b57d8aeff013d17b2145324d9b56c601284db324fa13816ee155ec
   languageName: node
   linkType: hard
 
