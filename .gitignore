@@ -34,3 +34,4 @@ __generated__
 schema.graphql
 .env
 dist/
+storybook-static/

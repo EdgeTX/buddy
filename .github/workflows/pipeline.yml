@@ -94,6 +94,34 @@ jobs:
       - name: Publish Coverage
         uses: codecov/codecov-action@v2
 
+  storybook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        run: yarn --immutable
+
+      - name: Build
+        run: yarn build-storybook
+
   build:
     runs-on: ${{ matrix.os }}
     env:
@@ -144,10 +172,10 @@ jobs:
         if: "!startsWith(github.ref, 'refs/tags/@betaflight/configurator@')"
         with:
           path: |
-            packages/configurator/dist/*.snap
-            packages/configurator/dist/*.AppImage
-            packages/configurator/dist/*.msi
-            packages/configurator/dist/*.dmg
+            dist/*.snap
+            dist/*.AppImage
+            dist/*.msi
+            dist/*.dmg
 
       # - name: Setup xvfb (Linux)
       #   if: runner.os == 'Linux'
