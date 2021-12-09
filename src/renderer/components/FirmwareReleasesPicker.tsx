@@ -102,16 +102,17 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
           title: "The version of EdgeTX to flash",
           icon: <InfoCircleOutlined />,
         }}
-        help={releasesQuery.error ? "Could not load targets" : undefined}
+        help={releasesQuery.error ? "Could not load releases" : undefined}
         validateStatus={releasesQuery.error ? "error" : undefined}
         required
       >
         <Select
           value={version}
           allowClear={false}
-          placeholder="Select a version"
+          placeholder={
+            releasesQuery.loading ? "Loading releases..." : "Select a version"
+          }
           loading={releasesQuery.loading}
-          showArrow={!releasesQuery.loading}
           disabled={!!releasesQuery.error}
         >
           {sortedReleases.map((r) => (
@@ -136,8 +137,11 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
           value={target}
           allowClear={false}
           loading={releaseTargetsQuery.loading}
-          showArrow={!releaseTargetsQuery.loading}
-          disabled={!selectedFirmware || !!releaseTargetsQuery.error}
+          disabled={
+            !selectedFirmware ||
+            !!releaseTargetsQuery.error ||
+            releaseTargetsQuery.loading
+          }
           placeholder={
             !selectedFirmware
               ? "Select a firmware to see available targets"

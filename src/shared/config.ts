@@ -8,6 +8,8 @@ const isElectron =
     process.release?.name === "node"
   );
 
+const isWebworker = !isElectron && !global.window;
+
 const E2E = process.env.E2E === "true";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
@@ -33,7 +35,9 @@ export default {
       themes: "edgetx-themes",
     },
   },
-  isMocked: isElectron
-    ? process.env.MOCKED === "true"
-    : extractParam("mocked") === "true",
+  isMocked:
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    isElectron || isWebworker
+      ? process.env.MOCKED === "true"
+      : extractParam("mocked") === "true",
 };
