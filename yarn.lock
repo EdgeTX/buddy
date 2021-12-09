@@ -6632,7 +6632,6 @@ __metadata:
     native-file-system-adapter: ^2.0.1
     nock: ^13.2.1
     node-bindings-loader: ^1.5.0
-    node-fetch: ^2.6.6
     p-limit: ^3.1.0
     p-map: ^5.3.0
     prettier: ^2.5.1
@@ -12248,7 +12247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.6":
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.5":
   version: 2.6.6
   resolution: "node-fetch@npm:2.6.6"
   dependencies:

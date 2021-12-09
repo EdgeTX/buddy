@@ -108,7 +108,8 @@ const createWindow = (): void => {
   });
 };
 const startBackend = (): void => {
-  const mocked = process.env.MOCKED === "true" || config.isE2e;
+  const mocked = config.isMocked || config.isE2e;
+  console.log(process.env.MOCKED);
   if (mocked) {
     console.log("Creating backend in mocked mode");
   }
@@ -117,10 +118,14 @@ const startBackend = (): void => {
     registerBus: electronBus(ipcMain),
     executor: createSchemaExecutor({
       schema: backend.schema,
-      context: backend.createContext({
-        fileSystem: fileSystemApi(),
-        usb: usbApi(),
-      }),
+      context: mocked
+        ? backend.createMockContext({
+            fileSystem: fileSystemApi(),
+          })
+        : backend.createContext({
+            fileSystem: fileSystemApi(),
+            usb: usbApi(),
+          }),
     }),
   });
 

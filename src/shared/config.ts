@@ -11,9 +11,12 @@ const isElectron =
 const E2E = process.env.E2E === "true";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
+const extractParam = (key: string): string | null =>
+  new URLSearchParams(window.location.search.slice(1)).get(key);
+
 export default {
   isElectron,
-  proxyUrl: isElectron ? "" : process.env.PROXY_URL,
+  proxyUrl: isElectron ? "" : process.env.PROXY_URL ?? "",
   isProduction: PRODUCTION,
   isE2e: E2E,
   github: {
@@ -26,4 +29,7 @@ export default {
       themes: "edgetx-themes",
     },
   },
+  isMocked: isElectron
+    ? process.env.MOCKED === "true"
+    : extractParam("mocked") === "true",
 };

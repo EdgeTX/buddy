@@ -14,7 +14,7 @@ import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginP
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import { SdcardWriteJob } from "shared/backend/graph/__generated__";
 import tmp from "tmp-promise";
-import { directorySnapshot } from "test-utils/tools";
+import { directorySnapshot, waitForStageCompleted } from "test-utils/tools";
 
 const requestWritableFolder = jest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -355,15 +355,8 @@ describe("Mutation", () => {
 const waitForSdcardJobCompleted = async (jobId: string) => {
   const queue =
     backend.context.sdcardJobs.jobUpdates.asyncIterator<SdcardWriteJob>(jobId);
-  while (true) {
-    const update = await queue.next();
-    if (!update.done) {
-      const job = update.value;
-      if (job.stages.write.completed || job.cancelled) {
-        return;
-      }
-    }
-  }
+
+  return waitForStageCompleted(queue, "write");
 };
 
 describe("Sdcard Job", () => {

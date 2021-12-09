@@ -52,7 +52,6 @@ export const startExecution = async (
     async (updatedJob: FlashJob) => {
       if (updatedJob.cancelled) {
         if (dfuProcess) {
-          console.log("Cancelling dfu process");
           await dfuProcess.close().catch(() => {});
           dfuProcess = undefined;
           await args.device.close().catch(() => {});
@@ -114,6 +113,7 @@ export const startExecution = async (
     .then(async () => {
       jobUpdates.unsubscribe(cancelledListener);
       await dfuProcess?.close().catch(() => {});
+      dfuProcess = undefined;
       await args.device.close().catch(() => {});
     })
     .catch((e) => {
@@ -189,9 +189,9 @@ export const flash = async (
         started: true,
       });
     });
-    process.events.on("erase/process", (progress) => {
+    process.events.on("erase/process", (progress, size) => {
       updateStageStatus(jobId, "erase", {
-        progress: (progress / firmware.byteLength) * 100,
+        progress: (progress / size) * 100,
       });
     });
     process.events.on("erase/end", () => {
@@ -207,9 +207,9 @@ export const flash = async (
         started: true,
       });
     });
-    process.events.on("write/process", (progress) => {
+    process.events.on("write/process", (progress, size) => {
       updateStageStatus(jobId, "flash", {
-        progress: (progress / firmware.byteLength) * 100,
+        progress: (progress / size) * 100,
       });
     });
 

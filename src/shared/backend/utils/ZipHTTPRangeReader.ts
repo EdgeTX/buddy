@@ -19,14 +19,16 @@ export default class ZipHTTPRangeReader implements Reader {
   async getLength(): Promise<number> {
     if (this.length === undefined) {
       const req = await ky(this.url, {
-        prefixUrl: config.proxyUrl,
         method: "HEAD",
-        headers: {
-          "user-agent": fakeUserAgent,
-          // This really doesn't matter, we are just using something which might
-          // help with slow requests
-          Referer: "https://github.com/",
-        },
+        prefixUrl: config.proxyUrl,
+        fetch: (input, init) =>
+          fetch(input, {
+            ...init,
+            headers: {
+              "user-agent": fakeUserAgent,
+              Referer: "https://github.com/",
+            },
+          }),
       });
       if (!req.ok) {
         throw new Error(
@@ -48,12 +50,15 @@ export default class ZipHTTPRangeReader implements Reader {
     }
     const req = await ky(this.url, {
       prefixUrl: config.proxyUrl,
-      headers: {
-        Range: `bytes=${offset}-${offset + size - 1}`,
-        "user-agent": fakeUserAgent,
-        Referer: "https://github.com/",
-      },
-      timeout: 60000,
+      fetch: (input, init) =>
+        fetch(input, {
+          ...init,
+          headers: {
+            Range: `bytes=${offset}-${offset + size - 1}`,
+            "user-agent": fakeUserAgent,
+            Referer: "https://github.com/",
+          },
+        }),
     });
     if (!req.ok) {
       throw new Error(

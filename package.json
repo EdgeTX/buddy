@@ -67,7 +67,6 @@
     "md5": "^2.3.0",
     "nanoevents": "^6.0.2",
     "native-file-system-adapter": "^2.0.1",
-    "node-fetch": "^2.6.6",
     "p-limit": "^3.1.0",
     "p-map": "^5.3.0",
     "react": "^17.0.2",
@@ -83,6 +82,7 @@
   },
   "scripts": {
     "start": "yarn compile:main && yarn start:renderer",
+    "start:mocked": "yarn compile:main && MOCKED=true yarn start:renderer",
     "start:renderer": "webpack-dev-server --hot --mode development --config webpack/renderer.config.js",
     "start:web": "WEB_ONLY=true yarn start:renderer",
     "start:cors": "node cors.js",

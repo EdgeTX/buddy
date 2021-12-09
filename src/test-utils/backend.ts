@@ -8,6 +8,7 @@ import {
 } from "graphql";
 import { createContext, schema, UsbApi, FileSystemApi } from "shared/backend";
 import { Context } from "shared/backend/context";
+import * as dfuApi from "shared/backend/services/dfu";
 
 export type PromiseOrValue<T> = Promise<T> | T;
 
@@ -33,10 +34,12 @@ const getOperationName = (document: DocumentNode): string | undefined =>
 export const createExecutor = ({
   usb = {} as UsbApi,
   fileSystem = {} as FileSystemApi,
+  dfu = {} as typeof dfuApi,
 } = {}): Executor => {
   const contextGenerator = createContext({
     usb,
     fileSystem,
+    dfu,
   });
 
   const executeQuery: QueryFunction = ({ query, variables }) => {
