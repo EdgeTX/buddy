@@ -9213,6 +9213,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"css-loader@npm:^6.5.1":
+  version: 6.5.1
+  resolution: "css-loader@npm:6.5.1"
+  dependencies:
+    icss-utils: ^5.1.0
+    postcss: ^8.2.15
+    postcss-modules-extract-imports: ^3.0.0
+    postcss-modules-local-by-default: ^4.0.0
+    postcss-modules-scope: ^3.0.0
+    postcss-modules-values: ^4.0.0
+    postcss-value-parser: ^4.1.0
+    semver: ^7.3.5
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 5a3bedecb468038f09673d25c32d8db5b0baa6c38820253c54ce4c56c27a2250d5d5b4bace77dd5e20ba0a569604eb759362bab4e3128e7db2229e40857d4aca
+  languageName: node
+  linkType: hard
+
 "css-select-base-adapter@npm:^0.1.1":
   version: 0.1.1
   resolution: "css-select-base-adapter@npm:0.1.1"
@@ -10228,6 +10246,7 @@ __metadata:
     babel-loader: ^8.2.3
     confusing-browser-globals: ^1.0.10
     cors-anywhere: ^0.4.4
+    css-loader: ^6.5.1
     debounce: ^1.2.1
     dfu: ^0.1.5
     directory-tree: ^3.0.1
@@ -10264,6 +10283,7 @@ __metadata:
     lint-staged: ^12.1.2
     markdown-to-jsx: ^7.1.5
     md5: ^2.3.0
+    mini-css-extract-plugin: ^2.4.5
     nanoevents: ^6.0.2
     native-ext-loader: ^2.3.0
     native-file-system-adapter: ^2.0.1
@@ -16773,6 +16793,17 @@ __metadata:
   version: 1.0.1
   resolution: "min-indent@npm:1.0.1"
   checksum: bfc6dd03c5eaf623a4963ebd94d087f6f4bbbfd8c41329a7f09706b0cb66969c4ddd336abeb587bc44bc6f08e13bf90f0b374f9d71f9f01e04adc2cd6f083ef1
+  languageName: node
+  linkType: hard
+
+"mini-css-extract-plugin@npm:^2.4.5":
+  version: 2.4.5
+  resolution: "mini-css-extract-plugin@npm:2.4.5"
+  dependencies:
+    schema-utils: ^4.0.0
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 09ad56ac33fd960c6a645a2a18b0fee22c34c8e48e91fc48acc5ac3b9c101a5e9ea50d168b94c9fcdf571265271f6e4dd4fea835b2242907d4311b170aff322f
   languageName: node
   linkType: hard
 

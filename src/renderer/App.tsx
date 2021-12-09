@@ -6,6 +6,7 @@ import FlashingWizard from "./pages/flash/Wizard";
 import FlashingExecution from "./pages/flash/Execution";
 import SdcardWizard from "./pages/sdcard/Wizard";
 import SdcardWriteExecution from "./pages/sdcard/Execution";
+import Next from "./Next";
 
 const App: React.FC = () => (
   <HashRouter>
@@ -15,6 +16,7 @@ const App: React.FC = () => (
         <Route path="/flash/:jobId" element={<FlashingExecution />} />
         <Route path="/sdcard" element={<SdcardWizard />} />
         <Route path="/sdcard/:jobId" element={<SdcardWriteExecution />} />
+        <Route path="/next" element={<Next />} />
         <Route path="*" element={<>Wow, first new app</>} />
       </Routes>
     </Layout>

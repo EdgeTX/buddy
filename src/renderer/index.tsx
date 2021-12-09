@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import CssBaseline from "@mui/material/CssBaseline";
 import { ApolloProvider } from "@apollo/client";
+import CssBaseline from "@mui/material/CssBaseline";
 import App from "./App";
 import client from "./gql/client";
 

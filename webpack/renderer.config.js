@@ -10,6 +10,7 @@ const webpack = require("webpack");
 const { spawn } = require("child_process");
 const tsconfig = require("../tsconfig.json");
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (_, { mode }) => ({
   target: "es2020",
@@ -49,6 +50,10 @@ module.exports = (_, { mode }) => ({
   },
   module: {
     rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
       {
         test: /\.m?js/,
         resolve: {
@@ -124,6 +129,7 @@ module.exports = (_, { mode }) => ({
       PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
       GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
     }),
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: "./src/renderer/index.html",
     }),

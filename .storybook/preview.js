@@ -1,6 +1,5 @@
-import React from "react";
-import { addDecorator } from "@storybook/react";
-import CssBaseline from "@mui/material/CssBaseline";
+import "antd/dist/antd.variable.min.css";
+import { ConfigProvider } from "antd";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -12,13 +11,6 @@ export const parameters = {
   },
 };
 
-addDecorator((story) => (
-  <>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-    />
-    <CssBaseline />
-    {story()}
-  </>
-));
+export const decorators = [
+  (story) => <ConfigProvider>{story()}</ConfigProvider>,
+];

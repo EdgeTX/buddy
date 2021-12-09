@@ -61,8 +61,8 @@ const FirmwarePicker: React.FC<
 
   const releaseTargetsQuery = useQuery(
     gql(/* GraphQL */ `
-      query ReleaseTargets($tagName: ID!) {
-        edgeTxRelease(id: $tagName) {
+      query ReleaseTargets($releaseId: ID!) {
+        edgeTxRelease(id: $releaseId) {
           id
           firmwareBundle {
             id
@@ -77,7 +77,7 @@ const FirmwarePicker: React.FC<
     {
       skip: !version,
       variables: {
-        tagName: version ?? "",
+        releaseId: version ?? "",
       },
     }
   );

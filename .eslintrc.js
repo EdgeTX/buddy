@@ -109,7 +109,12 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.spec.{ts,tsx}", "**/__mocks__/**/*", "src/test-utils/**/*"],
+      files: [
+        "**/*.spec.{ts,tsx}",
+        "**/__mocks__/**/*",
+        "src/test-utils/**/*",
+        "**/*.stories.{ts,tsx}",
+      ],
       env: {
         jest: true,
       },
