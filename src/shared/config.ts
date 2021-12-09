@@ -20,7 +20,11 @@ export default {
   isProduction: PRODUCTION,
   isE2e: E2E,
   github: {
-    apiKey: process.env.GITHUB_API_KEY,
+    // If you need the API key to record new APIs, change this
+    // line. The github API limits are 50/hour you should be ok
+    // when writing tests
+    apiKey:
+      process.env.NODE_ENV === "test" ? undefined : process.env.GITHUB_API_KEY,
     organization: "EdgeTX",
     repos: {
       firmware: "edgetx",

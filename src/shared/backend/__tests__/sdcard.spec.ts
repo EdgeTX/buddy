@@ -361,6 +361,7 @@ const waitForSdcardJobCompleted = async (jobId: string) => {
 
 describe("Sdcard Job", () => {
   let tempDir: tmp.DirectoryResult;
+  jest.setTimeout(20000);
 
   beforeEach(async () => {
     tempDir = await tmp.dir({ unsafeCleanup: true });
@@ -390,7 +391,9 @@ describe("Sdcard Job", () => {
       id: string;
     };
 
-    const { nockDone } = await nock.back("sdcard-job-jumper-t8.json");
+    const { nockDone } = await nock.back("sdcard-job-jumper-t8-cn.json", {
+      recorder: { enable_reqheaders_recording: true },
+    });
 
     const createJobRequest = await backend.mutate({
       mutation: gql`
