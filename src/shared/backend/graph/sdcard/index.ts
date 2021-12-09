@@ -105,7 +105,6 @@ const typeDefs = gql`
 const resolvers: Resolvers = {
   Query: {
     sdcardTargets: async (_, __, { github }) => {
-      console.log("doing");
       const release = (
         await github("GET /repos/{owner}/{repo}/releases/latest", {
           owner: config.github.organization,
@@ -187,7 +186,6 @@ const resolvers: Resolvers = {
         })
         .catch(() => undefined);
 
-      console.log(handle);
       if (!handle) {
         return null;
       }

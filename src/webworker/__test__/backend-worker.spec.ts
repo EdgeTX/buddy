@@ -2,6 +2,8 @@ import { ApolloClient, gql, InMemoryCache } from "@apollo/client/core";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { createWebWorkerBusLink } from "apollo-bus-link";
 import { MockedFunction } from "jest-mock";
+import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
+import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import nock from "nock";
 // eslint-disable-next-line import/extensions
 import BackendWebWorker from "webworker/backend.worker.ts";
@@ -9,6 +11,7 @@ import {
   showDirectoryPicker,
   requestDevice,
 } from "webworker/crossboundary/functions";
+import tmp from "tmp-promise";
 
 const worker = new BackendWebWorker();
 
@@ -30,7 +33,11 @@ window.showDirectoryPicker = showDirectoryPickerMock;
 const requestDeviceMock = jest.fn() as MockedFunction<
   typeof navigator.usb.requestDevice
 >;
+const getDevicesMock = jest.fn() as MockedFunction<
+  typeof navigator.usb.getDevices
+>;
 navigator.usb.requestDevice = requestDeviceMock;
+navigator.usb.getDevices = getDevicesMock;
 
 beforeEach(() => cache.reset());
 
@@ -56,9 +63,17 @@ describe("Backend Workers", () => {
 
   describe("showDirectoryPicker", () => {
     it("should be called via the crossboudary function when the pickSdcardFolder mutation is fired", async () => {
-      showDirectoryPickerMock.mockResolvedValue({
-        name: "/some/folder/path",
-      } as FileSystemDirectoryHandle);
+      const folder = (await tmp.dir()).path;
+      const handle = await getOriginPrivateDirectory(
+        nodeAdapter,
+        (
+          await tmp.dir()
+        ).path
+      );
+
+      // @ts-expect-error ignore this
+      handle.name = folder;
+      showDirectoryPickerMock.mockResolvedValue(handle);
 
       const { data, errors } = await client.mutate({
         mutation: gql`
@@ -72,9 +87,9 @@ describe("Backend Workers", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.pickSdcardFolder).toEqual({
+      expect(data?.pickSdcardFolder).toMatchObject({
         id: expect.any(String),
-        name: "/some/folder/path",
+        name: folder,
       });
     });
 
@@ -94,6 +109,59 @@ describe("Backend Workers", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.pickSdcardFolder).toBeNull();
+    });
+  });
+
+  describe("requestDevice", () => {
+    it("should be called via the crossboudary function when the requestFlashableDevice mutation is fired", async () => {
+      const devices = [
+        {
+          productName: "Some product",
+          serialNumber: "some-serial-number",
+          vendorId: 123,
+          productId: 567,
+        } as USBDevice,
+      ];
+      requestDeviceMock.mockResolvedValueOnce(devices[0]!);
+      getDevicesMock.mockResolvedValue(devices);
+
+      const { data, errors } = await client.mutate({
+        mutation: gql`
+          mutation RequestDevice {
+            requestFlashableDevice {
+              id
+              name
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.requestFlashableDevice).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "FlashableDevice",
+          "id": "some-serial-number",
+          "name": "Some product",
+        }
+      `);
+    });
+
+    it("should return null if the user doesnt select a device", async () => {
+      requestDeviceMock.mockRejectedValueOnce(new Error("Some error"));
+
+      const { data, errors } = await client.mutate({
+        mutation: gql`
+          mutation RequestDevce {
+            requestFlashableDevice {
+              id
+              name
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.requestFlashableDevice).toBeNull();
     });
   });
 });

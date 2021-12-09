@@ -15,7 +15,6 @@ export const requestDevice = createCrossBoundryFunction<
 export const showDirectoryPicker = createCrossBoundryFunction<
   typeof window.showDirectoryPicker
 >("showDirectoryPicker", async (options) => {
-  console.log("do it");
   const handle = await window.showDirectoryPicker(options);
 
   // We can't request permission in the worker context, so do that here

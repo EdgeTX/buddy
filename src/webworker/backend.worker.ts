@@ -4,17 +4,17 @@ import {
   createBusLinkBackend,
   createSchemaExecutor,
 } from "apollo-bus-link/core";
-import { webWorkerBus } from "apollo-bus-link/dist/cjs/webworker";
-import { createContext, schema } from "shared/backend";
+import { webWorkerBus } from "apollo-bus-link/webworker";
+import { createContext, FileSystemApi, schema, UsbApi } from "shared/backend";
 import { showDirectoryPicker, requestDevice } from "./crossboundary/functions";
 
-const fileSystem = {
-  requestWritableFolder: showDirectoryPicker.call,
+const fileSystem: FileSystemApi = {
+  requestWritableFolder: (options) => showDirectoryPicker.call(self, options),
 };
 
-const usb = {
+const usb: UsbApi = {
   requestDevice: async () => {
-    const pickedDevice = await requestDevice.call({
+    const pickedDevice = await requestDevice.call(self, {
       filters: [],
     });
     const devicesWithPermission = await navigator.usb.getDevices();

@@ -16,7 +16,11 @@ type FunctionRequestType<A extends unknown[]> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const waitForResponse = <T>(requestType: string, requestId: number) =>
+const waitForResponse = <T>(
+  workerSelf: typeof globalThis,
+  requestType: string,
+  requestId: number
+) =>
   new Promise<T>((resolve, reject) => {
     const listener = (message: MessageEvent<unknown>): void => {
       if (
@@ -32,12 +36,12 @@ const waitForResponse = <T>(requestType: string, requestId: number) =>
             reject(response.args.error);
           }
 
-          window.self.removeEventListener("message", listener);
+          workerSelf.removeEventListener("message", listener);
         }
       }
     };
 
-    self.addEventListener("message", listener);
+    workerSelf.addEventListener("message", listener);
   }) as T extends Promise<unknown> ? T : Promise<T>;
 
 let incrementedId = 0;
@@ -65,14 +69,14 @@ export const createCrossBoundryFunction = <
 
   const type = `call${name}`;
   return {
-    call: (...params: Params) => {
+    call: (workerSelf: typeof globalThis, ...params: Params) => {
       const id = getCallId();
-      self.postMessage({
+      workerSelf.postMessage({
         type,
         args: { args: params, id },
       } as FunctionRequestType<Params>);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return waitForResponse<Return>(type, id);
+      return waitForResponse<Return>(workerSelf, type, id);
     },
     listen: (worker: Worker) => {
       worker.addEventListener("message", async (event) => {
