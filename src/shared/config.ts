@@ -14,7 +14,10 @@ const E2E = process.env.E2E === "true";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
 const extractParam = (key: string): string | null =>
-  new URLSearchParams(window.location.search.slice(1)).get(key);
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  !isElectron && !isWebworker
+    ? new URLSearchParams(window.location.search.slice(1)).get(key)
+    : null;
 
 export default {
   isElectron,
@@ -35,9 +38,8 @@ export default {
       themes: "edgetx-themes",
     },
   },
-  isMocked:
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    isElectron || isWebworker
-      ? process.env.MOCKED === "true"
-      : extractParam("mocked") === "true",
+  isMocked: isElectron
+    ? process.env.MOCKED === "true"
+    : extractParam("mocked") === "true",
+  isNewUI: extractParam("next") === "true",
 };

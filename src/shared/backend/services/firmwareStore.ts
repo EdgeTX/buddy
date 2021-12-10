@@ -65,12 +65,16 @@ export const fetchFirmware = async (
   return Buffer.from(await firmwareFile.arrayBuffer());
 };
 
+type LocalFirmware = { id: string; name?: string; data: Buffer };
 const maxNumFirmwares = 4;
-const uploadedFirmware: { id: string; data: Buffer }[] = [];
+const uploadedFirmware: LocalFirmware[] = [];
 
-export const registerFirmware = (firmwareBuffer: Buffer): string => {
+export const registerFirmware = (
+  firmwareBuffer: Buffer,
+  name?: string
+): string => {
   const hash = md5(firmwareBuffer);
-  uploadedFirmware.push({ id: hash, data: firmwareBuffer });
+  uploadedFirmware.push({ id: hash, name, data: firmwareBuffer });
 
   if (uploadedFirmware.length > maxNumFirmwares) {
     uploadedFirmware.shift();
@@ -78,5 +82,5 @@ export const registerFirmware = (firmwareBuffer: Buffer): string => {
   return hash;
 };
 
-export const getLocalFirmwareById = (id: string): Buffer | undefined =>
-  uploadedFirmware.find((firmware) => firmware.id === id)?.data;
+export const getLocalFirmwareById = (id: string): LocalFirmware | undefined =>
+  uploadedFirmware.find((firmware) => firmware.id === id);

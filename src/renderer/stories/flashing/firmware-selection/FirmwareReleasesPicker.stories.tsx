@@ -1,9 +1,9 @@
 import React from "react";
-import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import FirmwareReleasesPicker from "renderer/components/FirmwareReleasesPicker";
-import { gql } from "@apollo/client";
+import { MockedProvider } from "@apollo/client/testing";
+import FirmwareReleasesPicker from "renderer/pages/flash/v2/components/FirmwareReleasesPicker";
 import { action } from "@storybook/addon-actions";
 import { exampleReleasesList, exampleTargetsList } from "test-utils/data";
+import { firmwaresQuery, targetsQuery } from "renderer/stories/flashing/mocks";
 
 export default {
   title: "Flashing/Firmware Selection/FirmwareReleasesPicker",
@@ -18,60 +18,6 @@ export default {
       control: { type: "select" },
     },
   },
-};
-
-const firmwaresQuery: MockedResponse = {
-  request: {
-    query: gql`
-      query Releases {
-        edgeTxReleases {
-          id
-          name
-          isPrerelease
-        }
-      }
-    `,
-  },
-  result: {
-    data: {
-      edgeTxReleases: exampleReleasesList,
-    },
-  },
-  delay: 100,
-};
-
-const targetsQuery: MockedResponse = {
-  request: {
-    query: gql`
-      query ReleaseTargets($releaseId: ID!) {
-        edgeTxRelease(id: $releaseId) {
-          id
-          firmwareBundle {
-            id
-            targets {
-              id
-              name
-            }
-          }
-        }
-      }
-    `,
-    variables: {
-      releaseId: "v2.5.0",
-    },
-  },
-  result: {
-    data: {
-      edgeTxRelease: {
-        id: "",
-        firmwareBundle: {
-          id: "",
-          targets: exampleTargetsList,
-        },
-      },
-    },
-  },
-  delay: 1000,
 };
 
 export const loadSuccessfully: React.FC<

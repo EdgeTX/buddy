@@ -68,9 +68,11 @@ const resolvers: Resolvers = {
       let firmwareData: Buffer | undefined;
       let firmwareBundleUrl: string | undefined;
       if (firmware.version === "local") {
-        firmwareData = context.firmwareStore.getLocalFirmwareById(
+        const localFirmware = context.firmwareStore.getLocalFirmwareById(
           firmware.target
         );
+
+        firmwareData = localFirmware?.data;
 
         if (!firmwareData) {
           throw new GraphQLError("Specified firmware not found");

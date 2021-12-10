@@ -14,7 +14,10 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    registerLocalFirmware(firmwareBase64Data: String!): LocalEdgeTxFirmware!
+    registerLocalFirmware(
+      fileName: String
+      firmwareBase64Data: String!
+    ): LocalEdgeTxFirmware!
   }
 
   type EdgeTxRelease {
@@ -41,6 +44,7 @@ const typeDefs = gql`
 
   type LocalEdgeTxFirmware {
     id: ID!
+    name: String!
     base64Data: String!
   }
 
@@ -110,25 +114,32 @@ const resolvers: Resolvers = {
       };
     },
     localFirmware: (_, { byId }, { firmwareStore }) => {
-      const firmwareData = firmwareStore.getLocalFirmwareById(byId);
+      const file = firmwareStore.getLocalFirmwareById(byId);
 
-      if (!firmwareData) {
+      if (!file) {
         return null;
       }
 
       return {
-        id: byId,
-        base64Data: firmwareData.toString("base64"),
+        id: file.id,
+        name: file.name ?? file.id,
+        base64Data: file.data.toString("base64"),
       };
     },
   },
   Mutation: {
-    registerLocalFirmware: (_, { firmwareBase64Data }, { firmwareStore }) => ({
-      id: firmwareStore.registerFirmware(
-        Buffer.from(firmwareBase64Data, "base64")
-      ),
-      base64Data: firmwareBase64Data,
-    }),
+    registerLocalFirmware: (
+      _,
+      { fileName, firmwareBase64Data },
+      { firmwareStore }
+    ) => {
+      const id = firmwareStore.registerFirmware(
+        Buffer.from(firmwareBase64Data, "base64"),
+        fileName ?? undefined
+      );
+
+      return { id, name: fileName ?? id, base64Data: firmwareBase64Data };
+    },
   },
   EdgeTxRelease: {
     firmwareBundle: (release) => {

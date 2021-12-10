@@ -85,9 +85,6 @@ module.exports = (_, { mode }) => ({
         /cdn.jsdelivr.net\/npm\/web-streams-polyfill@3\/dist\/ponyfill.es2018.mjs/,
     }),
     new webpack.EnvironmentPlugin({
-      // If the build env knows the proxy url, use that, otherwise
-      // default to our local cors proxy
-      PROXY_URL: process.env.PROXY_URL ?? "http://localhost:12000",
       GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
     }),
     ...(process.env.REPORT
