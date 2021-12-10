@@ -12,7 +12,7 @@ export default {
 export const initialRender = () => (
   <MemoryRouter>
     <MockedProvider mocks={[firmwaresQuery, targetsQuery]}>
-      <FirmwareStep />
+      <FirmwareStep stepIndex={0} />
     </MockedProvider>
   </MemoryRouter>
 );

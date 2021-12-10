@@ -55,15 +55,3 @@ export const targetsQuery: MockedResponse = {
   },
   delay: 1000,
 };
-
-export const registerTarget: MockedResponse = {
-  request: {
-    query: gql`
-      mutation RegisterLocalFirmwareWithName($name: String!, $data: String!) {
-        registerLocalFirmware(firmwareBase64Data: $data, fileName: $name) {
-          id
-        }
-      }
-    `,
-  },
-};

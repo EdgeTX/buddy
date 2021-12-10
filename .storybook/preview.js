@@ -1,4 +1,5 @@
 import "antd/dist/antd.variable.min.css";
+import "../src/renderer/Next.css";
 import { ConfigProvider } from "antd";
 
 export const parameters = {
