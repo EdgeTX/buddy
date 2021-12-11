@@ -1,7 +1,11 @@
 import { MockedResponse } from "@apollo/client/testing";
 import gql from "graphql-tag";
 import { times } from "shared/tools";
-import { exampleReleasesList, exampleTargetsList } from "test-utils/data";
+import {
+  exampleDevices,
+  exampleReleasesList,
+  exampleTargetsList,
+} from "test-utils/data";
 
 export const firmwaresQuery: MockedResponse = {
   request: {
@@ -92,6 +96,28 @@ export const firmwareReleaseDescriptionQuery: MockedResponse = {
         id: "v2.5.0",
         description: releaseDescription,
       },
+    },
+  },
+};
+
+export const devicesQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query Devices {
+        flashableDevices {
+          id
+          productName
+          serialNumber
+          vendorId
+          productId
+        }
+      }
+    `,
+  },
+  delay: 200,
+  result: {
+    data: {
+      flashableDevices: exampleDevices,
     },
   },
 };

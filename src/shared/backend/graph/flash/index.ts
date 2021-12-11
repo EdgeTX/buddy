@@ -6,6 +6,7 @@ import {
   Resolvers,
 } from "shared/backend/graph/__generated__";
 import config from "shared/config";
+import { hexString } from "shared/tools";
 
 const typeDefs = gql`
   type Mutation {
@@ -25,7 +26,10 @@ const typeDefs = gql`
 
   type FlashableDevice {
     id: String!
-    name: String
+    productName: String
+    serialNumber: String
+    vendorId: String!
+    productId: String!
   }
 
   type FlashJob {
@@ -58,8 +62,11 @@ const typeDefs = gql`
 const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
   id:
     device.serialNumber ??
-    `${device.vendorId.toString(16)}:${device.productId.toString(16)}`,
-  name: device.productName,
+    `${hexString(device.vendorId)}:${hexString(device.productId)}`,
+  productName: device.productName,
+  serialNumber: device.serialNumber,
+  vendorId: hexString(device.vendorId),
+  productId: hexString(device.productId),
 });
 
 const resolvers: Resolvers = {
@@ -97,10 +104,7 @@ const resolvers: Resolvers = {
       }
 
       const device = (await context.usb.deviceList()).find(
-        ({ vendorId, productId, serialNumber }) =>
-          deviceId.includes(":")
-            ? `${vendorId}:${productId}` === deviceId
-            : deviceId === serialNumber
+        (d) => deviceId === usbDeviceToFlashDevice(d).id
       );
 
       if (!device) {

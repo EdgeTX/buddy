@@ -130,7 +130,7 @@ describe("Backend Workers", () => {
           mutation RequestDevice {
             requestFlashableDevice {
               id
-              name
+              productName
             }
           }
         `,
@@ -141,7 +141,7 @@ describe("Backend Workers", () => {
         Object {
           "__typename": "FlashableDevice",
           "id": "some-serial-number",
-          "name": "Some product",
+          "productName": "Some product",
         }
       `);
     });

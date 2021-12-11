@@ -1,5 +1,7 @@
 import { Steps } from "antd";
 import React, { useState } from "react";
+import config from "shared/config";
+import DeviceSelectionStep from "./DeviceSelectionStep";
 import FirmwareStep from "./FirmwareStep";
 import { Centered } from "./shared";
 import { StepComponent } from "./types";
@@ -17,7 +19,7 @@ const flashSteps = [
   },
   {
     title: "Choose device",
-    component: DummyStep,
+    component: DeviceSelectionStep,
   },
   {
     title: "Confirm",
@@ -49,6 +51,8 @@ const FlashingWizard: React.FC = () => {
       <Component
         stepIndex={current}
         onNext={() => setCurrent((index) => index + 1)}
+        onPrevious={() => setCurrent((index) => index - 1)}
+        variant={config.isElectron ? "electron" : "web"}
       />
     </>
   );

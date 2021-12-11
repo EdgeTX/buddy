@@ -12,6 +12,7 @@ import {
   StepControlsContainer,
   StepContentContainer,
   Centered,
+  FullHeight,
 } from "./shared";
 import FirmwareReleaseDescription from "./components/FirmwareReleaseDescription";
 
@@ -35,19 +36,13 @@ const ReleaseStepContainer = styled.div`
 `;
 
 const ScrollableArea = styled.div`
-  overflow-y: scroll;
+  overflow-y: auto;
   /* TODO: Fix this massive hack */
   height: calc(100vh - 420px);
 `;
 
-const MaxHeight = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
 const FirmwareStep: StepComponent = ({ onNext }) => {
-  const { parseParam, updateParams } = useQueryParams(["version", "target"]);
+  const { parseParam, updateParams } = useQueryParams<"version" | "target">();
   const [activeTab, setActiveTab] = useState<string>("releases");
 
   const version = parseParam("version");
@@ -60,7 +55,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   }, [setActiveTab, target, activeTab]);
 
   return (
-    <MaxHeight>
+    <FullHeight>
       <StepContentContainer>
         <Tabs
           activeKey={activeTab}
@@ -133,6 +128,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
       <StepControlsContainer>
         <Button
           type="primary"
+          size="large"
           onClick={() => {
             if (target && version) {
               onNext?.();
@@ -142,7 +138,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
           Next
         </Button>
       </StepControlsContainer>
-    </MaxHeight>
+    </FullHeight>
   );
 };
 

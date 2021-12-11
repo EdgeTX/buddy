@@ -49,7 +49,7 @@ describe("Query", () => {
           query {
             flashableDevices {
               id
-              name
+              productName
             }
           }
         `,
@@ -61,11 +61,11 @@ describe("Query", () => {
           "flashableDevices": Array [
             Object {
               "id": "012345",
-              "name": "Some device name",
+              "productName": "Some device name",
             },
             Object {
               "id": "012345",
-              "name": "Some other device name",
+              "productName": "Some other device name",
             },
           ],
         }
@@ -91,7 +91,7 @@ describe("Query", () => {
           query {
             flashableDevices {
               id
-              name
+              productName
             }
           }
         `,
@@ -102,12 +102,12 @@ describe("Query", () => {
         Object {
           "flashableDevices": Array [
             Object {
-              "id": "234:567",
-              "name": "Some device name",
+              "id": "0x0234:0x0567",
+              "productName": "Some device name",
             },
             Object {
-              "id": "abc:def",
-              "name": "Some other device name",
+              "id": "0x0ABC:0x0DEF",
+              "productName": "Some other device name",
             },
           ],
         }
@@ -139,7 +139,6 @@ describe("Mutation", () => {
       expect(data?.requestFlashableDevice).toMatchInlineSnapshot(`
         Object {
           "id": "some-serial-number",
-          "name": "Some product",
         }
       `);
     });

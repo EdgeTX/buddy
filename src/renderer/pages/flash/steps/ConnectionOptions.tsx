@@ -21,7 +21,7 @@ const AvailableDevicesQueryDocument = gql(/* GraphQL */ `
   query AvailableDevices {
     flashableDevices {
       id
-      name
+      productName
     }
   }
 `);
@@ -100,7 +100,7 @@ const ConnectionOptions: React.FC<Props> = ({ deviceId, onDeviceSelected }) => {
               onChange={(e) => onDeviceSelected(e.target.value)}
             >
               {availableDevices?.map((device) => (
-                <MenuItem value={device.id}>{device.name}</MenuItem>
+                <MenuItem value={device.id}>{device.productName}</MenuItem>
               ))}
             </Select>
             {availableDevicesQuery.error && (

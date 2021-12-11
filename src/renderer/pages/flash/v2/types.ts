@@ -1,7 +1,10 @@
 import React from "react";
 
-export type StepComponent = React.FC<{
-  onNext?: () => void;
-  onPrevious?: () => void;
-  stepIndex: number;
-}>;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type StepComponent<P = {}> = React.FC<
+  {
+    onNext?: () => void;
+    onPrevious?: () => void;
+    stepIndex: number;
+  } & P
+>;

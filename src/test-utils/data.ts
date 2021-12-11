@@ -133,3 +133,55 @@ export const exampleTargetsList = [
     name: "Radiomaster TX16s",
   },
 ];
+
+export const exampleDevices = [
+  {
+    id: "1",
+    serialNumber: "375897983475",
+    productName: "STEM32 Bootloader",
+    vendorId: "0x3453",
+    productId: "0x4358",
+  },
+  {
+    id: "2",
+    serialNumber: "2435883",
+    productName: "Radio 2",
+    vendorId: "0x5467",
+    productId: "0x4668",
+  },
+  {
+    id: "3",
+    serialNumber: "2435883",
+    productName: "Radio 3",
+    vendorId: "0x5467",
+    productId: "0x4668",
+  },
+  {
+    id: "4",
+    serialNumber: "2435883",
+    productName: "Radio 4",
+    vendorId: "0x5467",
+    productId: "0x4668",
+  },
+  {
+    id: "5",
+    serialNumber: "375897983475",
+    productName: "STEM32 Bootloader 2",
+    vendorId: "0x3453",
+    productId: "0x4358",
+  },
+  {
+    id: "6",
+    serialNumber: "375897983475",
+    productName: "STEM32 Bootloader 3",
+    vendorId: "0x3453",
+    productId: "0x4358",
+  },
+  {
+    id: "6",
+    serialNumber: "375897983475",
+    productName: "STEM32 Bootloader 4",
+    vendorId: "0x3453",
+    productId: "0x4358",
+  },
+];

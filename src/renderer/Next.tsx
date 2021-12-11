@@ -68,7 +68,8 @@ const NextGeneration: React.FC = () => (
         </div>
       </Content>
       <Footer style={{ textAlign: "center", padding: "8px" }}>
-        EdgeTX ©2021
+        Built with ♥ by the EdgeTX contributors -{" "}
+        <a href="https://github.com/freshollie/edgetx-buddy">source</a>
       </Footer>
     </Layout>
   </HashRouter>

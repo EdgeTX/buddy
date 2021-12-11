@@ -15,11 +15,9 @@ type Stage = typeof stages[number];
 
 const FlashingWizard: React.FC = () => {
   const [stage, setStage] = useState<Stage>(stages[0]);
-  const { parseParam, updateParams } = useQueryParams([
-    "version",
-    "target",
-    "deviceId",
-  ]);
+  const { parseParam, updateParams } = useQueryParams<
+    "version" | "target" | "deviceId"
+  >();
   const navigate = useNavigate();
 
   const [registerFirmware] = useMutation(

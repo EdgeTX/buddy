@@ -16,12 +16,9 @@ import useQueryParams from "renderer/hooks/useQueryParams";
 
 const SdcardWizard: React.FC = () => {
   const navigate = useNavigate();
-  const { updateParams, parseParam } = useQueryParams([
-    "target",
-    "sounds",
-    "folder",
-    "clean",
-  ]);
+  const { updateParams, parseParam } = useQueryParams<
+    "target" | "sounds" | "folder" | "clean"
+  >();
 
   const target = parseParam("target");
   const folder = parseParam("folder");

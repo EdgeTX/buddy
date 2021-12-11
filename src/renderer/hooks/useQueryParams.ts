@@ -1,9 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default <K extends string>(initalParamKeys: K[]) => {
-  const [paramKeys] = useState(initalParamKeys);
+export default <K extends string>() => {
   const [params, setParams] = useSearchParams();
   const parseParam = useCallback(
     <T extends typeof String | typeof Boolean | typeof Number = typeof String>(
@@ -34,21 +33,27 @@ export default <K extends string>(initalParamKeys: K[]) => {
 
   return {
     updateParams: useCallback(
-      (newParams: Partial<Record<K, boolean | string | number>>) => {
+      (
+        newParams: Partial<Record<K, boolean | string | number>>,
+        replace?: boolean
+      ) => {
         const newObject = {
-          ...Object.fromEntries(paramKeys.map((key) => [key, parseParam(key)])),
+          ...Object.fromEntries(
+            Array.from(params.keys()).map((key) => [key, params.get(key)])
+          ),
           ...newParams,
         };
         setParams(
           Object.fromEntries(
             Object.entries(newObject).filter(
-              ([, value]) => value !== undefined
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              ([, value]) => value !== undefined && value !== null
             ) as [string, string][]
           ),
-          { replace: true }
+          { replace: replace ?? true }
         );
       },
-      [setParams, paramKeys, parseParam]
+      [setParams, params]
     ),
     setParams,
     parseParam,

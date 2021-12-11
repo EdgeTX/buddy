@@ -27,3 +27,9 @@ export const Centered = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+export const FullHeight = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
