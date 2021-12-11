@@ -17,6 +17,8 @@ type Props = {
   uploadedFile?: { name: string };
 };
 
+const ACCEPTED_TYPES = ["application/macbinary", "application/octet-stream"];
+
 const FirmwareUploadArea: React.FC<Props> = ({
   onFileSelected,
   loading,
@@ -35,7 +37,7 @@ const FirmwareUploadArea: React.FC<Props> = ({
       multiple={false}
       disabled={loadingState}
       beforeUpload={async (file) => {
-        if (file.type === "application/octet-stream") {
+        if (ACCEPTED_TYPES.includes(file.type)) {
           setEncoding(true);
           try {
             onFileSelected({
@@ -66,6 +68,9 @@ const FirmwareUploadArea: React.FC<Props> = ({
     </Upload.Dragger>
   ) : (
     <Result
+      style={{
+        padding: 0,
+      }}
       icon={<PaperClipOutlined />}
       title={uploadedFile.name}
       extra={

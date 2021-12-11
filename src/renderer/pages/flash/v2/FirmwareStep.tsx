@@ -1,12 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, message, Button } from "antd";
+import { Tabs, message, Button, Divider, Typography } from "antd";
 import { RocketOutlined, UploadOutlined } from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import { useMutation, gql, useQuery } from "@apollo/client";
+import styled from "styled-components";
+
 import { StepComponent } from "./types";
 import FirmwareReleasesPicker from "./components/FirmwareReleasesPicker";
 import FirmwareUploadArea from "./components/FirmwareUploadArea";
-import { StepControlsContainer, StepContentContainer } from "./shared";
+import {
+  StepControlsContainer,
+  StepContentContainer,
+  Centered,
+} from "./shared";
+import FirmwareReleaseDescription from "./components/FirmwareReleaseDescription";
+
+const ReleaseStepContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+
+  > * {
+    flex: 1;
+    height: 100%;
+  }
+
+  > :first-child {
+    max-width: 340px;
+  }
+
+  > .divider {
+    flex: 0;
+  }
+`;
+
+const ScrollableArea = styled.div`
+  overflow-y: scroll;
+  /* TODO: Fix this massive hack */
+  height: calc(100vh - 420px);
+`;
+
+const MaxHeight = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
 const FirmwareStep: StepComponent = ({ onNext }) => {
   const { parseParam, updateParams } = useQueryParams(["version", "target"]);
@@ -22,7 +60,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   }, [setActiveTab, target, activeTab]);
 
   return (
-    <>
+    <MaxHeight>
       <StepContentContainer>
         <Tabs
           activeKey={activeTab}
@@ -44,11 +82,25 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
             }
             key="releases"
           >
-            <FirmwareReleasesPicker
-              version={version}
-              target={target}
-              onChanged={updateParams}
-            />
+            <ReleaseStepContainer>
+              <FirmwareReleasesPicker
+                version={version}
+                target={target}
+                onChanged={updateParams}
+              />
+              <Divider className="divider" type="vertical" />
+              {version ? (
+                <ScrollableArea>
+                  <FirmwareReleaseDescription releaseId={version} />
+                </ScrollableArea>
+              ) : (
+                <Centered>
+                  <Typography.Title level={4} type="secondary">
+                    Release notes
+                  </Typography.Title>
+                </Centered>
+              )}
+            </ReleaseStepContainer>
           </Tabs.TabPane>
           <Tabs.TabPane
             tab={
@@ -90,7 +142,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
           Next
         </Button>
       </StepControlsContainer>
-    </>
+    </MaxHeight>
   );
 };
 

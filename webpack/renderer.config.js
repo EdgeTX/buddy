@@ -41,6 +41,7 @@ module.exports = (_, { mode }) => ({
       url: false,
       os: false,
       buffer: false,
+      stream: false,
     },
     plugins: [
       new TsconfigPathsPlugin({
@@ -90,11 +91,11 @@ module.exports = (_, { mode }) => ({
         ],
       },
       {
-        test: /\.(png|jpg|jpeg|gif)$/i,
+        test: /\.(png|jpg|jpeg|gif|webp)$/i,
         type: "asset/inline",
       },
       {
-        test: /\.(ico|gif|eot|otf|webp|ttf|woff|woff2|cur|ani|gltf)(\?.*)?$/,
+        test: /\.(ico|gif|eot|otf|ttf|woff|woff2|cur|ani|gltf)(\?.*)?$/,
         type: "asset/resource",
       },
     ],

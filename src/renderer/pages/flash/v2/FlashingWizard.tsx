@@ -1,6 +1,7 @@
 import { Steps } from "antd";
 import React, { useState } from "react";
 import FirmwareStep from "./FirmwareStep";
+import { Centered } from "./shared";
 import { StepComponent } from "./types";
 
 const { Step } = Steps;
@@ -32,11 +33,18 @@ const FlashingWizard: React.FC = () => {
 
   return (
     <>
-      <Steps current={current} progressDot labelPlacement="vertical">
-        {flashSteps.map((item) => (
-          <Step key={item.title} title={item.title} />
-        ))}
-      </Steps>
+      <Centered>
+        <Steps
+          current={current}
+          progressDot
+          labelPlacement="vertical"
+          style={{ maxWidth: "600px" }}
+        >
+          {flashSteps.map((item) => (
+            <Step key={item.title} title={item.title} />
+          ))}
+        </Steps>
+      </Centered>
 
       <Component
         stepIndex={current}
