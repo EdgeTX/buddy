@@ -18,6 +18,7 @@ const typeDefs = gql`
   type Query {
     flashJobStatus(jobId: ID!): FlashJob
     flashableDevices: [FlashableDevice!]!
+    flashableDevice(id: ID!): FlashableDevice
   }
 
   type Subscription {
@@ -59,15 +60,20 @@ const typeDefs = gql`
   }
 `;
 
+const usbDeviceId = (device: USBDevice): string =>
+  device.serialNumber ??
+  `${hexString(device.vendorId)}:${hexString(device.productId)}`;
+
 const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
-  id:
-    device.serialNumber ??
-    `${hexString(device.vendorId)}:${hexString(device.productId)}`,
+  id: usbDeviceId(device),
   productName: device.productName,
   serialNumber: device.serialNumber,
   vendorId: hexString(device.vendorId),
   productId: hexString(device.productId),
 });
+
+const findDevice = (devices: USBDevice[], id: string): USBDevice | undefined =>
+  devices.find((d) => usbDeviceId(d) === id);
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -103,9 +109,7 @@ const resolvers: Resolvers = {
         }
       }
 
-      const device = (await context.usb.deviceList()).find(
-        (d) => deviceId === usbDeviceToFlashDevice(d).id
-      );
+      const device = findDevice(await context.usb.deviceList(), deviceId);
 
       if (!device) {
         throw new GraphQLError("Device not found");
@@ -160,6 +164,11 @@ const resolvers: Resolvers = {
       flashJobs.getJob(jobId) ?? null,
     flashableDevices: (_, __, { usb }) =>
       usb.deviceList().then((devices) => devices.map(usbDeviceToFlashDevice)),
+    flashableDevice: async (_, { id }, { usb }) => {
+      const device = findDevice(await usb.deviceList(), id);
+
+      return device ? usbDeviceToFlashDevice(device) : null;
+    },
   },
   Subscription: {
     flashJobStatusUpdates: {

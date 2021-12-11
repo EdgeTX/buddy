@@ -4,7 +4,7 @@ import React from "react";
 import { HashRouter } from "react-router-dom";
 import { Layout, Menu, Typography } from "antd";
 import FlashingWizard from "./pages/flash/v2/FlashingWizard";
-import EdgeTxIcon from "./icon.webp";
+import EdgeTxIcon from "./assets/logo.webp";
 
 const { Header, Content, Footer } = Layout;
 

@@ -3,6 +3,7 @@ import { List, Skeleton, Typography } from "antd";
 import React from "react";
 import { times } from "shared/tools";
 import styled, { css } from "styled-components";
+import { Device } from "renderer/pages/flash/v2/types";
 
 type ListItemWithSelectable = React.FC<
   { selected: boolean } & Parameters<typeof List.Item>[0]
@@ -20,14 +21,6 @@ const SelectableItem = styled(List.Item as ListItemWithSelectable)`
     background-color: var(--ant-primary-1);
   }
 `;
-
-type Device = {
-  id: string;
-  productName?: string | null;
-  serialNumber?: string | null;
-  vendorId: string;
-  productId: string;
-};
 
 type Props = {
   devices: Device[];

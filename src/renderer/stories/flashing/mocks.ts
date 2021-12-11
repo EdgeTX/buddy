@@ -121,3 +121,38 @@ export const devicesQuery: MockedResponse = {
     },
   },
 };
+
+export const firmwareReleaseInfoQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query ReleaseInfo($version: ID!, $target: ID!) {
+        edgeTxRelease(id: $version) {
+          id
+          name
+          firmwareBundle {
+            id
+            target(id: $target) {
+              id
+              name
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      version: "v2.5.0",
+      target: "nv-14",
+    },
+  },
+  result: {
+    data: {
+      edgeTxRelease: {
+        ...exampleReleasesList[0],
+        firmwareBundle: {
+          id: "",
+          target: exampleTargetsList[3],
+        },
+      },
+    },
+  },
+};

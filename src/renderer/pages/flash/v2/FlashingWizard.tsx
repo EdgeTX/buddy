@@ -3,14 +3,10 @@ import React, { useState } from "react";
 import config from "shared/config";
 import DeviceSelectionStep from "./DeviceSelectionStep";
 import FirmwareStep from "./FirmwareStep";
+import OverviewStep from "./OverviewStep";
 import { Centered } from "./shared";
-import { StepComponent } from "./types";
 
 const { Step } = Steps;
-
-const DummyStep: StepComponent = ({ stepIndex }) => (
-  <div>Content {stepIndex}</div>
-);
 
 const flashSteps = [
   {
@@ -22,8 +18,8 @@ const flashSteps = [
     component: DeviceSelectionStep,
   },
   {
-    title: "Confirm",
-    component: DummyStep,
+    title: "Overview",
+    component: OverviewStep,
   },
 ];
 
@@ -52,6 +48,7 @@ const FlashingWizard: React.FC = () => {
         stepIndex={current}
         onNext={() => setCurrent((index) => index + 1)}
         onPrevious={() => setCurrent((index) => index - 1)}
+        onRestart={() => setCurrent(0)}
         variant={config.isElectron ? "electron" : "web"}
       />
     </>

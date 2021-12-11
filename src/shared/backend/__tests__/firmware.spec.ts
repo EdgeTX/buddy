@@ -212,6 +212,77 @@ describe("Query", () => {
       nockDone();
     });
   });
+
+  describe("firmwareBundleTarget", () => {
+    it("should return the target details by reading the firmware bundle", async () => {
+      const { nockDone } = await nock.back("firmware-with-targets.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxRelease(id: "v2.5.0") {
+              id
+              name
+              firmwareBundle {
+                target(id: "t8") {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxRelease).toMatchInlineSnapshot(`
+        Object {
+          "firmwareBundle": Object {
+            "target": Object {
+              "id": "t8",
+              "name": "Jumper T8",
+            },
+          },
+          "id": "v2.5.0",
+          "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+        }
+      `);
+      nockDone();
+    });
+
+    it("should return null if the the target doesnt exist in the firmware bundle", async () => {
+      const { nockDone } = await nock.back("firmware-with-targets.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxRelease(id: "v2.5.0") {
+              id
+              name
+              firmwareBundle {
+                target(id: "some-weird-radio-id") {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxRelease).toMatchInlineSnapshot(`
+        Object {
+          "firmwareBundle": Object {
+            "target": null,
+          },
+          "id": "v2.5.0",
+          "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+        }
+      `);
+      nockDone();
+    });
+  });
 });
 
 describe("Mutation", () => {

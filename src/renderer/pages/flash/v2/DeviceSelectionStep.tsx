@@ -101,7 +101,13 @@ const DeviceSelectionStep: StepComponent<{
         icon={<PlusSquareOutlined />}
         type={!devicesAvailable ? "primary" : undefined}
         onClick={() => {
-          void requestDevice();
+          // Select the device after it's been picked, as it's likely
+          // this is what the user wants
+          void requestDevice().then((result) => {
+            if (result.data?.requestFlashableDevice) {
+              updateParams({ deviceId: result.data.requestFlashableDevice.id });
+            }
+          });
         }}
       >
         Add new device
@@ -143,7 +149,7 @@ const DeviceSelectionStep: StepComponent<{
                     }
                     description={
                       variant === "electron"
-                        ? "No devices connected"
+                        ? "No devices found"
                         : "Add a device to get started"
                     }
                   >

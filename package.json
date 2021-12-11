@@ -119,6 +119,7 @@
     "@graphql-codegen/gql-tag-operations": "^1.2.4",
     "@graphql-codegen/gql-tag-operations-preset": "^1.2.1",
     "@graphql-codegen/typescript": "^2.4.1",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^2.1.8",
     "@graphql-codegen/typescript-resolvers": "^2.4.2",
     "@jest/globals": "^27.4.2",
     "@storybook/addon-actions": "^6.4.9",

@@ -52,6 +52,7 @@ const typeDefs = gql`
     id: ID!
     url: String!
     targets: [EdgeTxFirmwareTarget!]!
+    target(id: ID!): EdgeTxFirmwareTarget
   }
 `;
 
@@ -170,6 +171,20 @@ const resolvers: Resolvers = {
             name: target.name,
           }))
         ),
+    target: (firmwareBundle, { id }, { firmwareStore }) =>
+      firmwareStore
+        .firmwareTargets(firmwareBundle.url)
+        .then((firmwareTargets) => {
+          const target = firmwareTargets.find(({ code }) => code === id);
+          return target
+            ? {
+                id: target.code,
+                bundleUrl: firmwareBundle.url,
+                base64Data: "",
+                name: target.name,
+              }
+            : null;
+        }),
   },
   EdgeTxFirmwareTarget: {
     base64Data: async (target, _, { firmwareStore }) => {

@@ -114,6 +114,82 @@ describe("Query", () => {
       `);
     });
   });
+
+  describe("flashableDevice", () => {
+    it("should return the details of the device", async () => {
+      listDevicesMock.mockResolvedValue([
+        {
+          productName: "Some device name",
+          serialNumber: "012345",
+        },
+        {
+          productName: "Some other device name",
+          serialNumber: "56789",
+          vendorId: 0x3240,
+          productId: 0x3243,
+        },
+      ] as USBDevice[]);
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query FlashableDeviceQuery($id: ID!) {
+            flashableDevice(id: $id) {
+              id
+              productName
+              vendorId
+              productId
+              serialNumber
+            }
+          }
+        `,
+        variables: {
+          id: "56789",
+        },
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.flashableDevice).not.toBeNull();
+      expect(data?.flashableDevice).toMatchInlineSnapshot(`
+        Object {
+          "id": "56789",
+          "productId": "0x3243",
+          "productName": "Some other device name",
+          "serialNumber": "56789",
+          "vendorId": "0x3240",
+        }
+      `);
+    });
+
+    it("should return the null if the device doesn't exist", async () => {
+      listDevicesMock.mockResolvedValue([
+        {
+          productName: "Some device name",
+          serialNumber: "012345",
+        },
+        {
+          productName: "Some other device name",
+          serialNumber: "56789",
+        },
+      ] as USBDevice[]);
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query FlashableDeviceQuery($id: ID!) {
+            flashableDevice(id: $id) {
+              id
+              productName
+            }
+          }
+        `,
+        variables: {
+          id: "98765",
+        },
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.flashableDevice).toBeNull();
+    });
+  });
 });
 
 describe("Mutation", () => {

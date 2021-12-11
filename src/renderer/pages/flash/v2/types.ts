@@ -5,6 +5,15 @@ export type StepComponent<P = {}> = React.FC<
   {
     onNext?: () => void;
     onPrevious?: () => void;
+    onRestart?: () => void;
     stepIndex: number;
   } & P
 >;
+
+export type Device = {
+  id: string;
+  productName?: string | null;
+  serialNumber?: string | null;
+  vendorId: string;
+  productId: string;
+};

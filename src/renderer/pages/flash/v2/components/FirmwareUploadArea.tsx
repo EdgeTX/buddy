@@ -1,10 +1,7 @@
-import {
-  InboxOutlined,
-  LoadingOutlined,
-  PaperClipOutlined,
-} from "@ant-design/icons";
-import { Result, Upload, Button, message } from "antd";
+import { InboxOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Upload, Button, message } from "antd";
 import React, { useState } from "react";
+import FirmwareFileSummary from "./FirmwareFileSummary";
 
 type FirmwareFile = {
   name: string;
@@ -67,12 +64,8 @@ const FirmwareUploadArea: React.FC<Props> = ({
       </p>
     </Upload.Dragger>
   ) : (
-    <Result
-      style={{
-        padding: 0,
-      }}
-      icon={<PaperClipOutlined />}
-      title={uploadedFile.name}
+    <FirmwareFileSummary
+      name={uploadedFile.name}
       extra={
         <Button type="default" onClick={() => onFileSelected()}>
           Cancel
