@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import FirmwareStep from "renderer/pages/flash/v2/FirmwareStep";
+import FirmwareStep from "renderer/pages/flash/FirmwareStep";
 import {
   firmwaresQuery,
   targetsQuery,

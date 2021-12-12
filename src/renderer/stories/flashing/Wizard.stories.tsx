@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import FlashingWizard from "renderer/pages/flash/v2/FlashingWizard";
+import FlashingWizard from "renderer/pages/flash/FlashingWizard";
 import {
   devicesQuery,
   firmwareReleaseDescriptionQuery,

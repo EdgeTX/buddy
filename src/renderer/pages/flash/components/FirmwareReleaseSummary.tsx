@@ -1,7 +1,7 @@
 import { Space, Typography } from "antd";
 import React from "react";
 import EdgeTxLogo from "renderer/assets/logo.webp";
-import { Centered } from "renderer/pages/flash/v2/shared";
+import { Centered } from "renderer/pages/flash/shared";
 
 const FirmwareReleaseSummary: React.FC<{
   releaseName: string;

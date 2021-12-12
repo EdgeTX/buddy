@@ -1,7 +1,7 @@
 import { Card } from "antd";
 import React from "react";
-import FirmwareReleaseSummary from "renderer/pages/flash/v2/components/FirmwareReleaseSummary";
-import { Centered } from "renderer/pages/flash/v2/shared";
+import FirmwareReleaseSummary from "renderer/pages/flash/components/FirmwareReleaseSummary";
+import { Centered } from "renderer/pages/flash/shared";
 
 export default {
   title: "Flashing/Overview/FirmwareReleaseSummary",

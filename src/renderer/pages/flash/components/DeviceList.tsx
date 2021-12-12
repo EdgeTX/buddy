@@ -3,7 +3,7 @@ import { List, Skeleton, Typography } from "antd";
 import React from "react";
 import { times } from "shared/tools";
 import styled, { css } from "styled-components";
-import { Device } from "renderer/pages/flash/v2/types";
+import { Device } from "renderer/pages/flash/types";
 
 type ListItemWithSelectable = React.FC<
   { selected: boolean } & Parameters<typeof List.Item>[0]

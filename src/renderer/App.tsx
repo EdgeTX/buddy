@@ -1,8 +1,8 @@
 import React from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
-import FlashingWizard from "./pages/flash/v2/FlashingWizard";
-import FlashExecution from "./pages/flash/v2/FlashExecution";
+import FlashingWizard from "./pages/flash/FlashingWizard";
+import FlashExecution from "./pages/flash/FlashExecution";
 import SdcardWizard from "./pages/sdcard/Wizard";
 import SdcardWriteExecution from "./pages/sdcard/Execution";
 

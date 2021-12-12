@@ -1,6 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
-import FirmwareReleaseDescription from "renderer/pages/flash/v2/components/FirmwareReleaseDescription";
+import FirmwareReleaseDescription from "renderer/pages/flash/components/FirmwareReleaseDescription";
 
 import { firmwareReleaseDescriptionQuery } from "renderer/stories/flashing/mocks";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { MockedProvider } from "@apollo/client/testing";
-import FirmwareReleasesPicker from "renderer/pages/flash/v2/components/FirmwareReleasesPicker";
+import FirmwareReleasesPicker from "renderer/pages/flash/components/FirmwareReleasesPicker";
 import { action } from "@storybook/addon-actions";
 import { exampleReleasesList, exampleTargetsList } from "test-utils/data";
 import { firmwaresQuery, targetsQuery } from "renderer/stories/flashing/mocks";

@@ -1,5 +1,5 @@
 import React from "react";
-import DeviceList from "renderer/pages/flash/v2/components/DeviceList";
+import DeviceList from "renderer/pages/flash/components/DeviceList";
 import { exampleDevices } from "test-utils/data";
 import { action } from "@storybook/addon-actions";
 

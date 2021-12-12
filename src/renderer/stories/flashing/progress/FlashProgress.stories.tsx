@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import FlashProgress from "renderer/pages/flash/v2/components/FlashProgress";
+import FlashProgress from "renderer/pages/flash/components/FlashProgress";
 
 export default {
   title: "Flashing/Progress/FlashProgress",

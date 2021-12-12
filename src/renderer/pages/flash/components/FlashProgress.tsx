@@ -2,6 +2,7 @@ import {
   CloudDownloadOutlined,
   CloudSyncOutlined,
   DeleteOutlined,
+  DoubleRightOutlined,
   LoadingOutlined,
   RocketOutlined,
   RocketTwoTone,
@@ -106,7 +107,7 @@ const stageConfigs: StageConfig[] = [
       post: "New firmware flashed",
       error: "Could not write new firmware to device",
     },
-    Icon: CloudDownloadOutlined,
+    Icon: DoubleRightOutlined,
     showProgess: true,
   },
 ];

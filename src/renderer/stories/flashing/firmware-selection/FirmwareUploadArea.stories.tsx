@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FirmwareUploadArea from "renderer/pages/flash/v2/components/FirmwareUploadArea";
+import FirmwareUploadArea from "renderer/pages/flash/components/FirmwareUploadArea";
 import { action } from "@storybook/addon-actions";
 
 export default {
