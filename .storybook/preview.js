@@ -1,6 +1,7 @@
 import "antd/dist/antd.variable.min.css";
-import "../src/renderer/Next.css";
+import "../src/renderer/index.css";
 import { ConfigProvider } from "antd";
+import { MemoryRouter } from "react-router-dom";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -13,5 +14,9 @@ export const parameters = {
 };
 
 export const decorators = [
-  (story) => <ConfigProvider>{story()}</ConfigProvider>,
+  (story) => (
+    <ConfigProvider>
+      <MemoryRouter>{story()}</MemoryRouter>
+    </ConfigProvider>
+  ),
 ];

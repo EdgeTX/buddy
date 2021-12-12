@@ -47,16 +47,23 @@ export const startExecution = async (
   let firmwareData = args.firmware.data;
   let dfuProcess: WebDFU | undefined;
 
-  const cancelledListener = await jobUpdates.subscribe(
+  const cleanUp = async (): Promise<void> => {
+    if (dfuProcess) {
+      await dfuProcess.close().catch(() => {});
+      dfuProcess = undefined;
+      await args.device.close().catch(() => {});
+    }
+    if (cancelledListener) {
+      jobUpdates.unsubscribe(cancelledListener);
+      cancelledListener = undefined;
+    }
+  };
+
+  let cancelledListener: number | undefined = await jobUpdates.subscribe(
     jobId,
     async (updatedJob: FlashJob) => {
       if (updatedJob.cancelled) {
-        if (dfuProcess) {
-          await dfuProcess.close().catch(() => {});
-          dfuProcess = undefined;
-          await args.device.close().catch(() => {});
-        }
-        jobUpdates.unsubscribe(cancelledListener);
+        await cleanUp();
       }
     }
   );
@@ -110,15 +117,11 @@ export const startExecution = async (
 
     await flash(jobId, dfuProcess, firmwareData);
   })()
-    .then(async () => {
-      jobUpdates.unsubscribe(cancelledListener);
-      await dfuProcess?.close().catch(() => {});
-      dfuProcess = undefined;
-      await args.device.close().catch(() => {});
-    })
     .catch((e) => {
       console.error(e);
-      cancelJob(jobId);
+    })
+    .finally(async () => {
+      await cleanUp();
     });
 };
 

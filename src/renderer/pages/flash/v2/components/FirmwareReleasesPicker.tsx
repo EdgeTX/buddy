@@ -83,6 +83,13 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
     }
   }, [releases, version, onChanged, selectedFirmware]);
 
+  useEffect(() => {
+    if (sortedReleases.length > 0 && !version && !releasesQuery.loading) {
+      // Set the first selected version to the latest version
+      onChanged({ version: sortedReleases[0]?.id, target: undefined });
+    }
+  }, [sortedReleases, version, releasesQuery, onChanged]);
+
   return (
     <Form
       layout="vertical"

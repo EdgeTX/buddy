@@ -1,99 +1,76 @@
 import React from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import CodeIcon from "@mui/icons-material/Code";
-import { Link, useLocation } from "react-router-dom";
-import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
+import { Layout, Menu, Typography } from "antd";
+import { Link } from "react-router-dom";
+import EdgeTxIcon from "./assets/logo.webp";
 
-const drawerWidth = 240;
+const { Header, Content, Footer } = Layout;
 
-const LINKS = [
-  { name: "Flash firmware", icon: <CodeIcon />, to: "/flash" },
-  { name: "Setup SD Card", icon: <DriveFileMoveIcon />, to: "/sdcard" },
-];
-
-const Layout: React.FC = ({ children }) => {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const location = useLocation();
-
-  const handleDrawerToggle = (): void => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const drawer = (
-    <div>
-      <List>
-        {LINKS.map(({ name, icon, to }) => (
-          <ListItemButton
-            selected={location.pathname.startsWith(to)}
-            component={Link}
-            key={name}
-            to={to}
-          >
-            <ListItemIcon>{icon}</ListItemIcon>
-            <ListItemText primary={name} />
-          </ListItemButton>
-        ))}
-      </List>
-    </div>
-  );
-
-  return (
-    <Box sx={{ display: "flex" }} height="100%">
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+const AppLayout: React.FC = ({ children }) => (
+  <Layout style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Header style={{ width: "100%" }}>
+      <div
+        style={{
+          float: "left",
+          marginRight: "16px",
+          width: "150px",
+          height: "100%",
+        }}
       >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            height: "100%",
           }}
         >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        height="100%"
-        sx={{
-          flexGrow: 1,
-          p: 5,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          <img
+            alt="edgetx-logo"
+            src={EdgeTxIcon as string}
+            style={{ height: "40px", marginRight: "8px" }}
+          />
+          <Typography.Title
+            level={3}
+            style={{ color: "white", marginBottom: 0 }}
+          >
+            Buddy
+          </Typography.Title>
+        </div>
+      </div>
+      <Menu theme="dark" mode="horizontal">
+        <Menu.Item key="1">
+          <Link to="/flash">Flash</Link>
+        </Menu.Item>
+        <Menu.Item key="2">
+          <Link to="/sdcard">SD Card</Link>
+        </Menu.Item>
+      </Menu>
+    </Header>
+    <Content
+      className="site-layout"
+      style={{
+        padding: "16px 50px",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div
+        className="site-layout-background"
+        style={{
+          padding: 24,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {children}
-      </Box>
-    </Box>
-  );
-};
+      </div>
+    </Content>
+    <Footer style={{ textAlign: "center", padding: "8px" }}>
+      Built with ♥ by the EdgeTX contributors -{" "}
+      <a href="https://github.com/freshollie/edgetx-buddy">source</a>
+    </Footer>
+  </Layout>
+);
 
-export default Layout;
+export default AppLayout;

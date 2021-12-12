@@ -22,7 +22,6 @@ const ReleaseStepContainer = styled.div`
   height: 100%;
 
   > * {
-    max-width: 600px;
     flex: 1;
     height: 100%;
   }
@@ -38,6 +37,8 @@ const ReleaseStepContainer = styled.div`
 
 const DescriptionContainer = styled.div`
   overflow-y: auto;
+  padding-left: 32px;
+  padding-top: 32px;
   /* TODO: Fix this massive hack */
   height: calc(100vh - 380px);
 `;

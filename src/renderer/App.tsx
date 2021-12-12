@@ -1,26 +1,23 @@
 import React from "react";
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
-import FlashingWizard from "./pages/flash/Wizard";
-
-import FlashingExecution from "./pages/flash/Execution";
+import FlashingWizard from "./pages/flash/v2/FlashingWizard";
+import FlashExecution from "./pages/flash/v2/FlashExecution";
 import SdcardWizard from "./pages/sdcard/Wizard";
 import SdcardWriteExecution from "./pages/sdcard/Execution";
-import Next from "./Next";
 
-const App: React.FC = () => (
+const NextGeneration: React.FC = () => (
   <HashRouter>
     <Layout>
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />
-        <Route path="/flash/:jobId" element={<FlashingExecution />} />
+        <Route path="/flash/:jobId" element={<FlashExecution />} />
         <Route path="/sdcard" element={<SdcardWizard />} />
         <Route path="/sdcard/:jobId" element={<SdcardWriteExecution />} />
-        <Route path="/next" element={<Next />} />
-        <Route path="*" element={<>Wow, first new app</>} />
+        <Route path="*" element={<Navigate replace to="/flash" />} />
       </Routes>
     </Layout>
   </HashRouter>
 );
 
-export default App;
+export default NextGeneration;

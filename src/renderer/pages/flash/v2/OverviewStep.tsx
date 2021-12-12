@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
-import { useQuery, gql } from "@apollo/client";
-import { Card, Skeleton, Button, Space, Typography } from "antd";
+import { useQuery, gql, useMutation } from "@apollo/client";
+import { Card, Skeleton, Button, Space, Typography, message } from "antd";
 import styled from "styled-components";
 import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { StepComponent } from "./types";
 
 import { Centered, FullHeight } from "./shared";
@@ -30,6 +31,7 @@ const Container = styled.div`
 
 const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
   const { parseParam } = useQueryParams<"deviceId" | "target" | "version">();
+  const navigate = useNavigate();
 
   const deviceId = parseParam("deviceId");
   const target = parseParam("target");
@@ -41,6 +43,16 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
       onRestart?.();
     }
   }, [invalidState, onRestart]);
+
+  const [createFlashJob, { loading: creatingJob }] = useMutation(
+    gql(/* GraphQL */ `
+      mutation CreateFlashJob($firmware: FlashFirmwareInput!, $deviceId: ID!) {
+        createFlashJob(firmware: $firmware, deviceId: $deviceId) {
+          id
+        }
+      }
+    `)
+  );
 
   if (invalidState) {
     return null;
@@ -84,11 +96,37 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                 <Button
                   size="large"
                   type="primary"
+                  disabled={creatingJob}
                   icon={<PlayCircleOutlined />}
+                  onClick={() => {
+                    createFlashJob({
+                      variables: { firmware: { target, version }, deviceId },
+                    })
+                      .then((jobCreateResult) => {
+                        if (jobCreateResult.data) {
+                          navigate(
+                            `/flash/${jobCreateResult.data.createFlashJob.id}`
+                          );
+                        } else {
+                          throw new Error(
+                            jobCreateResult.errors
+                              ?.map((error) => error.message)
+                              .join(",") ?? ""
+                          );
+                        }
+                      })
+                      .catch((e: Error) => {
+                        void message.error(
+                          `Could not create job: ${e.message}`
+                        );
+                      });
+                  }}
                 >
                   Start
                 </Button>
-                <Button onClick={onPrevious}>Go back</Button>
+                <Button onClick={onPrevious} disabled={creatingJob}>
+                  Go back
+                </Button>
               </Space>
             </Centered>
           </FullHeight>
