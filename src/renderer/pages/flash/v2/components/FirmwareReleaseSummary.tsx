@@ -15,10 +15,14 @@ const FirmwareReleaseSummary: React.FC<{
         alt="EdgeTX logo"
       />
     </Centered>
-    <div>
-      <Typography.Title level={4}>{releaseName}</Typography.Title>
-      <Typography.Text type="secondary">{targetName}</Typography.Text>
-    </div>
+    <Centered>
+      <Typography.Title style={{ textAlign: "center" }} level={4}>
+        {releaseName}
+      </Typography.Title>
+      <Typography.Text style={{ textAlign: "center" }} type="secondary">
+        {targetName}
+      </Typography.Text>
+    </Centered>
   </Space>
 );
 

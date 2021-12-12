@@ -1,19 +1,130 @@
 import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import { useQuery, gql } from "@apollo/client";
-import { Card, Skeleton, Button, Space } from "antd";
+import { Card, Skeleton, Button, Space, Typography } from "antd";
 import styled from "styled-components";
-import { PlayCircleOutlined } from "@ant-design/icons";
+import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { StepComponent } from "./types";
 
-import {
-  Centered,
-  FullHeight,
-  StepContentContainer,
-  StepControlsContainer,
-} from "./shared";
+import { Centered, FullHeight } from "./shared";
 import FirmwareReleaseSummary from "./components/FirmwareReleaseSummary";
 import FirmwareFileSummary from "./components/FirmwareFileSummary";
+import DeviceSummary from "./components/DeviceSummary";
+
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  max-height: 300px;
+  width: 100%;
+
+  > * {
+    flex: 1;
+  }
+
+  margin-top: 32px;
+  margin-bottom: 32px;
+`;
+
+const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
+  const { parseParam } = useQueryParams<"deviceId" | "target" | "version">();
+
+  const deviceId = parseParam("deviceId");
+  const target = parseParam("target");
+  const version = parseParam("version");
+
+  const invalidState = !deviceId || !target || !version;
+  useEffect(() => {
+    if (invalidState) {
+      onRestart?.();
+    }
+  }, [invalidState, onRestart]);
+
+  if (invalidState) {
+    return null;
+  }
+
+  return (
+    <FullHeight>
+      <Centered style={{ height: "100%" }}>
+        <Card
+          bodyStyle={{
+            height: "100%",
+          }}
+          style={{
+            margin: "16px",
+            height: "100%",
+            width: "100%",
+            maxWidth: "800px",
+          }}
+        >
+          <FullHeight style={{ width: "100%" }}>
+            <Centered style={{ textAlign: "center" }}>
+              <Typography.Title level={5}>
+                You&apos;re all set!
+              </Typography.Title>
+              <Typography.Text style={{ maxWidth: "400px" }}>
+                Please check everything is correct before proceeding. Flashing
+                can take a few minutes so please be patient
+              </Typography.Text>
+            </Centered>
+            <Centered style={{ height: "100%" }}>
+              <Container>
+                <FirmwareSummary target={target} version={version} />
+                <DoubleRightOutlined
+                  style={{ fontSize: "24px", marginTop: "64px" }}
+                />
+                <Device deviceId={deviceId} />
+              </Container>
+            </Centered>
+            <Centered>
+              <Space>
+                <Button
+                  size="large"
+                  type="primary"
+                  icon={<PlayCircleOutlined />}
+                >
+                  Start
+                </Button>
+                <Button onClick={onPrevious}>Go back</Button>
+              </Space>
+            </Centered>
+          </FullHeight>
+        </Card>
+      </Centered>
+    </FullHeight>
+  );
+};
+
+const Device: React.FC<{ deviceId: string }> = ({ deviceId }) => {
+  const { loading, data } = useQuery(
+    gql(/* GraphQL */ `
+      query DeviceInfo($deviceId: ID!) {
+        flashableDevice(id: $deviceId) {
+          id
+          productName
+          serialNumber
+          vendorId
+          productId
+        }
+      }
+    `),
+    {
+      variables: {
+        deviceId,
+      },
+    }
+  );
+
+  return (
+    <DeviceSummary
+      loading={loading}
+      device={data?.flashableDevice ?? undefined}
+    />
+  );
+};
 
 const FirmwareSummary: React.FC<{ target: string; version: string }> = ({
   target,
@@ -90,72 +201,6 @@ const FirmwareSummary: React.FC<{ target: string; version: string }> = ({
     <FirmwareFileSummary
       name={firmwareFileQuery.data?.localFirmware?.name ?? "Unknown"}
     />
-  );
-};
-
-const Container = styled.div`
-  display: flex;
-  height: 100%;
-  flex-direction: row;
-  justify-content: space-between;
-  max-width: 1200px;
-  max-height: 300px;
-
-  > * {
-    max-width: 400px;
-    flex: 1;
-  }
-
-  margin-bottom: 16px;
-`;
-
-const OverviewStep: StepComponent = ({ onRestart }) => {
-  const { parseParam } = useQueryParams<"deviceId" | "target" | "version">();
-
-  const deviceId = parseParam("deviceId");
-  const target = parseParam("target");
-  const version = parseParam("version");
-
-  const invalidState = !deviceId || !target || !version;
-  useEffect(() => {
-    if (invalidState) {
-      onRestart?.();
-    }
-  }, [invalidState, onRestart]);
-
-  if (invalidState) {
-    return null;
-  }
-
-  return (
-    <FullHeight>
-      <StepContentContainer>
-        <FullHeight>
-          <Container>
-            <Card
-              bodyStyle={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              style={{ height: "100%" }}
-            >
-              <FirmwareSummary target={target} version={version} />
-            </Card>
-          </Container>
-        </FullHeight>
-      </StepContentContainer>
-      <StepControlsContainer>
-        <Space>
-          <Button type="primary" icon={<PlayCircleOutlined />}>
-            Start
-          </Button>
-          <Button>Previous</Button>
-        </Space>
-      </StepControlsContainer>
-    </FullHeight>
   );
 };
 

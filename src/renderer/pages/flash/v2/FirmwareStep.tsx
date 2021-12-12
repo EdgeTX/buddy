@@ -38,7 +38,7 @@ const ReleaseStepContainer = styled.div`
 const ScrollableArea = styled.div`
   overflow-y: auto;
   /* TODO: Fix this massive hack */
-  height: calc(100vh - 420px);
+  height: calc(100vh - 435px);
 `;
 
 const FirmwareStep: StepComponent = ({ onNext }) => {

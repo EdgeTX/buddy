@@ -1,24 +1,25 @@
-import { Card } from "antd";
 import React from "react";
 import styled from "styled-components";
 
 export const StepControlsContainer: React.FC = ({ children }) => (
-  <div style={{ marginTop: "24px" }}>{children}</div>
+  <div
+    style={{
+      marginTop: "16px",
+    }}
+  >
+    {children}
+  </div>
 );
 
 export const StepContentContainer: React.FC = ({ children }) => (
-  <Card
+  <div
     style={{
-      height: "100%",
-      margin: "16px",
-    }}
-    bodyStyle={{
       height: "100%",
       padding: "16px",
     }}
   >
     {children}
-  </Card>
+  </div>
 );
 
 export const Centered = styled.div`

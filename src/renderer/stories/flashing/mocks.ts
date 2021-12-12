@@ -122,6 +122,31 @@ export const devicesQuery: MockedResponse = {
   },
 };
 
+export const deviceQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query DeviceInfo($deviceId: ID!) {
+        flashableDevice(id: $deviceId) {
+          id
+          productName
+          serialNumber
+          vendorId
+          productId
+        }
+      }
+    `,
+    variables: {
+      deviceId: "1",
+    },
+  },
+  delay: 200,
+  result: {
+    data: {
+      flashableDevice: exampleDevices[4],
+    },
+  },
+};
+
 export const firmwareReleaseInfoQuery: MockedResponse = {
   request: {
     query: gql`

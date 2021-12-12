@@ -69,6 +69,7 @@ const DeviceSelectionStep: StepComponent<{
     `),
     {
       refetchQueries: [DevicesQuery],
+      awaitRefetchQueries: true,
     }
   );
 
