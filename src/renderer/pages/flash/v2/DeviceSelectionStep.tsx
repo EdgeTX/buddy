@@ -123,7 +123,7 @@ const DeviceSelectionStep: StepComponent<{
             Available devices ({data?.flashableDevices.length ?? 0})
           </Typography.Text>
 
-          <Card>
+          <Card style={{ height: "100%" }} bodyStyle={{ height: "100%" }}>
             <DeviceSelectionArea>
               {loading || devicesAvailable ? (
                 <DeviceList
