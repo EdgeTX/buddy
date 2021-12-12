@@ -36,7 +36,7 @@ export const downloadContents = async (
   const assets = await Promise.all(
     assetUrls.map(async (assetUrl, i) => {
       // In browser, we can use ky, as it uses fetch under the hood
-      if (!config.isElectron) {
+      if (!config.isMain) {
         return ky(assetUrl, {
           prefixUrl: config.proxyUrl,
           onDownloadProgress: (progress) => {
