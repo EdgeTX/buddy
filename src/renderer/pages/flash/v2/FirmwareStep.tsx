@@ -22,6 +22,7 @@ const ReleaseStepContainer = styled.div`
   height: 100%;
 
   > * {
+    max-width: 600px;
     flex: 1;
     height: 100%;
   }
@@ -35,7 +36,7 @@ const ReleaseStepContainer = styled.div`
   }
 `;
 
-const ScrollableArea = styled.div`
+const DescriptionContainer = styled.div`
   overflow-y: auto;
   /* TODO: Fix this massive hack */
   height: calc(100vh - 380px);
@@ -77,7 +78,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
             }
             key="releases"
           >
-            <ReleaseStepContainer>
+            <ReleaseStepContainer style={{ justifyContent: "space-around" }}>
               <FirmwareReleasesPicker
                 version={version}
                 target={target}
@@ -85,9 +86,9 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               />
               <Divider className="divider" type="vertical" />
               {version ? (
-                <ScrollableArea>
+                <DescriptionContainer>
                   <FirmwareReleaseDescription releaseId={version} />
-                </ScrollableArea>
+                </DescriptionContainer>
               ) : (
                 <Centered>
                   <Typography.Title level={4} type="secondary">
