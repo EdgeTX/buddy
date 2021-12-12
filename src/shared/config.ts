@@ -1,25 +1,26 @@
 // TODO: fix the types for these, use separate tsconfigs for different envs
 const isElectron =
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  !!global.window?.ipcRenderer ||
-  !!(
-    typeof process !== "undefined" &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    process.release?.name === "node"
-  );
+  !!global.window?.ipcRenderer;
 
-const isWebworker = !isElectron && !global.window;
+const isMain = !!(
+  typeof process !== "undefined" &&
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  process.release?.name === "node"
+);
+
+const isWebworker = (!isMain && !global.window) as boolean;
 
 const E2E = process.env.E2E === "true";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
 const extractParam = (key: string): string | null =>
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  !isElectron && !isWebworker
+  !isMain && !isWebworker
     ? new URLSearchParams(window.location.search.slice(1)).get(key)
     : null;
 
 export default {
+  isMain,
   isElectron,
   proxyUrl: isElectron ? "" : process.env.PROXY_URL ?? "",
   isProduction: PRODUCTION,
@@ -38,7 +39,7 @@ export default {
       themes: "edgetx-themes",
     },
   },
-  isMocked: isElectron
+  isMocked: isMain
     ? process.env.MOCKED === "true"
     : extractParam("mocked") === "true",
   isNewUI: extractParam("next") === "true",
