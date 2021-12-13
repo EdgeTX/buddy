@@ -1,11 +1,11 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
-import FirmwareReleaseDescription from "renderer/pages/flash/components/FirmwareReleaseDescription";
+import FirmwareReleaseDescription from "renderer/pages/flash/steps/firmware/FirmwareReleaseDescription";
 
 import { firmwareReleaseDescriptionQuery } from "renderer/stories/flashing/mocks";
 
 export default {
-  title: "Flashing/Firmware Selection/FirmwareReleaseDescription",
+  title: "Flashing/steps/Firmware Selection/FirmwareReleaseDescription",
   component: FirmwareReleaseDescription,
 };
 

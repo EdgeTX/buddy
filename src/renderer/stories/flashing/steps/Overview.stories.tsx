@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import OverviewStep from "renderer/pages/flash/OverviewStep";
+import OverviewStep from "renderer/pages/flash/steps/OverviewStep";
 import {
   deviceQuery,
   firmwareReleaseInfoQuery,

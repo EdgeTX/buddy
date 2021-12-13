@@ -1,9 +1,14 @@
+/**
+ * TODO: add step index to the query params so
+ * that navigation back and forth can be done with
+ * native history
+ */
 import { Steps } from "antd";
 import React, { useState } from "react";
 import config from "shared/config";
-import DeviceSelectionStep from "./DeviceSelectionStep";
-import FirmwareStep from "./FirmwareStep";
-import OverviewStep from "./OverviewStep";
+import DeviceSelectionStep from "./steps/DeviceSelectionStep";
+import FirmwareSelectionStep from "./steps/FirmwareSelectionStep";
+import OverviewStep from "./steps/OverviewStep";
 import { Centered } from "./shared";
 
 const { Step } = Steps;
@@ -11,7 +16,7 @@ const { Step } = Steps;
 const flashSteps = [
   {
     title: "Select a firmware",
-    component: FirmwareStep,
+    component: FirmwareSelectionStep,
   },
   {
     title: "Choose device",

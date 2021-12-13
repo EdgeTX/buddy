@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, message, Button, Divider, Typography } from "antd";
+import { Tabs, Button, Divider, Typography } from "antd";
 import { RocketOutlined, UploadOutlined } from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
-import { useMutation, gql, useQuery } from "@apollo/client";
 import styled from "styled-components";
 
-import { StepComponent } from "./types";
-import FirmwareReleasesPicker from "./components/FirmwareReleasesPicker";
-import FirmwareUploadArea from "./components/FirmwareUploadArea";
+import { StepComponent } from "renderer/pages/flash/types";
 import {
   StepControlsContainer,
   StepContentContainer,
   Centered,
   FullHeight,
-} from "./shared";
-import FirmwareReleaseDescription from "./components/FirmwareReleaseDescription";
+} from "renderer/pages/flash/shared";
+import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
+import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
+import FirmwareUploader from "./firmware/FirmwareUploader";
 
 const ReleaseStepContainer = styled.div`
   display: flex;
@@ -141,89 +140,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Button>
       </StepControlsContainer>
     </FullHeight>
-  );
-};
-
-type FirmwareUploaderProps = {
-  onFileUploaded: (fileId?: string) => void;
-  selectedFile?: string;
-};
-
-const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
-  onFileUploaded,
-  selectedFile,
-}) => {
-  const { data, loading } = useQuery(
-    gql(/* GraphQL */ `
-      query LocalFirmwareInfo($fileId: ID!) {
-        localFirmware(byId: $fileId) {
-          id
-          name
-        }
-      }
-    `),
-    {
-      variables: {
-        fileId: selectedFile ?? "",
-      },
-      skip: !selectedFile,
-    }
-  );
-
-  const [registerFirmware, { loading: uploading }] = useMutation(
-    gql(/* GraphQL */ `
-      mutation RegisterLocalFirmwareWithName($name: String!, $data: String!) {
-        registerLocalFirmware(firmwareBase64Data: $data, fileName: $name) {
-          id
-          name
-        }
-      }
-    `)
-  );
-
-  const firmwareInfo = data?.localFirmware;
-
-  useEffect(() => {
-    if (selectedFile && !loading && !firmwareInfo) {
-      // Deselect the file
-      onFileUploaded(undefined);
-    }
-  }, [selectedFile, loading, onFileUploaded, firmwareInfo]);
-
-  return (
-    <div
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <FirmwareUploadArea
-        loading={loading || uploading}
-        uploadedFile={firmwareInfo ?? undefined}
-        onFileSelected={(file) => {
-          if (file) {
-            void registerFirmware({
-              variables: {
-                name: file.name,
-                data: file.base64Data,
-              },
-            })
-              .then((result) => {
-                if (result.data) {
-                  onFileUploaded(result.data.registerLocalFirmware.id);
-                }
-              })
-              .catch(() => {
-                void message.error("Could not use firmware");
-              });
-          } else {
-            onFileUploaded();
-          }
-        }}
-      />
-    </div>
   );
 };
 

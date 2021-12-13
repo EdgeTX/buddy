@@ -1,10 +1,10 @@
 import React from "react";
-import DeviceList from "renderer/pages/flash/components/DeviceList";
+import DeviceList from "renderer/pages/flash/steps/device/DeviceList";
 import { exampleDevices } from "test-utils/data";
 import { action } from "@storybook/addon-actions";
 
 export default {
-  title: "Flashing/Device Selection/DeviceList",
+  title: "Flashing/steps/Device Selection/DeviceList",
   component: DeviceList,
 };
 

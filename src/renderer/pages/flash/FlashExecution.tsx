@@ -1,10 +1,10 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Button, Divider, Typography } from "antd";
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import config from "shared/config";
 import styled from "styled-components";
-import FlashProgress from "./components/FlashProgress";
+import FlashJobTimeline from "./execution/FlashJobTimeline";
 import { Centered, FullHeight } from "./shared";
 
 const Container = styled.div`
@@ -212,7 +212,15 @@ const FlashExecution: React.FC = () => {
           }}
         >
           {data?.flashJobStatus && (
-            <FlashProgress state={data.flashJobStatus.stages} />
+            <FlashJobTimeline
+              completionTip={
+                <Typography.Text>
+                  You may now want to{" "}
+                  <Link to="/sdcard">setup your SD Card</Link>
+                </Typography.Text>
+              }
+              state={data.flashJobStatus.stages}
+            />
           )}
         </Centered>
         <div

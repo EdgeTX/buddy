@@ -5,12 +5,12 @@ import { Card, Skeleton, Button, Space, Typography, message } from "antd";
 import styled from "styled-components";
 import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { StepComponent } from "./types";
+import { StepComponent } from "renderer/pages/flash/types";
 
-import { Centered, FullHeight } from "./shared";
-import FirmwareReleaseSummary from "./components/FirmwareReleaseSummary";
-import FirmwareFileSummary from "./components/FirmwareFileSummary";
-import DeviceSummary from "./components/DeviceSummary";
+import { Centered, FullHeight } from "renderer/pages/flash/shared";
+import FirmwareFileSummary from "renderer/pages/flash/components/FirmwareFileSummary";
+import FirmwareReleaseSummary from "./overview/FirmwareReleaseSummary";
+import DeviceSummary from "./overview/DeviceSummary";
 
 const Container = styled.div`
   display: flex;

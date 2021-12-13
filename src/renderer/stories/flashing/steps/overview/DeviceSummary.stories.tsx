@@ -1,11 +1,11 @@
 import { Card } from "antd";
 import React from "react";
-import DeviceSummary from "renderer/pages/flash/components/DeviceSummary";
+import DeviceSummary from "renderer/pages/flash/steps/overview/DeviceSummary";
 import { Centered } from "renderer/pages/flash/shared";
 import { exampleDevices } from "test-utils/data";
 
 export default {
-  title: "Flashing/Overview/DeviceSummary",
+  title: "Flashing/steps/Overview/DeviceSummary",
   component: DeviceSummary,
 };
 

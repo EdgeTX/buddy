@@ -10,7 +10,6 @@ import {
 } from "@ant-design/icons";
 import { Alert, Button, Progress, Result, Steps, Typography } from "antd";
 import React from "react";
-import { Link } from "react-router-dom";
 
 type FlashingStageStatus = {
   progress: number;
@@ -29,6 +28,7 @@ type FlashingState = {
 
 type Props = {
   state: FlashingState;
+  completionTip?: React.ReactNode;
 };
 
 type StageConfig = {
@@ -48,6 +48,9 @@ type StageConfig = {
   Icon: React.FC;
 };
 
+/**
+ * TODO: Align titles with the ant step types: wait, process, finish, error
+ */
 const stageConfigs: StageConfig[] = [
   {
     titles: {
@@ -182,13 +185,27 @@ const stageDescription = (
   return "";
 };
 
+const descriptionTextColor = (
+  stageStatus: FlashingStageStatus
+): "danger" | "secondary" | undefined => {
+  if (stageStatus.error) {
+    return "danger";
+  }
+
+  if (!stageStatus.started || stageStatus.completed) {
+    return "secondary";
+  }
+
+  return undefined;
+};
+
 const stepBaseStyle = {
   flex: 1,
   overflow: "hidden",
   transition: "max-height 0.25s ease-out",
 };
 
-const FlashProgress: React.FC<Props> = ({ state }) => {
+const FlashJobTimeline: React.FC<Props> = ({ state, completionTip }) => {
   const lastStepCompleted =
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state[stageConfigs[stageConfigs.length - 1]!.stage]!.completed;
@@ -222,16 +239,7 @@ const FlashProgress: React.FC<Props> = ({ state }) => {
               description={
                 !lastStepCompleted ? (
                   <>
-                    <Typography.Text
-                      type={
-                        stageStatus.error
-                          ? "danger"
-                          : ((!stageStatus.started || stageStatus.completed) &&
-                              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                              "secondary") ||
-                            undefined
-                      }
-                    >
+                    <Typography.Text type={descriptionTextColor(stageStatus)}>
                       {stageDescription(config, stageStatus)}
                     </Typography.Text>
                     {config.showProgess && (
@@ -282,9 +290,7 @@ const FlashProgress: React.FC<Props> = ({ state }) => {
             icon={<RocketTwoTone style={{ fontSize: 48 }} />}
             title="Your device has been upgraded"
           >
-            <Typography.Text>
-              You may now want to <Link to="/sdcard">setup your SD Card</Link>
-            </Typography.Text>
+            {completionTip}
           </Result>
         }
       />
@@ -292,4 +298,4 @@ const FlashProgress: React.FC<Props> = ({ state }) => {
   );
 };
 
-export default FlashProgress;
+export default FlashJobTimeline;

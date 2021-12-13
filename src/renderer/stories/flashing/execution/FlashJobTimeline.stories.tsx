@@ -1,13 +1,14 @@
+import { Typography } from "antd";
 import React, { useEffect, useState } from "react";
-import FlashProgress from "renderer/pages/flash/components/FlashProgress";
+import FlashJobTimeline from "renderer/pages/flash/execution/FlashJobTimeline";
 
 export default {
-  title: "Flashing/Progress/FlashProgress",
-  component: FlashProgress,
+  title: "Flashing/Execution/FlashJobTimeline",
+  component: FlashJobTimeline,
 };
 
 export const connectingRelease: React.FC = () => (
-  <FlashProgress
+  <FlashJobTimeline
     state={{
       connect: {
         started: true,
@@ -34,7 +35,7 @@ export const connectingRelease: React.FC = () => (
 );
 
 export const downloadingRelease: React.FC = () => (
-  <FlashProgress
+  <FlashJobTimeline
     state={{
       connect: {
         started: true,
@@ -61,7 +62,7 @@ export const downloadingRelease: React.FC = () => (
 );
 
 export const erasing: React.FC = () => (
-  <FlashProgress
+  <FlashJobTimeline
     state={{
       connect: {
         started: true,
@@ -88,7 +89,7 @@ export const erasing: React.FC = () => (
 );
 
 export const completed: React.FC = () => (
-  <FlashProgress
+  <FlashJobTimeline
     state={{
       connect: {
         started: true,
@@ -111,11 +112,17 @@ export const completed: React.FC = () => (
         completed: true,
       },
     }}
+    completionTip={
+      <Typography.Text>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        You may now want to <a>setup your SD Card</a>
+      </Typography.Text>
+    }
   />
 );
 
 export const downloadError: React.FC = () => (
-  <FlashProgress
+  <FlashJobTimeline
     state={{
       connect: {
         started: true,
@@ -201,5 +208,5 @@ const useFlashingState = () => {
 
 export const fullProcess: React.FC = () => (
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  <FlashProgress state={useFlashingState()} />
+  <FlashJobTimeline state={useFlashingState()} />
 );

@@ -1,12 +1,12 @@
 import React from "react";
 import { MockedProvider } from "@apollo/client/testing";
-import FirmwareReleasesPicker from "renderer/pages/flash/components/FirmwareReleasesPicker";
+import FirmwareReleasesPicker from "renderer/pages/flash/steps/firmware/FirmwareReleasesPicker";
 import { action } from "@storybook/addon-actions";
 import { exampleReleasesList, exampleTargetsList } from "test-utils/data";
 import { firmwaresQuery, targetsQuery } from "renderer/stories/flashing/mocks";
 
 export default {
-  title: "Flashing/Firmware Selection/FirmwareReleasesPicker",
+  title: "Flashing/steps/Firmware Selection/FirmwareReleasesPicker",
   component: FirmwareReleasesPicker,
   argTypes: {
     version: {

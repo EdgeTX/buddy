@@ -8,14 +8,14 @@ import { Button, Card, Empty, Space, Typography } from "antd";
 import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import styled from "styled-components";
-import DeviceList from "./components/DeviceList";
 import {
   Centered,
   FullHeight,
   StepContentContainer,
   StepControlsContainer,
-} from "./shared";
-import { StepComponent } from "./types";
+} from "renderer/pages/flash/shared";
+import { StepComponent } from "renderer/pages/flash/types";
+import DeviceList from "./device/DeviceList";
 
 const Main = styled.div`
   height: 100%;

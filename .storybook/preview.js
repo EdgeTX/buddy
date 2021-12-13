@@ -14,9 +14,5 @@ export const parameters = {
 };
 
 export const decorators = [
-  (story) => (
-    <ConfigProvider>
-      <MemoryRouter>{story()}</MemoryRouter>
-    </ConfigProvider>
-  ),
+  (story) => <ConfigProvider>{story()}</ConfigProvider>,
 ];

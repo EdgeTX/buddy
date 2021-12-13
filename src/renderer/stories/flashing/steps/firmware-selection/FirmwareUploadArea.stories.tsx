@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import FirmwareUploadArea from "renderer/pages/flash/components/FirmwareUploadArea";
+import FirmwareUploadArea from "renderer/pages/flash/steps/firmware/FirmwareUploadArea";
 import { action } from "@storybook/addon-actions";
 
 export default {
-  title: "Flashing/Firmware Selection/FirmwareUploadArea",
+  title: "Flashing/steps/Firmware Selection/FirmwareUploadArea",
   component: FirmwareUploadArea,
 };
 

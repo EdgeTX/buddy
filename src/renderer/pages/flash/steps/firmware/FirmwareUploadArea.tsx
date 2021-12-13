@@ -1,7 +1,7 @@
 import { InboxOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Upload, Button, message } from "antd";
 import React, { useState } from "react";
-import FirmwareFileSummary from "./FirmwareFileSummary";
+import FirmwareFileSummary from "renderer/pages/flash/components/FirmwareFileSummary";
 
 type FirmwareFile = {
   name: string;

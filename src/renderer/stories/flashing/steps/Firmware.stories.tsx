@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import FirmwareStep from "renderer/pages/flash/FirmwareStep";
+import FirmwareSelectionStep from "renderer/pages/flash/steps/FirmwareSelectionStep";
 import {
   firmwaresQuery,
   targetsQuery,
@@ -9,8 +9,8 @@ import {
 } from "renderer/stories/flashing/mocks";
 
 export default {
-  title: "Flashing/Steps/FirmwareStep",
-  component: FirmwareStep,
+  title: "Flashing/Steps/FirmwareSelectionStep",
+  component: FirmwareSelectionStep,
 };
 
 export const initialRender = () => (
@@ -18,7 +18,7 @@ export const initialRender = () => (
     <MockedProvider
       mocks={[firmwaresQuery, targetsQuery, firmwareReleaseDescriptionQuery]}
     >
-      <FirmwareStep stepIndex={0} />
+      <FirmwareSelectionStep stepIndex={0} />
     </MockedProvider>
   </MemoryRouter>
 );
