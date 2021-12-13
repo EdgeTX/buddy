@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { Skeleton } from "antd";
 import gql from "graphql-tag";
 import React from "react";
-import Markdown from "renderer/components/AntMarkdown";
+import Markdown from "renderer/components/Markdown";
 
 type Props = {
   releaseId: string;
