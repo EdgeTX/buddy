@@ -135,7 +135,7 @@ const DeviceSelectionStep: StepComponent<{
                   selectedDeviceId={selectedDeviceId}
                 />
               ) : (
-                <Centered>
+                <Centered style={{ height: "100%" }}>
                   <Empty
                     imageStyle={{
                       marginBottom: 0,
