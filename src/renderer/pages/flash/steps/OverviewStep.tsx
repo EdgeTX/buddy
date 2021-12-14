@@ -168,7 +168,7 @@ const FirmwareSummary: React.FC<{ target: string; version: string }> = ({
   target,
   version,
 }) => {
-  const isFile = target === "local";
+  const isFile = version === "local";
 
   const releaseInfoQuery = useQuery(
     gql(/* GraphQL */ `
@@ -206,7 +206,7 @@ const FirmwareSummary: React.FC<{ target: string; version: string }> = ({
     `),
     {
       variables: {
-        fileId: version,
+        fileId: target,
       },
       skip: !isFile,
     }

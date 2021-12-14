@@ -50,10 +50,10 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const target = parseParam("target");
 
   useEffect(() => {
-    if (target === "local" && activeTab !== "file") {
+    if (version === "local" && activeTab !== "file") {
       setActiveTab("file");
     }
-  }, [setActiveTab, target, activeTab]);
+  }, [setActiveTab, version, activeTab]);
 
   return (
     <FullHeight>
@@ -99,7 +99,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               key="file"
             >
               <Centered style={{ height: "100%" }}>
-                {!version && (
+                {!target && (
                   <Typography.Text
                     style={{ textAlign: "center" }}
                     type="secondary"
@@ -107,7 +107,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                     Select a firmware file
                   </Typography.Text>
                 )}
-                {target === "local" && version && (
+                {version === "local" && target && (
                   <Typography.Text
                     style={{ textAlign: "center" }}
                     type="secondary"
@@ -143,12 +143,12 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 }}
               >
                 <FirmwareUploader
-                  selectedFile={target === "local" ? version : undefined}
+                  selectedFile={version === "local" ? target : undefined}
                   onFileUploaded={(fileId) => {
                     if (fileId) {
                       updateParams({
-                        version: fileId,
-                        target: "local",
+                        target: fileId,
+                        version: "local",
                       });
                     } else {
                       updateParams({
