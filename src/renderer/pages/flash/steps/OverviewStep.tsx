@@ -93,6 +93,9 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
             </Centered>
             <Centered>
               <Space>
+                <Button onClick={onPrevious} disabled={creatingJob}>
+                  Go back
+                </Button>
                 <Button
                   size="large"
                   type="primary"
@@ -123,9 +126,6 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                   }}
                 >
                   Start
-                </Button>
-                <Button onClick={onPrevious} disabled={creatingJob}>
-                  Go back
                 </Button>
               </Space>
             </Centered>

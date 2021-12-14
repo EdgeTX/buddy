@@ -1,7 +1,9 @@
 import { InboxOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Upload, Button, message } from "antd";
+import { Upload, Button, message, Card } from "antd";
 import React, { useState } from "react";
 import FirmwareFileSummary from "renderer/pages/flash/components/FirmwareFileSummary";
+import styled from "styled-components";
+import { Centered, FullHeight } from "renderer/pages/flash/shared";
 
 type FirmwareFile = {
   name: string;
@@ -13,6 +15,13 @@ type Props = {
   loading?: boolean;
   uploadedFile?: { name: string };
 };
+
+const FirmwareUploadContainer = styled.div`
+  height: 100%;
+  > span {
+    height: 100%;
+  }
+`;
 
 const ACCEPTED_TYPES = ["application/macbinary", "application/octet-stream"];
 
@@ -26,52 +35,64 @@ const FirmwareUploadArea: React.FC<Props> = ({
   const loadingState = encoding || loading;
 
   return !uploadedFile ? (
-    <Upload.Dragger
-      style={{
-        padding: "48px 32px",
-      }}
-      showUploadList={false}
-      multiple={false}
-      disabled={loadingState}
-      beforeUpload={async (file) => {
-        if (ACCEPTED_TYPES.includes(file.type)) {
-          setEncoding(true);
-          try {
-            onFileSelected({
-              name: file.name,
-              base64Data: Buffer.from(await file.arrayBuffer()).toString(
-                "base64"
-              ),
-            });
-          } finally {
-            setEncoding(false);
+    <FirmwareUploadContainer>
+      <Upload.Dragger
+        style={{
+          padding: "48px 32px",
+          height: "100%",
+        }}
+        showUploadList={false}
+        multiple={false}
+        disabled={loadingState}
+        beforeUpload={async (file) => {
+          if (ACCEPTED_TYPES.includes(file.type)) {
+            setEncoding(true);
+            try {
+              onFileSelected({
+                name: file.name,
+                base64Data: Buffer.from(await file.arrayBuffer()).toString(
+                  "base64"
+                ),
+              });
+            } finally {
+              setEncoding(false);
+            }
+          } else {
+            await message.error("Not a firmware file");
           }
-        } else {
-          await message.error("Not a firmware file");
-        }
-        return false;
-      }}
-      accept="application/octet-stream"
-    >
-      <p className="ant-upload-drag-icon">
-        {loadingState ? <LoadingOutlined /> : <InboxOutlined />}
-      </p>
+          return false;
+        }}
+        accept="application/octet-stream"
+      >
+        <p className="ant-upload-drag-icon">
+          {loadingState ? <LoadingOutlined /> : <InboxOutlined />}
+        </p>
 
-      <p className="ant-upload-text">
-        {!loadingState
-          ? "Click or drag a firmware file to this area to upload"
-          : "Loading..."}
-      </p>
-    </Upload.Dragger>
+        <p className="ant-upload-text">
+          {!loadingState
+            ? "Click or drag a firmware file to this area to upload"
+            : "Loading..."}
+        </p>
+      </Upload.Dragger>
+    </FirmwareUploadContainer>
   ) : (
-    <FirmwareFileSummary
-      name={uploadedFile.name}
-      extra={
-        <Button type="default" onClick={() => onFileSelected()}>
-          Cancel
-        </Button>
-      }
-    />
+    <FullHeight style={{ justifyContent: "center" }}>
+      <Card
+        style={{ height: "100%", width: "100%" }}
+        bodyStyle={{ height: "100%", width: "100%" }}
+      >
+        <Centered style={{ height: "100%" }}>
+          <FirmwareFileSummary
+            name={uploadedFile.name}
+            extra={
+              <Button type="default" onClick={() => onFileSelected()}>
+                Cancel
+              </Button>
+            }
+          />
+        </Centered>
+      </Card>
+    </FullHeight>
   );
 };
 

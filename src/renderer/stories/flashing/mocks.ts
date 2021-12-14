@@ -50,7 +50,8 @@ export const targetsQuery: MockedResponse = {
   result: {
     data: {
       edgeTxRelease: {
-        id: "",
+        __typename: "EdgeTxRelease",
+        id: "v2.5.0",
         firmwareBundle: {
           id: "",
           targets: exampleTargetsList,
@@ -89,10 +90,11 @@ export const firmwareReleaseDescriptionQuery: MockedResponse = {
       releaseId: "v2.5.0",
     },
   },
-  delay: 200,
+  delay: 2000,
   result: {
     data: {
       edgeTxRelease: {
+        __typename: "EdgeTxRelease",
         id: "v2.5.0",
         description: releaseDescription,
       },
@@ -114,7 +116,7 @@ export const devicesQuery: MockedResponse = {
       }
     `,
   },
-  delay: 200,
+  delay: 2000,
   result: {
     data: {
       flashableDevices: exampleDevices,
@@ -139,7 +141,7 @@ export const deviceQuery: MockedResponse = {
       deviceId: "1",
     },
   },
-  delay: 200,
+  delay: 2000,
   result: {
     data: {
       flashableDevice: exampleDevices[4],

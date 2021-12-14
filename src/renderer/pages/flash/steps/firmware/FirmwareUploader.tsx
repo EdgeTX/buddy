@@ -50,39 +50,30 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
   }, [selectedFile, loading, onFileUploaded, firmwareInfo]);
 
   return (
-    <div
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <FirmwareUploadArea
-        loading={loading || uploading}
-        uploadedFile={firmwareInfo ?? undefined}
-        onFileSelected={(file) => {
-          if (file) {
-            void registerFirmware({
-              variables: {
-                name: file.name,
-                data: file.base64Data,
-              },
+    <FirmwareUploadArea
+      loading={loading || uploading}
+      uploadedFile={firmwareInfo ?? undefined}
+      onFileSelected={(file) => {
+        if (file) {
+          void registerFirmware({
+            variables: {
+              name: file.name,
+              data: file.base64Data,
+            },
+          })
+            .then((result) => {
+              if (result.data) {
+                onFileUploaded(result.data.registerLocalFirmware.id);
+              }
             })
-              .then((result) => {
-                if (result.data) {
-                  onFileUploaded(result.data.registerLocalFirmware.id);
-                }
-              })
-              .catch(() => {
-                void message.error("Could not use firmware");
-              });
-          } else {
-            onFileUploaded();
-          }
-        }}
-      />
-    </div>
+            .catch(() => {
+              void message.error("Could not use firmware");
+            });
+        } else {
+          onFileUploaded();
+        }
+      }}
+    />
   );
 };
 

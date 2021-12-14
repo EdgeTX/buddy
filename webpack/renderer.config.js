@@ -164,9 +164,9 @@ module.exports = (_, { mode }) => ({
   ],
   devtool: "source-map",
   devServer: {
-    hot: true,
+    port: 8081,
     onAfterSetupMiddleware() {
-      openBrowser("http://localhost:8080");
+      openBrowser("http://localhost:8081");
       if (!process.env.WEB_ONLY) {
         spawn("electron", ["./build/main/main.js"], {
           shell: true,

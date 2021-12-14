@@ -15,7 +15,7 @@ import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
 
-const ReleaseStepContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
@@ -31,6 +31,7 @@ const ReleaseStepContainer = styled.div`
 
   > .divider {
     flex: 0;
+    margin-left: 16px;
   }
 `;
 
@@ -38,8 +39,7 @@ const DescriptionContainer = styled.div`
   overflow-y: auto;
   padding-left: 32px;
   padding-top: 32px;
-  /* TODO: Fix this massive hack */
-  height: calc(100vh - 380px);
+  height: 100%;
 `;
 
 const FirmwareStep: StepComponent = ({ onNext }) => {
@@ -58,73 +58,110 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   return (
     <FullHeight>
       <StepContentContainer>
-        <Tabs
-          activeKey={activeTab}
-          destroyInactiveTabPane
-          onChange={(key) => {
-            updateParams({
-              version: undefined,
-              target: undefined,
-            });
-            setActiveTab(key);
-          }}
-        >
-          <Tabs.TabPane
-            tab={
-              <span>
-                <RocketOutlined />
-                Releases
-              </span>
-            }
-            key="releases"
+        <Container style={{ justifyContent: "space-around" }}>
+          <Tabs
+            activeKey={activeTab}
+            destroyInactiveTabPane
+            onChange={(key) => {
+              updateParams({
+                version: undefined,
+                target: undefined,
+              });
+              setActiveTab(key);
+            }}
           >
-            <ReleaseStepContainer style={{ justifyContent: "space-around" }}>
+            <Tabs.TabPane
+              tab={
+                <span>
+                  <RocketOutlined />
+                  Releases
+                </span>
+              }
+              key="releases"
+            >
               <FirmwareReleasesPicker
                 version={version}
                 target={target}
-                onChanged={updateParams}
+                onChanged={(params) => {
+                  if (activeTab === "releases") {
+                    updateParams(params);
+                  }
+                }}
               />
-              <Divider className="divider" type="vertical" />
-              {version ? (
-                <DescriptionContainer>
-                  <FirmwareReleaseDescription releaseId={version} />
-                </DescriptionContainer>
-              ) : (
-                <Centered>
-                  <Typography.Title level={4} type="secondary">
-                    Release notes
-                  </Typography.Title>
-                </Centered>
-              )}
-            </ReleaseStepContainer>
-          </Tabs.TabPane>
-          <Tabs.TabPane
-            tab={
-              <span>
-                <UploadOutlined />
-                File
-              </span>
-            }
-            key="file"
-          >
-            <FirmwareUploader
-              selectedFile={target === "local" ? version : undefined}
-              onFileUploaded={(fileId) => {
-                if (fileId) {
-                  updateParams({
-                    version: fileId,
-                    target: "local",
-                  });
-                } else {
-                  updateParams({
-                    target: undefined,
-                    version: undefined,
-                  });
-                }
-              }}
-            />
-          </Tabs.TabPane>
-        </Tabs>
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={
+                <span>
+                  <UploadOutlined />
+                  File
+                </span>
+              }
+              key="file"
+            >
+              <Centered style={{ height: "100%" }}>
+                {!version && (
+                  <Typography.Text
+                    style={{ textAlign: "center" }}
+                    type="secondary"
+                  >
+                    Select a firmware file
+                  </Typography.Text>
+                )}
+                {target === "local" && version && (
+                  <Typography.Text
+                    style={{ textAlign: "center" }}
+                    type="secondary"
+                  >
+                    File ready to use
+                  </Typography.Text>
+                )}
+              </Centered>
+            </Tabs.TabPane>
+          </Tabs>
+          <Divider className="divider" type="vertical" />
+
+          {activeTab === "releases" &&
+            (version ? (
+              <DescriptionContainer>
+                <FirmwareReleaseDescription releaseId={version} />
+              </DescriptionContainer>
+            ) : (
+              <Centered>
+                <Typography.Title level={4} type="secondary">
+                  Release notes
+                </Typography.Title>
+              </Centered>
+            ))}
+          {activeTab === "file" && (
+            <Centered>
+              <FullHeight
+                style={{
+                  width: "100%",
+                  padding: 32,
+                  maxWidth: "1200px",
+                  maxHeight: "600px",
+                }}
+              >
+                <FirmwareUploader
+                  selectedFile={target === "local" ? version : undefined}
+                  onFileUploaded={(fileId) => {
+                    if (fileId) {
+                      updateParams({
+                        version: fileId,
+                        target: "local",
+                      });
+                    } else {
+                      updateParams({
+                        target: undefined,
+                        version: undefined,
+                      });
+                    }
+                  }}
+                />
+              </FullHeight>
+            </Centered>
+          )}
+        </Container>
       </StepContentContainer>
       <StepControlsContainer>
         <Button

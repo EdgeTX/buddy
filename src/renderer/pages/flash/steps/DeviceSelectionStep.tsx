@@ -4,7 +4,7 @@ import {
   UsbOutlined,
 } from "@ant-design/icons";
 import { useQuery, gql, useMutation } from "@apollo/client";
-import { Button, Card, Empty, Space, Typography } from "antd";
+import { Button, Card, Empty, Typography } from "antd";
 import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import styled from "styled-components";
@@ -31,12 +31,6 @@ const Main = styled.div`
 
 const ButtonsContainer = styled.div`
   height: 32px;
-`;
-
-const DeviceSelectionArea = styled.div`
-  /* TODO: Fix this massive hack */
-  height: calc(100vh - 480px);
-  overflow-y: auto;
 `;
 
 const DevicesQuery = gql(/* GraphQL */ `
@@ -123,42 +117,43 @@ const DeviceSelectionStep: StepComponent<{
             Available devices ({data?.flashableDevices.length ?? 0})
           </Typography.Text>
 
-          <Card style={{ height: "100%" }} bodyStyle={{ height: "100%" }}>
-            <DeviceSelectionArea>
-              {loading || devicesAvailable ? (
-                <DeviceList
-                  devices={data?.flashableDevices ?? []}
-                  loading={loading}
-                  onSelected={(deviceId) => {
-                    updateParams({ deviceId });
+          <Card
+            style={{ height: "100%", overflowY: "auto" }}
+            bodyStyle={{ height: "100%", padding: 8 }}
+          >
+            {loading || devicesAvailable ? (
+              <DeviceList
+                devices={data?.flashableDevices ?? []}
+                loading={loading}
+                onSelected={(deviceId) => {
+                  updateParams({ deviceId });
+                }}
+                selectedDeviceId={selectedDeviceId}
+              />
+            ) : (
+              <Centered style={{ height: "100%" }}>
+                <Empty
+                  imageStyle={{
+                    marginBottom: 0,
                   }}
-                  selectedDeviceId={selectedDeviceId}
-                />
-              ) : (
-                <Centered style={{ height: "100%" }}>
-                  <Empty
-                    imageStyle={{
-                      marginBottom: 0,
-                    }}
-                    image={
-                      <UsbOutlined
-                        style={{
-                          fontSize: "64px",
-                          color: "#d9d9d9",
-                        }}
-                      />
-                    }
-                    description={
-                      variant === "electron"
-                        ? "No devices found"
-                        : "Add a device to get started"
-                    }
-                  >
-                    {actionButton}
-                  </Empty>
-                </Centered>
-              )}
-            </DeviceSelectionArea>
+                  image={
+                    <UsbOutlined
+                      style={{
+                        fontSize: "64px",
+                        color: "#d9d9d9",
+                      }}
+                    />
+                  }
+                  description={
+                    variant === "electron"
+                      ? "No devices found"
+                      : "Add a device to get started"
+                  }
+                >
+                  {actionButton}
+                </Empty>
+              </Centered>
+            )}
           </Card>
           <ButtonsContainer>
             {!loading && devicesAvailable && actionButton}
@@ -166,27 +161,25 @@ const DeviceSelectionStep: StepComponent<{
         </Main>
       </StepContentContainer>
       <StepControlsContainer>
-        <Space>
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => {
-              if (selectedDeviceId) {
-                onNext?.();
-              }
-            }}
-          >
-            Next
-          </Button>
-          <Button
-            size="large"
-            onClick={() => {
-              onPrevious?.();
-            }}
-          >
-            Previous
-          </Button>
-        </Space>
+        <Button
+          size="large"
+          onClick={() => {
+            onPrevious?.();
+          }}
+        >
+          Previous
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => {
+            if (selectedDeviceId) {
+              onNext?.();
+            }
+          }}
+        >
+          Next
+        </Button>
       </StepControlsContainer>
     </FullHeight>
   );
