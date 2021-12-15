@@ -32,14 +32,14 @@ const typeDefs = gql`
   type Query {
     sdcardTargets: [SdcardTarget!]!
     sdcardSounds: [SdcardSoundsAsset!]!
-    folderInfo(id: ID!): FileSystemFolder
+    sdcardDirectory(id: ID!): SdcardDirectory
     sdcardWriteJobStatus(jobId: ID!): SdcardWriteJob
   }
 
   type Mutation {
-    pickSdcardFolder: FileSystemFolder
+    pickSdcardDirectory: SdcardDirectory
     createSdcardWriteJob(
-      folderId: ID!
+      directoryId: ID!
       target: ID!
       sounds: ID!
       clean: Boolean
@@ -84,9 +84,12 @@ const typeDefs = gql`
     completedTime: String
   }
 
-  type FileSystemFolder {
+  type SdcardDirectory {
     id: ID!
     name: String!
+    version: String
+    target: String
+    sounds: String
   }
 
   type SdcardTarget {
@@ -145,7 +148,7 @@ const resolvers: Resolvers = {
           tag: soundsRelease.tag_name,
         }));
     },
-    folderInfo: (_, { id }) => {
+    sdcardDirectory: (_, { id }) => {
       const handle = directories.find(
         (directory) => directory.id === id
       )?.handle;
@@ -179,9 +182,9 @@ const resolvers: Resolvers = {
 
       return null;
     },
-    pickSdcardFolder: async (_, __, { fileSystem }) => {
+    pickSdcardDirectory: async (_, __, { fileSystem }) => {
       const handle = await fileSystem
-        .requestWritableFolder({
+        .requestWritableDirectory({
           id: "edgetx-sdcard",
         })
         .catch(() => undefined);
@@ -207,10 +210,10 @@ const resolvers: Resolvers = {
     },
     createSdcardWriteJob: async (
       _,
-      { folderId, target, clean, sounds },
+      { directoryId, target, clean, sounds },
       context
     ) => {
-      const directory = directories.find((d) => d.id === folderId);
+      const directory = directories.find((d) => d.id === directoryId);
 
       if (!directory) {
         throw new GraphQLError("Folder id doesnt exist");

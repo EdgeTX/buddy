@@ -1,5 +1,5 @@
 export type FileSystemApi = {
-  requestWritableFolder: typeof window.showDirectoryPicker;
+  requestWritableDirectory: typeof window.showDirectoryPicker;
 };
 
 export type UsbApi = {

@@ -152,7 +152,7 @@ const usbApi = (): UsbApi => {
 };
 
 const fileSystemApi = (): FileSystemApi => ({
-  requestWritableFolder: async () => {
+  requestWritableDirectory: async () => {
     if (mainWindow) {
       const result = await dialog.showOpenDialog(mainWindow, {
         properties: ["openDirectory"],

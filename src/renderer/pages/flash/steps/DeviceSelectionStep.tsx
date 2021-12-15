@@ -9,11 +9,10 @@ import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import styled from "styled-components";
 import {
-  Centered,
-  FullHeight,
   StepContentContainer,
   StepControlsContainer,
 } from "renderer/pages/flash/shared";
+import { Centered, FullHeight } from "renderer/shared/layouts";
 import { StepComponent } from "renderer/pages/flash/types";
 import DeviceList from "./device/DeviceList";
 

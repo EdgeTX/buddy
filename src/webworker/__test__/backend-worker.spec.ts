@@ -62,7 +62,7 @@ describe("Backend Workers", () => {
   });
 
   describe("showDirectoryPicker", () => {
-    it("should be called via the crossboudary function when the pickSdcardFolder mutation is fired", async () => {
+    it("should be called via the crossboudary function when the pickSdcardDirectory mutation is fired", async () => {
       const folder = (await tmp.dir()).path;
       const handle = await getOriginPrivateDirectory(
         nodeAdapter,
@@ -78,7 +78,7 @@ describe("Backend Workers", () => {
       const { data, errors } = await client.mutate({
         mutation: gql`
           mutation RequestFolder {
-            pickSdcardFolder {
+            pickSdcardDirectory {
               id
               name
             }
@@ -87,7 +87,7 @@ describe("Backend Workers", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.pickSdcardFolder).toMatchObject({
+      expect(data?.pickSdcardDirectory).toMatchObject({
         id: expect.any(String),
         name: folder,
       });
@@ -99,7 +99,7 @@ describe("Backend Workers", () => {
       const { data, errors } = await client.mutate({
         mutation: gql`
           mutation RequestFolder {
-            pickSdcardFolder {
+            pickSdcardDirectory {
               id
               name
             }
@@ -108,7 +108,7 @@ describe("Backend Workers", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.pickSdcardFolder).toBeNull();
+      expect(data?.pickSdcardDirectory).toBeNull();
     });
   });
 

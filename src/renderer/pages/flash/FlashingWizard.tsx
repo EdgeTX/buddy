@@ -6,10 +6,10 @@
 import { Steps } from "antd";
 import React, { useState } from "react";
 import config from "shared/config";
+import { Centered } from "renderer/shared/layouts";
 import DeviceSelectionStep from "./steps/DeviceSelectionStep";
 import FirmwareSelectionStep from "./steps/FirmwareSelectionStep";
 import OverviewStep from "./steps/OverviewStep";
-import { Centered } from "./shared";
 
 const { Step } = Steps;
 

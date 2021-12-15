@@ -4,8 +4,8 @@ import React, { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import config from "shared/config";
 import styled from "styled-components";
+import { Centered, FullHeight } from "renderer/shared/layouts";
 import FlashJobTimeline from "./execution/FlashJobTimeline";
-import { Centered, FullHeight } from "./shared";
 
 const Container = styled.div`
   height: 100%;

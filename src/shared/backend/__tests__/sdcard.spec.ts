@@ -16,13 +16,13 @@ import { SdcardWriteJob } from "shared/backend/graph/__generated__";
 import tmp from "tmp-promise";
 import { directorySnapshot, waitForStageCompleted } from "test-utils/tools";
 
-const requestWritableFolder = jest.fn() as MockedFunction<
+const requestWritableDirectory = jest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
 >;
 
 const backend = createExecutor({
   fileSystem: {
-    requestWritableFolder,
+    requestWritableDirectory,
   },
 });
 
@@ -207,16 +207,16 @@ describe("Query", () => {
 });
 
 describe("Mutation", () => {
-  describe("pickSdcardFolder", () => {
+  describe("pickSdcardDirectory", () => {
     it("should return a file system handler requested by the user", async () => {
-      requestWritableFolder.mockResolvedValue({
-        name: "/some/folder/path",
+      requestWritableDirectory.mockResolvedValue({
+        name: "/some/directory/path",
       } as FileSystemDirectoryHandle);
 
       const { data, errors } = await backend.mutate({
         mutation: gql`
-          mutation RequestFolder {
-            pickSdcardFolder {
+          mutation RequestDirectory {
+            pickSdcardDirectory {
               id
               name
             }
@@ -225,21 +225,21 @@ describe("Mutation", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.pickSdcardFolder).toEqual({
+      expect(data?.pickSdcardDirectory).toEqual({
         id: expect.any(String),
-        name: "/some/folder/path",
+        name: "/some/directory/path",
       });
     });
 
-    it("should allow the folder info to be queried after being picked", async () => {
-      requestWritableFolder.mockResolvedValue({
-        name: "/some/other/folder",
+    it("should allow the directory info to be queried after being picked", async () => {
+      requestWritableDirectory.mockResolvedValue({
+        name: "/some/other/directory",
       } as FileSystemDirectoryHandle);
 
-      const requestFolderResponse = await backend.mutate({
+      const requestDirectoryResponse = await backend.mutate({
         mutation: gql`
-          mutation RequestFolder {
-            pickSdcardFolder {
+          mutation RequestDirectory {
+            pickSdcardDirectory {
               id
               name
             }
@@ -247,14 +247,14 @@ describe("Mutation", () => {
         `,
       });
 
-      const { id } = requestFolderResponse.data?.pickSdcardFolder as {
+      const { id } = requestDirectoryResponse.data?.pickSdcardDirectory as {
         id: string;
       };
 
       const { data, errors } = await backend.query({
         query: gql`
-          query FolderInfoQuery($id: ID!) {
-            folderInfo(id: $id) {
+          query SdcardDirectoryQuery($id: ID!) {
+            sdcardDirectory(id: $id) {
               id
               name
             }
@@ -266,23 +266,23 @@ describe("Mutation", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.folderInfo).toEqual({
+      expect(data?.sdcardDirectory).toEqual({
         id,
-        name: "/some/other/folder",
+        name: "/some/other/directory",
       });
     });
 
-    it("should only keep 5 folder handles", async () => {
+    it("should only keep 5 directory handles", async () => {
       const currentHandles = await Promise.all(
         new Array(5).fill(1).map(async (_, i) => {
-          requestWritableFolder.mockResolvedValueOnce({
-            name: `/some/folder/folder${i}`,
+          requestWritableDirectory.mockResolvedValueOnce({
+            name: `/some/directory/directory${i}`,
           } as FileSystemDirectoryHandle);
 
-          const requestFolderResponse = await backend.mutate({
+          const requestDirectoryResponse = await backend.mutate({
             mutation: gql`
-              mutation RequestFolder {
-                pickSdcardFolder {
+              mutation RequestDirectory {
+                pickSdcardDirectory {
                   id
                   name
                 }
@@ -290,7 +290,7 @@ describe("Mutation", () => {
             `,
           });
 
-          const { id } = requestFolderResponse.data?.pickSdcardFolder as {
+          const { id } = requestDirectoryResponse.data?.pickSdcardDirectory as {
             id: string;
           };
 
@@ -298,15 +298,15 @@ describe("Mutation", () => {
         })
       );
 
-      requestWritableFolder.mockResolvedValueOnce({
-        name: `/some/folder/folderlast`,
+      requestWritableDirectory.mockResolvedValueOnce({
+        name: `/some/directory/directorylast`,
       } as FileSystemDirectoryHandle);
 
       // Request one more so the first should be gone
       await backend.mutate({
         mutation: gql`
           mutation RequestFolder {
-            pickSdcardFolder {
+            pickSdcardDirectory {
               id
               name
             }
@@ -316,8 +316,8 @@ describe("Mutation", () => {
 
       const { data, errors } = await backend.query({
         query: gql`
-          query FolderInfoQuery($id: ID!) {
-            folderInfo(id: $id) {
+          query SdcardDirectoryQuery($id: ID!) {
+            sdcardDirectory(id: $id) {
               id
               name
             }
@@ -329,16 +329,16 @@ describe("Mutation", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.folderInfo).toBeNull();
+      expect(data?.sdcardDirectory).toBeNull();
     });
 
-    it("should return null if the user doesnt select a folder", async () => {
-      requestWritableFolder.mockRejectedValue(new Error("some error"));
+    it("should return null if the user doesnt select a directory", async () => {
+      requestWritableDirectory.mockRejectedValue(new Error("some error"));
 
       const { data, errors } = await backend.mutate({
         mutation: gql`
-          mutation RequestFolder {
-            pickSdcardFolder {
+          mutation RequestDirectory {
+            pickSdcardDirectory {
               id
               name
             }
@@ -347,7 +347,7 @@ describe("Mutation", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.pickSdcardFolder).toBeNull();
+      expect(data?.pickSdcardDirectory).toBeNull();
     });
   });
 });
@@ -372,14 +372,14 @@ describe("Sdcard Job", () => {
   });
 
   it("should extract the specified sdcard target and sounds to the desired sdcard", async () => {
-    requestWritableFolder.mockResolvedValue(
+    requestWritableDirectory.mockResolvedValue(
       await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
     );
 
-    const folderRequest = await backend.mutate({
+    const directoryRequest = await backend.mutate({
       mutation: gql`
-        mutation RequestFolder {
-          pickSdcardFolder {
+        mutation RequestDirectory {
+          pickSdcardDirectory {
             id
             name
           }
@@ -387,7 +387,7 @@ describe("Sdcard Job", () => {
       `,
     });
 
-    const { id: folderId } = folderRequest.data?.pickSdcardFolder as {
+    const { id: directoryId } = directoryRequest.data?.pickSdcardDirectory as {
       id: string;
     };
 
@@ -397,9 +397,9 @@ describe("Sdcard Job", () => {
 
     const createJobRequest = await backend.mutate({
       mutation: gql`
-        mutation CreateSdcardJob($folderId: ID!) {
+        mutation CreateSdcardJob($directoryId: ID!) {
           createSdcardWriteJob(
-            folderId: $folderId
+            directoryId: $directoryId
             target: "jumper-t8"
             sounds: "cn"
           ) {
@@ -408,7 +408,7 @@ describe("Sdcard Job", () => {
         }
       `,
       variables: {
-        folderId,
+        directoryId,
       },
     });
 

@@ -17,11 +17,11 @@ import useQueryParams from "renderer/hooks/useQueryParams";
 const SdcardWizard: React.FC = () => {
   const navigate = useNavigate();
   const { updateParams, parseParam } = useQueryParams<
-    "target" | "sounds" | "folder" | "clean"
+    "target" | "sounds" | "directory" | "clean"
   >();
 
   const target = parseParam("target");
-  const folder = parseParam("folder");
+  const directory = parseParam("directory");
   const sounds = parseParam("sounds");
   const clean = parseParam("clean", Boolean);
 
@@ -50,8 +50,8 @@ const SdcardWizard: React.FC = () => {
 
   const [pickFolder] = useMutation(
     gql(/* GraphQL */ `
-      mutation PickSdcardFolder {
-        pickSdcardFolder {
+      mutation PickSdcardDirectory {
+        pickSdcardDirectory {
           id
           name
         }
@@ -62,7 +62,7 @@ const SdcardWizard: React.FC = () => {
   const [createWriteJob] = useMutation(
     gql(/* GraphQL */ `
       mutation CreateSdcardWriteJob(
-        $folderId: ID!
+        $directoryId: ID!
         $target: ID!
         $sounds: ID!
         $clean: Boolean
@@ -71,7 +71,7 @@ const SdcardWizard: React.FC = () => {
           target: $target
           sounds: $sounds
           clean: $clean
-          folderId: $folderId
+          directoryId: $directoryId
         ) {
           id
         }
@@ -157,8 +157,8 @@ const SdcardWizard: React.FC = () => {
       <Button
         onClick={() =>
           pickFolder().then((result) => {
-            if (result.data?.pickSdcardFolder) {
-              updateParams({ folder: result.data.pickSdcardFolder.id });
+            if (result.data?.pickSdcardDirectory) {
+              updateParams({ directory: result.data.pickSdcardDirectory.id });
             }
           })
         }
@@ -168,10 +168,10 @@ const SdcardWizard: React.FC = () => {
       <Button
         disabled={!selectedTargetExists || !selectedSoundsExists}
         onClick={() => {
-          if (folder && target && sounds)
+          if (directory && target && sounds)
             void createWriteJob({
               variables: {
-                folderId: folder,
+                directoryId: directory,
                 target,
                 sounds,
                 clean: !!clean,

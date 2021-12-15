@@ -6,8 +6,7 @@ import styled from "styled-components";
 import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { StepComponent } from "renderer/pages/flash/types";
-
-import { Centered, FullHeight } from "renderer/pages/flash/shared";
+import { Centered, FullHeight } from "renderer/shared/layouts";
 import FirmwareFileSummary from "renderer/pages/flash/components/FirmwareFileSummary";
 import FirmwareReleaseSummary from "./overview/FirmwareReleaseSummary";
 import DeviceSummary from "./overview/DeviceSummary";

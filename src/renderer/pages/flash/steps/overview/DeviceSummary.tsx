@@ -1,7 +1,7 @@
 import { UsbOutlined } from "@ant-design/icons";
 import { Skeleton, Space, Typography } from "antd";
 import React from "react";
-import { Centered } from "renderer/pages/flash/shared";
+import { Centered } from "renderer/shared/layouts";
 import { Device } from "renderer/pages/flash/types";
 
 const DeviceSummary: React.FC<{ device?: Device; loading?: boolean }> = ({

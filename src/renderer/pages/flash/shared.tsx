@@ -1,6 +1,5 @@
 import { Space } from "antd";
 import React from "react";
-import styled from "styled-components";
 
 export const StepControlsContainer: React.FC = ({ children }) => (
   <div
@@ -26,17 +25,3 @@ export const StepContentContainer: React.FC = ({ children }) => (
     {children}
   </div>
 );
-
-export const Centered = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-export const FullHeight = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-`;

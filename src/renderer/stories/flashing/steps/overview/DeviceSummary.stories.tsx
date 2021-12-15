@@ -1,7 +1,7 @@
 import { Card } from "antd";
 import React from "react";
 import DeviceSummary from "renderer/pages/flash/steps/overview/DeviceSummary";
-import { Centered } from "renderer/pages/flash/shared";
+import { Centered } from "renderer/shared/layouts";
 import { exampleDevices } from "test-utils/data";
 
 export default {

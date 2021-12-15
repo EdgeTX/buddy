@@ -3,7 +3,7 @@ import { Upload, Button, message, Card } from "antd";
 import React, { useState } from "react";
 import FirmwareFileSummary from "renderer/pages/flash/components/FirmwareFileSummary";
 import styled from "styled-components";
-import { Centered, FullHeight } from "renderer/pages/flash/shared";
+import { Centered, FullHeight } from "renderer/shared/layouts";
 
 type FirmwareFile = {
   name: string;

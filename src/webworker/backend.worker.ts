@@ -9,7 +9,8 @@ import { createContext, FileSystemApi, schema, UsbApi } from "shared/backend";
 import { showDirectoryPicker, requestDevice } from "./crossboundary/functions";
 
 const fileSystem: FileSystemApi = {
-  requestWritableFolder: (options) => showDirectoryPicker.call(self, options),
+  requestWritableDirectory: (options) =>
+    showDirectoryPicker.call(self, options),
 };
 
 const usb: UsbApi = {

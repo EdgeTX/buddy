@@ -6,11 +6,10 @@ import styled from "styled-components";
 
 import { StepComponent } from "renderer/pages/flash/types";
 import {
-  StepControlsContainer,
   StepContentContainer,
-  Centered,
-  FullHeight,
+  StepControlsContainer,
 } from "renderer/pages/flash/shared";
+import { Centered, FullHeight } from "renderer/shared/layouts";
 import FirmwareReleasesPicker, {
   VersionFilters,
 } from "./firmware/FirmwareReleasesPicker";
