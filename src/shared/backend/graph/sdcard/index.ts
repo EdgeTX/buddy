@@ -89,7 +89,8 @@ const typeDefs = gql`
     name: String!
     version: String
     target: String
-    sounds: String
+    sounds: [String!]!
+    themes: [String!]!
   }
 
   type SdcardTarget {
