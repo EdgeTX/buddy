@@ -57,7 +57,9 @@ export const fetchFirmware = async (
   target: string
 ): Promise<Buffer> => {
   const { entries } = await firmwareBundle(firmwareBundleUrl);
-  const firmwareFile = entries.find((entry) => entry.name.startsWith(target));
+  const firmwareFile = entries.find(
+    (entry) => entry.name.includes(`${target}-`) && entry.name.endsWith(".bin")
+  );
   if (!firmwareFile) {
     throw new Error("Could not find firmware target binary");
   }

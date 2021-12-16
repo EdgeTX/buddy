@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Tabs, Button, Divider, Typography } from "antd";
 import { RocketOutlined, UploadOutlined } from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
@@ -11,7 +11,9 @@ import {
   Centered,
   FullHeight,
 } from "renderer/pages/flash/shared";
-import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
+import FirmwareReleasesPicker, {
+  VersionFilters,
+} from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
 
@@ -42,12 +44,26 @@ const DescriptionContainer = styled.div`
   height: 100%;
 `;
 
+const filterKeys = ["includePrereleases"];
+
 const FirmwareStep: StepComponent = ({ onNext }) => {
-  const { parseParam, updateParams } = useQueryParams<"version" | "target">();
+  const { parseParam, updateParams } = useQueryParams<
+    "version" | "target" | "filters"
+  >();
   const [activeTab, setActiveTab] = useState<string>("releases");
 
   const version = parseParam("version");
   const target = parseParam("target");
+  const enabledFilters = parseParam("filters")?.split(",");
+
+  const filters = useMemo(
+    () =>
+      filterKeys.reduce(
+        (acc, key) => ({ ...acc, [key]: enabledFilters?.includes(key) }),
+        {} as VersionFilters
+      ),
+    [enabledFilters]
+  );
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -82,9 +98,17 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               <FirmwareReleasesPicker
                 version={version}
                 target={target}
+                filters={filters}
                 onChanged={(params) => {
                   if (activeTab === "releases") {
-                    updateParams(params);
+                    updateParams({
+                      ...params,
+                      filters:
+                        Object.entries(params.filters)
+                          .filter(([, value]) => value)
+                          .map(([key]) => key)
+                          .join(",") || undefined,
+                    });
                   }
                 }}
               />

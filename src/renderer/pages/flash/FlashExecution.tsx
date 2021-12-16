@@ -207,7 +207,8 @@ const FlashExecution: React.FC = () => {
       >
         <Centered
           style={{
-            maxWidth: "600px",
+            maxWidth: "500px",
+            width: "100%",
             height: "100%",
           }}
         >

@@ -1,12 +1,20 @@
-import { Select, Form } from "antd";
-import React, { useEffect } from "react";
+import { Select, Form, Menu, Dropdown, Checkbox } from "antd";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, DownOutlined } from "@ant-design/icons";
 import useSorted from "renderer/hooks/useSorted";
 
+export type VersionFilters = {
+  includePrereleases: boolean;
+};
+
 type Props = {
-  onChanged: (values: { target?: string; version?: string }) => void;
-  prereleases?: boolean;
+  onChanged: (values: {
+    target?: string;
+    version?: string;
+    filters: VersionFilters;
+  }) => void;
+  filters: VersionFilters;
   target?: string;
   version?: string;
 };
@@ -15,7 +23,7 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   onChanged,
   target,
   version,
-  prereleases = false,
+  filters,
 }) => {
   const releasesQuery = useQuery(
     gql(/* GraphQL */ `
@@ -53,12 +61,11 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   );
 
   const releases = releasesQuery.data?.edgeTxReleases.filter(
-    (release) => release.isPrerelease === prereleases
+    (release) => !release.isPrerelease || filters.includePrereleases
   );
 
-  const sortedReleases = useSorted(releases, (r1, r2) =>
-    r2.id.localeCompare(r1.id)
-  );
+  // TODO: sort releases by date, need to add date to schema
+  const sortedReleases = useSorted(releases, () => 0);
   const selectedFirmware = releases?.find((release) => release.id === version);
   const targets =
     releaseTargetsQuery.data?.edgeTxRelease?.firmwareBundle.targets;
@@ -71,30 +78,30 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   // deselect
   useEffect(() => {
     if (targets && target && !targets.find((t) => t.id === target)) {
-      onChanged({ version, target: undefined });
+      onChanged({ version, target: undefined, filters });
     }
-  }, [targets, target, version, onChanged]);
+  }, [targets, target, version, onChanged, filters]);
 
   // If a version is selected which is not in the list
   // deselect
   useEffect(() => {
     if (releases && version && !selectedFirmware) {
-      onChanged({ version: undefined, target: undefined });
+      onChanged({ version: undefined, target: undefined, filters });
     }
-  }, [releases, version, onChanged, selectedFirmware]);
+  }, [releases, version, onChanged, selectedFirmware, filters]);
 
   useEffect(() => {
     if (sortedReleases.length > 0 && !version && !releasesQuery.loading) {
       // Set the first selected version to the latest version
-      onChanged({ version: sortedReleases[0]?.id, target: undefined });
+      onChanged({ version: sortedReleases[0]?.id, target: undefined, filters });
     }
-  }, [sortedReleases, version, releasesQuery, onChanged]);
+  }, [sortedReleases, version, releasesQuery, onChanged, filters]);
 
   return (
     <Form
       layout="vertical"
       onValuesChange={(_, values) =>
-        onChanged(values as Parameters<typeof onChanged>[0])
+        onChanged({ ...values, filters } as Parameters<typeof onChanged>[0])
       }
       fields={Object.entries({
         target,
@@ -109,7 +116,20 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
           title: "The version of EdgeTX to flash",
           icon: <InfoCircleOutlined />,
         }}
-        help={releasesQuery.error ? "Could not load releases" : undefined}
+        help={
+          releasesQuery.error ? (
+            "Could not load releases"
+          ) : (
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <VersionFiltersDropdown
+                filters={filters}
+                onChange={(newFilters) => {
+                  onChanged({ version, target, filters: newFilters });
+                }}
+              />
+            </div>
+          )
+        }
         validateStatus={releasesQuery.error ? "error" : undefined}
         required
       >
@@ -163,6 +183,48 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
         </Select>
       </Form.Item>
     </Form>
+  );
+};
+
+const filterNames: Record<keyof VersionFilters, string> = {
+  includePrereleases: "Include pre-releases",
+};
+
+const VersionFiltersDropdown: React.FC<{
+  filters: VersionFilters;
+  onChange: (filters: VersionFilters) => void;
+}> = ({ filters, onChange }) => {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Dropdown
+      visible={visible}
+      trigger={["click"]}
+      onVisibleChange={(flag) => setVisible(flag)}
+      overlay={
+        <Menu>
+          {(Object.entries(filters) as [keyof VersionFilters, boolean][]).map(
+            ([key, value]) => (
+              <Menu.Item key={key}>
+                <Checkbox
+                  checked={value}
+                  onChange={(e) =>
+                    onChange({ ...filters, [key]: e.target.checked })
+                  }
+                >
+                  {filterNames[key]}
+                </Checkbox>
+              </Menu.Item>
+            )
+          )}
+        </Menu>
+      }
+    >
+      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+        Filters <DownOutlined />
+      </a>
+    </Dropdown>
   );
 };
 
