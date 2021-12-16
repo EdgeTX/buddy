@@ -20,11 +20,12 @@ export default class ZipHTTPRangeReader implements Reader {
     if (this.length === undefined) {
       const req = await ky(this.url, {
         method: "HEAD",
-        prefixUrl: config.proxyUrl,
+        prefixUrl: !config.isMain ? config.proxyUrl : undefined,
         fetch: (input, init) =>
           fetch(input, {
             ...init,
             headers: {
+              ...init?.headers,
               "user-agent": fakeUserAgent,
               Referer: "https://github.com/",
             },
@@ -49,11 +50,12 @@ export default class ZipHTTPRangeReader implements Reader {
       return new Uint8Array(0);
     }
     const req = await ky(this.url, {
-      prefixUrl: config.proxyUrl,
+      prefixUrl: !config.isMain ? config.proxyUrl : undefined,
       fetch: (input, init) =>
         fetch(input, {
           ...init,
           headers: {
+            ...init?.headers,
             Range: `bytes=${offset}-${offset + size - 1}`,
             "user-agent": fakeUserAgent,
             Referer: "https://github.com/",

@@ -22,7 +22,7 @@ const extractParam = (key: string): string | null =>
 export default {
   isMain,
   isElectron,
-  proxyUrl: isElectron ? "" : process.env.PROXY_URL ?? "",
+  proxyUrl: process.env.PROXY_URL,
   isProduction: PRODUCTION,
   isE2e: E2E,
   github: {

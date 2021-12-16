@@ -5258,13 +5258,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^8.0.54":
-  version: 8.10.66
-  resolution: "@types/node@npm:8.10.66"
-  checksum: c52039de862654a139abdc6a51de532a69dd80516ac35a959c3b3a2831ecbaaf065b0df5f9db943f5e28b544ebb9a891730d52b52f7a169b86a82bc060210000
-  languageName: node
-  linkType: hard
-
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
@@ -5476,15 +5469,6 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
-  languageName: node
-  linkType: hard
-
-"@types/usb@npm:^1.5.1":
-  version: 1.5.4
-  resolution: "@types/usb@npm:1.5.4"
-  dependencies:
-    "@types/node": "*"
-  checksum: 6004717c1c31f335531ed7bf60f1b0a1e748c98c143de73497f2682e44afe9624bf8714013e98f46cdc343d0aea6cde90420319a19aa81b027f3d28e400fbd13
   languageName: node
   linkType: hard
 
@@ -10316,7 +10300,6 @@ __metadata:
     "@types/wicg-file-system-access": ^2020.9.4
     "@typescript-eslint/eslint-plugin": ^5.6.0
     "@typescript-eslint/parser": ^5.6.0
-    abort-controller: ^3.0.0
     antd: ^4.17.2
     apollo-bus-link: ^0.4.4
     apollo-link-logger: ^2.0.0
@@ -10383,7 +10366,7 @@ __metadata:
     type-guards: ^0.15.0
     typescript: ^4.5.2
     unzipit: ^1.3.6
-    usb: ^1.9.2
+    usb: 2.0.3
     uuid: ^8.3.2
     web-streams-polyfill: ^3.2.0
     webpack: ^5.64.4
@@ -10391,7 +10374,6 @@ __metadata:
     webpack-cli: ^4.9.1
     webpack-dev-server: ^4.6.0
     webpackbar: ^5.0.2
-    webusb: ^2.2.0
     workerloader-jest-transformer: ^0.0.5
   languageName: unknown
   linkType: soft
@@ -23250,14 +23232,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"usb@npm:^1.6.0, usb@npm:^1.9.2":
-  version: 1.9.2
-  resolution: "usb@npm:1.9.2"
+"usb@npm:2.0.3":
+  version: 2.0.3
+  resolution: "usb@npm:2.0.3"
   dependencies:
+    "@types/w3c-web-usb": ^1.0.4
     node-addon-api: ^4.2.0
     node-gyp: latest
     node-gyp-build: ^4.3.0
-  checksum: 7aaf6669f02c6f4bebe571de1c364447ca44be4dc8c60fc3261f38660e04015099ebed3943935ad64755afccd11213245d697ea05571a2f142d912bb801bb54f
+  checksum: df8c15a64174a30da98e15c364e7632a4bf18cb0bb0ee8319e8793b4982cd419ce1aa125d4223afa150e69a088025bfefa7e9f85a67a7d2c69d71de9c9b5681f
+  languageName: node
+  linkType: hard
+
+"usb@patch:usb@npm:2.0.3#.yarn/patches/usb-npm-2.0.3-20d40266b6::locator=edgetx-buddy%40workspace%3A.":
+  version: 2.0.3
+  resolution: "usb@patch:usb@npm%3A2.0.3#.yarn/patches/usb-npm-2.0.3-20d40266b6::version=2.0.3&hash=bf06d4&locator=edgetx-buddy%40workspace%3A."
+  dependencies:
+    "@types/w3c-web-usb": ^1.0.4
+    node-addon-api: ^4.2.0
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: 75f2e9dac80c969d7bd6bf64f6b045fdcf274e71122ecf53ba8c044db8ca2a946723685cfcca90b0a474e75008920a79b14299beaa5ac8ca866e7fb8e1287616
   languageName: node
   linkType: hard
 
@@ -23999,18 +23994,6 @@ __metadata:
   version: 0.1.4
   resolution: "websocket-extensions@npm:0.1.4"
   checksum: 5976835e68a86afcd64c7a9762ed85f2f27d48c488c707e67ba85e717b90fa066b98ab33c744d64255c9622d349eedecf728e65a5f921da71b58d0e9591b9038
-  languageName: node
-  linkType: hard
-
-"webusb@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "webusb@npm:2.2.0"
-  dependencies:
-    "@types/node": ^8.0.54
-    "@types/usb": ^1.5.1
-    "@types/w3c-web-usb": ^1.0.4
-    usb: ^1.6.0
-  checksum: 020ae79966c194eef00cbaeafbbf2f52a644413d0ca72e448e833a3993c4d02234f232efade03f5e3f5df2c709fe564eabeed3697e9cadc7869201bbd8b47f30
   languageName: node
   linkType: hard
 

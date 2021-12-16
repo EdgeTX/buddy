@@ -1,0 +1,15 @@
+diff --git a/dist/usb/bindings.js b/dist/usb/bindings.js
+index a80a550c29a45ff7ab2231c903da3c7ddc23be21..6c05c970ee9c35aa68e752d28ba9156233939dfa 100644
+--- a/dist/usb/bindings.js
++++ b/dist/usb/bindings.js
+@@ -3,8 +3,7 @@
+ //  Eric Brody <https://github.com/underscorebrody>
+ //  Rob Moran <https://github.com/thegecko>
+ Object.defineProperty(exports, "__esModule", { value: true });
+-var path_1 = require("path");
+ /* eslint-disable @typescript-eslint/no-var-requires */
+-var usb = require('node-gyp-build')(path_1.join(__dirname, '..', '..'));
++var usb = require('node-gyp-build')(__dirname + '/../..');
+ module.exports = usb;
+ //# sourceMappingURL=bindings.js.map
+\ No newline at end of file

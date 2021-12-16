@@ -12,8 +12,7 @@ import {
 import { electronBus } from "apollo-bus-link/electron";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
-import { USB } from "webusb";
-import { Device as NativeUSBDevice } from "usb";
+import { WebUSB } from "usb";
 import * as backend from "shared/backend";
 import type { FileSystemApi, UsbApi } from "shared/backend";
 import config from "shared/config";
@@ -141,25 +140,14 @@ if (process.platform === "win32") {
 
 const usbApi = (): UsbApi => {
   // Some operations can take longer for stem boards
-  NativeUSBDevice.prototype.timeout = 60000;
-  let availableDevices: USBDevice[] = [];
-
-  const usb = new USB({
-    devicesFound: (devices) => {
-      availableDevices = devices;
-      return Promise.resolve(undefined);
-    },
+  const usb = new WebUSB({
+    deviceTimeout: 60000,
+    allowAllDevices: true,
   });
 
   return {
     requestDevice: usb.requestDevice.bind(usb),
-    deviceList: async () => {
-      // No device will be returned, so ignore errors from this
-      await usb
-        .requestDevice({ filters: [{ vendorId: 0x483 }] })
-        .catch(() => {});
-      return availableDevices;
-    },
+    deviceList: async () => usb.getDevices(),
   };
 };
 
