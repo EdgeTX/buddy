@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200" src=".github/media/header.png" alt="Electron architecture">
+  <img height="200" src=".github/media/header.png" alt="EdgeTX Buddy logo">
 
 </p>
 
@@ -20,14 +20,111 @@
 
 > Helping you on your journey to EdgeTX
 
-### Development
+- [Use it online](https://buddy.edgetx.org/)
 
-linux
+## Development
 
+### Prerequisits
+
+This application uses `node-usb` when running in electron. In order to compile the bindings
+some build libraries are required dependning on platform. For MacOS and Windows, these should
+already be built in.
+
+Linux
+
+```bash
+$ sudo apt-get install build-essentials libudev-dev
 ```
-sudo apt-get install libudev-dev
+
+This software is designed to run on `node@16` which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
+
+### Commands
+
+Install deps
+
+```bash
+$ yarn
 ```
 
-#### Methods
+Developing
 
-- Cross compatible code. Everything in `./shared` should be able to run in any environment
+```bash
+# Start electron and web environments in watch mode
+$ yarn start
+
+# Start web environment only
+$ yarn start:web
+
+# Storybook component environment
+$ yarn storybook
+```
+
+Building
+
+```bash
+# Build and pack electron app (outputs renderer assets too)
+$ yarn build
+
+# Compile only web environment
+$ yarn compile:web:production
+```
+
+Run tests
+
+```bash
+$ yarn test
+```
+
+Lint
+
+```bash
+$ yarn lint:all
+
+# Or yarn lint <file>
+```
+
+Format (this codebase has enforced formatting with prettier)
+
+```bash
+$ yarn fmt
+```
+
+### Structure
+
+The application is split into different contexts
+
+- **Main**: Electron Main Process - initialising the electron application, runs the backend when running in electron. Runs in a Node.JS context
+- **Renderer**: React Web Application - Runs in browser or electron renderer process. Shows different UI depending on context.
+- **Shared**: Multi-Context code - Designed to run in any environment. Imported by both `Main` or `Renderer`
+- **Webworker**: WebWorker Context - `.bootstap` files start-up `.worker` files. Code designed only to run in WebWorker contexts.
+
+### Communication
+
+This application makes use of [`GraphQL`](https://graphql.org/) to request data across process boundary. Meaning that the `renderer` process
+is always entirely separated from the GraphQL execution environment.
+
+[Apollo Bus Link](https://github.com/freshollie/apollo-bus-link) is used to facilitate the communication between the GraphQL execution process
+in Electron or Webworker environments.
+
+<p align="center">
+  <img height="200" src="https://github.com/freshollie/apollo-bus-link/raw/main/.github/media/electron.png" alt="Electron architecture">
+  <img height="200" src="https://github.com/freshollie/apollo-bus-link/raw/main/.github/media/webworker.png" alt="Webworker architecture">
+</p>
+
+#### Exceptions
+
+Within WebWorker contexts, there are some browser functions which cannot be invoked within WebWorker contexts
+and so have to be invoked in the main process. In order to keep things in Electron and Web processes similar
+a set of [Cross Boundary Communication](src/webworker/crossboundary) functions have been defined.
+
+## Acknowledgements
+
+A massive thank you to the software which makes all of this possible. Specifically:
+
+- [Flipper Devices](https://flipperzero.one/) for their opensource [DFU library](https://github.com/flipperdevices/webdfu) which runs on [Web USB](https://wicg.github.io/webusb/)
+- [Rob Moran](https://github.com/thegecko) for their work on [`node-usb`](https://github.com/node-usb/node-usb) to support WebUSB within Node environments
+- [Jimmy Wärting](https://github.com/jimmywarting) for creating a [pollyfill](https://github.com/jimmywarting/native-file-system-adapter) of web filesystem API for Node environments
+
+## Screenshots
+
+<img height="400" src=".github/media/flashing.png" alt="Screenshot of flashing">
