@@ -108,7 +108,6 @@ const createWindow = (): void => {
 };
 const startBackend = (): void => {
   const mocked = config.isMocked || config.isE2e;
-  console.log(process.env.MOCKED);
   if (mocked) {
     console.log("Creating backend in mocked mode");
   }

@@ -87,6 +87,7 @@ const typeDefs = gql`
   type SdcardDirectory {
     id: ID!
     name: String!
+    isValid: Boolean!
     version: String
     target: String
     sounds: [String!]!
@@ -105,6 +106,28 @@ const typeDefs = gql`
     tag: String!
   }
 `;
+
+const EXPECTED_ROOT_ENTRIES = [
+  "FIRMWARE",
+  "THEMES",
+  "IMAGES",
+  "RADIO",
+  "SOUNDS",
+  "edgetx.sdcard.version",
+  "MODELS",
+  "SCRIPTS",
+  "SCREENSHOTS",
+];
+
+const getDirectoryHandle = (id: string): FileSystemDirectoryHandle => {
+  const handle = directories.find((directory) => directory.id === id)?.handle;
+
+  if (!handle) {
+    throw new GraphQLError("Directory handle does not exist");
+  }
+
+  return handle;
+};
 
 const resolvers: Resolvers = {
   Query: {
@@ -154,7 +177,17 @@ const resolvers: Resolvers = {
         (directory) => directory.id === id
       )?.handle;
 
-      return handle ? { id, name: handle.name } : null;
+      return handle
+        ? {
+            id,
+            name: handle.name,
+            isValid: false,
+            version: null,
+            target: null,
+            sounds: [],
+            themes: [],
+          }
+        : null;
     },
     sdcardWriteJobStatus: (_, { jobId }, { sdcardJobs }) =>
       sdcardJobs.getSdcardJob(jobId) ?? null,
@@ -207,6 +240,11 @@ const resolvers: Resolvers = {
       return {
         id,
         name: handle.name,
+        isValid: false,
+        version: null,
+        target: null,
+        sounds: [],
+        themes: [],
       };
     },
     createSdcardWriteJob: async (
@@ -275,6 +313,18 @@ const resolvers: Resolvers = {
       );
 
       return job;
+    },
+  },
+  SdcardDirectory: {
+    isValid: async ({ id }) => {
+      const handle = getDirectoryHandle(id);
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const entry of handle.keys()) {
+        if (EXPECTED_ROOT_ENTRIES.includes(entry)) {
+          return true;
+        }
+      }
+      return false;
     },
   },
 };
