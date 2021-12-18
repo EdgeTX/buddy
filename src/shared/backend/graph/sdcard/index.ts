@@ -5,6 +5,7 @@ import { Resolvers, SdcardWriteJob } from "shared/backend/graph/__generated__";
 import config from "shared/config";
 import { arrayFromAsync, findAsync } from "shared/tools";
 import { isNotUndefined } from "type-guards";
+import semver from "semver";
 
 // TODO: Move SD card assets to own module
 
@@ -27,11 +28,27 @@ const targetsToAssets = [
   { name: "Radiomaster TX16s", asset: "horus.zip" },
 ];
 
-const nameToId = (name: string): string =>
-  name.split(" ").join("-").toLowerCase();
+const EXPECTED_ROOT_ENTRIES = [
+  "FIRMWARE",
+  "THEMES",
+  "IMAGES",
+  "RADIO",
+  "SOUNDS",
+  "edgetx.sdcard.version",
+  "MODELS",
+  "SCRIPTS",
+  "SCREENSHOTS",
+];
 
 const typeDefs = gql`
   type Query {
+    edgeTxSdcardPackReleases: [EdgeTxSdcardPackRelease!]!
+    edgeTxSdcardPackRelease(id: ID!): EdgeTxSdcardPackRelease
+    edgeTxSoundsReleases: [EdgeTxSoundsRelease!]!
+    edgeTxSoundsRelease(
+      forPack: ID!
+      isPrerelease: Boolean!
+    ): EdgeTxSoundsRelease
     sdcardTargets: [SdcardTarget!]!
     sdcardSounds: [SdcardSoundsAsset!]!
     sdcardDirectory(id: ID!): SdcardDirectory
@@ -99,27 +116,33 @@ const typeDefs = gql`
   type SdcardTarget {
     id: ID!
     name: String!
-    tag: String!
   }
 
   type SdcardSoundsAsset {
     id: ID!
     name: String!
-    tag: String!
+  }
+
+  type GithubReleaseArtifact {
+    id: ID!
+    name: String!
+  }
+
+  type EdgeTxSdcardPackRelease {
+    id: ID!
+    name: String!
+    isPrerelease: Boolean!
+    targets: [SdcardTarget!]!
+    artifacts: [GithubReleaseArtifact!]!
+  }
+
+  type EdgeTxSoundsRelease {
+    id: ID!
+    name: String!
+    sounds: [SdcardSoundsAsset!]!
+    artifacts: [GithubReleaseArtifact!]!
   }
 `;
-
-const EXPECTED_ROOT_ENTRIES = [
-  "FIRMWARE",
-  "THEMES",
-  "IMAGES",
-  "RADIO",
-  "SOUNDS",
-  "edgetx.sdcard.version",
-  "MODELS",
-  "SCRIPTS",
-  "SCREENSHOTS",
-];
 
 const getDirectoryHandle = (id: string): FileSystemDirectoryHandle => {
   const handle = directories.find((directory) => directory.id === id)?.handle;
@@ -131,8 +154,117 @@ const getDirectoryHandle = (id: string): FileSystemDirectoryHandle => {
   return handle;
 };
 
+const nameToId = (name: string): string =>
+  name.split(" ").join("-").toLowerCase();
+
+/**
+ * Try to find the sounds which are the most up to date
+ * for the same sdcard minor version
+ */
+const findBestReleaseForPack = <
+  T extends { prerelease: boolean; tag_name: string }
+>(
+  packVersion: string,
+  isPrerelease: boolean,
+  releases: T[]
+): T | undefined =>
+  releases.find(
+    (r) =>
+      (semver.valid(r.tag_name) &&
+        semver.valid(packVersion) &&
+        semver.major(r.tag_name) === semver.major(packVersion) &&
+        semver.minor(r.tag_name) === semver.minor(packVersion) &&
+        r.prerelease === isPrerelease) ||
+      r.tag_name === packVersion
+  );
+
 const resolvers: Resolvers = {
   Query: {
+    edgeTxSdcardPackReleases: async (_, __, { github }) => {
+      const releases = (
+        await github("GET /repos/{owner}/{repo}/releases", {
+          owner: config.github.organization,
+          repo: config.github.repos.sdcard,
+        })
+      ).data;
+
+      return releases.map((release) => ({
+        id: release.tag_name,
+        targets: [],
+        name: release.name ?? release.tag_name,
+        isPrerelease: release.prerelease,
+        artifacts: release.assets.map((asset) => ({
+          ...asset,
+          id: asset.id.toString(),
+        })),
+      }));
+    },
+    edgeTxSdcardPackRelease: async (_, { id }, { github }) => {
+      const release = (
+        await github("GET /repos/{owner}/{repo}/releases/tags/{tag}", {
+          owner: config.github.organization,
+          repo: config.github.repos.sdcard,
+          tag: id,
+        }).catch(() => ({ data: undefined }))
+      ).data;
+
+      if (!release) {
+        return null;
+      }
+
+      return {
+        id: release.tag_name,
+        targets: [],
+        name: release.name ?? release.tag_name,
+        isPrerelease: release.prerelease,
+        artifacts: release.assets.map((asset) => ({
+          ...asset,
+          id: asset.id.toString(),
+        })),
+      };
+    },
+    edgeTxSoundsReleases: async (_, __, { github }) => {
+      const releases = (
+        await github("GET /repos/{owner}/{repo}/releases", {
+          owner: config.github.organization,
+          repo: config.github.repos.sounds,
+        })
+      ).data;
+
+      return releases.map((release) => ({
+        id: release.tag_name,
+        sounds: [],
+        name: release.name ?? release.tag_name,
+        artifacts: release.assets.map((asset) => ({
+          ...asset,
+          id: asset.id.toString(),
+        })),
+      }));
+    },
+    edgeTxSoundsRelease: async (_, { forPack, isPrerelease }, { github }) => {
+      const releases = (
+        await github("GET /repos/{owner}/{repo}/releases", {
+          owner: config.github.organization,
+          repo: config.github.repos.sounds,
+        })
+      ).data;
+
+      const release = findBestReleaseForPack(forPack, isPrerelease, releases);
+
+      if (!release) {
+        return null;
+      }
+
+      return {
+        id: release.tag_name,
+        sounds: [],
+        name: release.name ?? release.tag_name,
+        artifacts: release.assets.map((asset) => ({
+          ...asset,
+          id: asset.id.toString(),
+        })),
+      };
+    },
     sdcardTargets: async (_, __, { github }) => {
       const release = (
         await github("GET /repos/{owner}/{repo}/releases/latest", {
@@ -148,7 +280,6 @@ const resolvers: Resolvers = {
           .map((radio) => ({
             ...radio,
             id: nameToId(radio.name),
-            tag: release.tag_name,
           }))
       );
     },
@@ -171,7 +302,6 @@ const resolvers: Resolvers = {
         .map((name) => ({
           id: name,
           name: name.toUpperCase(),
-          tag: soundsRelease.tag_name,
         }));
     },
     sdcardDirectory: async (_, { id }) => {
@@ -325,6 +455,32 @@ const resolvers: Resolvers = {
 
       return job;
     },
+  },
+  EdgeTxSdcardPackRelease: {
+    targets: ({ artifacts }) =>
+      artifacts.flatMap((releaseArtifact) =>
+        targetsToAssets
+          .filter((radio) => radio.asset === releaseArtifact.name)
+          .map((radio) => ({
+            ...radio,
+            id: nameToId(radio.name),
+          }))
+      ),
+  },
+  EdgeTxSoundsRelease: {
+    sounds: ({ artifacts }) =>
+      artifacts
+        .filter((artifact) => artifact.name.includes("edgetx-sdcard-sounds-"))
+        .map(
+          (artifact) =>
+            // We have just filtered for this, so should be ok
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            artifact.name.split("edgetx-sdcard-sounds-")[1]!.split("-")[0]!
+        )
+        .map((name) => ({
+          id: name,
+          name: name.toUpperCase(),
+        })),
   },
   SdcardDirectory: {
     isValid: async ({ id }) => {

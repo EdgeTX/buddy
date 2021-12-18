@@ -43,12 +43,12 @@ beforeEach(() => cache.reset());
 
 describe("Backend Workers", () => {
   it("should return queried data over the webworker message transport", async () => {
-    const { nockDone } = await nock.back("sdcard-targets.json");
+    const { nockDone } = await nock.back("sdcard-pack-releases.json");
 
     const { data, errors } = await client.query({
       query: gql`
         query {
-          sdcardTargets {
+          edgeTxSdcardPackReleases {
             id
             name
           }
@@ -57,7 +57,9 @@ describe("Backend Workers", () => {
     });
 
     expect(errors).toBeFalsy();
-    expect((data?.sdcardTargets as unknown[]).length).toBeGreaterThan(0);
+    expect(
+      (data?.edgeTxSdcardPackReleases as unknown[]).length
+    ).toBeGreaterThan(0);
     nockDone();
   });
 

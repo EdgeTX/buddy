@@ -31,7 +31,6 @@ const SdcardWizard: React.FC = () => {
         sdcardTargets {
           id
           name
-          tag
         }
       }
     `)
@@ -42,7 +41,6 @@ const SdcardWizard: React.FC = () => {
         sdcardSounds {
           id
           name
-          tag
         }
       }
     `)

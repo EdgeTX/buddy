@@ -29,182 +29,254 @@ const backend = createExecutor({
 });
 
 describe("Query", () => {
-  describe("sdcardTargets", () => {
-    // TODO: Query sdcard targets by release
-    it("should return a list of sdcard targets for the latest firmware", async () => {
-      const { nockDone } = await nock.back("sdcard-targets.json");
+  describe("edgeTxSdcardPackReleases", () => {
+    it("should return the list of sdcard pack releases", async () => {
+      const { nockDone } = await nock.back("sdcard-pack-releases.json");
 
       const { data, errors } = await backend.query({
         query: gql`
           query {
-            sdcardTargets {
+            edgeTxSdcardPackReleases {
               id
               name
-              tag
             }
           }
         `,
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.sdcardTargets).toMatchInlineSnapshot(`
+      expect(data?.edgeTxSdcardPackReleases).toMatchInlineSnapshot(`
         Array [
           Object {
-            "id": "jumper-t16",
-            "name": "Jumper T16",
-            "tag": "latest",
+            "id": "latest",
+            "name": "Latest",
           },
           Object {
-            "id": "jumper-t18",
-            "name": "Jumper T18",
-            "tag": "latest",
+            "id": "v2.5.0",
+            "name": "EdgeTX \\"Dauntless\\" v2.5.0 SD Card Pack",
           },
           Object {
-            "id": "frsky-horus-x10",
-            "name": "FrSky Horus X10",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-horus-x12s",
-            "name": "FrSky Horus X12s",
-            "tag": "latest",
-          },
-          Object {
-            "id": "radiomaster-tx16s",
-            "name": "Radiomaster TX16s",
-            "tag": "latest",
-          },
-          Object {
-            "id": "flysky-nirvana",
-            "name": "FlySky Nirvana",
-            "tag": "latest",
-          },
-          Object {
-            "id": "jumper-t-lite",
-            "name": "Jumper T-Lite",
-            "tag": "latest",
-          },
-          Object {
-            "id": "jumper-t12",
-            "name": "Jumper T12",
-            "tag": "latest",
-          },
-          Object {
-            "id": "jumper-t8",
-            "name": "Jumper T8",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-qx7",
-            "name": "FrSky QX7",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-x-lite",
-            "name": "FrSky X-Lite",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-x9-lite",
-            "name": "FrSky X9 Lite",
-            "tag": "latest",
-          },
-          Object {
-            "id": "radiomaster-tx12",
-            "name": "Radiomaster TX12",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-x9d",
-            "name": "FrSky X9D",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-x9d-plus",
-            "name": "FrSky X9D Plus",
-            "tag": "latest",
-          },
-          Object {
-            "id": "frsky-x9d-plus-2019",
-            "name": "FrSky X9D Plus 2019",
-            "tag": "latest",
+            "id": "v2.4.0-rc1",
+            "name": "2.4.0-rc1",
           },
         ]
+      `);
+      nockDone();
+    });
+  });
+
+  describe("edgeTxSdcardPackRelease", () => {
+    it("should return the sdcard release and its targets", async () => {
+      const { nockDone } = await nock.back("sdcard-pack-latest.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxSdcardPackRelease(id: "latest") {
+              id
+              name
+              targets {
+                id
+                name
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxSdcardPackRelease).toMatchInlineSnapshot(`
+        Object {
+          "id": "latest",
+          "name": "Latest",
+          "targets": Array [
+            Object {
+              "id": "jumper-t16",
+              "name": "Jumper T16",
+            },
+            Object {
+              "id": "jumper-t18",
+              "name": "Jumper T18",
+            },
+            Object {
+              "id": "frsky-horus-x10",
+              "name": "FrSky Horus X10",
+            },
+            Object {
+              "id": "frsky-horus-x12s",
+              "name": "FrSky Horus X12s",
+            },
+            Object {
+              "id": "radiomaster-tx16s",
+              "name": "Radiomaster TX16s",
+            },
+            Object {
+              "id": "flysky-nirvana",
+              "name": "FlySky Nirvana",
+            },
+            Object {
+              "id": "jumper-t-lite",
+              "name": "Jumper T-Lite",
+            },
+            Object {
+              "id": "jumper-t12",
+              "name": "Jumper T12",
+            },
+            Object {
+              "id": "jumper-t8",
+              "name": "Jumper T8",
+            },
+            Object {
+              "id": "frsky-qx7",
+              "name": "FrSky QX7",
+            },
+            Object {
+              "id": "frsky-x-lite",
+              "name": "FrSky X-Lite",
+            },
+            Object {
+              "id": "frsky-x9-lite",
+              "name": "FrSky X9 Lite",
+            },
+            Object {
+              "id": "radiomaster-tx12",
+              "name": "Radiomaster TX12",
+            },
+            Object {
+              "id": "frsky-x9d",
+              "name": "FrSky X9D",
+            },
+            Object {
+              "id": "frsky-x9d-plus",
+              "name": "FrSky X9D Plus",
+            },
+            Object {
+              "id": "frsky-x9d-plus-2019",
+              "name": "FrSky X9D Plus 2019",
+            },
+          ],
+        }
+      `);
+
+      nockDone();
+    });
+
+    it("should return null if the release doesn't exist", async () => {
+      const { nockDone } = await nock.back("sdcard-pack-not-exist.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxSdcardPackRelease(id: "some-unknown-release") {
+              id
+              name
+              targets {
+                id
+                name
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxSdcardPackRelease).toBeNull();
+
+      nockDone();
+    });
+  });
+
+  describe("edgeTxSoundsRelease", () => {
+    it("should return the available sounds for the sdcard park", async () => {
+      const { nockDone } = await nock.back("sdcard-sounds-releases.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxSoundsRelease(forPack: "v2.5.0", isPrerelease: false) {
+              id
+              name
+              sounds {
+                id
+                name
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
+        Object {
+          "id": "v2.5.3",
+          "name": "2.5.3",
+          "sounds": Array [
+            Object {
+              "id": "cn",
+              "name": "CN",
+            },
+            Object {
+              "id": "cz",
+              "name": "CZ",
+            },
+            Object {
+              "id": "de",
+              "name": "DE",
+            },
+            Object {
+              "id": "en",
+              "name": "EN",
+            },
+            Object {
+              "id": "es",
+              "name": "ES",
+            },
+            Object {
+              "id": "fr",
+              "name": "FR",
+            },
+            Object {
+              "id": "it",
+              "name": "IT",
+            },
+            Object {
+              "id": "pt",
+              "name": "PT",
+            },
+            Object {
+              "id": "ru",
+              "name": "RU",
+            },
+          ],
+        }
       `);
 
       nockDone();
     });
   });
 
-  describe("sdcardSounds", () => {
-    it("should return the available sdcard assets", async () => {
-      const { nockDone } = await nock.back("sdcard-sounds.json");
+  it("should return prerelease sounds for a prerelease version", async () => {
+    const { nockDone } = await nock.back("sdcard-sounds-releases.json");
 
-      const { data, errors } = await backend.query({
-        query: gql`
-          query {
-            sdcardSounds {
-              id
-              name
-              tag
-            }
+    const { data, errors } = await backend.query({
+      query: gql`
+        query {
+          edgeTxSoundsRelease(forPack: "v2.4.0-rc1", isPrerelease: true) {
+            id
+            name
           }
-        `,
-      });
-
-      expect(errors).toBeFalsy();
-      expect(data?.sdcardSounds).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "id": "cn",
-            "name": "CN",
-            "tag": "latest",
-          },
-          Object {
-            "id": "cz",
-            "name": "CZ",
-            "tag": "latest",
-          },
-          Object {
-            "id": "de",
-            "name": "DE",
-            "tag": "latest",
-          },
-          Object {
-            "id": "en",
-            "name": "EN",
-            "tag": "latest",
-          },
-          Object {
-            "id": "es",
-            "name": "ES",
-            "tag": "latest",
-          },
-          Object {
-            "id": "fr",
-            "name": "FR",
-            "tag": "latest",
-          },
-          Object {
-            "id": "it",
-            "name": "IT",
-            "tag": "latest",
-          },
-          Object {
-            "id": "pt",
-            "name": "PT",
-            "tag": "latest",
-          },
-          Object {
-            "id": "ru",
-            "name": "RU",
-            "tag": "latest",
-          },
-        ]
-      `);
-
-      nockDone();
+        }
+      `,
     });
+
+    expect(errors).toBeFalsy();
+    expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
+      Object {
+        "id": "v2.4.0-rc3",
+        "name": "2.4.0-rc3",
+      }
+    `);
+    nockDone();
   });
 });
 
