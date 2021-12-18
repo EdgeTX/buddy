@@ -14,7 +14,9 @@ import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginP
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import { SdcardWriteJob } from "shared/backend/graph/__generated__";
 import tmp from "tmp-promise";
+import fs from "fs/promises";
 import { directorySnapshot, waitForStageCompleted } from "test-utils/tools";
+import path from "path";
 
 const requestWritableDirectory = jest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -207,6 +209,17 @@ describe("Query", () => {
 });
 
 describe("Mutation", () => {
+  let tempDir: tmp.DirectoryResult;
+  jest.setTimeout(20000);
+
+  beforeEach(async () => {
+    tempDir = await tmp.dir({ unsafeCleanup: true });
+  });
+
+  afterEach(async () => {
+    await tempDir.cleanup();
+  });
+
   describe("pickSdcardDirectory", () => {
     it("should return a file system handler requested by the user", async () => {
       requestWritableDirectory.mockResolvedValue({
@@ -348,6 +361,333 @@ describe("Mutation", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.pickSdcardDirectory).toBeNull();
+    });
+
+    describe("isValid", () => {
+      it.each([
+        "THEMES",
+        "SOUNDS",
+        "FIRMWARE",
+        "edgetx.sdcard.version",
+        "SCRIPTS",
+        "SCREENSHOTS",
+      ])(
+        "should return true if the directory contains %s",
+        async (name: string) => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
+
+          await fs.writeFile(path.join(tempDir.path, name), "");
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  name
+                  isValid
+                }
+              }
+            `,
+          });
+
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            isValid: true,
+          });
+        }
+      );
+
+      it("should return false if the directory contains %", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        await fs.writeFile(path.join(tempDir.path, "some-other-file"), "");
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                name
+                isValid
+              }
+            }
+          `,
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          isValid: false,
+        });
+      });
+    });
+
+    describe("sounds", () => {
+      it("should return the sounds stored in the SD Card", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        await Promise.all(
+          ["en", "cn", "fr", "es"].map(async (folderName) => {
+            await fs.mkdir(path.join(tempDir.path, "SOUNDS", folderName), {
+              recursive: true,
+            });
+          })
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                sounds
+              }
+            }
+          `,
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          sounds: expect.arrayContaining(["cn", "en", "es", "fr"]),
+        });
+      });
+
+      it("should return no sounds if there is no SOUNDS directory", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                sounds
+              }
+            }
+          `,
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          sounds: [],
+        });
+      });
+    });
+
+    describe("themes", () => {
+      it("should not return any themes if there is no THEMES directory", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                themes
+              }
+            }
+          `,
+        });
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          themes: [],
+        });
+      });
+
+      describe("in legacy format", () => {
+        it("should return themes stored on the sdcard", async () => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
+
+          await fs.mkdir(path.join(tempDir.path, "THEMES"));
+
+          await Promise.all(
+            ["dark", "light", "green", "blue"]
+              .map(async (themeName) => {
+                await fs.writeFile(
+                  path.join(tempDir.path, "THEMES", `${themeName}.yml`),
+                  ""
+                );
+              })
+              .concat(
+                ["otherfiles.png", "anotherfile.txt"].map(async (file) => {
+                  await fs.writeFile(
+                    path.join(tempDir.path, "THEMES", file),
+                    ""
+                  );
+                })
+              )
+          );
+
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  themes
+                }
+              }
+            `,
+          });
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            themes: expect.arrayContaining(["dark", "light", "green", "blue"]),
+          });
+        });
+      });
+
+      describe("v2.6+", () => {
+        it("should return themes stored on the sdcard", async () => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
+
+          await Promise.all(
+            ["dark", "light", "green", "blue"].map(async (themeName) => {
+              await fs.mkdir(path.join(tempDir.path, "THEMES", themeName), {
+                recursive: true,
+              });
+
+              await fs.writeFile(
+                path.join(tempDir.path, "THEMES", themeName, "theme.yml"),
+                ""
+              );
+            })
+          );
+
+          await Promise.all(
+            ["not-a-theme", "also-not-a-theme"].map(async (themeName) => {
+              await fs.mkdir(path.join(tempDir.path, "THEMES", themeName), {
+                recursive: true,
+              });
+
+              await fs.writeFile(
+                path.join(tempDir.path, "THEMES", themeName, "something.xml"),
+                ""
+              );
+            })
+          );
+
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  themes
+                }
+              }
+            `,
+          });
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            themes: expect.arrayContaining(["dark", "light", "green", "blue"]),
+          });
+        });
+      });
+    });
+
+    describe("version", () => {
+      it("should return the version from edgetx.sdcard.version file", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        await fs.writeFile(
+          path.join(tempDir.path, "edgetx.sdcard.version"),
+          "v2.5.4"
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                version
+              }
+            }
+          `,
+        });
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          version: "v2.5.4",
+        });
+      });
+
+      it("should return null if there is no edgetx.sdcard.version file", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                version
+              }
+            }
+          `,
+        });
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          version: null,
+        });
+      });
+    });
+
+    describe("target", () => {
+      it("should return the target from edgetx.sdcard.target file", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        await fs.writeFile(
+          path.join(tempDir.path, "edgetx.sdcard.target"),
+          "nv14"
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                target
+              }
+            }
+          `,
+        });
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          target: "nv14",
+        });
+      });
+
+      it("should return null if there is no edgetx.sdcard.target file", async () => {
+        requestWritableDirectory.mockResolvedValueOnce(
+          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+        );
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RequestFolder {
+              pickSdcardDirectory {
+                id
+                target
+              }
+            }
+          `,
+        });
+        expect(errors).toBeFalsy();
+        expect(data?.pickSdcardDirectory).toMatchObject({
+          target: null,
+        });
+      });
     });
   });
 });

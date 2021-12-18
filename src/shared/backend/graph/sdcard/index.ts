@@ -3,6 +3,8 @@ import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
 import { Resolvers, SdcardWriteJob } from "shared/backend/graph/__generated__";
 import config from "shared/config";
+import { arrayFromAsync, findAsync } from "shared/tools";
+import { isNotUndefined } from "type-guards";
 
 // TODO: Move SD card assets to own module
 
@@ -318,13 +320,94 @@ const resolvers: Resolvers = {
   SdcardDirectory: {
     isValid: async ({ id }) => {
       const handle = getDirectoryHandle(id);
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const entry of handle.keys()) {
-        if (EXPECTED_ROOT_ENTRIES.includes(entry)) {
-          return true;
+      return !!(await findAsync(handle.keys(), (entry) =>
+        EXPECTED_ROOT_ENTRIES.includes(entry)
+      ));
+    },
+    sounds: async ({ id }) => {
+      const handle = getDirectoryHandle(id);
+      const soundsDirectoryHandle = await handle
+        .getDirectoryHandle("SOUNDS")
+        .catch(() => undefined);
+
+      if (soundsDirectoryHandle) {
+        return (await arrayFromAsync(soundsDirectoryHandle.values()))
+          .filter(
+            (file): file is FileSystemDirectoryHandle =>
+              file.kind === "directory"
+          )
+          .map((folder) => folder.name);
+      }
+      return [];
+    },
+
+    themes: async ({ id }) => {
+      const handle = getDirectoryHandle(id);
+      const themesDirectoryHandle = await handle
+        .getDirectoryHandle("THEMES", { create: true })
+        .catch(() => undefined);
+
+      if (themesDirectoryHandle) {
+        const themeFiles = await arrayFromAsync(themesDirectoryHandle.values());
+        const validThemeDirectories = (
+          await Promise.all(
+            themeFiles
+              .filter(
+                (file): file is FileSystemDirectoryHandle =>
+                  file.kind === "directory"
+              )
+              .map((folder) =>
+                folder
+                  .getFileHandle("theme.yml")
+                  .then(() => folder.name)
+                  .catch(() => undefined)
+              )
+          )
+        ).filter(isNotUndefined);
+
+        if (validThemeDirectories.length > 0) {
+          return validThemeDirectories;
+        }
+
+        const themeFileConfigs = await Promise.all(
+          themeFiles
+            .filter(
+              (file): file is FileSystemFileHandle =>
+                file.kind === "file" && file.name.endsWith(".yml")
+            )
+            .map((file) => file.name.replace(".yml", ""))
+        );
+
+        return themeFileConfigs;
+      }
+      return [];
+    },
+    version: async ({ id }) => {
+      const handle = getDirectoryHandle(id);
+      const versionFile = await handle
+        .getFileHandle("edgetx.sdcard.version")
+        .then((h) => h.getFile())
+        .catch(() => undefined);
+      if (versionFile) {
+        const contents = await versionFile.text();
+        if (contents.startsWith("v")) {
+          return contents;
         }
       }
-      return false;
+
+      return null;
+    },
+    target: async ({ id }) => {
+      const handle = getDirectoryHandle(id);
+      const versionFile = await handle
+        .getFileHandle("edgetx.sdcard.target")
+        .then((h) => h.getFile())
+        .catch(() => undefined);
+      if (versionFile) {
+        return versionFile.text();
+      }
+
+      return null;
     },
   },
 };

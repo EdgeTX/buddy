@@ -15,3 +15,29 @@ export const hexString = (num: number): string => {
     .toUpperCase()
     .padStart(byteCount * 2, "0")}`;
 };
+
+export const arrayFromAsync = async <T>(
+  iterator: AsyncIterableIterator<T>
+): Promise<T[]> => {
+  const data: T[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const value of iterator) {
+    data.push(value);
+  }
+
+  return data;
+};
+
+export const findAsync = async <T>(
+  iterator: AsyncIterableIterator<T>,
+  findFunc: (item: T) => boolean
+): Promise<T | undefined> => {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const value of iterator) {
+    if (findFunc(value)) {
+      return value;
+    }
+  }
+
+  return undefined;
+};
