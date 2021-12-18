@@ -14,7 +14,7 @@
     <img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square">
   </a>
   <a href="https://app.netlify.com/sites/edgetx-buddy/deploys" >
-    <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/ca5e3f4a-673c-47de-9f5c-cbb3f1fd52a2/deploy-status">
+    <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/7e118675-653f-4f0e-b0e2-69b14c9306d2/deploy-status">
   </a>
   <a href="https://github.com/storybooks/storybook" target="_blank">
     <img src="https://raw.githubusercontent.com/storybooks/brand/master/badge/badge-storybook.svg">
