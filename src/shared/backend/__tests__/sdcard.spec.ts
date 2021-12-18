@@ -701,7 +701,7 @@ const waitForSdcardJobCompleted = async (jobId: string) => {
 
 describe("Sdcard Job", () => {
   let tempDir: tmp.DirectoryResult;
-  jest.setTimeout(20000);
+  jest.setTimeout(60000);
 
   beforeEach(async () => {
     tempDir = await tmp.dir({ unsafeCleanup: true });
