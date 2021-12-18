@@ -116,7 +116,7 @@ const SdcardWriteExecution: React.FC = () => {
   useEffect(() => {
     if (!jobId || (!loading && !jobExists) || error || jobCancelled) {
       // this job doesn't exist or has now been cancelled
-      navigate("/sdcard", { replace: true });
+      navigate("/sdcardv1", { replace: true });
     }
   }, [jobId, loading, jobCancelled, error, jobExists, navigate]);
 

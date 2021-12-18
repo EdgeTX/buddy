@@ -10,8 +10,10 @@ export default {
   component: SelectSdcardScreen,
 };
 
-const Story: React.FC<{ isValid: boolean }> = ({ isValid }) => (
-  <MockedProvider mocks={[pickSdcardDirectoryMutation(isValid)]}>
+const Story: React.FC<{ select: boolean }> = ({ select }) => (
+  <MockedProvider
+    mocks={[pickSdcardDirectoryMutation(select ? "some-id" : undefined)]}
+  >
     <MemoryRouter initialEntries={["/sdcard"]}>
       <Layout>
         <Routes>
@@ -23,6 +25,5 @@ const Story: React.FC<{ isValid: boolean }> = ({ isValid }) => (
   </MockedProvider>
 );
 
-export const invalidDirectory = () => <Story isValid={false} />;
-
-export const validDirectory = () => <Story isValid />;
+export const directorySelected = () => <Story select />;
+export const directoryNotSelected = () => <Story select={false} />;

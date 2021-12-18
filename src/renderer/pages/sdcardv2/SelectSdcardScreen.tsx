@@ -3,9 +3,8 @@ import {
   PoweroffOutlined,
   UsbOutlined,
   FolderOutlined,
-  ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Typography, Divider, Modal } from "antd";
+import { Button, Typography, Divider } from "antd";
 import React from "react";
 import {
   FullHeightCentered,
@@ -44,10 +43,9 @@ const SelectSdcardScreen: React.FC = () => {
 
   const [selectDirectory] = useMutation(
     gql(/* GraphQL */ `
-      mutation PickValidSdcardDirectory {
+      mutation PickSdcardDirectory {
         pickSdcardDirectory {
           id
-          isValid
         }
       }
     `)
@@ -102,22 +100,7 @@ const SelectSdcardScreen: React.FC = () => {
               void selectDirectory().then((result) => {
                 if (result.data?.pickSdcardDirectory) {
                   const directory = result.data.pickSdcardDirectory;
-                  if (!directory.isValid) {
-                    Modal.confirm({
-                      title: "Are you sure this is the SD Card?",
-                      icon: <ExclamationCircleOutlined />,
-                      content:
-                        "The selected directory might not be the SD card. If your SD Card is empty, please continue, otherwise please make sure you select the root of the SD Card",
-                      okText: "Continue",
-                      cancelText: "Go back",
-                      okType: "danger",
-                      onOk: () => {
-                        navigate(`/sdcard/${directory.id}`);
-                      },
-                    });
-                  } else {
-                    navigate(`/sdcard/${directory.id}`);
-                  }
+                  navigate(`/sdcard/${directory.id}`);
                 }
               });
             }}

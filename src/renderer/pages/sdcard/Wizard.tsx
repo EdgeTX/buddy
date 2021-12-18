@@ -50,7 +50,7 @@ const SdcardWizard: React.FC = () => {
 
   const [pickFolder] = useMutation(
     gql(/* GraphQL */ `
-      mutation PickSdcardDirectory {
+      mutation PickSdcardDirectoryWithName {
         pickSdcardDirectory {
           id
           name
@@ -178,7 +178,7 @@ const SdcardWizard: React.FC = () => {
               },
             }).then((result) => {
               if (result.data?.createSdcardWriteJob.id) {
-                navigate(`/sdcard/${result.data.createSdcardWriteJob.id}`);
+                navigate(`/sdcardv1/${result.data.createSdcardWriteJob.id}`);
               } else {
                 console.log(result);
               }

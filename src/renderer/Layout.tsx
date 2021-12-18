@@ -41,7 +41,7 @@ const AppLayout: React.FC = ({ children }) => (
           <Link to="/flash">Flash</Link>
         </Menu.Item>
         <Menu.Item key="2">
-          <Link to="/sdcard">SD Card</Link>
+          <Link to="/sdcardv1">SD Card</Link>
         </Menu.Item>
       </Menu>
     </Header>

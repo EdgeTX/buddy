@@ -174,10 +174,19 @@ const resolvers: Resolvers = {
           tag: soundsRelease.tag_name,
         }));
     },
-    sdcardDirectory: (_, { id }) => {
+    sdcardDirectory: async (_, { id }) => {
       const handle = directories.find(
         (directory) => directory.id === id
       )?.handle;
+
+      // Make sure the directory still exists
+      if (handle) {
+        try {
+          await arrayFromAsync(handle.keys());
+        } catch {
+          return null;
+        }
+      }
 
       return handle
         ? {

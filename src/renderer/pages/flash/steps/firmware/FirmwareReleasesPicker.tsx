@@ -1,12 +1,9 @@
-import { Select, Form, Menu, Dropdown, Checkbox } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { InfoCircleOutlined, DownOutlined } from "@ant-design/icons";
 import useSorted from "renderer/hooks/useSorted";
-
-export type VersionFilters = {
-  includePrereleases: boolean;
-};
+import VersionTargetForm, {
+  VersionFilters,
+} from "renderer/components/VersionTargetForm";
 
 type Props = {
   onChanged: (values: {
@@ -73,14 +70,28 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   const sortedTargets = useSorted(targets, (r1, r2) =>
     r1.name.localeCompare(r2.name)
   );
+  const selectedTarget = sortedTargets.find((t) => t.id === target);
 
   // If a target is selected which is not in the new list,
   // deselect
   useEffect(() => {
-    if (targets && target && !targets.find((t) => t.id === target)) {
+    if (
+      sortedTargets.length > 0 &&
+      target &&
+      !selectedTarget &&
+      releaseTargetsQuery.loading
+    ) {
       onChanged({ version, target: undefined, filters });
     }
-  }, [targets, target, version, onChanged, filters]);
+  }, [
+    sortedTargets.length,
+    selectedTarget,
+    target,
+    version,
+    onChanged,
+    filters,
+    releaseTargetsQuery,
+  ]);
 
   // If a version is selected which is not in the list
   // deselect
@@ -98,133 +109,24 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   }, [sortedReleases, version, releasesQuery, onChanged, filters]);
 
   return (
-    <Form
-      layout="vertical"
-      onValuesChange={(_, values) =>
-        onChanged({ ...values, filters } as Parameters<typeof onChanged>[0])
-      }
-      fields={Object.entries({
-        target,
-        version,
-      }).map(([key, value]) => ({ name: [key], value }))}
-      size="large"
-    >
-      <Form.Item
-        label="Version"
-        name="version"
-        tooltip={{
-          title: "The version of EdgeTX to flash",
-          icon: <InfoCircleOutlined />,
-        }}
-        help={
-          releasesQuery.error ? (
-            "Could not load releases"
-          ) : (
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <VersionFiltersDropdown
-                filters={filters}
-                onChange={(newFilters) => {
-                  onChanged({ version, target, filters: newFilters });
-                }}
-              />
-            </div>
-          )
-        }
-        validateStatus={releasesQuery.error ? "error" : undefined}
-        required
-      >
-        <Select
-          value={version}
-          allowClear={false}
-          placeholder={
-            releasesQuery.loading ? "Loading releases..." : "Select a version"
-          }
-          loading={releasesQuery.loading}
-          disabled={!!releasesQuery.error}
-        >
-          {sortedReleases.map((r) => (
-            <Select.Option key={r.id} value={r.id}>
-              {r.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-      <Form.Item
-        label="Radio"
-        name="target"
-        tooltip={{
-          title: "The type of radio you want to flash",
-          icon: <InfoCircleOutlined />,
-        }}
-        help={releaseTargetsQuery.error ? "Could not load targets" : undefined}
-        required
-        validateStatus={releaseTargetsQuery.error ? "error" : undefined}
-      >
-        <Select
-          value={target}
-          allowClear={false}
-          loading={releaseTargetsQuery.loading}
-          disabled={
-            !selectedFirmware ||
-            !!releaseTargetsQuery.error ||
-            releaseTargetsQuery.loading
-          }
-          placeholder={
-            !selectedFirmware
-              ? "Select a firmware to see available targets"
-              : "Select a radio"
-          }
-        >
-          {sortedTargets.map((t) => (
-            <Select.Option key={t.id} value={t.id}>
-              {t.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-    </Form>
-  );
-};
-
-const filterNames: Record<keyof VersionFilters, string> = {
-  includePrereleases: "Include pre-releases",
-};
-
-const VersionFiltersDropdown: React.FC<{
-  filters: VersionFilters;
-  onChange: (filters: VersionFilters) => void;
-}> = ({ filters, onChange }) => {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <Dropdown
-      visible={visible}
-      trigger={["click"]}
-      onVisibleChange={(flag) => setVisible(flag)}
-      overlay={
-        <Menu>
-          {(Object.entries(filters) as [keyof VersionFilters, boolean][]).map(
-            ([key, value]) => (
-              <Menu.Item key={key}>
-                <Checkbox
-                  checked={value}
-                  onChange={(e) =>
-                    onChange({ ...filters, [key]: e.target.checked })
-                  }
-                >
-                  {filterNames[key]}
-                </Checkbox>
-              </Menu.Item>
-            )
-          )}
-        </Menu>
-      }
-    >
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-        Filters <DownOutlined />
-      </a>
-    </Dropdown>
+    <VersionTargetForm
+      onChanged={onChanged}
+      filters={filters}
+      versions={{
+        available: sortedReleases,
+        selectedId: selectedFirmware?.id,
+        error: !!releasesQuery.error,
+        loading: releasesQuery.loading,
+        tooltip: "The version of EdgeTX to flash",
+      }}
+      targets={{
+        available: sortedTargets,
+        selectedId: selectedTarget?.id,
+        error: !!releaseTargetsQuery.error,
+        loading: releaseTargetsQuery.loading,
+        tooltip: "The type of radio you want to flash",
+      }}
+    />
   );
 };
 

@@ -10,9 +10,8 @@ import {
   StepControlsContainer,
 } from "renderer/pages/flash/shared";
 import { Centered, FullHeight } from "renderer/shared/layouts";
-import FirmwareReleasesPicker, {
-  VersionFilters,
-} from "./firmware/FirmwareReleasesPicker";
+import { VersionFilters } from "renderer/components/VersionTargetForm";
+import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
 

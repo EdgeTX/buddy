@@ -5,6 +5,8 @@ import FlashingWizard from "./pages/flash/FlashingWizard";
 import FlashExecution from "./pages/flash/FlashExecution";
 import SdcardWizard from "./pages/sdcard/Wizard";
 import SdcardWriteExecution from "./pages/sdcard/Execution";
+import SdcardEditor from "./pages/sdcardv2/SdcardEditor";
+import SelectSdcardScreen from "./pages/sdcardv2/SelectSdcardScreen";
 
 const NextGeneration: React.FC = () => (
   <HashRouter>
@@ -12,8 +14,11 @@ const NextGeneration: React.FC = () => (
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />
         <Route path="/flash/:jobId" element={<FlashExecution />} />
-        <Route path="/sdcard" element={<SdcardWizard />} />
-        <Route path="/sdcard/:jobId" element={<SdcardWriteExecution />} />
+        <Route path="/sdcard" element={<SelectSdcardScreen />} />
+        <Route path="/sdcard/:directoryId" element={<SdcardEditor />} />
+
+        <Route path="/sdcardv1" element={<SdcardWizard />} />
+        <Route path="/sdcardv1/:jobId" element={<SdcardWriteExecution />} />
         <Route path="*" element={<Navigate replace to="/flash" />} />
       </Routes>
     </Layout>
