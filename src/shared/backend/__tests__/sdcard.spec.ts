@@ -217,7 +217,7 @@ describe("Mutation", () => {
   });
 
   afterEach(async () => {
-    await tempDir.cleanup();
+    await tempDir.cleanup().catch(() => {});
   });
 
   describe("pickSdcardDirectory", () => {
@@ -245,9 +245,10 @@ describe("Mutation", () => {
     });
 
     it("should allow the directory info to be queried after being picked", async () => {
-      requestWritableDirectory.mockResolvedValue({
-        name: "/some/other/directory",
-      } as FileSystemDirectoryHandle);
+      const handle = await getOriginPrivateDirectory(nodeAdapter, tempDir.path);
+      // @ts-expect-error is readonly but this is testing
+      handle.name = tempDir.path;
+      requestWritableDirectory.mockResolvedValueOnce(handle);
 
       const requestDirectoryResponse = await backend.mutate({
         mutation: gql`
@@ -281,8 +282,48 @@ describe("Mutation", () => {
       expect(errors).toBeFalsy();
       expect(data?.sdcardDirectory).toEqual({
         id,
-        name: "/some/other/directory",
+        name: tempDir.path,
       });
+    });
+
+    it("should return null if the directory can no longer be read", async () => {
+      requestWritableDirectory.mockResolvedValueOnce(
+        await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+      );
+
+      const requestDirectoryResponse = await backend.mutate({
+        mutation: gql`
+          mutation RequestDirectory {
+            pickSdcardDirectory {
+              id
+              name
+            }
+          }
+        `,
+      });
+
+      const { id } = requestDirectoryResponse.data?.pickSdcardDirectory as {
+        id: string;
+      };
+
+      await fs.rmdir(tempDir.path);
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query SdcardDirectoryQuery($id: ID!) {
+            sdcardDirectory(id: $id) {
+              id
+              name
+            }
+          }
+        `,
+        variables: {
+          id,
+        },
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.sdcardDirectory).toEqual(null);
     });
 
     it("should only keep 5 directory handles", async () => {
