@@ -4,17 +4,20 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/freshollie/edgetx-buddy/actions">
-    <img src="https://github.com/freshollie/fresh-configurator/workflows/pipeline/badge.svg" alt="Pipeline status">
+  <a href="https://github.com/EdgeTX/buddy/actions">
+    <img src="https://github.com/EdgeTX/buddy/workflows/pipeline/badge.svg" alt="Pipeline status">
   </a>
-  <a href="https://codecov.io/gh/freshollie/edgetx-buddy">
-    <img alt="Coverage" src="https://codecov.io/gh/freshollie/edgetx-buddy/branch/main/graph/badge.svg?token=B5ZM49925A">
+  <a href="https://codecov.io/gh/EdgeTX/buddy">
+    <img alt="Coverage" src="https://codecov.io/gh/EdgeTX/buddy/branch/main/graph/badge.svg?token=B5ZM49925A">
   </a>
   <a href="https://github.com/prettier/prettier">
     <img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square">
   </a>
   <a href="https://app.netlify.com/sites/edgetx-buddy/deploys" >
     <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/ca5e3f4a-673c-47de-9f5c-cbb3f1fd52a2/deploy-status">
+  </a>
+  <a href="https://github.com/storybooks/storybook" target="_blank">
+    <img src="https://raw.githubusercontent.com/storybooks/brand/master/badge/badge-storybook.svg">
   </a>
 </p>
 
@@ -27,7 +30,7 @@
 ### Prerequisits
 
 This application uses `node-usb` when running in electron. In order to compile the bindings
-some build libraries are required dependning on platform. For MacOS and Windows, these should
+some build libraries are required depending on platform. For MacOS and Windows, these should
 already be built in.
 
 Linux
