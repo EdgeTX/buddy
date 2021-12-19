@@ -91,68 +91,84 @@ describe("Query", () => {
           "name": "Latest",
           "targets": Array [
             Object {
-              "id": "jumper-t16",
+              "id": "t16",
               "name": "Jumper T16",
             },
             Object {
-              "id": "jumper-t18",
+              "id": "t18",
               "name": "Jumper T18",
             },
             Object {
-              "id": "frsky-horus-x10",
-              "name": "FrSky Horus X10",
+              "id": "x10",
+              "name": "Frsky Horus X10",
             },
             Object {
-              "id": "frsky-horus-x12s",
-              "name": "FrSky Horus X12s",
+              "id": "x10-access",
+              "name": "Frsky Horus X10 Access",
             },
             Object {
-              "id": "radiomaster-tx16s",
+              "id": "x12s",
+              "name": "Frsky Horus X12s",
+            },
+            Object {
+              "id": "tx16s",
               "name": "Radiomaster TX16s",
             },
             Object {
-              "id": "flysky-nirvana",
-              "name": "FlySky Nirvana",
+              "id": "nv14",
+              "name": "Flysky NV14",
             },
             Object {
-              "id": "jumper-t-lite",
+              "id": "tlite",
               "name": "Jumper T-Lite",
             },
             Object {
-              "id": "jumper-t12",
+              "id": "t12",
               "name": "Jumper T12",
             },
             Object {
-              "id": "jumper-t8",
+              "id": "t8",
               "name": "Jumper T8",
             },
             Object {
-              "id": "frsky-qx7",
-              "name": "FrSky QX7",
+              "id": "x7",
+              "name": "Frsky QX7",
             },
             Object {
-              "id": "frsky-x-lite",
-              "name": "FrSky X-Lite",
+              "id": "x7-access",
+              "name": "Frsky QX7 Access",
             },
             Object {
-              "id": "frsky-x9-lite",
-              "name": "FrSky X9 Lite",
+              "id": "xlite",
+              "name": "Frsky X-Lite",
             },
             Object {
-              "id": "radiomaster-tx12",
+              "id": "xlites",
+              "name": "Frsky X-Lite S",
+            },
+            Object {
+              "id": "x9lite",
+              "name": "Frsky X9 Lite",
+            },
+            Object {
+              "id": "x9lites",
+              "name": "Frsky X9 Lite S",
+            },
+            Object {
+              "id": "tx12",
               "name": "Radiomaster TX12",
             },
             Object {
-              "id": "frsky-x9d",
-              "name": "FrSky X9D",
+              "id": "x9d",
+              "name": "Frsky X9D",
             },
             Object {
-              "id": "frsky-x9d-plus",
-              "name": "FrSky X9D Plus",
+              "id": "x9dp",
+              "name": "Frsky X9D Plus",
             },
             Object {
-              "id": "frsky-x9d-plus-2019",
-              "name": "FrSky X9D Plus 2019",
+              "id": "x9dp2019",
+              "name": "Frsky X9D Plus 2019",
             },
           ],
         }
@@ -853,7 +869,7 @@ describe("Sdcard Job", () => {
         mutation CreateSdcardJob($directoryId: ID!) {
           createSdcardWriteJob(
             directoryId: $directoryId
-            target: "jumper-t8"
+            target: "t8"
             sounds: "cn"
           ) {
             id

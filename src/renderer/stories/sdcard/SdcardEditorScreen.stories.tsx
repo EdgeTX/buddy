@@ -3,7 +3,11 @@ import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Layout from "renderer/Layout";
 import SdcardEditor from "renderer/pages/sdcardv2/SdcardEditor";
-import { sdcardInfoQuery } from "./mocks";
+import {
+  sdcardAssetInfoQuery,
+  sdcardInfoQuery,
+  sdcardPacksQuery,
+} from "./mocks";
 
 export default {
   title: "Sdcard/SdcardEditor",
@@ -25,6 +29,12 @@ const Story: React.FC<{ good: boolean; exists?: boolean }> = ({
             : { isValid: false }
           : undefined
       ),
+      sdcardAssetInfoQuery("some-id", {
+        version: "v2.5.0",
+        target: "nv14",
+        sounds: ["en"],
+      }),
+      sdcardPacksQuery,
     ]}
   >
     <MemoryRouter initialEntries={["/sdcard/some-id"]}>

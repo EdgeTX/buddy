@@ -3,11 +3,14 @@ import { gql, useQuery } from "@apollo/client";
 import { Modal, Tabs } from "antd";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import useMedia from "use-media";
+
 import AssetsTab from "./editor/AssetsTab";
 
 const SdcardEditor: React.FC = () => {
   const { directoryId, tab } = useParams();
   const navigate = useNavigate();
+  const isWide = useMedia({ minWidth: "1200px" });
 
   const { data, loading, error } = useQuery(
     gql(/* GraphQL */ `
@@ -74,16 +77,20 @@ const SdcardEditor: React.FC = () => {
       activeKey={tab}
       size="large"
       type="card"
-      tabPosition="left"
+      tabPosition={isWide ? "left" : "top"}
       onTabClick={(newTab) => {
         if (newTab !== tab) {
           navigate(`/sdcard/${directoryId}/${newTab}`);
         }
       }}
       destroyInactiveTabPane
-      tabBarStyle={{
-        width: "100px",
-      }}
+      tabBarStyle={
+        isWide
+          ? {
+              width: "100px",
+            }
+          : undefined
+      }
     >
       <Tabs.TabPane
         tab={
