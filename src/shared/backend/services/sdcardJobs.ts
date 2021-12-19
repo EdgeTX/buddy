@@ -9,9 +9,22 @@ import {
   SdcardWriteJobStages,
 } from "shared/backend/graph/__generated__";
 import { Context } from "shared/backend/context";
+import { isNotUndefined } from "type-guards";
+
+type WriteMeta = {
+  pack?: {
+    version?: string;
+    target?: string;
+  };
+  sounds?: {
+    version?: string;
+  };
+};
 
 export const jobUpdates = new PubSub();
 const sdcardJobs: Record<string, SdcardWriteJob> = {};
+
+const NO_ERASE_DIRECTORIES = ["RADIO", "MODELS", "EEPROM"];
 
 export const createSdcardJob = (
   stages: (keyof Omit<SdcardWriteJobStages, "__typename">)[]
@@ -44,7 +57,8 @@ export const startExecution = async (
   args: {
     assetUrls: string[];
     directoryHandle: FileSystemDirectoryHandle;
-    clean: boolean;
+    clean: boolean | string[];
+    writeMeta?: WriteMeta;
   },
   { sdcardAssets }: Context
 ): // This may at some poit require async use, so ignore
@@ -84,17 +98,15 @@ Promise<void> => {
 
     /** Clean */
     if (args.clean) {
-      console.log("cleaning");
-
       updateStageStatus(jobId, "erase", { started: true });
 
-      const success = await erase(
-        args.directoryHandle,
-        () => !isCancelled(jobId),
-        (progress) => {
+      const success = await erase(args.directoryHandle, {
+        specificDirectories: Array.isArray(args.clean) ? args.clean : undefined,
+        shouldContinue: () => !isCancelled(jobId),
+        onProgress: (progress) => {
           updateStageStatus(jobId, "erase", { progress });
-        }
-      )
+        },
+      })
         .then(() => {
           updateStageStatus(jobId, "erase", { completed: true });
           return true;
@@ -119,6 +131,7 @@ Promise<void> => {
     await writeAssets(
       args.directoryHandle,
       zipEntries,
+      args.writeMeta,
       () => !isCancelled(jobId),
       {
         onFileWriteStarted: (name) => {
@@ -221,8 +234,11 @@ const isCancelled = (jobId: string): boolean =>
  */
 const erase = async (
   rootHandle: FileSystemDirectoryHandle,
-  shouldContinue?: () => boolean,
-  onProgress?: (progress: number) => void
+  options: {
+    specificDirectories?: string[];
+    shouldContinue?: () => boolean;
+    onProgress?: (progress: number) => void;
+  }
 ): Promise<void> => {
   let progress = 0;
 
@@ -232,37 +248,46 @@ const erase = async (
   // so we have to unpack :(
   // eslint-disable-next-line no-restricted-syntax
   for await (const entry of rootHandle.values()) {
-    if (shouldContinue && !shouldContinue()) {
+    if (options.shouldContinue && !options.shouldContinue()) {
       return;
     }
     entries.push(entry);
   }
 
   await Promise.all(
-    entries.map(async (entry) => {
-      if (shouldContinue && !shouldContinue()) {
-        return;
-      }
-      await rootHandle
-        .removeEntry(
-          entry.name,
-          entry.kind === "directory" ? { recursive: true } : undefined
-        )
-        .catch((e) => {
-          // Some weird macos folder
-          if (
-            (e as Error).message.includes(
-              "An operation that depends on state cached in an interface object"
-            )
-          ) {
-            return;
-          }
-          throw e;
-        });
-      progress += 1;
-      onProgress?.((progress / entries.length) * 100);
-    })
+    entries
+      .filter(
+        (entry) =>
+          !options.specificDirectories ||
+          options.specificDirectories.includes(entry.name)
+      )
+      .filter((entry) => !NO_ERASE_DIRECTORIES.includes(entry.name))
+      .map(async (entry) => {
+        if (options.shouldContinue && !options.shouldContinue()) {
+          return;
+        }
+        await rootHandle
+          .removeEntry(
+            entry.name,
+            entry.kind === "directory" ? { recursive: true } : undefined
+          )
+          .catch((e) => {
+            // Some weird macos folder
+            if (
+              (e as Error).message.includes(
+                "An operation that depends on state cached in an interface object"
+              )
+            ) {
+              return;
+            }
+            throw e;
+          });
+        progress += 1;
+        options.onProgress?.((progress / entries.length) * 100);
+      })
   );
+
+  options.onProgress?.(100);
 };
 
 /**
@@ -271,6 +296,7 @@ const erase = async (
 const writeAssets = async (
   rootHandle: FileSystemDirectoryHandle,
   zipEntries: ZipEntry[],
+  writeMeta?: WriteMeta,
   shouldContinue?: () => boolean,
   updates?: {
     onFileWriteStarted?: (name: string) => void;
@@ -278,7 +304,31 @@ const writeAssets = async (
     onProgress?: (progress: number) => void;
   }
 ): Promise<void> => {
-  const total = zipEntries.reduce((acc, entity) => acc + entity.size, 0);
+  const metaFiles = [
+    writeMeta?.pack?.version
+      ? {
+          name: "edgetx.sdcard.version",
+          content: Buffer.from(writeMeta.pack.version),
+        }
+      : undefined,
+    writeMeta?.pack?.target
+      ? {
+          name: "edgetx.sdcard.target",
+          content: Buffer.from(writeMeta.pack.target),
+        }
+      : undefined,
+    writeMeta?.sounds?.version
+      ? {
+          folder: "SOUNDS",
+          name: "edgetx.sounds.version",
+          content: Buffer.from(writeMeta.sounds.version),
+        }
+      : undefined,
+  ].filter(isNotUndefined);
+
+  const total =
+    zipEntries.reduce((acc, entity) => acc + entity.size, 0) +
+    metaFiles.reduce((acc, file) => acc + file.content.byteLength, 0);
   let progress = 0;
 
   const writeLimiter = pLimit(10);
@@ -357,4 +407,27 @@ const writeAssets = async (
       updates?.onFileWriteCompleted?.(entry.name);
     })
   );
+
+  await Promise.all(
+    metaFiles.map(async (metaFile) => {
+      const folderHandle = metaFile.folder
+        ? await rootHandle.getDirectoryHandle(metaFile.folder, { create: true })
+        : rootHandle;
+
+      updates?.onFileWriteStarted?.(metaFile.name);
+
+      const file = await folderHandle
+        .getFileHandle(metaFile.name, { create: true })
+        .then((handle) => handle.createWritable());
+      await file.write(metaFile.content);
+      await file.close();
+
+      progress += metaFile.content.byteLength;
+
+      updates?.onProgress?.((progress / total) * 100);
+      updates?.onFileWriteCompleted?.(metaFile.name);
+    })
+  );
+
+  updates?.onProgress?.(100);
 };

@@ -18,8 +18,10 @@ const SdcardEditor: React.FC = () => {
         sdcardDirectory(id: $directoryId) {
           id
           isValid
-          version
-          target
+          pack {
+            target
+            version
+          }
         }
       }
     `),
@@ -36,7 +38,7 @@ const SdcardEditor: React.FC = () => {
   const baseAssetsUnknown =
     !loading &&
     !error &&
-    (!data?.sdcardDirectory?.target || !data.sdcardDirectory.version);
+    (!data?.sdcardDirectory?.pack.target || !data.sdcardDirectory.pack.version);
 
   useEffect(() => {
     if (!directoryId || (!loading && (!directory || error))) {
@@ -107,7 +109,11 @@ const SdcardEditor: React.FC = () => {
       >
         <AssetsTab directoryId={directoryId} />
       </Tabs.TabPane>
-      <Tabs.TabPane tab="Themes" key="themes" disabled={baseAssetsUnknown}>
+      <Tabs.TabPane
+        tab="Themes"
+        key="themes"
+        disabled={baseAssetsUnknown || true}
+      >
         <div>Theme tabs</div>
       </Tabs.TabPane>
     </Tabs>

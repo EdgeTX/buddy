@@ -1,8 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import {
   Alert,
   Button,
-  Checkbox,
   Divider,
   Space,
   Typography,
@@ -10,6 +9,7 @@ import {
   Card,
   Empty,
   Skeleton,
+  message,
 } from "antd";
 import React from "react";
 import VersionTargetForm from "renderer/components/VersionTargetForm";
@@ -25,6 +25,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import SelectableListItem from "renderer/components/SelectableListItem";
 import useSorted from "renderer/hooks/useSorted";
 import { times } from "shared/tools";
+import JobExecutionModal from "./JobExecutionModal";
 
 const Container = styled.div`
   display: flex;
@@ -48,11 +49,18 @@ const Container = styled.div`
 
 const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
   const { parseParam, updateParams } = useQueryParams<
-    "version" | "target" | "filters" | "sounds"
+    | "packVersion"
+    | "packTarget"
+    | "filters"
+    | "soundsVersion"
+    | "soundsId"
+    | "job"
   >();
-  const newVersion = parseParam("version");
-  const newTarget = parseParam("target");
-  const newSounds = parseParam("sounds");
+  const newPackVersion = parseParam("packVersion");
+  const newPackTarget = parseParam("packTarget");
+  const newSoundsVersion = parseParam("soundsVersion");
+  const newSoundsId = parseParam("soundsId");
+  const currentJob = parseParam("job");
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
 
   const sdcardAssetInfoQuery = useQuery(
@@ -61,9 +69,14 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
         sdcardDirectory(id: $directoryId) {
           id
           name
-          version
-          target
-          sounds
+          pack {
+            target
+            version
+          }
+          sounds {
+            ids
+            version
+          }
         }
       }
     `),
@@ -90,21 +103,58 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
     `)
   );
 
+  const [createWriteJob, { loading: creatingJob }] = useMutation(
+    gql(/* GraphQL */ `
+      mutation CreateSdcardPackAndSoundsWriteJob(
+        $directoryId: ID!
+        $pack: SdcardPackInput
+        $sounds: SdcardSoundsInput
+        $clean: Boolean
+      ) {
+        createSdcardWriteJob(
+          pack: $pack
+          sounds: $sounds
+          clean: $clean
+          directoryId: $directoryId
+        ) {
+          id
+        }
+      }
+    `),
+    {
+      onError: (e) => {
+        void message.error(`Could not update SD Card: ${e.message}`);
+      },
+    }
+  );
+
   const sdcardInfo = sdcardAssetInfoQuery.data?.sdcardDirectory;
 
-  const version = newVersion ?? sdcardInfo?.version;
-  const target = newTarget ?? sdcardInfo?.target;
+  const currentPackVersion = sdcardInfo?.pack.version;
+  const packVersion = newPackVersion ?? sdcardInfo?.pack.version;
+
+  const currentPackTarget = sdcardInfo?.pack.target;
+  const packTarget = newPackTarget ?? sdcardInfo?.pack.target;
+
   // TODO: Allow more than one sound to be selected?
-  const sounds = newSounds ?? sdcardInfo?.sounds[0];
+  const soundsId = newSoundsId ?? sdcardInfo?.sounds.ids[0];
 
   const selectedPack = sdcardPacksQuery.data?.edgeTxSdcardPackReleases.find(
-    (release) => release.id === version
+    (release) => release.id === packVersion
   );
 
   const sdcardSoundsQuery = useQuery(
     gql(/* GraphQL */ `
-      query SdcardSoundsForPack($packId: ID!, $isPrerelease: Boolean!) {
-        edgeTxSoundsRelease(forPack: $packId, isPrerelease: $isPrerelease) {
+      query SdcardSoundsForPack(
+        $packId: ID
+        $soundsVersion: ID
+        $isPrerelease: Boolean!
+      ) {
+        edgeTxSoundsRelease(
+          forPack: $packId
+          id: $soundsVersion
+          isPrerelease: $isPrerelease
+        ) {
           id
           name
           sounds {
@@ -118,10 +168,16 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
       variables: {
         packId: selectedPack?.id ?? "",
         isPrerelease: selectedPack?.isPrerelease ?? false,
+        soundsVersion: newSoundsVersion ?? sdcardInfo?.sounds.version,
       },
       skip: !selectedPack,
     }
   );
+
+  const soundsVersion =
+    newSoundsVersion ??
+    sdcardInfo?.sounds.version ??
+    sdcardSoundsQuery.data?.edgeTxSoundsRelease?.id;
 
   const loading = sdcardAssetInfoQuery.loading || sdcardPacksQuery.loading;
 
@@ -137,139 +193,273 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
   const sortedTargets = useSorted(selectedPack?.targets, (t1, t2) =>
     t1.name.localeCompare(t2.name)
   );
-  const selectedTarget = selectedPack?.targets.find((t) => t.id === target);
+  const selectedTarget = selectedPack?.targets.find((t) => t.id === packTarget);
   const selectedSounds =
     sdcardSoundsQuery.data?.edgeTxSoundsRelease?.sounds.find(
-      (sound) => sound.id === sounds
+      (sound) => sound.id === soundsId
     );
-  const soundsVersion = sdcardSoundsQuery.data?.edgeTxSoundsRelease?.id;
+  const foundSoundsVersion = sdcardSoundsQuery.data?.edgeTxSoundsRelease?.id;
 
   return (
-    <FullHeight>
-      <Container>
-        <FullHeight>
-          <Centered>
-            <div style={{ width: "100%", maxWidth: "400px" }}>
-              {!sdcardAssetInfoQuery.loading &&
-                !sdcardAssetInfoQuery.error &&
-                (!sdcardInfo?.version || !sdcardInfo.target) && (
-                  <Alert
-                    message="Warning"
-                    description="Could not detect current version, select your radio and EdgeTX version and apply changes to setup your SD Card"
-                    type="warning"
-                    showIcon
-                    style={{ marginBottom: "16px" }}
-                  />
-                )}
-              <VersionTargetForm
-                onChanged={(params) => {
-                  updateParams({
-                    ...params,
-                    filters: encodeFilters(params.filters),
-                  });
-                }}
-                disabled={!sdcardInfo || loading}
-                versions={{
-                  available: availablePacks,
-                  selectedId: selectedPack?.id,
-                }}
-                targets={{
-                  available: sortedTargets,
-                  selectedId: selectedTarget?.id,
-                }}
-                filters={filters}
-              />
-            </div>
-          </Centered>
-        </FullHeight>
-        <Divider type="vertical" className="divider" />
-        <FullHeightCentered style={{ alignItems: "center" }}>
-          <FullHeight
-            style={{
-              width: "100%",
-              maxWidth: "300px",
-            }}
-          >
-            <Typography.Text>
-              Available sounds {soundsVersion ? `(${soundsVersion})` : ""}
-            </Typography.Text>
-            <Card
-              style={{
-                height: "100%",
-                width: "100%",
-                maxHeight: "500px",
-                overflowY: "auto",
-              }}
-              bodyStyle={{ height: "100%", padding: 0 }}
-            >
-              {selectedPack ? (
-                <List
-                  size="large"
-                  style={{ height: "100%" }}
-                  dataSource={
-                    !sdcardSoundsQuery.loading
-                      ? availableSounds
-                      : times(4).map((i) => ({
-                          id: i.toString(),
-                          name: i.toString(),
-                        }))
-                  }
-                  renderItem={(item) =>
-                    sdcardSoundsQuery.loading ? (
-                      <Skeleton.Input
-                        style={{ width: "100%" }}
-                        key={item.id}
-                        active
-                      />
-                    ) : (
-                      <SelectableListItem
-                        selected={
-                          !!selectedSounds && item.id === selectedSounds.id
-                        }
-                        style={{ textAlign: "center" }}
-                        key={item.id}
-                        onClick={() => {
-                          updateParams({
-                            sounds:
-                              selectedSounds?.id !== item.id ? item.id : "none",
-                          });
-                        }}
-                      >
-                        {item.name}
-                      </SelectableListItem>
-                    )
-                  }
+    <>
+      {currentJob && (
+        <JobExecutionModal
+          jobId={currentJob}
+          onCompleted={() => {
+            updateParams({
+              job: undefined,
+              soundsVersion: undefined,
+              soundsId: undefined,
+              packVersion: undefined,
+              packTarget: undefined,
+            });
+            void sdcardAssetInfoQuery.refetch();
+          }}
+          onCancelled={() => {
+            updateParams({
+              job: undefined,
+            });
+            void sdcardAssetInfoQuery.refetch();
+          }}
+        />
+      )}
+      <FullHeight>
+        <Container>
+          <FullHeight>
+            <Centered>
+              <div style={{ width: "100%", maxWidth: "400px" }}>
+                {!sdcardAssetInfoQuery.loading &&
+                  !sdcardAssetInfoQuery.error &&
+                  (!sdcardInfo?.pack.version || !sdcardInfo.pack.target) && (
+                    <Alert
+                      message="Warning"
+                      description="Could not detect current version, select your radio and EdgeTX version and apply changes to setup your SD Card"
+                      type="warning"
+                      showIcon
+                      style={{ marginBottom: "16px" }}
+                    />
+                  )}
+                <VersionTargetForm
+                  onChanged={(params) => {
+                    updateParams({
+                      packVersion:
+                        currentPackVersion === params.version
+                          ? undefined
+                          : params.version,
+                      packTarget:
+                        currentPackTarget === params.target
+                          ? undefined
+                          : params.target,
+                      filters: encodeFilters(params.filters),
+                    });
+                  }}
+                  disabled={!sdcardInfo || loading}
+                  versions={{
+                    available: availablePacks,
+                    selectedId: selectedPack?.id,
+                  }}
+                  targets={{
+                    available: sortedTargets,
+                    selectedId: selectedTarget?.id,
+                  }}
+                  filters={filters}
                 />
-              ) : (
-                <FullHeightCentered style={{ alignItems: "center" }}>
-                  <Empty
-                    style={{ margin: "8px" }}
-                    className="ant-empty-normal"
-                    imageStyle={{
-                      height: "unset",
-                      fontSize: "32px",
-                    }}
-                    image={<ExclamationCircleOutlined />}
-                    description={
-                      <p>Select SD Card version to see available sounds</p>
+              </div>
+            </Centered>
+          </FullHeight>
+          <Divider type="vertical" className="divider" />
+          <FullHeightCentered style={{ alignItems: "center" }}>
+            <FullHeight
+              style={{
+                width: "100%",
+                maxWidth: "300px",
+              }}
+            >
+              <Typography style={{ lineHeight: "48px" }}>
+                Available sounds{" "}
+                {foundSoundsVersion ? `(${foundSoundsVersion})` : ""}
+              </Typography>
+              <Card
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  maxHeight: "500px",
+                  overflowY: "auto",
+                }}
+                bodyStyle={{ height: "100%", padding: 0 }}
+              >
+                {selectedPack ? (
+                  <List
+                    size="large"
+                    style={{ height: "100%" }}
+                    dataSource={
+                      !sdcardSoundsQuery.loading
+                        ? availableSounds
+                        : times(4).map((i) => ({
+                            id: i.toString(),
+                            name: i.toString(),
+                          }))
+                    }
+                    renderItem={(item) =>
+                      sdcardSoundsQuery.loading ? (
+                        <Skeleton.Input
+                          style={{ width: "100%" }}
+                          key={item.id}
+                          active
+                        />
+                      ) : (
+                        <SelectableListItem
+                          selected={
+                            !!selectedSounds && item.id === selectedSounds.id
+                          }
+                          style={{ textAlign: "center" }}
+                          key={item.id}
+                          onClick={() => {
+                            const emptySounds =
+                              (sdcardInfo?.sounds.ids.length ?? 0) > 0
+                                ? "none"
+                                : undefined;
+                            updateParams({
+                              soundsId:
+                                selectedSounds?.id !== item.id
+                                  ? item.id
+                                  : emptySounds,
+                            });
+                          }}
+                        >
+                          {item.name}
+                        </SelectableListItem>
+                      )
                     }
                   />
-                </FullHeightCentered>
-              )}
-            </Card>
-          </FullHeight>
-        </FullHeightCentered>
-      </Container>
-      <Centered>
-        <Space style={{ margin: "8px" }} direction="vertical">
-          <Checkbox>Remove existing data</Checkbox>
+                ) : (
+                  <FullHeightCentered style={{ alignItems: "center" }}>
+                    <Empty
+                      style={{ margin: "8px" }}
+                      className="ant-empty-normal"
+                      imageStyle={{
+                        height: "unset",
+                        fontSize: "32px",
+                      }}
+                      image={<ExclamationCircleOutlined />}
+                      description={
+                        <p>Select SD Card version to see available sounds</p>
+                      }
+                    />
+                  </FullHeightCentered>
+                )}
+              </Card>
+            </FullHeight>
+          </FullHeightCentered>
+        </Container>
+        <Centered>
           <Space size="middle">
-            <Button>Cancel</Button>
-            <Button type="primary">Apply</Button>
+            <Button
+              disabled={
+                (!newSoundsVersion &&
+                  !newPackVersion &&
+                  !newPackTarget &&
+                  !newSoundsId) ||
+                creatingJob
+              }
+              onClick={() => {
+                updateParams({
+                  job: undefined,
+                  soundsVersion: undefined,
+                  soundsId: undefined,
+                  packVersion: undefined,
+                  packTarget: undefined,
+                });
+              }}
+            >
+              Revert changes
+            </Button>
+            <Button
+              disabled={
+                (!newSoundsVersion &&
+                  !newPackVersion &&
+                  !newPackTarget &&
+                  !newSoundsId) ||
+                creatingJob
+              }
+              type="primary"
+              onClick={() => {
+                if (
+                  newSoundsVersion ||
+                  newPackVersion ||
+                  newPackTarget ||
+                  newSoundsId
+                ) {
+                  void createWriteJob({
+                    variables: {
+                      directoryId,
+                      pack:
+                        newPackVersion || newPackTarget
+                          ? {
+                              version: packVersion!,
+                              target: packTarget!,
+                            }
+                          : null,
+                      sounds:
+                        newSoundsVersion || newSoundsId
+                          ? {
+                              ids: [soundsId!],
+                              version: soundsVersion!,
+                            }
+                          : null,
+                    },
+                  }).then((result) => {
+                    if (result.data?.createSdcardWriteJob.id) {
+                      updateParams({
+                        job: result.data.createSdcardWriteJob.id,
+                      });
+                    }
+                  });
+                }
+              }}
+            >
+              Apply changes
+            </Button>
+            <Button
+              disabled={
+                !soundsVersion ||
+                !soundsId ||
+                !packVersion ||
+                !packTarget ||
+                creatingJob
+              }
+              type="default"
+              onClick={() => {
+                if (soundsVersion && soundsId && packVersion && packTarget) {
+                  void createWriteJob({
+                    variables: {
+                      directoryId,
+                      pack: {
+                        version: packVersion,
+                        target: packTarget,
+                      },
+                      sounds: {
+                        version: soundsVersion,
+                        ids: [soundsId],
+                      },
+                      clean: true,
+                    },
+                  }).then((result) => {
+                    if (result.data?.createSdcardWriteJob.id) {
+                      updateParams({
+                        job: result.data.createSdcardWriteJob.id,
+                      });
+                    }
+                  });
+                }
+              }}
+            >
+              Re-install
+            </Button>
           </Space>
-        </Space>
-      </Centered>
-    </FullHeight>
+        </Centered>
+      </FullHeight>
+    </>
   );
 };
 

@@ -571,7 +571,10 @@ describe("Mutation", () => {
             mutation RequestFolder {
               pickSdcardDirectory {
                 id
-                sounds
+                sounds {
+                  ids
+                  version
+                }
               }
             }
           `,
@@ -579,7 +582,10 @@ describe("Mutation", () => {
 
         expect(errors).toBeFalsy();
         expect(data?.pickSdcardDirectory).toMatchObject({
-          sounds: expect.arrayContaining(["cn", "en", "es", "fr"]),
+          sounds: {
+            ids: expect.arrayContaining(["cn", "en", "es", "fr"]),
+            version: null,
+          },
         });
       });
 
@@ -593,7 +599,9 @@ describe("Mutation", () => {
             mutation RequestFolder {
               pickSdcardDirectory {
                 id
-                sounds
+                sounds {
+                  ids
+                }
               }
             }
           `,
@@ -601,7 +609,9 @@ describe("Mutation", () => {
 
         expect(errors).toBeFalsy();
         expect(data?.pickSdcardDirectory).toMatchObject({
-          sounds: [],
+          sounds: {
+            ids: [],
+          },
         });
       });
     });
@@ -721,100 +731,114 @@ describe("Mutation", () => {
       });
     });
 
-    describe("version", () => {
-      it("should return the version from edgetx.sdcard.version file", async () => {
-        requestWritableDirectory.mockResolvedValueOnce(
-          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
-        );
+    describe("pack", () => {
+      describe("version", () => {
+        it("should return the version from edgetx.sdcard.version file", async () => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
 
-        await fs.writeFile(
-          path.join(tempDir.path, "edgetx.sdcard.version"),
-          "v2.5.4"
-        );
+          await fs.writeFile(
+            path.join(tempDir.path, "edgetx.sdcard.version"),
+            "v2.5.4\nsomeotherline"
+          );
 
-        const { data, errors } = await backend.mutate({
-          mutation: gql`
-            mutation RequestFolder {
-              pickSdcardDirectory {
-                id
-                version
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  pack {
+                    version
+                  }
+                }
               }
-            }
-          `,
+            `,
+          });
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            pack: {
+              version: "v2.5.4",
+            },
+          });
         });
-        expect(errors).toBeFalsy();
-        expect(data?.pickSdcardDirectory).toMatchObject({
-          version: "v2.5.4",
+
+        it("should return null if there is no edgetx.sdcard.version file", async () => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
+
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  pack {
+                    version
+                  }
+                }
+              }
+            `,
+          });
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            pack: {
+              version: null,
+            },
+          });
         });
       });
 
-      it("should return null if there is no edgetx.sdcard.version file", async () => {
-        requestWritableDirectory.mockResolvedValueOnce(
-          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
-        );
+      describe("target", () => {
+        it("should return the target from edgetx.sdcard.target file", async () => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
 
-        const { data, errors } = await backend.mutate({
-          mutation: gql`
-            mutation RequestFolder {
-              pickSdcardDirectory {
-                id
-                version
+          await fs.writeFile(
+            path.join(tempDir.path, "edgetx.sdcard.target"),
+            "nv14\nsomeotherline"
+          );
+
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  pack {
+                    target
+                  }
+                }
               }
-            }
-          `,
+            `,
+          });
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            pack: { target: "nv14" },
+          });
         });
-        expect(errors).toBeFalsy();
-        expect(data?.pickSdcardDirectory).toMatchObject({
-          version: null,
-        });
-      });
-    });
 
-    describe("target", () => {
-      it("should return the target from edgetx.sdcard.target file", async () => {
-        requestWritableDirectory.mockResolvedValueOnce(
-          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
-        );
+        it("should return null if there is no edgetx.sdcard.target file", async () => {
+          requestWritableDirectory.mockResolvedValueOnce(
+            await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
+          );
 
-        await fs.writeFile(
-          path.join(tempDir.path, "edgetx.sdcard.target"),
-          "nv14"
-        );
-
-        const { data, errors } = await backend.mutate({
-          mutation: gql`
-            mutation RequestFolder {
-              pickSdcardDirectory {
-                id
-                target
+          const { data, errors } = await backend.mutate({
+            mutation: gql`
+              mutation RequestFolder {
+                pickSdcardDirectory {
+                  id
+                  pack {
+                    target
+                  }
+                }
               }
-            }
-          `,
-        });
-        expect(errors).toBeFalsy();
-        expect(data?.pickSdcardDirectory).toMatchObject({
-          target: "nv14",
-        });
-      });
-
-      it("should return null if there is no edgetx.sdcard.target file", async () => {
-        requestWritableDirectory.mockResolvedValueOnce(
-          await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
-        );
-
-        const { data, errors } = await backend.mutate({
-          mutation: gql`
-            mutation RequestFolder {
-              pickSdcardDirectory {
-                id
-                target
-              }
-            }
-          `,
-        });
-        expect(errors).toBeFalsy();
-        expect(data?.pickSdcardDirectory).toMatchObject({
-          target: null,
+            `,
+          });
+          expect(errors).toBeFalsy();
+          expect(data?.pickSdcardDirectory).toMatchObject({
+            pack: { target: null },
+          });
         });
       });
     });
@@ -845,6 +869,15 @@ describe("Sdcard Job", () => {
       await getOriginPrivateDirectory(nodeAdapter, tempDir.path)
     );
 
+    await Promise.all([
+      // This directory should not be deleted so should be in snapshot
+      fs.mkdir(path.join(tempDir.path, "EEPROM")),
+      // this should be deleted as we are providing sounds
+      fs.mkdir(path.join(tempDir.path, "SOUNDS", "some-initial-sounds"), {
+        recursive: true,
+      }),
+    ]);
+
     const directoryRequest = await backend.mutate({
       mutation: gql`
         mutation RequestDirectory {
@@ -860,17 +893,20 @@ describe("Sdcard Job", () => {
       id: string;
     };
 
-    const { nockDone } = await nock.back("sdcard-job-jumper-t8-cn.json", {
-      recorder: { enable_reqheaders_recording: true },
-    });
+    const { nockDone } = await nock.back(
+      "sdcard-job-jumper-t8-cn-latest.json",
+      {
+        recorder: { enable_reqheaders_recording: true },
+      }
+    );
 
     const createJobRequest = await backend.mutate({
       mutation: gql`
         mutation CreateSdcardJob($directoryId: ID!) {
           createSdcardWriteJob(
             directoryId: $directoryId
-            target: "t8"
-            sounds: "cn"
+            pack: { target: "t8", version: "latest" }
+            sounds: { ids: ["cn"], version: "latest" }
           ) {
             id
           }
@@ -933,7 +969,11 @@ describe("Sdcard Job", () => {
               "progress": 100,
               "started": true,
             },
-            "erase": null,
+            "erase": Object {
+              "completed": true,
+              "progress": 100,
+              "started": true,
+            },
             "write": Object {
               "completed": true,
               "progress": 100,

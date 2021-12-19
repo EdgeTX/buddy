@@ -30,9 +30,8 @@ const Story: React.FC<{ good: boolean; exists?: boolean }> = ({
           : undefined
       ),
       sdcardAssetInfoQuery("some-id", {
-        version: "v2.5.0",
-        target: "nv14",
-        sounds: ["en"],
+        pack: { version: "v2.5.0", target: "nv14" },
+        sounds: { ids: ["en"], version: "v2.5.0" },
       }),
       sdcardPacksQuery,
     ]}

@@ -1512,16 +1512,26 @@ exports[`Sdcard Job should extract the specified sdcard target and sounds to the
             }
           ],
           \\"size\\": 13688892
+        },
+        {
+          \\"path\\": \\"./SOUNDS/edgetx.sounds.version\\",
+          \\"name\\": \\"edgetx.sounds.version\\",
+          \\"size\\": 6
         }
       ],
-      \\"size\\": 13688892
+      \\"size\\": 13688898
+    },
+    {
+      \\"path\\": \\"./edgetx.sdcard.target\\",
+      \\"name\\": \\"edgetx.sdcard.target\\",
+      \\"size\\": 2
     },
     {
       \\"path\\": \\"./edgetx.sdcard.version\\",
       \\"name\\": \\"edgetx.sdcard.version\\",
-      \\"size\\": 3
+      \\"size\\": 6
     }
   ],
-  \\"size\\": 13735979
+  \\"size\\": 13735990
 }"
 `;

@@ -35,8 +35,10 @@ export const sdcardInfoQuery = (
         sdcardDirectory(id: $directoryId) {
           id
           isValid
-          version
-          target
+          pack {
+            target
+            version
+          }
         }
       }
     `,
@@ -61,7 +63,10 @@ export const sdcardInfoQuery = (
 
 export const sdcardAssetInfoQuery = (
   directoryId: string,
-  details: { version?: string; target?: string; sounds: string[] }
+  details: {
+    pack: { version?: string; target?: string };
+    sounds: { ids: string[]; version?: string };
+  }
 ): MockedResponse => ({
   request: {
     query: gql`
@@ -69,9 +74,14 @@ export const sdcardAssetInfoQuery = (
         sdcardDirectory(id: $directoryId) {
           id
           name
-          version
-          target
-          sounds
+          pack {
+            target
+            version
+          }
+          sounds {
+            ids
+            version
+          }
         }
       }
     `,

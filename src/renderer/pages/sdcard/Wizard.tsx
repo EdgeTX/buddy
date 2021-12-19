@@ -62,12 +62,12 @@ const SdcardWizard: React.FC = () => {
       mutation CreateSdcardWriteJob(
         $directoryId: ID!
         $target: ID!
-        $sounds: ID!
+        $sounds: [ID!]!
         $clean: Boolean
       ) {
         createSdcardWriteJob(
-          target: $target
-          sounds: $sounds
+          pack: { target: $target, version: "latest" }
+          sounds: { ids: $sounds, version: "latest" }
           clean: $clean
           directoryId: $directoryId
         ) {
@@ -171,7 +171,7 @@ const SdcardWizard: React.FC = () => {
               variables: {
                 directoryId: directory,
                 target,
-                sounds,
+                sounds: [sounds],
                 clean: !!clean,
               },
             }).then((result) => {

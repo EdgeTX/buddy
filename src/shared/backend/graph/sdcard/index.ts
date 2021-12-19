@@ -4,7 +4,7 @@ import { GraphQLError } from "graphql";
 import { Resolvers, SdcardWriteJob } from "shared/backend/graph/__generated__";
 import config from "shared/config";
 import { arrayFromAsync, findAsync } from "shared/tools";
-import { isNotUndefined } from "type-guards";
+import { isArrayOf, isNotUndefined, isString } from "type-guards";
 import semver from "semver";
 import ISO6391 from "iso-639-1";
 
@@ -43,6 +43,7 @@ const EXPECTED_ROOT_ENTRIES = [
   "MODELS",
   "SCRIPTS",
   "SCREENSHOTS",
+  "EEPROM",
 ];
 
 const SOUND_NAMES_TO_ISO: Record<string, string> = {
@@ -56,7 +57,8 @@ const typeDefs = gql`
     edgeTxSdcardPackRelease(id: ID!): EdgeTxSdcardPackRelease
     edgeTxSoundsReleases: [EdgeTxSoundsRelease!]!
     edgeTxSoundsRelease(
-      forPack: ID!
+      forPack: ID
+      id: ID
       isPrerelease: Boolean!
     ): EdgeTxSoundsRelease
     sdcardTargets: [SdcardTarget!]!
@@ -69,8 +71,8 @@ const typeDefs = gql`
     pickSdcardDirectory: SdcardDirectory
     createSdcardWriteJob(
       directoryId: ID!
-      target: ID!
-      sounds: ID!
+      pack: SdcardPackInput
+      sounds: SdcardSoundsInput
       clean: Boolean
     ): SdcardWriteJob!
     cancelSdcardWriteJob(jobId: ID!): Boolean
@@ -117,9 +119,8 @@ const typeDefs = gql`
     id: ID!
     name: String!
     isValid: Boolean!
-    version: String
-    target: String
-    sounds: [String!]!
+    pack: SdcardPack!
+    sounds: SdcardSounds!
     themes: [String!]!
   }
 
@@ -149,8 +150,29 @@ const typeDefs = gql`
   type EdgeTxSoundsRelease {
     id: ID!
     name: String!
+    latestMinorVersion: String!
     sounds: [SdcardSoundsAsset!]!
     artifacts: [GithubReleaseArtifact!]!
+  }
+
+  type SdcardPack {
+    target: String
+    version: String
+  }
+
+  type SdcardSounds {
+    ids: [String!]!
+    version: String
+  }
+
+  input SdcardPackInput {
+    target: ID!
+    version: ID!
+  }
+
+  input SdcardSoundsInput {
+    ids: [ID!]!
+    version: String!
   }
 `;
 
@@ -162,6 +184,22 @@ const getDirectoryHandle = (id: string): FileSystemDirectoryHandle => {
   }
 
   return handle;
+};
+
+const readVersionFromFile = async (
+  directoryHandle: FileSystemDirectoryHandle,
+  fileName: string
+): Promise<string | undefined> => {
+  const versionFile = await directoryHandle
+    .getFileHandle(fileName)
+    .then((h) => h.getFile())
+    .catch(() => undefined);
+  if (versionFile) {
+    const contents = await versionFile.text();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return contents.split("\n")[0]!;
+  }
+  return undefined;
 };
 
 /**
@@ -242,13 +280,20 @@ const resolvers: Resolvers = {
         id: release.tag_name,
         sounds: [],
         name: release.name ?? release.tag_name,
+        latestMinorVersion:
+          findBestReleaseForPack(release.tag_name, release.prerelease, releases)
+            ?.tag_name ?? release.tag_name,
         artifacts: release.assets.map((asset) => ({
           ...asset,
           id: asset.id.toString(),
         })),
       }));
     },
-    edgeTxSoundsRelease: async (_, { forPack, isPrerelease }, { github }) => {
+    edgeTxSoundsRelease: async (
+      _,
+      { forPack, id, isPrerelease },
+      { github }
+    ) => {
       const releases = (
         await github("GET /repos/{owner}/{repo}/releases", {
           owner: config.github.organization,
@@ -256,7 +301,20 @@ const resolvers: Resolvers = {
         })
       ).data;
 
-      const release = findBestReleaseForPack(forPack, isPrerelease, releases);
+      if (!id && !forPack) {
+        throw new GraphQLError("No queries given");
+      }
+
+      const latestMinorRelease = findBestReleaseForPack(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        id ?? forPack!,
+        isPrerelease,
+        releases
+      );
+
+      const release = id
+        ? releases.find((r) => r.tag_name === id)
+        : latestMinorRelease;
 
       if (!release) {
         return null;
@@ -266,6 +324,7 @@ const resolvers: Resolvers = {
         id: release.tag_name,
         sounds: [],
         name: release.name ?? release.tag_name,
+        latestMinorVersion: "",
         artifacts: release.assets.map((asset) => ({
           ...asset,
           id: asset.id.toString(),
@@ -325,9 +384,11 @@ const resolvers: Resolvers = {
             id,
             name: handle.name,
             isValid: false,
-            version: null,
-            target: null,
-            sounds: [],
+            pack: { version: null, target: null },
+            sounds: {
+              version: null,
+              ids: [],
+            },
             themes: [],
           }
         : null;
@@ -384,15 +445,20 @@ const resolvers: Resolvers = {
         id,
         name: handle.name,
         isValid: false,
-        version: null,
-        target: null,
-        sounds: [],
+        pack: {
+          version: null,
+          target: null,
+        },
+        sounds: {
+          ids: [],
+          version: null,
+        },
         themes: [],
       };
     },
     createSdcardWriteJob: async (
       _,
-      { directoryId, target, clean, sounds },
+      { directoryId, pack, clean, sounds },
       context
     ) => {
       const directory = directories.find((d) => d.id === directoryId);
@@ -401,56 +467,83 @@ const resolvers: Resolvers = {
         throw new GraphQLError("Folder id doesnt exist");
       }
 
-      const requiredAssetName = targetsToAssets.find(
-        ({ id }) => id === target
-      )?.asset;
+      const requiredPackName = pack
+        ? targetsToAssets.find(({ id }) => id === pack.target)?.asset
+        : undefined;
 
-      if (!requiredAssetName) {
+      if (pack && !requiredPackName) {
         throw new GraphQLError("Target doesnt exist");
       }
 
-      const [sdcardAssetUrl, soundsAssetUrl] = await Promise.all([
-        context
-          .github("GET /repos/{owner}/{repo}/releases/latest", {
-            owner: config.github.organization,
-            repo: config.github.repos.sdcard,
-          })
-          .then(
-            ({ data }) =>
-              data.assets.find((asset) => asset.name === requiredAssetName)
-                ?.browser_download_url
-          ),
-        context
-          .github("GET /repos/{owner}/{repo}/releases/latest", {
-            owner: config.github.organization,
-            repo: config.github.repos.sounds,
-          })
-          .then(
-            ({ data }) =>
-              data.assets.find((asset) =>
-                asset.name.startsWith(`edgetx-sdcard-sounds-${sounds}`)
-              )?.browser_download_url
-          ),
-      ]);
+      const assetUrls = (
+        await Promise.all([
+          sounds &&
+            sounds.ids.length > 0 &&
+            context
+              .github("GET /repos/{owner}/{repo}/releases/tags/{tag}", {
+                owner: config.github.organization,
+                repo: config.github.repos.sounds,
+                tag: sounds.version,
+              })
+              .then(({ data }) =>
+                sounds.ids
+                  .map(
+                    (soundId) =>
+                      data.assets.find((asset) =>
+                        asset.name.startsWith(`edgetx-sdcard-sounds-${soundId}`)
+                      )?.browser_download_url
+                  )
+                  .filter(isString)
+              )
+              .then((urls) => {
+                if (urls.length === 0) {
+                  throw new GraphQLError("Could not get sdcard sounds");
+                }
+                return urls;
+              }),
+          pack &&
+            context
+              .github("GET /repos/{owner}/{repo}/releases/tags/{tag}", {
+                owner: config.github.organization,
+                repo: config.github.repos.sdcard,
+                tag: pack.version,
+              })
+              .then(
+                ({ data }) =>
+                  data.assets.find((asset) => asset.name === requiredPackName)
+                    ?.browser_download_url
+              )
+              .then((url) => {
+                if (!url) {
+                  throw new GraphQLError("Could not get sdcard pack");
+                }
+                return [url];
+              }),
+        ])
+      )
+        .filter(isArrayOf(isString))
+        .flat();
 
-      if (!sdcardAssetUrl) {
-        throw new GraphQLError("Couldn't find sdcard assets url");
-      }
-
-      if (!soundsAssetUrl) {
-        throw new GraphQLError("Couldn't find sound assets url");
-      }
+      const cleanRequirements = clean ?? (sounds ? ["SOUNDS"] : false);
 
       const job = context.sdcardJobs.createSdcardJob(
-        clean ? ["download", "erase", "write"] : ["download", "write"]
+        cleanRequirements
+          ? ["download", "erase", "write"]
+          : ["download", "write"]
       );
 
       await context.sdcardJobs.startExecution(
         job.id,
         {
           directoryHandle: directory.handle,
-          assetUrls: [soundsAssetUrl, sdcardAssetUrl],
-          clean: clean ?? false,
+          assetUrls,
+          clean: cleanRequirements,
+          writeMeta: {
+            sounds: sounds ? { version: sounds.version } : undefined,
+            pack: pack
+              ? { version: pack.version, target: pack.target }
+              : undefined,
+          },
         },
         context
       );
@@ -491,23 +584,6 @@ const resolvers: Resolvers = {
         EXPECTED_ROOT_ENTRIES.includes(entry)
       ));
     },
-    sounds: async ({ id }) => {
-      const handle = getDirectoryHandle(id);
-      const soundsDirectoryHandle = await handle
-        .getDirectoryHandle("SOUNDS")
-        .catch(() => undefined);
-
-      if (soundsDirectoryHandle) {
-        return (await arrayFromAsync(soundsDirectoryHandle.values()))
-          .filter(
-            (file): file is FileSystemDirectoryHandle =>
-              file.kind === "directory"
-          )
-          .map((folder) => folder.name);
-      }
-      return [];
-    },
-
     themes: async ({ id }) => {
       const handle = getDirectoryHandle(id);
       const themesDirectoryHandle = await handle
@@ -549,32 +625,40 @@ const resolvers: Resolvers = {
       }
       return [];
     },
-    version: async ({ id }) => {
+    sounds: async ({ id }) => {
       const handle = getDirectoryHandle(id);
-      const versionFile = await handle
-        .getFileHandle("edgetx.sdcard.version")
-        .then((h) => h.getFile())
+      const soundsDirectoryHandle = await handle
+        .getDirectoryHandle("SOUNDS")
         .catch(() => undefined);
-      if (versionFile) {
-        const contents = await versionFile.text();
-        if (contents.startsWith("v")) {
-          return contents;
-        }
+
+      if (!soundsDirectoryHandle) {
+        return {
+          version: null,
+          ids: [],
+        };
       }
 
-      return null;
+      return {
+        version: await readVersionFromFile(
+          soundsDirectoryHandle,
+          "edgetx.sounds.version"
+        ),
+        ids: (await arrayFromAsync(soundsDirectoryHandle.values()))
+          .filter(
+            (file): file is FileSystemDirectoryHandle =>
+              file.kind === "directory"
+          )
+          .map((folder) => folder.name),
+      };
     },
-    target: async ({ id }) => {
+    pack: async ({ id }) => {
       const handle = getDirectoryHandle(id);
-      const versionFile = await handle
-        .getFileHandle("edgetx.sdcard.target")
-        .then((h) => h.getFile())
-        .catch(() => undefined);
-      if (versionFile) {
-        return versionFile.text();
-      }
-
-      return null;
+      return {
+        version:
+          (await readVersionFromFile(handle, "edgetx.sdcard.version")) ?? null,
+        target:
+          (await readVersionFromFile(handle, "edgetx.sdcard.target")) ?? null,
+      };
     },
   },
 };

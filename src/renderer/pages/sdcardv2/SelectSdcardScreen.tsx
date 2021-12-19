@@ -56,6 +56,7 @@ const SelectSdcardScreen: React.FC = () => {
       <FullHeightCentered style={{ flex: 1, alignItems: "center" }}>
         <FullHeight
           style={{
+            margin: "16px",
             maxWidth: 600,
             width: "100%",
             maxHeight: 900,
