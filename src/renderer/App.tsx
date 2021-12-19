@@ -16,6 +16,7 @@ const NextGeneration: React.FC = () => (
         <Route path="/flash/:jobId" element={<FlashExecution />} />
         <Route path="/sdcard" element={<SelectSdcardScreen />} />
         <Route path="/sdcard/:directoryId" element={<SdcardEditor />} />
+        <Route path="/sdcard/:directoryId/:tab" element={<SdcardEditor />} />
 
         <Route path="/sdcardv1" element={<SdcardWizard />} />
         <Route path="/sdcardv1/:jobId" element={<SdcardWriteExecution />} />

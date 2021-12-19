@@ -2,25 +2,8 @@ import { UsbOutlined } from "@ant-design/icons";
 import { List, Skeleton, Typography } from "antd";
 import React from "react";
 import { times } from "shared/tools";
-import styled, { css } from "styled-components";
 import { Device } from "renderer/pages/flash/types";
-
-type ListItemWithSelectable = React.FC<
-  { selected: boolean } & Parameters<typeof List.Item>[0]
->;
-const SelectableItem = styled(List.Item as ListItemWithSelectable)`
-  background-color: ${({ selected }) =>
-    selected
-      ? css`
-         var(--ant-primary-1)
-        `
-      : undefined};
-
-  :hover {
-    cursor: pointer;
-    background-color: var(--ant-primary-1);
-  }
-`;
+import SelectableItemList from "renderer/components/SelectableListItem";
 
 type Props = {
   devices: Device[];
@@ -55,7 +38,7 @@ const DeviceList: React.FC<Props> = ({
     }
     renderItem={(device) => (
       <Skeleton loading={!!loading} active avatar>
-        <SelectableItem
+        <SelectableItemList
           selected={device.id === selectedDeviceId}
           key={device.id}
           onClick={() => {
@@ -76,7 +59,7 @@ const DeviceList: React.FC<Props> = ({
             }
             description={device.serialNumber ?? "-"}
           />
-        </SelectableItem>
+        </SelectableItemList>
       </Skeleton>
     )}
   />

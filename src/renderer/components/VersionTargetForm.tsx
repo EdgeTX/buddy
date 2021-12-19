@@ -98,10 +98,14 @@ const VersionTargetForm: React.FC<Props> = ({
     <Form.Item
       label="Radio"
       name="target"
-      tooltip={{
-        title: "The type of radio you want to flash",
-        icon: <InfoCircleOutlined />,
-      }}
+      tooltip={
+        targets.tooltip
+          ? {
+              title: "The type of radio you want to flash",
+              icon: <InfoCircleOutlined />,
+            }
+          : undefined
+      }
       help={targets.error ? "Could not load targets" : undefined}
       required
       validateStatus={targets.error ? "error" : undefined}

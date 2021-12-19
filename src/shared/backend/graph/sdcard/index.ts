@@ -6,6 +6,7 @@ import config from "shared/config";
 import { arrayFromAsync, findAsync } from "shared/tools";
 import { isNotUndefined } from "type-guards";
 import semver from "semver";
+import ISO6391 from "iso-639-1";
 
 // TODO: Move SD card assets to own module
 
@@ -39,6 +40,11 @@ const EXPECTED_ROOT_ENTRIES = [
   "SCRIPTS",
   "SCREENSHOTS",
 ];
+
+const SOUND_NAMES_TO_ISO: Record<string, string> = {
+  cn: "zh",
+  cz: "cs",
+};
 
 const typeDefs = gql`
   type Query {
@@ -477,10 +483,15 @@ const resolvers: Resolvers = {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             artifact.name.split("edgetx-sdcard-sounds-")[1]!.split("-")[0]!
         )
-        .map((name) => ({
-          id: name,
-          name: name.toUpperCase(),
-        })),
+        .map((isoName) => {
+          const iso = SOUND_NAMES_TO_ISO[isoName] ?? isoName;
+          return {
+            id: isoName,
+            name: ISO6391.validate(iso)
+              ? ISO6391.getNativeName(iso)
+              : isoName.toUpperCase(),
+          };
+        }),
   },
   SdcardDirectory: {
     isValid: async ({ id }) => {

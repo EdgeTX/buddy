@@ -32,6 +32,7 @@ const Story: React.FC<{ good: boolean; exists?: boolean }> = ({
         <Routes>
           <Route path="/sdcard" element={<div>SD card selection</div>} />
           <Route path="/sdcard/:directoryId" element={<SdcardEditor />} />
+          <Route path="/sdcard/:directoryId/:tab" element={<SdcardEditor />} />
         </Routes>
       </Layout>
     </MemoryRouter>

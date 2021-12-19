@@ -61,6 +61,7 @@
     "graphql": "^16.0.1",
     "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "^2.12.6",
+    "iso-639-1": "^2.1.11",
     "ky": "^0.28.7",
     "ky-universal": "^0.9.1",
     "markdown-to-jsx": "^7.1.5",

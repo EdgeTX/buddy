@@ -1,6 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { Tabs } from "antd";
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import AssetsTab from "renderer/pages/sdcardv2/editor/AssetsTab";
 
 export default {
@@ -10,16 +11,20 @@ export default {
 
 export const withData: React.FC = () => (
   <MockedProvider>
-    <AssetsTab directoryId="some-directory" />
+    <MemoryRouter>
+      <AssetsTab directoryId="some-directory" />
+    </MemoryRouter>
   </MockedProvider>
 );
 
 export const inTabs: React.FC = () => (
   <MockedProvider>
-    <Tabs defaultActiveKey="1" size="large" type="card">
-      <Tabs.TabPane tab="Assets" key="1">
-        <AssetsTab directoryId="some-directory" />
-      </Tabs.TabPane>
-    </Tabs>
+    <MemoryRouter>
+      <Tabs defaultActiveKey="1" size="large" type="card">
+        <Tabs.TabPane tab="Assets" key="1">
+          <AssetsTab directoryId="some-directory" />
+        </Tabs.TabPane>
+      </Tabs>
+    </MemoryRouter>
   </MockedProvider>
 );

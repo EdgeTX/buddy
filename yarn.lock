@@ -10344,6 +10344,7 @@ __metadata:
     html-webpack-plugin: ^5.5.0
     husky: ^7.0.0
     is-ci: ^3.0.1
+    iso-639-1: ^2.1.11
     jest: ^27.4.3
     jest-mock: ^27.4.2
     ky: ^0.28.7
@@ -14735,6 +14736,13 @@ __metadata:
   version: 2.0.0
   resolution: "isexe@npm:2.0.0"
   checksum: 26bf6c5480dda5161c820c5b5c751ae1e766c587b1f951ea3fcfc973bafb7831ae5b54a31a69bd670220e42e99ec154475025a468eae58ea262f813fdc8d1c62
+  languageName: node
+  linkType: hard
+
+"iso-639-1@npm:^2.1.11":
+  version: 2.1.11
+  resolution: "iso-639-1@npm:2.1.11"
+  checksum: 8516c2434f2b55ad841247f522d2440cecd11236fa5a6d3a30af775a8d0b8d2a97145392685a2289e99c6a760afe371388311080db554a26de076a6845db3a06
   languageName: node
   linkType: hard
 

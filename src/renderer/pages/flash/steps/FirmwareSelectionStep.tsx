@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, Button, Divider, Typography } from "antd";
 import { RocketOutlined, UploadOutlined } from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
@@ -10,7 +10,7 @@ import {
   StepControlsContainer,
 } from "renderer/pages/flash/shared";
 import { Centered, FullHeight } from "renderer/shared/layouts";
-import { VersionFilters } from "renderer/components/VersionTargetForm";
+import useVersionFilters from "renderer/hooks/useVersionFilters";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
@@ -42,8 +42,6 @@ const DescriptionContainer = styled.div`
   height: 100%;
 `;
 
-const filterKeys = ["includePrereleases"];
-
 const FirmwareStep: StepComponent = ({ onNext }) => {
   const { parseParam, updateParams } = useQueryParams<
     "version" | "target" | "filters"
@@ -52,16 +50,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
 
   const version = parseParam("version");
   const target = parseParam("target");
-  const enabledFilters = parseParam("filters")?.split(",");
-
-  const filters = useMemo(
-    () =>
-      filterKeys.reduce(
-        (acc, key) => ({ ...acc, [key]: enabledFilters?.includes(key) }),
-        {} as VersionFilters
-      ),
-    [enabledFilters]
-  );
+  const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -101,11 +90,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   if (activeTab === "releases") {
                     updateParams({
                       ...params,
-                      filters:
-                        Object.entries(params.filters)
-                          .filter(([, value]) => value)
-                          .map(([key]) => key)
-                          .join(",") || undefined,
+                      filters: encodeFilters(params.filters),
                     });
                   }
                 }}

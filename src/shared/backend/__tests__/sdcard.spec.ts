@@ -213,39 +213,39 @@ describe("Query", () => {
           "sounds": Array [
             Object {
               "id": "cn",
-              "name": "CN",
+              "name": "中文",
             },
             Object {
               "id": "cz",
-              "name": "CZ",
+              "name": "čeština",
             },
             Object {
               "id": "de",
-              "name": "DE",
+              "name": "Deutsch",
             },
             Object {
               "id": "en",
-              "name": "EN",
+              "name": "English",
             },
             Object {
               "id": "es",
-              "name": "ES",
+              "name": "Español",
             },
             Object {
               "id": "fr",
-              "name": "FR",
+              "name": "Français",
             },
             Object {
               "id": "it",
-              "name": "IT",
+              "name": "Italiano",
             },
             Object {
               "id": "pt",
-              "name": "PT",
+              "name": "Português",
             },
             Object {
               "id": "ru",
-              "name": "RU",
+              "name": "Русский",
             },
           ],
         }

@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import AssetsTab from "./editor/AssetsTab";
 
 const SdcardEditor: React.FC = () => {
-  const { directoryId } = useParams();
+  const { directoryId, tab } = useParams();
   const navigate = useNavigate();
 
   const { data, loading, error } = useQuery(
@@ -25,16 +25,23 @@ const SdcardEditor: React.FC = () => {
         directoryId: directoryId ?? "",
       },
       skip: !directoryId,
+      fetchPolicy: "cache-and-network",
     }
   );
 
   const directory = data?.sdcardDirectory;
+  const baseAssetsUnknown =
+    !loading &&
+    !error &&
+    (!data?.sdcardDirectory?.target || !data.sdcardDirectory.version);
 
   useEffect(() => {
     if (!directoryId || (!loading && (!directory || error))) {
-      navigate("/sdcard");
+      navigate("/sdcard", { replace: true });
+    } else if (directoryId && !tab) {
+      navigate(`/sdcard/${directoryId}/assets`, { replace: true });
     }
-  }, [directoryId, navigate, directory, error, loading]);
+  }, [directoryId, navigate, directory, error, loading, tab]);
 
   useEffect(() => {
     if (directory && !loading && !directory.isValid) {
@@ -63,9 +70,38 @@ const SdcardEditor: React.FC = () => {
   }
 
   return (
-    <Tabs defaultActiveKey="1" size="large" type="card">
-      <Tabs.TabPane tab="Assets" key="1">
+    <Tabs
+      activeKey={tab}
+      size="large"
+      type="card"
+      tabPosition="left"
+      onTabClick={(newTab) => {
+        if (newTab !== tab) {
+          navigate(`/sdcard/${directoryId}/${newTab}`);
+        }
+      }}
+      destroyInactiveTabPane
+      tabBarStyle={{
+        width: "100px",
+      }}
+    >
+      <Tabs.TabPane
+        tab={
+          <span style={{ width: "60px" }}>
+            {baseAssetsUnknown && (
+              <ExclamationCircleOutlined
+                style={{ color: "var(--ant-error-color)" }}
+              />
+            )}
+            Assets
+          </span>
+        }
+        key="assets"
+      >
         <AssetsTab directoryId={directoryId} />
+      </Tabs.TabPane>
+      <Tabs.TabPane tab="Themes" key="themes" disabled={baseAssetsUnknown}>
+        <div>Theme tabs</div>
       </Tabs.TabPane>
     </Tabs>
   );
