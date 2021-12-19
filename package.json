@@ -44,12 +44,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.5.5",
-    "@emotion/react": "^11.6.0",
-    "@emotion/styled": "^11.6.0",
     "@graphql-tools/merge": "^8.2.1",
     "@graphql-tools/schema": "^8.3.1",
-    "@mui/icons-material": "^5.1.1",
-    "@mui/material": "^5.1.1",
     "@octokit/core": "^3.5.1",
     "antd": "^4.17.2",
     "apollo-bus-link": "^0.4.4",
