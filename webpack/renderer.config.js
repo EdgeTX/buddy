@@ -11,6 +11,7 @@ const { spawn } = require("child_process");
 const tsconfig = require("../tsconfig.json");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 
 module.exports = (_, { mode }) => ({
   target: "es2020",
@@ -132,6 +133,7 @@ module.exports = (_, { mode }) => ({
       GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
     }),
     new MiniCssExtractPlugin(),
+    new FaviconsWebpackPlugin("./assets/icon.png"),
     new HtmlWebpackPlugin({
       template: "./src/renderer/index.html",
     }),
