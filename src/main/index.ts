@@ -74,6 +74,7 @@ const createWindow = (): void => {
   mainWindow = new BrowserWindow({
     width: 1024,
     height: 768,
+    titleBarStyle: "hidden",
     resizable: !config.isProduction,
     show: false,
     webPreferences: {

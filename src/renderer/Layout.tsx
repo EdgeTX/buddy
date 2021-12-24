@@ -1,24 +1,34 @@
 import React from "react";
 import { Layout, Menu, Typography } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useMedia from "use-media";
+import config from "shared/config";
+import styled from "styled-components";
 import EdgeTxIcon from "./assets/logo.webp";
 
 const { Header, Content, Footer } = Layout;
 
+const DragableHeader = styled(Header)`
+  app-region: drag;
+  user-select: none;
+  width: "100%";
+`;
+
 const AppLayout: React.FC = ({ children }) => {
   const isWide = useMedia({ minWidth: "1200px" });
+  const location = useLocation();
   return (
     <Layout
       style={{ height: "100%", display: "flex", flexDirection: "column" }}
     >
-      <Header style={{ width: "100%" }}>
+      <DragableHeader>
         <div
           style={{
             float: "left",
-            marginRight: "16px",
-            width: "150px",
+            marginRight: config.isElectron ? "8px" : "16px",
+            width: config.isElectron ? "132px" : "150px",
             height: "100%",
+            marginLeft: config.isElectron ? "32px" : undefined,
           }}
         >
           <div
@@ -41,15 +51,19 @@ const AppLayout: React.FC = ({ children }) => {
             </Typography.Title>
           </div>
         </div>
-        <Menu theme="dark" mode="horizontal">
-          <Menu.Item key="1">
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          selectedKeys={[location.pathname.split("/")[1] as string]}
+        >
+          <Menu.Item key="flash">
             <Link to="/flash">Flash</Link>
           </Menu.Item>
-          <Menu.Item key="2">
+          <Menu.Item key="sdcard">
             <Link to="/sdcard">SD Card</Link>
           </Menu.Item>
         </Menu>
-      </Header>
+      </DragableHeader>
       <Content
         className="site-layout"
         style={{
