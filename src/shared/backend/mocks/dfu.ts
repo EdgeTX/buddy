@@ -78,6 +78,10 @@ export const connect: typeof dfu.connect = async (device) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   await delay(1000);
 
+  if (device === badDevice) {
+    throw new Error("Couldnt connect");
+  }
+
   return {
     write: () => {
       const events = createDfuEvents();
@@ -86,8 +90,6 @@ export const connect: typeof dfu.connect = async (device) => {
         case goodDevice:
           startEmulation(events, "good");
           break;
-        case badDevice:
-          throw new Error("Couldnt connect");
         case errorErasingDevice:
           startEmulation(events, "bad-erase");
           break;

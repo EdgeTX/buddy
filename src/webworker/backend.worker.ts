@@ -5,8 +5,15 @@ import {
   createSchemaExecutor,
 } from "apollo-bus-link/core";
 import { webWorkerBus } from "apollo-bus-link/webworker";
-import { createContext, FileSystemApi, schema, UsbApi } from "shared/backend";
+import {
+  createContext,
+  createMockContext,
+  FileSystemApi,
+  schema,
+  UsbApi,
+} from "shared/backend";
 import { showDirectoryPicker, requestDevice } from "./crossboundary/functions";
+import { WorkerArgs } from "./types";
 
 const fileSystem: FileSystemApi = {
   requestWritableDirectory: (options) =>
@@ -34,15 +41,21 @@ const usb: UsbApi = {
   deviceList: () => navigator.usb.getDevices(),
 };
 
-const backend = createBusLinkBackend({
+const backend = createBusLinkBackend<WorkerArgs>({
   registerBus: webWorkerBus(self),
-  executor: createSchemaExecutor({
-    schema,
-    context: createContext({
-      fileSystem,
-      usb,
+  createExecutor: (args) =>
+    createSchemaExecutor({
+      schema,
+      context: args.mocked
+        ? createMockContext({
+            fileSystem,
+          })
+        : createContext({
+            fileSystem,
+            usb,
+          }),
     }),
-  }),
 });
 
+void backend.initialise({ mocked: false });
 backend.listen();
