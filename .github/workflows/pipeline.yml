@@ -223,7 +223,7 @@ jobs:
       #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
       - name: Release
-        if: github.ref == 'refs/heads/master'
+        if: github.event_name != 'pull_request'
         run: yarn release
         env:
           GH_TOKEN: ${{ secrets.github_token }}
