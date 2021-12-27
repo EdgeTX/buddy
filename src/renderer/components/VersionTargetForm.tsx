@@ -46,7 +46,7 @@ const VersionTargetForm: React.FC<Props> = ({
     size="large"
   >
     <Form.Item
-      label="Version"
+      label="Firmware version"
       name="version"
       tooltip={
         versions.tooltip
@@ -96,7 +96,7 @@ const VersionTargetForm: React.FC<Props> = ({
       </Select>
     </Form.Item>
     <Form.Item
-      label="Radio"
+      label="Radio model"
       name="target"
       tooltip={
         targets.tooltip
@@ -122,8 +122,8 @@ const VersionTargetForm: React.FC<Props> = ({
         }
         placeholder={
           !versions.selectedId
-            ? "Select a firmware to see available targets"
-            : versions.placeholder ?? "Select a radio"
+            ? "Select firmware to see available models"
+            : versions.placeholder ?? "Select radio model"
         }
       >
         {targets.available?.map((t) => (

@@ -19,11 +19,11 @@ const flashSteps = [
     component: FirmwareSelectionStep,
   },
   {
-    title: "Choose device",
+    title: "Connect radio",
     component: DeviceSelectionStep,
   },
   {
-    title: "Overview",
+    title: "Overview & flash",
     component: OverviewStep,
   },
 ];

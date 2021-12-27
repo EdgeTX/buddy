@@ -77,7 +77,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <RocketOutlined />
-                  Releases
+                  Cloud
                 </span>
               }
               key="releases"
@@ -100,7 +100,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <UploadOutlined />
-                  File
+                  Local file
                 </span>
               }
               key="file"
@@ -172,6 +172,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
       </StepContentContainer>
       <StepControlsContainer>
         <Button
+          disabled={!target || !version}
           type="primary"
           size="large"
           onClick={() => {

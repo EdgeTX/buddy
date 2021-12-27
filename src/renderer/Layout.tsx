@@ -14,6 +14,19 @@ const DragableHeader = styled(Header)`
   width: "100%";
 `;
 
+// TODO: use this if we want the menu labels to spill over multiple lines
+// const MenuLabel = styled.div`
+//   white-space: normal;
+//   width: 64px;
+//   line-height: initial;
+//   text-align: center;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   // Height of top-bar
+//   height: 64px;
+// `;
+
 const AppLayout: React.FC = ({ children }) => {
   const isWide = useMedia({ minWidth: "1200px" });
   const location = useLocation();
@@ -57,10 +70,10 @@ const AppLayout: React.FC = ({ children }) => {
           selectedKeys={[location.pathname.split("/")[1] as string]}
         >
           <Menu.Item key="flash">
-            <Link to="/flash">Flash</Link>
+            <Link to="/flash">Radio firmware</Link>
           </Menu.Item>
           <Menu.Item key="sdcard">
-            <Link to="/sdcard">SD Card</Link>
+            <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
         </Menu>
       </DragableHeader>
@@ -87,7 +100,7 @@ const AppLayout: React.FC = ({ children }) => {
       </Content>
       <Footer style={{ textAlign: "center", padding: "8px" }}>
         Built with ♥ by the EdgeTX contributors -{" "}
-        <a href="https://github.com/freshollie/edgetx-buddy">source</a>
+        <a href="https://github.com/EdgeTX/buddy">source</a>
       </Footer>
     </Layout>
   );
