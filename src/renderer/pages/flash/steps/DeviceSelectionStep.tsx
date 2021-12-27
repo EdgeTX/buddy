@@ -166,11 +166,12 @@ const DeviceSelectionStep: StepComponent<{
             onPrevious?.();
           }}
         >
-          Previous
+          Go back
         </Button>
         <Button
           type="primary"
           size="large"
+          disabled={!selectedDeviceId}
           onClick={() => {
             if (selectedDeviceId) {
               onNext?.();

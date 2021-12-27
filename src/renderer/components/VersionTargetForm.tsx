@@ -83,7 +83,7 @@ const VersionTargetForm: React.FC<Props> = ({
         placeholder={
           versions.loading
             ? "Loading releases..."
-            : versions.placeholder ?? "Select a version"
+            : versions.placeholder ?? "Select firmware version"
         }
         loading={versions.loading}
         disabled={!!versions.error || disabled}

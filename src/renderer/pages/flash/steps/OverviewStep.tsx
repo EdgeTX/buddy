@@ -83,11 +83,25 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
             </Centered>
             <Centered style={{ height: "100%" }}>
               <Container>
-                <FirmwareSummary target={target} version={version} />
+                <div>
+                  <Typography.Title level={3} style={{ textAlign: "center" }}>
+                    Firmware
+                  </Typography.Title>
+                  <FirmwareSummary target={target} version={version} />
+                </div>
                 <DoubleRightOutlined
-                  style={{ fontSize: "24px", marginTop: "64px" }}
+                  style={{
+                    fontSize: "24px",
+                    marginTop: "64px",
+                    color: "var(--ant-primary-4)",
+                  }}
                 />
-                <Device deviceId={deviceId} />
+                <div>
+                  <Typography.Title level={3} style={{ textAlign: "center" }}>
+                    Radio
+                  </Typography.Title>
+                  <Device deviceId={deviceId} />
+                </div>
               </Container>
             </Centered>
             <Centered>
@@ -124,7 +138,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                       });
                   }}
                 >
-                  Start
+                  Start flashing
                 </Button>
               </Space>
             </Centered>

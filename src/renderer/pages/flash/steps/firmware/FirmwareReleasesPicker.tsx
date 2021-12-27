@@ -104,8 +104,17 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   useEffect(() => {
     if (sortedReleases.length > 0 && !version && !releasesQuery.loading) {
       // Set the first selected version to the latest version
-      onChanged({ version: sortedReleases[0]?.id, target: undefined, filters });
+      const timeout = setTimeout(() =>
+        onChanged({
+          version: sortedReleases[0]?.id,
+          target: undefined,
+          filters,
+        })
+      );
+
+      return () => clearTimeout(timeout);
     }
+    return undefined;
   }, [sortedReleases, version, releasesQuery, onChanged, filters]);
 
   return (

@@ -25,6 +25,7 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
       variables: {
         fileId: selectedFile ?? "",
       },
+      fetchPolicy: "network-only",
       skip: !selectedFile,
     }
   );

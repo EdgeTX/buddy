@@ -70,8 +70,8 @@ const FirmwareUploadArea: React.FC<Props> = ({
 
         <p className="ant-upload-text">
           {!loadingState
-            ? "Click or drag a firmware file to this area to upload"
-            : "Loading..."}
+            ? "Click here to select firmware file, or drag it here to upload."
+            : "Verifying..."}
         </p>
       </Upload.Dragger>
     </FirmwareUploadContainer>
@@ -86,7 +86,7 @@ const FirmwareUploadArea: React.FC<Props> = ({
             name={uploadedFile.name}
             extra={
               <Button type="default" onClick={() => onFileSelected()}>
-                Cancel
+                Remove
               </Button>
             }
           />

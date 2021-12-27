@@ -105,24 +105,23 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               }
               key="file"
             >
-              <Centered style={{ height: "100%" }}>
+              <div style={{ marginTop: "16px" }}>
                 {!target && (
-                  <Typography.Text
-                    style={{ textAlign: "center" }}
-                    type="secondary"
-                  >
-                    Select a firmware file
-                  </Typography.Text>
+                  <>
+                    <div>
+                      <Typography.Text type="secondary">
+                        • Local firmware file should be a binary (.bin)
+                      </Typography.Text>
+                    </div>
+                    <div>
+                      <Typography.Text type="secondary">
+                        • These can be built locally or downloaded from the
+                        EdgeTX releases
+                      </Typography.Text>
+                    </div>
+                  </>
                 )}
-                {version === "local" && target && (
-                  <Typography.Text
-                    style={{ textAlign: "center" }}
-                    type="secondary"
-                  >
-                    File ready to use
-                  </Typography.Text>
-                )}
-              </Centered>
+              </div>
             </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />

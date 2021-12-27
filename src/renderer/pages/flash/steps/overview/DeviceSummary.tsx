@@ -8,7 +8,7 @@ const DeviceSummary: React.FC<{ device?: Device; loading?: boolean }> = ({
   device,
   loading,
 }) => (
-  <Space direction="vertical" size="large">
+  <Space direction="vertical" size="large" style={{ width: "100%" }}>
     <Centered>
       <UsbOutlined
         style={{
@@ -22,7 +22,7 @@ const DeviceSummary: React.FC<{ device?: Device; loading?: boolean }> = ({
       <Skeleton title active />
     ) : (
       <Centered>
-        <Typography.Title style={{ textAlign: "center" }} level={4}>
+        <Typography.Title style={{ textAlign: "center" }} level={5}>
           {device?.productName ?? "-"}
         </Typography.Title>
         <div>

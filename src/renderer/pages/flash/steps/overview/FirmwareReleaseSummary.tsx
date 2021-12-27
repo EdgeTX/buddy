@@ -7,7 +7,7 @@ const FirmwareReleaseSummary: React.FC<{
   releaseName: string;
   targetName: string;
 }> = ({ releaseName, targetName }) => (
-  <Space direction="vertical" size="large">
+  <Space direction="vertical" size="large" style={{ width: "100%" }}>
     <Centered>
       <img
         style={{ height: "64px" }}
@@ -16,7 +16,7 @@ const FirmwareReleaseSummary: React.FC<{
       />
     </Centered>
     <Centered>
-      <Typography.Title style={{ textAlign: "center" }} level={4}>
+      <Typography.Title style={{ textAlign: "center" }} level={5}>
         {releaseName}
       </Typography.Title>
       <Typography.Text style={{ textAlign: "center" }} type="secondary">

@@ -37,7 +37,6 @@ export default <K extends string>() => {
         newParams: Partial<Record<K, boolean | string | number>>,
         replace?: boolean
       ) => {
-        console.log(newParams);
         const newObject = {
           ...Object.fromEntries(
             Array.from(params.keys()).map((key) => [key, params.get(key)])
