@@ -10,6 +10,9 @@ export default <K extends string>() => {
       type?: T
     ): ReturnType<T> | undefined => {
       const value = params.get(key);
+      if (value === null) {
+        return undefined;
+      }
 
       if (type === Number) {
         const parsedValue = Number(value);
@@ -18,15 +21,11 @@ export default <K extends string>() => {
         }
       }
 
-      if (type === Boolean && value !== null) {
+      if (type === Boolean) {
         return (value === "true") as ReturnType<T>;
       }
 
-      if (value !== null) {
-        return value as ReturnType<T>;
-      }
-
-      return undefined;
+      return value as ReturnType<T>;
     },
     [params]
   );
@@ -35,7 +34,7 @@ export default <K extends string>() => {
     updateParams: useCallback(
       (
         newParams: Partial<Record<K, boolean | string | number>>,
-        replace?: boolean
+        pushState?: boolean
       ) => {
         const newObject = {
           ...Object.fromEntries(
@@ -50,7 +49,7 @@ export default <K extends string>() => {
               ([, value]) => value !== undefined && value !== null
             ) as [string, string][]
           ),
-          { replace: replace ?? true }
+          { replace: !pushState }
         );
       },
       [setParams, params]

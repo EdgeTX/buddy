@@ -4,9 +4,10 @@
  * native history
  */
 import { Steps } from "antd";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import config from "shared/config";
 import { Centered } from "renderer/shared/layouts";
+import useQueryParams from "renderer/hooks/useQueryParams";
 import DeviceSelectionStep from "./steps/DeviceSelectionStep";
 import FirmwareSelectionStep from "./steps/FirmwareSelectionStep";
 import OverviewStep from "./steps/OverviewStep";
@@ -29,10 +30,19 @@ const flashSteps = [
 ];
 
 const FlashingWizard: React.FC = () => {
-  const [current, setCurrent] = useState<number>(0);
+  const { parseParam, updateParams } = useQueryParams<"step">();
+  const current = parseParam("step", Number) ?? 1;
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const Component = flashSteps[current]!.component;
+  const Component = flashSteps[current - 1]!.component;
+
+  // If this page first renders, set the step back to 1
+  useEffect(() => {
+    updateParams({
+      step: undefined,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -51,9 +61,9 @@ const FlashingWizard: React.FC = () => {
 
       <Component
         stepIndex={current}
-        onNext={() => setCurrent((index) => index + 1)}
-        onPrevious={() => setCurrent((index) => index - 1)}
-        onRestart={() => setCurrent(0)}
+        onNext={() => updateParams({ step: current + 1 }, true)}
+        onPrevious={() => updateParams({ step: current - 1 }, true)}
+        onRestart={() => updateParams({ step: undefined }, true)}
         variant={config.isElectron ? "electron" : "web"}
       />
     </>

@@ -268,6 +268,7 @@ const FlashExecution: React.FC = () => {
         <FullHeightCentered
           style={{
             maxWidth: "500px",
+            width: "100%",
           }}
         >
           {data?.flashJobStatus && (
