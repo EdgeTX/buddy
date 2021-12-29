@@ -34,7 +34,7 @@
       "./build/main/*",
       "./build/renderer/*",
       "!./build/renderer/*.js",
-      "./build/renderer/main.js"
+      "./build/renderer/main-*.js"
     ],
     "npmRebuild": false,
     "directories": {
