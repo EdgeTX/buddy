@@ -3,8 +3,9 @@ import { Skeleton, Space, Typography } from "antd";
 import React from "react";
 import { Centered } from "renderer/shared/layouts";
 import { Device } from "renderer/pages/flash/types";
+import { gql, useQuery } from "@apollo/client";
 
-const DeviceSummary: React.FC<{ device?: Device; loading?: boolean }> = ({
+const DeviceDetails: React.FC<{ device?: Device; loading?: boolean }> = ({
   device,
   loading,
 }) => (
@@ -19,7 +20,7 @@ const DeviceSummary: React.FC<{ device?: Device; loading?: boolean }> = ({
     </Centered>
 
     {loading ? (
-      <Skeleton title active />
+      <Skeleton title paragraph={{ rows: 2 }} active />
     ) : (
       <Centered>
         <Typography.Title style={{ textAlign: "center" }} level={5}>
@@ -39,5 +40,33 @@ const DeviceSummary: React.FC<{ device?: Device; loading?: boolean }> = ({
     )}
   </Space>
 );
+
+const DeviceSummary: React.FC<{ deviceId: string }> = ({ deviceId }) => {
+  const { loading, data } = useQuery(
+    gql(/* GraphQL */ `
+      query DeviceInfo($deviceId: ID!) {
+        flashableDevice(id: $deviceId) {
+          id
+          productName
+          serialNumber
+          vendorId
+          productId
+        }
+      }
+    `),
+    {
+      variables: {
+        deviceId,
+      },
+    }
+  );
+
+  return (
+    <DeviceDetails
+      loading={loading}
+      device={data?.flashableDevice ?? undefined}
+    />
+  );
+};
 
 export default DeviceSummary;

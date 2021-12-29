@@ -6,15 +6,18 @@ import { Centered } from "renderer/shared/layouts";
 const FirmwareReleaseSummary: React.FC<{
   releaseName: string;
   targetName: string;
-}> = ({ releaseName, targetName }) => (
+  hideIcon?: boolean;
+}> = ({ releaseName, targetName, hideIcon }) => (
   <Space direction="vertical" size="large" style={{ width: "100%" }}>
-    <Centered>
-      <img
-        style={{ height: "64px" }}
-        src={EdgeTxLogo as string}
-        alt="EdgeTX logo"
-      />
-    </Centered>
+    {!hideIcon && (
+      <Centered>
+        <img
+          style={{ height: "64px" }}
+          src={EdgeTxLogo as string}
+          alt="EdgeTX logo"
+        />
+      </Centered>
+    )}
     <Centered>
       <Typography.Title style={{ textAlign: "center" }} level={5}>
         {releaseName}

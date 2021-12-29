@@ -1,6 +1,6 @@
 import { Card } from "antd";
 import React from "react";
-import FirmwareReleaseSummary from "renderer/pages/flash/steps/overview/FirmwareReleaseSummary";
+import FirmwareReleaseSummary from "renderer/pages/flash/components/FirmwareReleaseSummary";
 import { Centered } from "renderer/shared/layouts";
 
 export default {

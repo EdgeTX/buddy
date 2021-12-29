@@ -6,6 +6,7 @@ import config from "shared/config";
 import styled from "styled-components";
 import { Centered, FullHeight } from "renderer/shared/layouts";
 import FlashJobTimeline from "./execution/FlashJobTimeline";
+import FirmwareSummary from "./components/FirmwareSummary";
 
 const Container = styled.div`
   height: 100%;
@@ -30,6 +31,13 @@ const FlashExecution: React.FC = () => {
         flashJobStatus(jobId: $jobId) {
           id
           cancelled
+          meta {
+            firmware {
+              target
+              version
+            }
+            deviceId
+          }
           stages {
             connect {
               ...FlashJobStageData
@@ -107,8 +115,12 @@ const FlashExecution: React.FC = () => {
         onError: (subscriptionError) => {
           console.log(subscriptionError);
         },
-        updateQuery: (_, { subscriptionData }) => ({
-          flashJobStatus: subscriptionData.data.flashJobStatusUpdates,
+        updateQuery: (existing, { subscriptionData }) => ({
+          flashJobStatus: {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            ...existing.flashJobStatus!,
+            ...subscriptionData.data.flashJobStatusUpdates,
+          },
         }),
       });
     }
@@ -185,16 +197,28 @@ const FlashExecution: React.FC = () => {
     <Container>
       <FullHeight
         style={{
-          justifyContent: "center",
+          marginTop: "100px",
           textAlign: "center",
           width: "400px",
         }}
       >
         {!data?.flashJobStatus?.stages.flash.completed ? (
           <>
-            <Typography.Title level={1}>Flashing EdgeTX</Typography.Title>
+            <div
+              style={{
+                marginBottom: "32px",
+              }}
+            >
+              <Typography.Title level={1}>Flashing EdgeTX</Typography.Title>
+              <FirmwareSummary
+                hideIcon
+                loading={loading && !data}
+                target={data?.flashJobStatus?.meta.firmware.target ?? ""}
+                version={data?.flashJobStatus?.meta.firmware.version ?? ""}
+              />
+            </div>
             <Typography.Text>
-              Please leave this window open whilst we upgrade your device
+              Please leave this window open whilst your radio is being flashed
             </Typography.Text>
           </>
         ) : (
@@ -233,7 +257,7 @@ const FlashExecution: React.FC = () => {
             flex: 0,
           }}
         >
-          {data?.flashJobStatus?.stages.flash.completed ? (
+          {jobCompleted && (
             <Button
               onClick={() => {
                 navigate("/flash", { replace: true });
@@ -241,13 +265,23 @@ const FlashExecution: React.FC = () => {
             >
               Done
             </Button>
-          ) : (
+          )}
+          {!jobCompleted && !jobError && (
             <Button
               onClick={() => {
                 void cancelJob();
               }}
             >
               Cancel
+            </Button>
+          )}
+          {jobError && (
+            <Button
+              onClick={() => {
+                navigate("/flash", { replace: true });
+              }}
+            >
+              Go back
             </Button>
           )}
         </div>

@@ -8,6 +8,7 @@ import {
   FlashJob,
   FlashStage,
   FlashStages,
+  FlashJobMeta,
 } from "shared/backend/graph/__generated__";
 
 export const jobUpdates = new PubSub();
@@ -15,12 +16,14 @@ export const jobUpdates = new PubSub();
 const jobs: Record<string, FlashJob> = {};
 
 export const createJob = (
-  stages: (keyof Omit<FlashStages, "__typename">)[]
+  stages: (keyof Omit<FlashStages, "__typename">)[],
+  meta: FlashJobMeta
 ): FlashJob => {
   const id = uuid.v1();
   const job: FlashJob = {
     id,
     cancelled: false,
+    meta,
     stages: Object.fromEntries(
       stages.map((stage) => [
         stage,

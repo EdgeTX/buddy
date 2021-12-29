@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
-import { useQuery, gql, useMutation } from "@apollo/client";
-import { Card, Skeleton, Button, Space, Typography, message } from "antd";
+import { gql, useMutation } from "@apollo/client";
+import { Card, Button, Space, Typography, message } from "antd";
 import styled from "styled-components";
 import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { StepComponent } from "renderer/pages/flash/types";
 import { Centered, FullHeight } from "renderer/shared/layouts";
-import FirmwareFileSummary from "renderer/pages/flash/components/FirmwareFileSummary";
-import FirmwareReleaseSummary from "./overview/FirmwareReleaseSummary";
-import DeviceSummary from "./overview/DeviceSummary";
+import DeviceSummary from "renderer/pages/flash/components/DeviceSummary";
+import FirmwareSummary from "renderer/pages/flash/components/FirmwareSummary";
 
 const Container = styled.div`
   display: flex;
@@ -100,7 +99,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
                     Radio
                   </Typography.Title>
-                  <Device deviceId={deviceId} />
+                  <DeviceSummary deviceId={deviceId} />
                 </div>
               </Container>
             </Centered>
@@ -146,112 +145,6 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
         </Card>
       </Centered>
     </FullHeight>
-  );
-};
-
-const Device: React.FC<{ deviceId: string }> = ({ deviceId }) => {
-  const { loading, data } = useQuery(
-    gql(/* GraphQL */ `
-      query DeviceInfo($deviceId: ID!) {
-        flashableDevice(id: $deviceId) {
-          id
-          productName
-          serialNumber
-          vendorId
-          productId
-        }
-      }
-    `),
-    {
-      variables: {
-        deviceId,
-      },
-    }
-  );
-
-  return (
-    <DeviceSummary
-      loading={loading}
-      device={data?.flashableDevice ?? undefined}
-    />
-  );
-};
-
-const FirmwareSummary: React.FC<{ target: string; version: string }> = ({
-  target,
-  version,
-}) => {
-  const isFile = version === "local";
-
-  const releaseInfoQuery = useQuery(
-    gql(/* GraphQL */ `
-      query ReleaseInfo($version: ID!, $target: ID!) {
-        edgeTxRelease(id: $version) {
-          id
-          name
-          firmwareBundle {
-            id
-            target(id: $target) {
-              id
-              name
-            }
-          }
-        }
-      }
-    `),
-    {
-      variables: {
-        target,
-        version,
-      },
-      skip: isFile,
-    }
-  );
-
-  const firmwareFileQuery = useQuery(
-    gql(/* GraphQL */ `
-      query LocalFirmwareInfo($fileId: ID!) {
-        localFirmware(byId: $fileId) {
-          id
-          name
-        }
-      }
-    `),
-    {
-      variables: {
-        fileId: target,
-      },
-      skip: !isFile,
-    }
-  );
-
-  if (firmwareFileQuery.loading || releaseInfoQuery.loading) {
-    return (
-      <div>
-        <Centered>
-          <Skeleton.Avatar active size="large" shape="square" />
-        </Centered>
-        <Skeleton title active />
-      </div>
-    );
-  }
-
-  if (!isFile && releaseInfoQuery.data) {
-    return (
-      <FirmwareReleaseSummary
-        releaseName={releaseInfoQuery.data.edgeTxRelease?.name ?? "Unknown"}
-        targetName={
-          releaseInfoQuery.data.edgeTxRelease?.firmwareBundle.target?.name ??
-          "Unknown"
-        }
-      />
-    );
-  }
-
-  return (
-    <FirmwareFileSummary
-      name={firmwareFileQuery.data?.localFirmware?.name ?? "Unknown"}
-    />
   );
 };
 

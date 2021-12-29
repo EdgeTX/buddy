@@ -94,7 +94,7 @@ const stageConfigs: StageConfig[] = [
     stage: "erase",
     description: {
       pre: "Remove existing firmware",
-      active: "Removing existing firmware from device",
+      active: "Removing existing firmware from radio",
       post: "Existing firmware erased",
       error: "Could not erase existing firmeware",
     },
@@ -106,9 +106,9 @@ const stageConfigs: StageConfig[] = [
     stage: "flash",
     description: {
       pre: "Write new firmware",
-      active: "Writing new firmware to device, this could take several minutes",
+      active: "Writing new firmware to radio, this could take several minutes",
       post: "New firmware flashed",
-      error: "Could not write new firmware to device",
+      error: "Could not write new firmware to radio",
     },
     Icon: DoubleRightOutlined,
     showProgess: true,
@@ -288,7 +288,7 @@ const FlashJobTimeline: React.FC<Props> = ({ state, completionTip }) => {
           <Result
             style={{ padding: 8, textAlign: "center" }}
             icon={<RocketTwoTone style={{ fontSize: 48 }} />}
-            title="Your device has been upgraded"
+            title="Your radio has been upgraded"
           >
             {completionTip}
           </Result>

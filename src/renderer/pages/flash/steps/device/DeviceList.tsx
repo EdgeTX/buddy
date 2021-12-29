@@ -37,7 +37,7 @@ const DeviceList: React.FC<Props> = ({
         : devices
     }
     renderItem={(device) => (
-      <Skeleton loading={!!loading} active avatar>
+      <Skeleton loading={!!loading} active avatar paragraph={{ rows: 1 }}>
         <SelectableItemList
           selected={device.id === selectedDeviceId}
           key={device.id}

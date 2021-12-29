@@ -36,7 +36,13 @@ const typeDefs = gql`
   type FlashJob {
     id: ID!
     cancelled: Boolean!
+    meta: FlashJobMeta!
     stages: FlashStages!
+  }
+
+  type FlashJobMeta {
+    firmware: FlashFirmware!
+    deviceId: ID!
   }
 
   type FlashStages {
@@ -55,6 +61,11 @@ const typeDefs = gql`
   }
 
   input FlashFirmwareInput {
+    version: ID!
+    target: ID!
+  }
+
+  type FlashFirmware {
     version: ID!
     target: ID!
   }
@@ -118,13 +129,17 @@ const resolvers: Resolvers = {
       // If we already have the firmware we don't need to download
       // So start the state off assuming no download step
       const job = firmwareData
-        ? context.flashJobs.createJob(["connect", "erase", "flash"])
-        : context.flashJobs.createJob([
-            "connect",
-            "download",
-            "erase",
-            "flash",
-          ]);
+        ? context.flashJobs.createJob(["connect", "erase", "flash"], {
+            firmware,
+            deviceId,
+          })
+        : context.flashJobs.createJob(
+            ["connect", "download", "erase", "flash"],
+            {
+              firmware,
+              deviceId,
+            }
+          );
 
       await context.flashJobs.startExecution(
         job.id,

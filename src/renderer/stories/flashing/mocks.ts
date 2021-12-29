@@ -182,4 +182,94 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
       },
     },
   },
+  delay: 1000,
 };
+
+export const flashJobQuery = (
+  jobId: string,
+  error?: boolean,
+  completed?: boolean
+): MockedResponse => ({
+  request: {
+    query: gql`
+      query FlashJobStatus($jobId: ID!) {
+        flashJobStatus(jobId: $jobId) {
+          id
+          cancelled
+          meta {
+            firmware {
+              target
+              version
+            }
+            deviceId
+          }
+          stages {
+            connect {
+              ...FlashJobStageData
+            }
+            build {
+              ...FlashJobStageData
+            }
+            download {
+              ...FlashJobStageData
+            }
+            erase {
+              ...FlashJobStageData
+            }
+            flash {
+              ...FlashJobStageData
+            }
+          }
+        }
+      }
+
+      fragment FlashJobStageData on FlashStage {
+        started
+        completed
+        progress
+        error
+      }
+    `,
+    variables: {
+      jobId,
+    },
+  },
+  result: {
+    data: {
+      flashJobStatus: {
+        id: jobId,
+        cancelled: false,
+        meta: {
+          firmware: {
+            version: "v2.5.0",
+            target: "nv-14",
+          },
+          deviceId: "some-device-id",
+        },
+        stages: {
+          connect: {
+            started: true,
+            progress: 0,
+            completed: true,
+          },
+          download: {
+            started: true,
+            progress: 100,
+            completed: true,
+          },
+          erase: {
+            started: true,
+            progress: 70.2,
+            error: error ? "Some error" : null,
+            completed: completed ?? false,
+          },
+          flash: {
+            started: completed ?? false,
+            progress: 0,
+            completed: completed ?? false,
+          },
+        },
+      },
+    },
+  },
+});

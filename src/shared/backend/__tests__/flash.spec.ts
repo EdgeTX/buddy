@@ -205,7 +205,7 @@ describe("Mutation", () => {
           mutation RequestDevce {
             requestFlashableDevice {
               id
-              name
+              productName
             }
           }
         `,
@@ -215,6 +215,7 @@ describe("Mutation", () => {
       expect(data?.requestFlashableDevice).toMatchInlineSnapshot(`
         Object {
           "id": "some-serial-number",
+          "productName": "Some product",
         }
       `);
     });
@@ -227,7 +228,7 @@ describe("Mutation", () => {
           mutation RequestDevce {
             requestFlashableDevice {
               id
-              name
+              productName
             }
           }
         `,
@@ -244,6 +245,13 @@ describe("Mutation", () => {
         query FlashJobStatus($jobId: ID!) {
           flashJobStatus(jobId: $jobId) {
             cancelled
+            meta {
+              firmware {
+                target
+                version
+              }
+              deviceId
+            }
             stages {
               connect {
                 ...FlashJobStageData
@@ -348,6 +356,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -395,6 +410,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -431,6 +453,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -465,6 +494,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -501,6 +537,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -537,6 +580,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -571,6 +621,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
@@ -608,6 +665,13 @@ describe("Mutation", () => {
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
         Object {
           "cancelled": false,
+          "meta": Object {
+            "deviceId": "some-device-id",
+            "firmware": Object {
+              "target": "nv14",
+              "version": "v2.5.0",
+            },
+          },
           "stages": Object {
             "build": null,
             "connect": Object {
