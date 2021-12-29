@@ -1,4 +1,3 @@
-import { Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import FlashJobTimeline from "renderer/pages/flash/execution/FlashJobTimeline";
 
@@ -112,12 +111,6 @@ export const completed: React.FC = () => (
         completed: true,
       },
     }}
-    completionTip={
-      <Typography.Text>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        You may now want to <a>setup your SD Card</a>
-      </Typography.Text>
-    }
   />
 );
 

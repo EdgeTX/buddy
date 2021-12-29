@@ -173,7 +173,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         <Button
           disabled={!target || !version}
           type="primary"
-          size="large"
           onClick={() => {
             if (target && version) {
               onNext?.();

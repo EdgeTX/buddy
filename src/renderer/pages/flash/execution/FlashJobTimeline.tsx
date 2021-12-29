@@ -7,7 +7,7 @@ import {
   RocketOutlined,
   UsbOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Progress, Result, Steps, Typography } from "antd";
+import { Alert, Button, Progress, Steps, Typography } from "antd";
 import React from "react";
 
 type FlashingStageStatus = {
@@ -27,7 +27,6 @@ type FlashingState = {
 
 type Props = {
   state: FlashingState;
-  completionTip?: React.ReactNode;
 };
 
 type StageConfig = {
@@ -204,7 +203,7 @@ const stepBaseStyle = {
   transition: "max-height 0.25s ease-out",
 };
 
-const FlashJobTimeline: React.FC<Props> = ({ state, completionTip }) => {
+const FlashJobTimeline: React.FC<Props> = ({ state }) => {
   const lastStepCompleted =
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state[stageConfigs[stageConfigs.length - 1]!.stage]!.completed;
@@ -216,7 +215,11 @@ const FlashJobTimeline: React.FC<Props> = ({ state, completionTip }) => {
       current={stageConfigs.findIndex(
         (stage) => state[stage.stage] && !state[stage.stage]?.started
       )}
-      style={{ height: "100%", maxHeight: "600px" }}
+      style={{
+        height: "100%",
+        transition: "max-height 0.25s ease-out",
+        maxHeight: lastStepCompleted ? "275px" : "600px",
+      }}
     >
       {
         // Annoying that we can't make this it's own component. Something to do with
@@ -281,17 +284,8 @@ const FlashJobTimeline: React.FC<Props> = ({ state, completionTip }) => {
         icon={lastStepCompleted ? undefined : <RocketOutlined />}
         style={{
           ...stepBaseStyle,
-          maxHeight: lastStepCompleted ? 150 : 40,
+          maxHeight: 35,
         }}
-        description={
-          <Result
-            style={{ padding: 8, textAlign: "center" }}
-            icon={<div />}
-            title={null}
-          >
-            {completionTip}
-          </Result>
-        }
       />
     </Steps>
   );

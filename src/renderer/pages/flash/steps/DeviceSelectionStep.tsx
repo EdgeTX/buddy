@@ -161,7 +161,6 @@ const DeviceSelectionStep: StepComponent<{
       </StepContentContainer>
       <StepControlsContainer>
         <Button
-          size="large"
           onClick={() => {
             onPrevious?.();
           }}
@@ -170,7 +169,6 @@ const DeviceSelectionStep: StepComponent<{
         </Button>
         <Button
           type="primary"
-          size="large"
           disabled={!selectedDeviceId}
           onClick={() => {
             if (selectedDeviceId) {

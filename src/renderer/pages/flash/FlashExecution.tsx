@@ -4,7 +4,11 @@ import React, { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import config from "shared/config";
 import styled from "styled-components";
-import { Centered, FullHeight } from "renderer/shared/layouts";
+import {
+  Centered,
+  FullHeight,
+  FullHeightCentered,
+} from "renderer/shared/layouts";
 import { RocketTwoTone } from "@ant-design/icons";
 import FlashJobTimeline from "./execution/FlashJobTimeline";
 import FirmwareSummary from "./components/FirmwareSummary";
@@ -15,6 +19,7 @@ const Container = styled.div`
   flex-direction: row;
 
   > * {
+    transition: max-width 0.3s;
     padding: 16px;
   }
 
@@ -200,67 +205,75 @@ const FlashExecution: React.FC = () => {
         style={{
           paddingTop: "100px",
           textAlign: "center",
-          width: "400px",
+          maxWidth: jobCompleted ? "100%" : "400px",
+          flex: 1,
         }}
       >
-        {!data?.flashJobStatus?.stages.flash.completed ? (
-          <>
-            <div
-              style={{
-                marginBottom: "32px",
-              }}
-            >
-              <Typography.Title level={1}>Flashing EdgeTX</Typography.Title>
+        <Centered>
+          {!data?.flashJobStatus?.stages.flash.completed ? (
+            <>
+              <div
+                style={{
+                  marginBottom: "32px",
+                }}
+              >
+                <Typography.Title level={1}>Flashing EdgeTX</Typography.Title>
+                <FirmwareSummary
+                  hideIcon
+                  loading={loading && !data}
+                  target={data?.flashJobStatus?.meta.firmware.target ?? ""}
+                  version={data?.flashJobStatus?.meta.firmware.version ?? ""}
+                />
+              </div>
+              <Typography.Text>
+                Please leave this window open whilst your radio is being flashed
+              </Typography.Text>
+            </>
+          ) : (
+            <>
+              <Result
+                style={{ padding: 8 }}
+                icon={<RocketTwoTone style={{ fontSize: 48 }} />}
+                title="Your radio has been flashed with EdgeTX"
+              />
               <FirmwareSummary
                 hideIcon
                 loading={loading && !data}
-                target={data?.flashJobStatus?.meta.firmware.target ?? ""}
-                version={data?.flashJobStatus?.meta.firmware.version ?? ""}
+                target={data.flashJobStatus.meta.firmware.target}
+                version={data.flashJobStatus.meta.firmware.version}
               />
-            </div>
-            <Typography.Text>
-              Please leave this window open whilst your radio is being flashed
-            </Typography.Text>
-          </>
-        ) : (
-          <>
-            <Result
-              style={{ padding: 8 }}
-              icon={<RocketTwoTone style={{ fontSize: 48 }} />}
-              title="Your radio has been flashed with EdgeTX"
-            />
-            <FirmwareSummary
-              hideIcon
-              loading={loading && !data}
-              target={data.flashJobStatus.meta.firmware.target}
-              version={data.flashJobStatus.meta.firmware.version}
-            />
-          </>
-        )}
-      </FullHeight>
-      <Divider className="divider" type="vertical" style={{ height: "100%" }} />
-      <FullHeight
-        style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
-      >
-        <Centered
-          style={{
-            maxWidth: "500px",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          {data?.flashJobStatus && (
-            <FlashJobTimeline
-              completionTip={
+              <Result
+                style={{ padding: 8, textAlign: "center" }}
+                icon={<div />}
+                title={null}
+              >
                 <Typography.Text>
                   You may now want to{" "}
                   <Link to="/sdcard">setup your SD Card</Link>
                 </Typography.Text>
-              }
-              state={data.flashJobStatus.stages}
-            />
+              </Result>
+            </>
           )}
         </Centered>
+      </FullHeight>
+      <Divider className="divider" type="vertical" style={{ height: "100%" }} />
+      <FullHeight
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 1,
+          maxWidth: jobCompleted ? "300px" : "100%",
+        }}
+      >
+        <FullHeightCentered
+          style={{
+            maxWidth: "500px",
+          }}
+        >
+          {data?.flashJobStatus && (
+            <FlashJobTimeline state={data.flashJobStatus.stages} />
+          )}
+        </FullHeightCentered>
         <div
           style={{
             width: "100%",
