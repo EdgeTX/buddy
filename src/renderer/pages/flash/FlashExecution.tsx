@@ -197,7 +197,7 @@ const FlashExecution: React.FC = () => {
     <Container>
       <FullHeight
         style={{
-          marginTop: "100px",
+          paddingTop: "100px",
           textAlign: "center",
           width: "400px",
         }}
