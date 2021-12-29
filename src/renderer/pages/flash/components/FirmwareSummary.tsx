@@ -68,7 +68,11 @@ const FirmwareSummary: React.FC<{
             />
           </Centered>
         )}
-        <Skeleton title={false} paragraph={{ rows: 2 }} active />
+        <Skeleton
+          title={false}
+          paragraph={{ rows: 2, width: "150px" }}
+          active
+        />
       </div>
     );
   }

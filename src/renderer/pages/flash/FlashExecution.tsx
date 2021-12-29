@@ -19,7 +19,7 @@ const Container = styled.div`
   flex-direction: row;
 
   > * {
-    transition: max-width 0.3s;
+    transition: max-width 0.1s;
     padding: 16px;
   }
 
