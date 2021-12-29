@@ -5,7 +5,6 @@ import {
   DoubleRightOutlined,
   LoadingOutlined,
   RocketOutlined,
-  RocketTwoTone,
   UsbOutlined,
 } from "@ant-design/icons";
 import { Alert, Button, Progress, Result, Steps, Typography } from "antd";
@@ -278,17 +277,17 @@ const FlashJobTimeline: React.FC<Props> = ({ state, completionTip }) => {
       }
       <Steps.Step
         status={lastStepCompleted ? "finish" : "wait"}
-        title={lastStepCompleted ? "Completed" : "Completed"}
+        title="Flashing done"
         icon={lastStepCompleted ? undefined : <RocketOutlined />}
         style={{
           ...stepBaseStyle,
-          maxHeight: lastStepCompleted ? 300 : 40,
+          maxHeight: lastStepCompleted ? 150 : 40,
         }}
         description={
           <Result
             style={{ padding: 8, textAlign: "center" }}
-            icon={<RocketTwoTone style={{ fontSize: 48 }} />}
-            title="Your radio has been upgraded"
+            icon={<div />}
+            title={null}
           >
             {completionTip}
           </Result>

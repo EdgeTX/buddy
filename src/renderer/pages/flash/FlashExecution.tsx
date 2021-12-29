@@ -1,10 +1,11 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Button, Divider, Typography } from "antd";
+import { Button, Divider, Result, Typography } from "antd";
 import React, { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import config from "shared/config";
 import styled from "styled-components";
 import { Centered, FullHeight } from "renderer/shared/layouts";
+import { RocketTwoTone } from "@ant-design/icons";
 import FlashJobTimeline from "./execution/FlashJobTimeline";
 import FirmwareSummary from "./components/FirmwareSummary";
 
@@ -222,7 +223,19 @@ const FlashExecution: React.FC = () => {
             </Typography.Text>
           </>
         ) : (
-          <Typography.Title level={1}>All done!</Typography.Title>
+          <>
+            <Result
+              style={{ padding: 8 }}
+              icon={<RocketTwoTone style={{ fontSize: 48 }} />}
+              title="Your radio has been flashed with EdgeTX"
+            />
+            <FirmwareSummary
+              hideIcon
+              loading={loading && !data}
+              target={data.flashJobStatus.meta.firmware.target}
+              version={data.flashJobStatus.meta.firmware.version}
+            />
+          </>
         )}
       </FullHeight>
       <Divider className="divider" type="vertical" style={{ height: "100%" }} />
