@@ -12,6 +12,8 @@ const tsconfig = require("../tsconfig.json");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
+const HTMLInlineCSSWebpackPlugin =
+  require("html-inline-css-webpack-plugin").default;
 
 module.exports = (_, { mode }) => ({
   target: "es2020",
@@ -54,7 +56,15 @@ module.exports = (_, { mode }) => ({
     rules: [
       {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: false,
+            },
+          },
+        ],
       },
       {
         test: /\.m?js/,
@@ -139,6 +149,7 @@ module.exports = (_, { mode }) => ({
     new HtmlWebpackPlugin({
       template: "./src/renderer/index.html",
     }),
+    new HTMLInlineCSSWebpackPlugin(),
     // Only typecheck in production
     new ForkTsCheckerWebpackPlugin({
       typescript: {

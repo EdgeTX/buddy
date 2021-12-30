@@ -3,3 +3,5 @@ node_modules
 webpack.lock.data
 **/__generated__
 __fixtures__
+storybook-static
+coverage

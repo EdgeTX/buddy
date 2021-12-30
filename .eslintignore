@@ -1,3 +1,4 @@
 # We don't have many js files which should need checking here
 **/*.js
 **/__generated__
+storybook-static/

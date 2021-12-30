@@ -34,7 +34,9 @@
       "./build/main/*",
       "./build/renderer/*",
       "!./build/renderer/*.js",
-      "./build/renderer/main-*.js"
+      "!./build/renderer/*.map",
+      "./build/renderer/main-*.js",
+      "./build/renderer/main-*.map"
     ],
     "npmRebuild": false,
     "directories": {
@@ -171,6 +173,7 @@
     "favicons": "^6.2.2",
     "favicons-webpack-plugin": "^5.0.2",
     "fork-ts-checker-webpack-plugin": "^6.4.2",
+    "html-inline-css-webpack-plugin": "^1.11.1",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.0",
     "is-ci": "^3.0.1",
