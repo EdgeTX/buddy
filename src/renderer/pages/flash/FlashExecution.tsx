@@ -19,8 +19,12 @@ const Container = styled.div`
   flex-direction: row;
 
   > * {
-    transition: max-width 0.1s;
+    transition: max-width 0.2s;
     padding: 16px;
+
+    @media screen and (max-width: 1200px) {
+      transition: max-width 0.1s;
+    }
   }
 
   > .divider {
