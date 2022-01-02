@@ -19,6 +19,10 @@ const DragableHeader = styled(Header)`
     display: flex;
     padding-right: 0;
   }
+
+  li {
+    -webkit-app-region: no-drag;
+  }
 `;
 
 // TODO: use this if we want the menu labels to spill over multiple lines
@@ -84,7 +88,7 @@ const AppLayout: React.FC<Props> = ({
           theme="dark"
           mode="horizontal"
           selectedKeys={[location.pathname.split("/")[1] as string]}
-          style={{ flex: 1 }}
+          style={{ flex: 1, boxShadow: "none" }}
         >
           <Menu.Item key="flash">
             <Link to="/flash">Radio firmware</Link>
@@ -93,11 +97,7 @@ const AppLayout: React.FC<Props> = ({
             <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
         </Menu>
-        {windowsFrameless && (
-          <div style={{ float: "right" }}>
-            <WindowsNav />
-          </div>
-        )}
+        {windowsFrameless && <WindowsNav />}
       </DragableHeader>
       <Content
         className="site-layout"

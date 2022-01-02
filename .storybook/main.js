@@ -3,6 +3,7 @@ const webpack = require("webpack");
 module.exports = {
   stories: ["../src/renderer/stories/**/*.stories.@(ts|tsx)"],
   addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
+  staticDirs: ["../assets"],
   core: {
     builder: "webpack5",
   },

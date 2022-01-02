@@ -4,6 +4,7 @@ import "./polyfills";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import electron, { BrowserWindow, app, dialog, ipcMain } from "electron";
 import path from "path";
+import WindowControls from "electron-window-controls";
 
 import {
   createBusLinkBackend,
@@ -112,6 +113,8 @@ const createWindow = (): void => {
       mainWindow?.webContents.openDevTools();
     }
   });
+
+  WindowControls.initMain();
 };
 
 const startBackend = (): void => {

@@ -2,38 +2,77 @@ import React from "react";
 import styled from "styled-components";
 
 const Buttons = styled.div`
-  height: 100%;
-  line-height: 30px;
+  display: grid;
+  grid-template-columns: repeat(3, 46px);
   -webkit-app-region: no-drag;
-  display: flex;
+  height: 32px;
+  line-height: 32px;
+  color: white;
+  font-size: 10px;
+  font-family: "Segoe MDL2 Assets";
+
+  .min-button {
+    grid-column: 1;
+  }
+  .max-button,
+  .restore-button {
+    grid-column: 2;
+  }
+  .close-button {
+    grid-column: 3;
+  }
+
+  .close-button:hover {
+    background: #e81123 !important;
+  }
+  .close-button:active {
+    background: #f1707a !important;
+  }
+  .close-button:active .icon {
+    filter: invert(1);
+  }
+
+  -webkit-app-region: no-drag;
 `;
 
 const Button = styled.div`
-  text-align: center;
-  color: #f7f7f7;
-  cursor: default;
-  font-size: 30px;
-  width: 50px;
+  grid-row: 1 / span 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  width: 100%;
+  height: 100%;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 `;
 
 const WindowsNav: React.FC = () => (
   <Buttons>
     <Button
+      className="min-button"
       onClick={() => {
-        window.browserWindow?.minimize();
+        window.electronMinimize?.();
       }}
     >
-      <span>&#8210;</span>
+      &#xE921;
     </Button>
-    <Button style={{ opacity: 0.5 }}>
-      <span>&#9633;</span>
+    <Button className="max-button" style={{ opacity: 0.5 }}>
+      &#xE922;
     </Button>
     <Button
+      className="close-button"
       onClick={() => {
-        window.browserWindow?.close();
+        window.electronClose?.();
       }}
     >
-      <span>&times;</span>
+      &#xE8BB;
     </Button>
   </Buttons>
 );

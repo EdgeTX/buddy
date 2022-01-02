@@ -1,14 +1,16 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import electron, { ipcRenderer } from "electron";
+import { ipcRenderer } from "electron";
+import { BrowserWindow } from "electron-window-controls";
 
-const win = electron.BrowserWindow.getFocusedWindow();
 window.ipcRenderer = ipcRenderer;
-window.browserWindow = win;
+window.electronMinimize = () => BrowserWindow.minimize();
+window.electronClose = () => BrowserWindow.close();
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     ipcRenderer?: typeof ipcRenderer;
-    browserWindow?: typeof win;
+    electronMinimize?: () => void;
+    electronClose?: () => void;
   }
 }

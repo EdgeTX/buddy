@@ -1781,7 +1781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.13.0":
+"@electron/get@npm:^1.0.1, @electron/get@npm:^1.13.0":
   version: 1.13.1
   resolution: "@electron/get@npm:1.13.1"
   dependencies:
@@ -10596,6 +10596,7 @@ __metadata:
     electron-builder: ^22.14.5
     electron-devtools-installer: ^3.2.0
     electron-rebuild: ^3.2.5
+    electron-window-controls: ^1.0.23
     esbuild-loader: ^2.16.0
     eslint: ^8.4.1
     eslint-config-airbnb: ^19.0.2
@@ -10792,6 +10793,30 @@ __metadata:
   version: 1.4.0
   resolution: "electron-to-chromium@npm:1.4.0"
   checksum: 8ff6bfad86f56c970a6325b239a10bdf8eb353aadf02db3d3ab26737d148c590b52be75e3c735b02956180342fbdad0538b4d3a23ef13b044290841c8beeeeeb
+  languageName: node
+  linkType: hard
+
+"electron-window-controls@npm:^1.0.23":
+  version: 1.0.23
+  resolution: "electron-window-controls@npm:1.0.23"
+  dependencies:
+    electron: ^12.0.4
+  peerDependencies:
+    electron: ^11.0.0
+  checksum: f8349f4bff0cc700f15461de3a1663fb3fa9ad2d95b5a58e4597b24b52543144b6c50977778e476b886c37d1b454da509894eae1168f226e1ae5425865d766d5
+  languageName: node
+  linkType: hard
+
+"electron@npm:^12.0.4":
+  version: 12.2.3
+  resolution: "electron@npm:12.2.3"
+  dependencies:
+    "@electron/get": ^1.0.1
+    "@types/node": ^14.6.2
+    extract-zip: ^1.0.3
+  bin:
+    electron: cli.js
+  checksum: fba741639ce53397c916a91c192b819c745adfee3559b1ffccf74f0631b9cf14ab313ed755a5972c4f845e1b220eeba54a2e941d83569798753081bf0325537b
   languageName: node
   linkType: hard
 
