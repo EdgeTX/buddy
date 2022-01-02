@@ -18,7 +18,7 @@ export const initialRender = () => (
     <MockedProvider
       mocks={[firmwaresQuery, targetsQuery, firmwareReleaseDescriptionQuery]}
     >
-      <FirmwareSelectionStep stepIndex={0} />
+      <FirmwareSelectionStep />
     </MockedProvider>
   </MemoryRouter>
 );

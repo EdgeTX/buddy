@@ -6,7 +6,6 @@ export type StepComponent<P = {}> = React.FC<
     onNext?: () => void;
     onPrevious?: () => void;
     onRestart?: () => void;
-    stepIndex: number;
   } & P
 >;
 

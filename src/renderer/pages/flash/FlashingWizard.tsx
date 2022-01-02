@@ -48,7 +48,7 @@ const FlashingWizard: React.FC = () => {
     <>
       <Centered>
         <Steps
-          current={current}
+          current={current - 1}
           progressDot
           labelPlacement="vertical"
           style={{ maxWidth: "600px" }}
@@ -60,7 +60,6 @@ const FlashingWizard: React.FC = () => {
       </Centered>
 
       <Component
-        stepIndex={current - 1}
         onNext={() => updateParams({ step: current + 1 }, true)}
         onPrevious={() => updateParams({ step: current - 1 }, true)}
         onRestart={() => updateParams({ step: undefined }, true)}

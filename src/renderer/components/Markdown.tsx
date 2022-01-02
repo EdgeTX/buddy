@@ -55,7 +55,12 @@ const Markdown: typeof ReactMarkdown = ((props) => (
           },
         },
         p: MarkdownParagraph,
-        a: Typography.Link,
+        a: {
+          component: Typography.Link,
+          props: {
+            target: "_blank",
+          },
+        },
         li: MarkdownListItem,
       },
     }}
