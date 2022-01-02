@@ -1,5 +1,6 @@
 import React from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import config from "shared/config";
 import Layout from "./Layout";
 import FlashingWizard from "./pages/flash/FlashingWizard";
 import FlashExecution from "./pages/flash/FlashExecution";
@@ -8,7 +9,10 @@ import SelectSdcardScreen from "./pages/sdcard/SelectSdcardScreen";
 
 const NextGeneration: React.FC = () => (
   <HashRouter>
-    <Layout>
+    <Layout
+      macFrameless={config.isElectron && config.os === "Mac OS"}
+      windowsFrameless={config.isElectron && !!config.os?.startsWith("Windows")}
+    >
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />
         <Route path="/flash/:jobId" element={<FlashExecution />} />

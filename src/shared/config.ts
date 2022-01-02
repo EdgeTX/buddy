@@ -1,7 +1,11 @@
+import { detect } from "detect-browser";
+
 // TODO: fix the types for these, use separate tsconfigs for different envs
 const isElectron =
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   !!global.window?.ipcRenderer;
+
+const browser = detect();
 
 const isMain = !!(
   typeof process !== "undefined" &&
@@ -43,4 +47,5 @@ export default {
     ? process.env.MOCKED === "true"
     : extractParam("mocked") === "true",
   isNewUI: extractParam("next") === "true",
+  os: browser?.os,
 };

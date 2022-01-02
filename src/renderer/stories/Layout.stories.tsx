@@ -14,3 +14,11 @@ export const layoutWithContent: React.FC = () => (
     </Layout>
   </MemoryRouter>
 );
+
+export const windows: React.FC = () => (
+  <MemoryRouter>
+    <Layout windowsFrameless>
+      <div>The layout</div>
+    </Layout>
+  </MemoryRouter>
+);

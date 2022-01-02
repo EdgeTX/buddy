@@ -10083,6 +10083,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-browser@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "detect-browser@npm:5.3.0"
+  checksum: dd6e08d55da1d9e0f22510ac79872078ae03d9dfa13c5e66c96baedc1c86567345a88f96949161f6be8f3e0fafa93bf179bdb1cd311b14f5f163112fcc70ab49
+  languageName: node
+  linkType: hard
+
 "detect-indent@npm:^6.0.0":
   version: 6.1.0
   resolution: "detect-indent@npm:6.1.0"
@@ -10581,6 +10588,7 @@ __metadata:
     cors-anywhere: ^0.4.4
     css-loader: ^6.5.1
     debounce: ^1.2.1
+    detect-browser: ^5.3.0
     dfu: ^0.1.5
     directory-tree: ^3.0.1
     dotenv: ^10.0.0

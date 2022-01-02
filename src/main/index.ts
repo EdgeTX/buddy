@@ -43,30 +43,6 @@ const main = async (): Promise<void> => {
 
   startBackend();
   createWindow();
-  mainWindow?.once("ready-to-show", async () => {
-    if (process.env.HEADLESS !== "true") {
-      mainWindow?.show();
-    }
-
-    // Open the DevTools automatically if developing
-    if (!config.isProduction && !config.isE2e) {
-      const {
-        default: installExtension,
-        REACT_DEVELOPER_TOOLS,
-        APOLLO_DEVELOPER_TOOLS,
-        // eslint-disable-next-line import/no-extraneous-dependencies
-      } = await import("electron-devtools-installer");
-      installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log("Error loading React DevTools: ", err)
-      );
-      installExtension(APOLLO_DEVELOPER_TOOLS).catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log("Error loading Apollo DevTools: ", err)
-      );
-      mainWindow?.webContents.openDevTools();
-    }
-  });
 };
 
 const createWindow = (): void => {
@@ -106,7 +82,38 @@ const createWindow = (): void => {
     // when you should delete the corresponding element.
     mainWindow = undefined;
   });
+
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    void electron.shell.openExternal(details.url);
+    return { action: "deny" };
+  });
+
+  mainWindow.once("ready-to-show", async () => {
+    if (process.env.HEADLESS !== "true") {
+      mainWindow?.show();
+    }
+
+    // Open the DevTools automatically if developing
+    if (!config.isProduction && !config.isE2e) {
+      const {
+        default: installExtension,
+        REACT_DEVELOPER_TOOLS,
+        APOLLO_DEVELOPER_TOOLS,
+        // eslint-disable-next-line import/no-extraneous-dependencies
+      } = await import("electron-devtools-installer");
+      installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
+        // eslint-disable-next-line no-console
+        console.log("Error loading React DevTools: ", err)
+      );
+      installExtension(APOLLO_DEVELOPER_TOOLS).catch((err) =>
+        // eslint-disable-next-line no-console
+        console.log("Error loading Apollo DevTools: ", err)
+      );
+      mainWindow?.webContents.openDevTools();
+    }
+  });
 };
+
 const startBackend = (): void => {
   const mocked = config.isMocked || config.isE2e;
   if (mocked) {

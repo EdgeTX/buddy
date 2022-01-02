@@ -2,16 +2,23 @@ import React from "react";
 import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import useMedia from "use-media";
-import config from "shared/config";
 import styled from "styled-components";
 import EdgeTxIcon from "./assets/logo.webp";
+import WindowsNav from "./components/WindowsNav";
 
 const { Header, Content, Footer } = Layout;
 
 const DragableHeader = styled(Header)`
-  app-region: drag;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
   user-select: none;
-  width: "100%";
+  width: 100%;
+
+  // In largers windows we can use flex here
+  @media screen and (min-width: 800px) {
+    display: flex;
+    padding-right: 0;
+  }
 `;
 
 // TODO: use this if we want the menu labels to spill over multiple lines
@@ -27,7 +34,16 @@ const DragableHeader = styled(Header)`
 //   height: 64px;
 // `;
 
-const AppLayout: React.FC = ({ children }) => {
+type Props = {
+  macFrameless?: boolean;
+  windowsFrameless?: boolean;
+};
+
+const AppLayout: React.FC<Props> = ({
+  children,
+  macFrameless,
+  windowsFrameless,
+}) => {
   const isWide = useMedia({ minWidth: "1200px" });
   const location = useLocation();
   return (
@@ -38,10 +54,10 @@ const AppLayout: React.FC = ({ children }) => {
         <div
           style={{
             float: "left",
-            marginRight: config.isElectron ? "8px" : "16px",
-            width: config.isElectron ? "132px" : "150px",
+            marginRight: macFrameless ? "8px" : "16px",
+            width: macFrameless ? "132px" : "150px",
             height: "100%",
-            marginLeft: config.isElectron ? "32px" : undefined,
+            marginLeft: macFrameless ? "32px" : undefined,
           }}
         >
           <div
@@ -68,6 +84,7 @@ const AppLayout: React.FC = ({ children }) => {
           theme="dark"
           mode="horizontal"
           selectedKeys={[location.pathname.split("/")[1] as string]}
+          style={{ flex: 1 }}
         >
           <Menu.Item key="flash">
             <Link to="/flash">Radio firmware</Link>
@@ -76,6 +93,11 @@ const AppLayout: React.FC = ({ children }) => {
             <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
         </Menu>
+        {windowsFrameless && (
+          <div style={{ float: "right" }}>
+            <WindowsNav />
+          </div>
+        )}
       </DragableHeader>
       <Content
         className="site-layout"
@@ -100,7 +122,13 @@ const AppLayout: React.FC = ({ children }) => {
       </Content>
       <Footer style={{ textAlign: "center", padding: "8px" }}>
         Built with ♥ by the EdgeTX contributors -{" "}
-        <a href="https://github.com/EdgeTX/buddy">source</a>
+        <a
+          target="_blank"
+          href="https://github.com/EdgeTX/buddy"
+          rel="noreferrer"
+        >
+          source
+        </a>
       </Footer>
     </Layout>
   );
