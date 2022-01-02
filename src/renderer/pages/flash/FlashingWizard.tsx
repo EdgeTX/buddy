@@ -60,7 +60,7 @@ const FlashingWizard: React.FC = () => {
       </Centered>
 
       <Component
-        stepIndex={current}
+        stepIndex={current - 1}
         onNext={() => updateParams({ step: current + 1 }, true)}
         onPrevious={() => updateParams({ step: current - 1 }, true)}
         onRestart={() => updateParams({ step: undefined }, true)}
