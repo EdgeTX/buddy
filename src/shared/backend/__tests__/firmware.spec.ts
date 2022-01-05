@@ -119,95 +119,95 @@ describe("Query", () => {
 
         expect(errors).toBeFalsy();
         expect(data?.edgeTxRelease).toMatchInlineSnapshot(`
-                  Object {
-                    "firmwareBundle": Object {
-                      "targets": Array [
-                        Object {
-                          "id": "nv14",
-                          "name": "Flysky NV14",
-                        },
-                        Object {
-                          "id": "x10",
-                          "name": "Frsky Horus X10",
-                        },
-                        Object {
-                          "id": "x10-access",
-                          "name": "Frsky Horus X10 Access",
-                        },
-                        Object {
-                          "id": "x12s",
-                          "name": "Frsky Horus X12s",
-                        },
-                        Object {
-                          "id": "x7",
-                          "name": "Frsky QX7",
-                        },
-                        Object {
-                          "id": "x7-access",
-                          "name": "Frsky QX7 Access",
-                        },
-                        Object {
-                          "id": "x9d",
-                          "name": "Frsky X9D",
-                        },
-                        Object {
-                          "id": "x9dp",
-                          "name": "Frsky X9D Plus",
-                        },
-                        Object {
-                          "id": "x9dp2019",
-                          "name": "Frsky X9D Plus 2019",
-                        },
-                        Object {
-                          "id": "x9lite",
-                          "name": "Frsky X9 Lite",
-                        },
-                        Object {
-                          "id": "x9lites",
-                          "name": "Frsky X9 Lite S",
-                        },
-                        Object {
-                          "id": "xlite",
-                          "name": "Frsky X-Lite",
-                        },
-                        Object {
-                          "id": "xlites",
-                          "name": "Frsky X-Lite S",
-                        },
-                        Object {
-                          "id": "t8",
-                          "name": "Jumper T8",
-                        },
-                        Object {
-                          "id": "t12",
-                          "name": "Jumper T12",
-                        },
-                        Object {
-                          "id": "t16",
-                          "name": "Jumper T16",
-                        },
-                        Object {
-                          "id": "t18",
-                          "name": "Jumper T18",
-                        },
-                        Object {
-                          "id": "tlite",
-                          "name": "Jumper T-Lite",
-                        },
-                        Object {
-                          "id": "tx12",
-                          "name": "Radiomaster TX12",
-                        },
-                        Object {
-                          "id": "tx16s",
-                          "name": "Radiomaster TX16s",
-                        },
-                      ],
-                    },
-                    "id": "v2.5.0",
-                    "name": "EdgeTX \\"Dauntless\\" 2.5.0",
-                  }
-              `);
+          Object {
+            "firmwareBundle": Object {
+              "targets": Array [
+                Object {
+                  "id": "nv14",
+                  "name": "Flysky NV14",
+                },
+                Object {
+                  "id": "x10",
+                  "name": "Frsky Horus X10",
+                },
+                Object {
+                  "id": "x10-access",
+                  "name": "Frsky Horus X10 Access",
+                },
+                Object {
+                  "id": "x12s",
+                  "name": "Frsky Horus X12s",
+                },
+                Object {
+                  "id": "x7",
+                  "name": "Frsky QX7",
+                },
+                Object {
+                  "id": "x7-access",
+                  "name": "Frsky QX7 Access",
+                },
+                Object {
+                  "id": "x9d",
+                  "name": "Frsky X9D",
+                },
+                Object {
+                  "id": "x9dp",
+                  "name": "Frsky X9D Plus",
+                },
+                Object {
+                  "id": "x9dp2019",
+                  "name": "Frsky X9D Plus 2019",
+                },
+                Object {
+                  "id": "x9lite",
+                  "name": "Frsky X9 Lite",
+                },
+                Object {
+                  "id": "x9lites",
+                  "name": "Frsky X9 Lite S",
+                },
+                Object {
+                  "id": "xlite",
+                  "name": "Frsky X-Lite",
+                },
+                Object {
+                  "id": "xlites",
+                  "name": "Frsky X-Lite S",
+                },
+                Object {
+                  "id": "t8",
+                  "name": "Jumper T8",
+                },
+                Object {
+                  "id": "t12",
+                  "name": "Jumper T12",
+                },
+                Object {
+                  "id": "t16",
+                  "name": "Jumper T16",
+                },
+                Object {
+                  "id": "t18",
+                  "name": "Jumper T18",
+                },
+                Object {
+                  "id": "tlite",
+                  "name": "Jumper T-Lite",
+                },
+                Object {
+                  "id": "tx12",
+                  "name": "Radiomaster TX12",
+                },
+                Object {
+                  "id": "tx16s",
+                  "name": "Radiomaster TX16s",
+                },
+              ],
+            },
+            "id": "v2.5.0",
+            "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+          }
+        `);
         nockDone();
       });
 
@@ -234,17 +234,17 @@ describe("Query", () => {
 
           expect(errors).toBeFalsy();
           expect(data?.edgeTxRelease).toMatchInlineSnapshot(`
-                    Object {
-                      "firmwareBundle": Object {
-                        "target": Object {
-                          "id": "t8",
-                          "name": "Jumper T8",
-                        },
-                      },
-                      "id": "v2.5.0",
-                      "name": "EdgeTX \\"Dauntless\\" 2.5.0",
-                    }
-                `);
+            Object {
+              "firmwareBundle": Object {
+                "target": Object {
+                  "id": "t8",
+                  "name": "Jumper T8",
+                },
+              },
+              "id": "v2.5.0",
+              "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+            }
+          `);
           nockDone();
         });
 
@@ -270,14 +270,14 @@ describe("Query", () => {
 
           expect(errors).toBeFalsy();
           expect(data?.edgeTxRelease).toMatchInlineSnapshot(`
-                    Object {
-                      "firmwareBundle": Object {
-                        "target": null,
-                      },
-                      "id": "v2.5.0",
-                      "name": "EdgeTX \\"Dauntless\\" 2.5.0",
-                    }
-                `);
+            Object {
+              "firmwareBundle": Object {
+                "target": null,
+              },
+              "id": "v2.5.0",
+              "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+            }
+          `);
           nockDone();
         });
       });
@@ -301,121 +301,176 @@ describe("Query", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect((data?.edgeTxPrs as any[]).slice(5)).toMatchInlineSnapshot(`
+      expect((data?.edgeTxPrs as any[]).slice(0, 5)).toMatchInlineSnapshot(`
         Array [
           Object {
-            "headCommitId": "7c1aad8bd68d48669af3b820526697778161d51c",
-            "id": "1189",
-            "name": "jfrickmann:GlobalVars",
+            "headCommitId": "815a632902236b6b766f6db52d15e8ec363bd487",
+            "id": "446",
+            "name": "sfjuocekr:2.4",
           },
           Object {
-            "headCommitId": "08d9b326668007170d25582c75e45009862f501c",
-            "id": "952",
-            "name": "EdgeTX:pfeerick/issue774",
+            "headCommitId": "2fceb40b70432378d9e0693e0d3939221799ba86",
+            "id": "984",
+            "name": "EdgeTX:crsf-support-lua-command-id",
           },
           Object {
-            "headCommitId": "ffdeb1130b3bea041be4aaa5a31efb0f23a3b9d3",
-            "id": "953",
-            "name": "EdgeTX:pfeerick/issue776",
+            "headCommitId": "621a6833106e744b7e4b616ad6218af7c7d47e19",
+            "id": "1009",
+            "name": "jfrickmann:LCD",
           },
           Object {
-            "headCommitId": "6d9ef6089b1b09304ab9a5305cec980656251627",
-            "id": "881",
-            "name": "elecpower:fix-836-nv14-modules",
+            "headCommitId": "ceafdea344cd9bc021dd083fe4a487393edb1458",
+            "id": "980",
+            "name": "EdgeTX:nv14-bigger-controls",
           },
           Object {
-            "headCommitId": "414685b7f7dcd4c3d4a73b7bd6a06a94d6a1b8c7",
-            "id": "1089",
-            "name": "EdgeTX:serial-refactor",
-          },
-          Object {
-            "headCommitId": "0565689d77ceca087e73995bf1e1857cce43081a",
-            "id": "1035",
-            "name": "richardclli:tidy-up-translations",
-          },
-          Object {
-            "headCommitId": "0d4ee8b26bdcb5707fc3b796e163785528354538",
-            "id": "1233",
-            "name": "daleckystepan:ghst12bit",
-          },
-          Object {
-            "headCommitId": "b1f04c559cad5c00cf9b260149e3fbfc2e7ae151",
-            "id": "1293",
-            "name": "EdgeTX:fix-simu-conversion",
-          },
-          Object {
-            "headCommitId": "1715f61eef371e82b896ad08303ff24087eb8fc0",
-            "id": "1212",
-            "name": "eshifri:eshifri/NV14_range_value",
-          },
-          Object {
-            "headCommitId": "0d7944649f71d8a81b26207739ae60ef6132c3f0",
-            "id": "987",
-            "name": "EdgeTX:test-2.5.1-build-image",
-          },
-          Object {
-            "headCommitId": "317fe561d502c97589e0e30533b8e09cc94734f4",
-            "id": "853",
-            "name": "EdgeTX:boot_speedup",
-          },
-          Object {
-            "headCommitId": "15e9e592917d5bad1d1e4b5f022a42133c669178",
-            "id": "1289",
-            "name": "eshifri:eshifri/stuck_key_test",
-          },
-          Object {
-            "headCommitId": "34f3e3900f22d46cabe1671764a9ab81ec802de6",
-            "id": "1304",
-            "name": "EdgeTX:throttle-and-switch-warnings",
-          },
-          Object {
-            "headCommitId": "ab8498f86a54c47e26d307a8cd6d3fcc51e15e56",
-            "id": "1320",
-            "name": "gagarinlg:spi_flash",
-          },
-          Object {
-            "headCommitId": "007eb0ba934c1bb7c5c8cdee9ae5b63af51728ac",
-            "id": "1329",
-            "name": "eshifri:eshifri/old_RM_FW",
-          },
-          Object {
-            "headCommitId": "b9319c5428aab118b9473e98fcde996355333c8c",
-            "id": "1337",
-            "name": "wimalopaan:wm1333",
-          },
-          Object {
-            "headCommitId": "b7ffa5f381eaa896b578a9a1647453c69af78a74",
-            "id": "502",
-            "name": "EdgeTX:tbs-merge",
-          },
-          Object {
-            "headCommitId": "860bc0d61a1b867fb9b9ce85afe67f94a1bca9a7",
-            "id": "1338",
-            "name": "wimalopaan:wm1317",
-          },
-          Object {
-            "headCommitId": "2fb494bcd58ef958741c012b115ac5db67d19ff5",
-            "id": "150",
-            "name": "EdgeTX:mavlink-support",
-          },
-          Object {
-            "headCommitId": "80f74057a0cfafa770f2b66fda8d0db8bf3fee5d",
-            "id": "1163",
-            "name": "kevinkoenig:fix-1100",
-          },
-          Object {
-            "headCommitId": "4a96b68bf9e20a1a6ea498f281e4cce4b0b1ef18",
-            "id": "1339",
-            "name": "EdgeTX:fix-curve-clear",
-          },
-          Object {
-            "headCommitId": "86b03f96a201e1fec4e3c307017260a2f1336f71",
-            "id": "1300",
-            "name": "jfrickmann:Issue1285",
+            "headCommitId": "c05c7066af63dfd30df28fbf1355ef19eca0f574",
+            "id": "1115",
+            "name": "stronnag:add_MP_header_to_Telem_Mirror",
           },
         ]
       `);
       nockDone();
+    });
+  });
+  describe("edgeTxPr", () => {
+    describe("commits", () => {
+      it("should return the commits associated with the PR", async () => {
+        const { nockDone } = await nock.back("edgetx-single-pr.json");
+
+        const { data, errors } = await backend.query({
+          query: gql`
+            query {
+              edgeTxPr(id: "1337") {
+                id
+                name
+                commits {
+                  id
+                }
+                headCommitId
+              }
+            }
+          `,
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data?.edgeTxPr).toMatchInlineSnapshot(`
+          Object {
+            "commits": Array [
+              Object {
+                "id": "217c02e6e06b4500edbb0eca99b5d1d077111aab",
+              },
+              Object {
+                "id": "b9319c5428aab118b9473e98fcde996355333c8c",
+              },
+            ],
+            "headCommitId": "b9319c5428aab118b9473e98fcde996355333c8c",
+            "id": "1337",
+            "name": "wimalopaan:wm1333",
+          }
+        `);
+        nockDone();
+      });
+    });
+
+    describe("commit", () => {
+      describe("firmwareBundle", () => {
+        it("should return the firmware bundle info", async () => {
+          const { nockDone } = await nock.back(
+            "edgetx-single-pr-single-commit-firmware-bundle.json"
+          );
+
+          const { data, errors } = await backend.query({
+            query: gql`
+              query {
+                edgeTxPr(id: "1337") {
+                  id
+                  name
+                  commit(id: "217c02e6e06b4500edbb0eca99b5d1d077111aab") {
+                    id
+                    firmwareBundle {
+                      id
+                      url
+                    }
+                  }
+                  headCommitId
+                }
+              }
+            `,
+          });
+
+          expect(errors).toBeFalsy();
+          expect((data?.edgeTxPr as any).commit.firmwareBundle).not.toBeNull();
+          expect(data?.edgeTxPr as any).toMatchInlineSnapshot(`
+            Object {
+              "commit": Object {
+                "firmwareBundle": Object {
+                  "id": "135237194",
+                  "url": "https://pipelines.actions.githubusercontent.com/NxLpNZeoQYQAQB5RfZI0MeyE5v91R8PNgsqE66iLXA4MuFlpCV/_apis/pipelines/1/runs/3685/signedartifactscontent?artifactName=edgetx-firmware-merge&urlExpires=2022-01-05T00%3A43%3A31.2027280Z&urlSigningMethod=HMACV2&urlSignature=2jyXlmNd%2B0v%2B%2FmtIqMd%2FHqGECo58IsEiH5GfXhaiwG8%3D",
+                },
+                "id": "217c02e6e06b4500edbb0eca99b5d1d077111aab",
+              },
+              "headCommitId": "b9319c5428aab118b9473e98fcde996355333c8c",
+              "id": "1337",
+              "name": "wimalopaan:wm1333",
+            }
+          `);
+          nockDone();
+        });
+
+        describe("target", () => {
+          it("should return the target details in the firmware bundle", async () => {
+            const { nockDone } = await nock.back(
+              "edgetx-single-pr-single-commit-firmware-bundle-target.json"
+            );
+
+            const { data, errors } = await backend.query({
+              query: gql`
+                query {
+                  edgeTxPr(id: "1337") {
+                    id
+                    name
+                    commit(id: "217c02e6e06b4500edbb0eca99b5d1d077111aab") {
+                      id
+                      firmwareBundle {
+                        id
+                        target(id: "nv14") {
+                          id
+                          name
+                        }
+                      }
+                    }
+                    headCommitId
+                  }
+                }
+              `,
+            });
+
+            expect(errors).toBeFalsy();
+            expect(
+              (data?.edgeTxPr as any).commit.firmwareBundle.target
+            ).not.toBeNull();
+            expect(data?.edgeTxPr).toMatchInlineSnapshot(`
+              Object {
+                "commit": Object {
+                  "firmwareBundle": Object {
+                    "id": "135237194",
+                    "target": Object {
+                      "id": "nv14",
+                      "name": "Flysky NV14",
+                    },
+                  },
+                  "id": "217c02e6e06b4500edbb0eca99b5d1d077111aab",
+                },
+                "headCommitId": "b9319c5428aab118b9473e98fcde996355333c8c",
+                "id": "1337",
+                "name": "wimalopaan:wm1333",
+              }
+            `);
+            nockDone();
+          }, 20000);
+        });
+      });
     });
   });
 });

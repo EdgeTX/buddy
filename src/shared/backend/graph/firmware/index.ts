@@ -5,6 +5,7 @@ import {
   Resolvers,
 } from "shared/backend/graph/__generated__";
 import config from "shared/config";
+import ky from "ky-universal";
 
 const typeDefs = gql`
   type Query {
@@ -36,6 +37,7 @@ const typeDefs = gql`
     name: String!
     description: String!
     commits: [EdgeTxPrCommit!]!
+    commit(id: ID!): EdgeTxPrCommit
     headCommitId: String!
   }
 
@@ -224,6 +226,10 @@ const resolvers: Resolvers = {
         firmwareBundle: null,
       }));
     },
+    commit: (_, { id }) => ({
+      id,
+      firmwareBundle: null,
+    }),
   },
   EdgeTxPrCommit: {
     firmwareBundle: async ({ id }, _, { github }) => {
@@ -273,10 +279,24 @@ const resolvers: Resolvers = {
         return null;
       }
 
+      const archiveUrlRedirect = await ky(firmwareAsset.archive_download_url, {
+        redirect: "manual",
+        throwHttpErrors: false,
+        headers: {
+          Authorization: config.github.apiKey
+            ? `token ${config.github.apiKey}`
+            : undefined,
+        },
+      });
+      const url = archiveUrlRedirect.headers.get("Location");
+
+      if (!url) {
+        return null;
+      }
+
       return {
         id: firmwareAsset.id.toString(),
-        name: firmwareAsset.name,
-        url: firmwareAsset.archive_download_url,
+        url,
         targets: [],
       };
     },

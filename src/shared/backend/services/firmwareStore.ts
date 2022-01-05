@@ -1,6 +1,7 @@
 import md5 from "md5";
-import { Reader, ZipInfoRaw, unzipRaw } from "unzipit";
+import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
+import ky from "ky-universal";
 
 export type Target = {
   name: string;
@@ -13,9 +14,15 @@ type FirmwareFile = {
 
 const firmwareTargetsCache: Record<string, Promise<Target[]>> = {};
 
-const firmwareBundle = (url: string): Promise<ZipInfoRaw> => {
-  const reader = new ZipHTTPRangeReader(url);
-  return unzipRaw(reader as Reader);
+const firmwareBundle = async (url: string): Promise<ZipInfoRaw> => {
+  // For github action related assets we can't use Range reads :(
+  const reader = url.includes("pipelines.actions.githubusercontent.com")
+    ? await ky(url)
+        .then((res) => res.arrayBuffer())
+        .then((buffer) => new Blob([buffer]))
+    : new ZipHTTPRangeReader(url);
+
+  return unzipRaw(reader);
 };
 
 export const firmwareTargets = async (
