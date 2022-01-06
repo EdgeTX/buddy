@@ -287,37 +287,41 @@ describe("Mutation", () => {
     return data?.flashJobStatus;
   };
 
-  describe("Create flash job", () => {
-    const dfuEvents = createDfuEvents();
-    const mockDevice = {
-      productName: "Some device",
-      serialNumber: "some-device-id",
-      close: jest.fn().mockRejectedValue(undefined),
-    };
-    const mockDfuConnection = {
-      write: dfuWriteFunc.mockReturnValue({
-        events: dfuEvents,
-      }),
-      close: jest.fn().mockRejectedValue(undefined),
-      properties: {
-        TransferSize: 4567,
+  const cancelFlashJob = (jobId: string) =>
+    backend.mutate({
+      mutation: gql`
+        mutation CancelFlashJob($jobId: ID!) {
+          cancelFlashJob(jobId: $jobId)
+        }
+      `,
+      variables: {
+        jobId,
       },
-    };
+    });
+
+  const dfuEvents = createDfuEvents();
+  const mockDevice = {
+    productName: "Some device",
+    serialNumber: "some-device-id",
+    close: jest.fn().mockRejectedValue(undefined),
+  };
+  const mockDfuConnection = {
+    write: dfuWriteFunc.mockReturnValue({
+      events: dfuEvents,
+    }),
+    close: jest.fn().mockRejectedValue(undefined),
+    properties: {
+      TransferSize: 4567,
+    },
+  };
+
+  describe("Create flash job from release", () => {
     let jobId: string;
     let jobUpdatesQueue: AsyncIterator<FlashJob, any, undefined>;
 
     afterAll(async () => {
       if (jobId) {
-        await backend.mutate({
-          mutation: gql`
-            mutation CancelFlashJob($jobId: ID!) {
-              cancelFlashJob(jobId: $jobId)
-            }
-          `,
-          variables: {
-            jobId,
-          },
-        });
+        await cancelFlashJob(jobId);
       }
     });
 
@@ -704,6 +708,132 @@ describe("Mutation", () => {
 
       expect(mockDfuConnection.close).toHaveBeenCalled();
       expect(mockDevice.close).toHaveBeenCalled();
+    });
+  });
+
+  describe("Create flash job from PR build", () => {
+    let jobId: string;
+    let jobUpdatesQueue: AsyncIterator<FlashJob, any, undefined>;
+
+    afterAll(async () => {
+      if (jobId) {
+        await cancelFlashJob(jobId);
+      }
+    });
+
+    it("should download the given PR build and start flashing it, updating the job status", async () => {
+      dfuConnectMock.mockResolvedValue(mockDfuConnection as never);
+      listDevicesMock.mockResolvedValue([mockDevice as never]);
+
+      const { nockDone } = await nock.back(
+        "edgetx-single-pr-single-commit-firmware-bundle-target.json"
+      );
+
+      const createFlashMutation = await backend.mutate({
+        mutation: gql`
+          mutation CreateFlashJob {
+            createFlashJob(
+              firmware: {
+                target: "nv14"
+                version: "pr-1337@217c02e6e06b4500edbb0eca99b5d1d077111aab"
+              }
+              deviceId: "some-device-id"
+            ) {
+              id
+            }
+          }
+        `,
+      });
+
+      expect(createFlashMutation.errors).toBeFalsy();
+      ({ id: jobId } = createFlashMutation.data?.createFlashJob as {
+        id: string;
+      });
+      expect(jobId).toBeTruthy();
+
+      jobUpdatesQueue =
+        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
+
+      await waitForStageCompleted(jobUpdatesQueue, "connect");
+      await waitForStageCompleted(jobUpdatesQueue, "download");
+      nockDone();
+
+      expect(mockDfuConnection.write).toHaveBeenCalledWith(
+        mockDfuConnection.properties.TransferSize,
+        expect.any(Buffer),
+        true
+      );
+
+      const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
+      expect(md5(Buffer.from(bufferToWrite))).toMatchInlineSnapshot(
+        `"0f52f2fa9f93e1fe7561ed7aaaf94d82"`
+      );
+    });
+  });
+
+  describe("Create flash job from local file", () => {
+    let jobId: string;
+    let jobUpdatesQueue: AsyncIterator<FlashJob, any, undefined>;
+
+    afterAll(async () => {
+      if (jobId) {
+        await cancelFlashJob(jobId);
+      }
+    });
+
+    it("should flash the device with the given local file, and update the job status", async () => {
+      dfuConnectMock.mockResolvedValue(mockDfuConnection as never);
+      listDevicesMock.mockResolvedValue([mockDevice as never]);
+
+      const fileData = Buffer.from("ABCDEFG");
+
+      const firmwareId =
+        backend.context.firmwareStore.registerFirmware(fileData);
+
+      const createFlashMutation = await backend.mutate({
+        mutation: gql`
+          mutation CreateFlashJob($target: ID!) {
+            createFlashJob(
+              firmware: { target: $target, version: "local" }
+              deviceId: "some-device-id"
+            ) {
+              id
+              stages {
+                download {
+                  started
+                  completed
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          target: firmwareId,
+        },
+      });
+
+      expect(createFlashMutation.errors).toBeFalsy();
+      const job = createFlashMutation.data?.createFlashJob as {
+        id: string;
+        stages: any;
+      };
+      ({ id: jobId } = job);
+      expect(jobId).toBeTruthy();
+      expect(job.stages.download).toBeNull();
+
+      jobUpdatesQueue =
+        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
+
+      await waitForStageCompleted(jobUpdatesQueue, "connect");
+
+      expect(mockDfuConnection.write).toHaveBeenCalledWith(
+        mockDfuConnection.properties.TransferSize,
+        expect.any(Buffer),
+        true
+      );
+
+      const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
+      expect(bufferToWrite).toEqual(fileData);
     });
   });
 });
