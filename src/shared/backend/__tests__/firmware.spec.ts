@@ -406,7 +406,7 @@ describe("Query", () => {
               "commit": Object {
                 "firmwareBundle": Object {
                   "id": "135237194",
-                  "url": "https://pipelines.actions.githubusercontent.com/NxLpNZeoQYQAQB5RfZI0MeyE5v91R8PNgsqE66iLXA4MuFlpCV/_apis/pipelines/1/runs/3685/signedartifactscontent?artifactName=edgetx-firmware-merge&urlExpires=2022-01-05T00%3A43%3A31.2027280Z&urlSigningMethod=HMACV2&urlSignature=2jyXlmNd%2B0v%2B%2FmtIqMd%2FHqGECo58IsEiH5GfXhaiwG8%3D",
+                  "url": "https://api.github.com/repos/EdgeTX/edgetx/actions/artifacts/135237194/zip",
                 },
                 "id": "217c02e6e06b4500edbb0eca99b5d1d077111aab",
               },
@@ -462,7 +462,7 @@ describe("Query", () => {
                   },
                   "id": "217c02e6e06b4500edbb0eca99b5d1d077111aab",
                 },
-                "headCommitId": "b9319c5428aab118b9473e98fcde996355333c8c",
+                "headCommitId": "fea444a1ec4915503e6da98de41ccb6bb74799a9",
                 "id": "1337",
                 "name": "wimalopaan:wm1333",
               }

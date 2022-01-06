@@ -101,6 +101,18 @@ const resolvers: Resolvers = {
         if (!firmwareData) {
           throw new GraphQLError("Specified firmware not found");
         }
+      } else if (firmware.version.startsWith("pr")) {
+        const [, commit] = firmware.version.split("@");
+        if (!commit) {
+          throw new GraphQLError("Commit not specified for PR");
+        }
+        const prBuild = await context.firmwareStore.fetchPrBuild(commit);
+
+        if (!prBuild) {
+          throw new GraphQLError("Could not find a build for given PR commit");
+        }
+
+        firmwareBundleUrl = prBuild.url;
       } else {
         firmwareBundleUrl = (
           await context.github(

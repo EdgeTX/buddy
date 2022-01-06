@@ -5,7 +5,6 @@ import {
   Resolvers,
 } from "shared/backend/graph/__generated__";
 import config from "shared/config";
-import ky from "ky-universal";
 
 const typeDefs = gql`
   type Query {
@@ -232,71 +231,16 @@ const resolvers: Resolvers = {
     }),
   },
   EdgeTxPrCommit: {
-    firmwareBundle: async ({ id }, _, { github }) => {
-      const checks = (
-        await github("GET /repos/{owner}/{repo}/commits/{ref}/check-runs", {
-          repo: config.github.repos.firmware,
-          owner: config.github.organization,
-          ref: id,
-        })
-      ).data;
-
-      const githubActionsRun = checks.check_runs.find(
-        (run) =>
-          run.app?.slug === "github-actions" &&
-          run.name.toLowerCase().includes("build")
-      );
-
-      if (!githubActionsRun) {
-        return null;
-      }
-
-      const job = await github(
-        "GET /repos/{owner}/{repo}/actions/jobs/{job_id}",
-        {
-          repo: config.github.repos.firmware,
-          owner: config.github.organization,
-          job_id: githubActionsRun.id,
-        }
-      );
-
-      const { artifacts } = (
-        await github(
-          "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts",
-          {
-            repo: config.github.repos.firmware,
-            owner: config.github.organization,
-            run_id: job.data.run_id,
-          }
-        )
-      ).data;
-
-      const firmwareAsset = artifacts.find((artifact) =>
-        artifact.name.includes("firmware")
-      );
+    firmwareBundle: async ({ id }, _, { firmwareStore }) => {
+      const firmwareAsset = await firmwareStore.fetchPrBuild(id);
 
       if (!firmwareAsset) {
         return null;
       }
 
-      const archiveUrlRedirect = await ky(firmwareAsset.archive_download_url, {
-        redirect: "manual",
-        throwHttpErrors: false,
-        headers: {
-          Authorization: config.github.apiKey
-            ? `token ${config.github.apiKey}`
-            : undefined,
-        },
-      });
-      const url = archiveUrlRedirect.headers.get("Location");
-
-      if (!url) {
-        return null;
-      }
-
       return {
-        id: firmwareAsset.id.toString(),
-        url,
+        id: firmwareAsset.id,
+        url: firmwareAsset.url,
         targets: [],
       };
     },

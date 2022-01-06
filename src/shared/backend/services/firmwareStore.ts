@@ -2,6 +2,8 @@ import md5 from "md5";
 import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky-universal";
+import config from "shared/config";
+import { github } from "./github";
 
 export type Target = {
   name: string;
@@ -12,14 +14,29 @@ type FirmwareFile = {
   targets: [string, string][];
 };
 
+const firmwareBundleBlobs: Record<string, Promise<Blob>> = {};
+
 const firmwareTargetsCache: Record<string, Promise<Target[]>> = {};
 
 const firmwareBundle = async (url: string): Promise<ZipInfoRaw> => {
   // For github action related assets we can't use Range reads :(
-  const reader = url.includes("pipelines.actions.githubusercontent.com")
-    ? await ky(url)
-        .then((res) => res.arrayBuffer())
-        .then((buffer) => new Blob([buffer]))
+  const reader = url.includes("api.github.com")
+    ? await (async () => {
+        if (!firmwareBundleBlobs[url]) {
+          firmwareBundleBlobs[url] = ky(url, {
+            headers: {
+              Authorization: config.github.apiKey
+                ? `token ${config.github.apiKey}`
+                : undefined,
+            },
+          })
+            .then((res) => res.arrayBuffer())
+            .then((buffer) => new Blob([buffer]));
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return firmwareBundleBlobs[url]!;
+      })()
     : new ZipHTTPRangeReader(url);
 
   return unzipRaw(reader);
@@ -93,3 +110,52 @@ export const registerFirmware = (
 
 export const getLocalFirmwareById = (id: string): LocalFirmware | undefined =>
   uploadedFirmware.find((firmware) => firmware.id === id);
+
+export const fetchPrBuild = async (
+  commitSha: string
+): Promise<{ id: string; url: string } | undefined> => {
+  const checks = (
+    await github("GET /repos/{owner}/{repo}/commits/{ref}/check-runs", {
+      repo: config.github.repos.firmware,
+      owner: config.github.organization,
+      ref: commitSha,
+    })
+  ).data;
+
+  const githubActionsRun = checks.check_runs.find(
+    (run) =>
+      run.app?.slug === "github-actions" &&
+      run.name.toLowerCase().includes("build")
+  );
+
+  if (!githubActionsRun) {
+    return undefined;
+  }
+
+  const job = await github("GET /repos/{owner}/{repo}/actions/jobs/{job_id}", {
+    repo: config.github.repos.firmware,
+    owner: config.github.organization,
+    job_id: githubActionsRun.id,
+  });
+
+  const { artifacts } = (
+    await github("GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", {
+      repo: config.github.repos.firmware,
+      owner: config.github.organization,
+      run_id: job.data.run_id,
+    })
+  ).data;
+
+  const firmwareAsset = artifacts.find((artifact) =>
+    artifact.name.includes("firmware")
+  );
+
+  if (!firmwareAsset) {
+    return undefined;
+  }
+
+  return {
+    id: firmwareAsset.id.toString(),
+    url: firmwareAsset.archive_download_url,
+  };
+};

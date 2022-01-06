@@ -34,7 +34,9 @@ export default {
     // line. The github API limits are 50/hour you should be ok
     // when writing tests
     apiKey:
-      process.env.NODE_ENV === "test" ? undefined : process.env.GITHUB_API_KEY,
+      process.env.NODE_ENV === "test"
+        ? process.env.GITHUB_API_KEY
+        : process.env.GITHUB_API_KEY,
     organization: "EdgeTX",
     repos: {
       firmware: "edgetx",
