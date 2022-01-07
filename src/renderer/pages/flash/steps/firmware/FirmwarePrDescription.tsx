@@ -4,14 +4,14 @@ import React from "react";
 import Markdown from "renderer/components/Markdown";
 
 type Props = {
-  releaseId?: string;
+  prId?: string;
 };
 
-const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
+const FirmwarePrDescription: React.FC<Props> = ({ prId }) => {
   const { data, loading } = useQuery(
     gql(/* GraphQL */ `
-      query FirmwareReleaseDescription($releaseId: ID!) {
-        edgeTxRelease(id: $releaseId) {
+      query PrDescription($prId: ID!) {
+        edgeTxPr(id: $prId) {
           id
           description
         }
@@ -19,9 +19,9 @@ const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
     `),
     {
       variables: {
-        releaseId: releaseId ?? "",
+        prId: prId ?? "",
       },
-      skip: !releaseId,
+      skip: !prId,
     }
   );
 
@@ -29,7 +29,7 @@ const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
     return <Skeleton />;
   }
 
-  const description = data?.edgeTxRelease?.description;
+  const description = data?.edgeTxPr?.description;
 
   if (!description) {
     return null;
@@ -38,4 +38,4 @@ const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
   return <Markdown>{description}</Markdown>;
 };
 
-export default FirmwareReleaseDescription;
+export default FirmwarePrDescription;

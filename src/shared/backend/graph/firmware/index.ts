@@ -34,7 +34,8 @@ const typeDefs = gql`
   type EdgeTxPr {
     id: ID!
     name: String!
-    description: String!
+    title: String!
+    description: String
     commits: [EdgeTxPrCommit!]!
     commit(id: ID!): EdgeTxPrCommit
     headCommitId: String!
@@ -143,7 +144,8 @@ const resolvers: Resolvers = {
         name: pr.head.label,
         headCommitId: pr.head.sha,
         commits: [],
-        description: `#${pr.title}\n${pr.body as string}`,
+        title: pr.title,
+        description: pr.body ?? null,
       }));
     },
     edgeTxPr: async (_, { id }, { github }) => {
@@ -160,7 +162,8 @@ const resolvers: Resolvers = {
         name: pr.head.label,
         headCommitId: pr.head.sha,
         commits: [],
-        description: `#${pr.title}\n${pr.body as string}`,
+        title: pr.title,
+        description: pr.body ?? null,
       };
     },
     localFirmware: (_, { byId }, { firmwareStore }) => {
