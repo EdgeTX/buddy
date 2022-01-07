@@ -1,5 +1,5 @@
 import { useQuery, gql } from "@apollo/client";
-import { Skeleton } from "antd";
+import { Skeleton, Typography } from "antd";
 import React from "react";
 import Markdown from "renderer/components/Markdown";
 
@@ -13,6 +13,7 @@ const FirmwarePrDescription: React.FC<Props> = ({ prId }) => {
       query PrDescription($prId: ID!) {
         edgeTxPr(id: $prId) {
           id
+          title
           description
         }
       }
@@ -30,12 +31,18 @@ const FirmwarePrDescription: React.FC<Props> = ({ prId }) => {
   }
 
   const description = data?.edgeTxPr?.description;
+  const title = data?.edgeTxPr?.title;
 
-  if (!description) {
+  if (!title) {
     return null;
   }
 
-  return <Markdown>{description}</Markdown>;
+  return (
+    <div>
+      <Typography.Title level={3}>{title}</Typography.Title>
+      <Markdown>{description}</Markdown>
+    </div>
+  );
 };
 
 export default FirmwarePrDescription;
