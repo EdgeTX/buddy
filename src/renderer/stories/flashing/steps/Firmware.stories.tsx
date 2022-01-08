@@ -6,6 +6,10 @@ import {
   firmwaresQuery,
   targetsQuery,
   firmwareReleaseDescriptionQuery,
+  prCommitBuildQuery,
+  prsQuery,
+  prDescriptionQuery,
+  prCommitsQuery,
 } from "renderer/stories/flashing/mocks";
 
 export default {
@@ -16,7 +20,15 @@ export default {
 export const initialRender = () => (
   <MemoryRouter>
     <MockedProvider
-      mocks={[firmwaresQuery, targetsQuery, firmwareReleaseDescriptionQuery]}
+      mocks={[
+        firmwaresQuery,
+        targetsQuery,
+        firmwareReleaseDescriptionQuery,
+        prCommitBuildQuery,
+        prsQuery,
+        prDescriptionQuery,
+        prCommitsQuery,
+      ]}
     >
       <FirmwareSelectionStep />
     </MockedProvider>

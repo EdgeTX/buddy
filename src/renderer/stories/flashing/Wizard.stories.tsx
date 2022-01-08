@@ -6,6 +6,10 @@ import {
   devicesQuery,
   firmwareReleaseDescriptionQuery,
   firmwaresQuery,
+  prCommitBuildQuery,
+  prCommitsQuery,
+  prDescriptionQuery,
+  prsQuery,
   targetsQuery,
 } from "./mocks";
 
@@ -21,6 +25,10 @@ export const usable: React.FC = () => (
         firmwaresQuery,
         targetsQuery,
         firmwareReleaseDescriptionQuery,
+        prCommitBuildQuery,
+        prsQuery,
+        prDescriptionQuery,
+        prCommitsQuery,
         devicesQuery,
       ]}
     >

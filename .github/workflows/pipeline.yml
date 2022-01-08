@@ -165,10 +165,12 @@ jobs:
       - name: Install build deps (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y libudev-dev
+          sudo apt-get update && sudo apt-get install -y libudev-dev
 
       - name: Build
         run: yarn build
+        env:
+          GITUHB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
       - name: Output
         uses: actions/upload-artifact@v2

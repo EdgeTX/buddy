@@ -14,17 +14,15 @@ const Container = styled.div`
   display: flex;
   height: 100%;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
   max-height: 300px;
-  width: 100%;
-
-  > * {
-    flex: 1;
-  }
-
   margin-top: 32px;
   margin-bottom: 32px;
+
+  .flash-component {
+    width: 200px;
+  }
 `;
 
 const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
@@ -82,7 +80,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
             </Centered>
             <Centered style={{ height: "100%" }}>
               <Container>
-                <div>
+                <div className="flash-component">
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
                     Firmware
                   </Typography.Title>
@@ -95,7 +93,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                     color: "var(--ant-primary-4)",
                   }}
                 />
-                <div>
+                <div className="flash-component">
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
                     Radio
                   </Typography.Title>

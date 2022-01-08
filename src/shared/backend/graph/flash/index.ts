@@ -6,7 +6,7 @@ import {
   Resolvers,
 } from "shared/backend/graph/__generated__";
 import config from "shared/config";
-import { hexString } from "shared/tools";
+import { decodePrVersion, hexString, isPrVersion } from "shared/tools";
 
 const typeDefs = gql`
   type Mutation {
@@ -101,12 +101,12 @@ const resolvers: Resolvers = {
         if (!firmwareData) {
           throw new GraphQLError("Specified firmware not found");
         }
-      } else if (firmware.version.startsWith("pr")) {
-        const [, commit] = firmware.version.split("@");
-        if (!commit) {
+      } else if (isPrVersion(firmware.version)) {
+        const { commitId } = decodePrVersion(firmware.version);
+        if (!commitId) {
           throw new GraphQLError("Commit not specified for PR");
         }
-        const prBuild = await context.firmwareStore.fetchPrBuild(commit);
+        const prBuild = await context.firmwareStore.fetchPrBuild(commitId);
 
         if (!prBuild) {
           throw new GraphQLError("Could not find a build for given PR commit");

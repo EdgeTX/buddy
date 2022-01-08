@@ -2,7 +2,9 @@ import { gql, useQuery } from "@apollo/client";
 import { Skeleton } from "antd";
 import React from "react";
 import { Centered } from "renderer/shared/layouts";
+import { decodePrVersion, isPrVersion } from "shared/tools";
 import FirmwareFileSummary from "./FirmwareFileSummary";
+import FirmwarePrBuildSummary from "./FirmwarePrBuildSummary";
 import FirmwareReleaseSummary from "./FirmwareReleaseSummary";
 
 const FirmwareSummary: React.FC<{
@@ -12,6 +14,7 @@ const FirmwareSummary: React.FC<{
   hideIcon?: boolean;
 }> = ({ target, version, hideIcon, loading }) => {
   const isFile = version === "local";
+  const isPr = isPrVersion(version);
 
   const releaseInfoQuery = useQuery(
     gql(/* GraphQL */ `
@@ -55,7 +58,43 @@ const FirmwareSummary: React.FC<{
     }
   );
 
-  if (firmwareFileQuery.loading || releaseInfoQuery.loading || loading) {
+  const prVersion = decodePrVersion(version);
+
+  const prFirmwareQuery = useQuery(
+    gql(/* GraphQL */ `
+      query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          name
+          commit(id: $commitId) {
+            id
+            firmwareBundle {
+              id
+              target(id: $target) {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `),
+    {
+      skip: !isPr,
+      variables: {
+        prId: prVersion.prId ?? "",
+        commitId: prVersion.commitId ?? "",
+        target,
+      },
+    }
+  );
+
+  if (
+    firmwareFileQuery.loading ||
+    releaseInfoQuery.loading ||
+    prFirmwareQuery.loading ||
+    loading
+  ) {
     return (
       <div>
         {!hideIcon && (
@@ -74,6 +113,20 @@ const FirmwareSummary: React.FC<{
           active
         />
       </div>
+    );
+  }
+
+  if (isPr && prFirmwareQuery.data) {
+    return (
+      <FirmwarePrBuildSummary
+        hideIcon={hideIcon}
+        branchName={prFirmwareQuery.data.edgeTxPr?.name ?? "Unknown"}
+        commitId={prFirmwareQuery.data.edgeTxPr?.commit?.id ?? "Unknown"}
+        targetName={
+          prFirmwareQuery.data.edgeTxPr?.commit?.firmwareBundle?.target?.name ??
+          "Unknown"
+        }
+      />
     );
   }
 

@@ -347,6 +347,8 @@ describe("Query", () => {
                 commits {
                   id
                 }
+                title
+                description
                 headCommitId
               }
             }
@@ -364,9 +366,11 @@ describe("Query", () => {
                 "id": "b9319c5428aab118b9473e98fcde996355333c8c",
               },
             ],
+            "description": "This fixes one incorrect use of potential unterminated cstrings for the ctor of std::string.",
             "headCommitId": "b9319c5428aab118b9473e98fcde996355333c8c",
             "id": "1337",
             "name": "wimalopaan:wm1333",
+            "title": "Potential out of bounds access of flightmode name on main screen (#1333)",
           }
         `);
         nockDone();

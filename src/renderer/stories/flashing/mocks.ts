@@ -3,6 +3,8 @@ import gql from "graphql-tag";
 import { times } from "shared/tools";
 import {
   exampleDevices,
+  examplePrCommits,
+  examplePrs,
   exampleReleasesList,
   exampleTargetsList,
 } from "test-utils/data";
@@ -102,6 +104,158 @@ export const firmwareReleaseDescriptionQuery: MockedResponse = {
   },
 };
 
+export const prsQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query EdgeTxPrs {
+        edgeTxPrs {
+          id
+          name
+          headCommitId
+        }
+      }
+    `,
+  },
+  result: {
+    data: {
+      edgeTxPrs: examplePrs,
+    },
+  },
+};
+
+export const prCommitsQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query EdgeTxPrCommits($prId: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          commits {
+            id
+          }
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        __typename: "EdgeTxPr",
+        id: examplePrs[0]?.id,
+        commits: examplePrCommits,
+      },
+    },
+  },
+};
+
+export const prCommitBuildQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query EdgeTxPrCommitBuild($prId: ID!, $commitId: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          commit(id: $commitId) {
+            id
+            firmwareBundle {
+              id
+              targets {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+      commitId: examplePrs[0]?.headCommitId,
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        __typename: "EdgeTxPr",
+        id: examplePrs[0]?.id,
+        commit: {
+          firmwareBundle: {
+            id: "135237194",
+            targets: exampleTargetsList,
+          },
+          id: examplePrs[0]?.headCommitId,
+        },
+      },
+    },
+  },
+};
+
+export const prCommitBuildNotAvailableQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query EdgeTxPrCommitBuild($prId: ID!, $commitId: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          commit(id: $commitId) {
+            id
+            firmwareBundle {
+              id
+              targets {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+      commitId: examplePrCommits[1]?.id,
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        __typename: "EdgeTxPr",
+        id: examplePrs[0]?.id,
+        commit: {
+          firmwareBundle: null,
+          id: examplePrCommits[1]?.id,
+        },
+      },
+    },
+  },
+};
+
+export const prDescriptionQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query PrDescription($prId: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          title
+          description
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        __typename: "EdgeTxPr",
+        id: examplePrs[0]?.id,
+        title: "Some pr title",
+        description: "- My Pr description",
+      },
+    },
+  },
+};
+
 export const devicesQuery: MockedResponse = {
   request: {
     query: gql`
@@ -178,6 +332,49 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
         firmwareBundle: {
           id: "",
           target: exampleTargetsList[3],
+        },
+      },
+    },
+  },
+  delay: 1000,
+};
+
+export const firmwarePrBuildInfoQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          name
+          commit(id: $commitId) {
+            id
+            firmwareBundle {
+              id
+              target(id: $target) {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+      commitId: examplePrs[0]?.headCommitId,
+      target: "nv-14",
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        name: examplePrs[0]?.name,
+        commit: {
+          id: examplePrs[0]?.headCommitId,
+          firmwareBundle: {
+            id: "",
+            target: exampleTargetsList[0],
+          },
         },
       },
     },

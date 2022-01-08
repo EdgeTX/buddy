@@ -1,11 +1,10 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import { Skeleton } from "antd";
-import gql from "graphql-tag";
 import React from "react";
 import Markdown from "renderer/components/Markdown";
 
 type Props = {
-  releaseId: string;
+  releaseId?: string;
 };
 
 const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
@@ -20,8 +19,9 @@ const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
     `),
     {
       variables: {
-        releaseId,
+        releaseId: releaseId ?? "",
       },
+      skip: !releaseId,
     }
   );
 

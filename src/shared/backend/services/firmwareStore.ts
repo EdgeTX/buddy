@@ -25,8 +25,8 @@ const firmwareBundle = async (url: string): Promise<ZipInfoRaw> => {
         if (!firmwareBundleBlobs[url]) {
           firmwareBundleBlobs[url] = ky(url, {
             headers: {
-              Authorization: config.github.apiKey
-                ? `token ${config.github.apiKey}`
+              Authorization: config.github.prBuildsKey
+                ? `token ${config.github.prBuildsKey}`
                 : undefined,
             },
           })

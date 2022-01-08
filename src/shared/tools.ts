@@ -41,3 +41,26 @@ export const findAsync = async <T>(
 
   return undefined;
 };
+
+type PrVersion = { prId?: string; commitId?: string };
+
+export const isPrVersion = (version: string): boolean =>
+  version.startsWith("pr-");
+export const decodePrVersion = (version: string): PrVersion => {
+  if (!isPrVersion(version)) {
+    return {
+      prId: undefined,
+      commitId: undefined,
+    };
+  }
+  const [prId, commitId] = version.slice(3).split("@");
+
+  return {
+    prId,
+    commitId,
+  };
+};
+export const encodePrVersion = (values: PrVersion): string | undefined =>
+  values.prId
+    ? `pr-${values.prId}${values.commitId ? `@${values.commitId}` : ""}`
+    : undefined;

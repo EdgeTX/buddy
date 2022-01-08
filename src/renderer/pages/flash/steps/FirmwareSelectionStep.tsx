@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Button, Divider, Typography } from "antd";
-import { RocketOutlined, UploadOutlined } from "@ant-design/icons";
+import { Tabs, Button, Divider, Typography, Dropdown, Menu } from "antd";
+import {
+  BranchesOutlined,
+  EllipsisOutlined,
+  RocketOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import styled from "styled-components";
 
@@ -11,9 +16,12 @@ import {
 } from "renderer/pages/flash/shared";
 import { Centered, FullHeight } from "renderer/shared/layouts";
 import useVersionFilters from "renderer/hooks/useVersionFilters";
+import { decodePrVersion, isPrVersion } from "shared/tools";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
+import FirmwarePrBuildPicker from "./firmware/FirmwarePrBuildPicker";
+import FirmwarePrDescription from "./firmware/FirmwarePrDescription";
 
 const Container = styled.div`
   display: flex;
@@ -55,6 +63,8 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
       setActiveTab("file");
+    } else if (version && isPrVersion(version) && activeTab !== "pr") {
+      setActiveTab("pr");
     }
   }, [setActiveTab, version, activeTab]);
 
@@ -72,6 +82,38 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               });
               setActiveTab(key);
             }}
+            tabBarExtraContent={
+              <Dropdown
+                placement="bottomRight"
+                trigger={["click"]}
+                overlay={
+                  <Menu
+                    onClick={(item) => {
+                      setActiveTab(item.key);
+                    }}
+                    selectedKeys={[activeTab]}
+                  >
+                    <Menu.Item key="pr" icon={<BranchesOutlined />}>
+                      PR Builds
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button
+                  type="text"
+                  style={
+                    ["pr"].includes(activeTab)
+                      ? {
+                          color: "var(--ant-primary-color)",
+                          borderColor: "var(--ant-primary-color)",
+                        }
+                      : undefined
+                  }
+                >
+                  <EllipsisOutlined />
+                </Button>
+              </Dropdown>
+            }
           >
             <Tabs.TabPane
               tab={
@@ -123,6 +165,17 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 )}
               </div>
             </Tabs.TabPane>
+            <Tabs.TabPane key="pr">
+              <FirmwarePrBuildPicker
+                version={version}
+                target={target}
+                onChanged={(params) => {
+                  if (activeTab === "pr") {
+                    updateParams(params);
+                  }
+                }}
+              />
+            </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />
 
@@ -135,6 +188,18 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               <Centered>
                 <Typography.Title level={4} type="secondary">
                   Release notes
+                </Typography.Title>
+              </Centered>
+            ))}
+          {activeTab === "pr" &&
+            (version && isPrVersion(version) ? (
+              <DescriptionContainer>
+                <FirmwarePrDescription prId={decodePrVersion(version).prId} />
+              </DescriptionContainer>
+            ) : (
+              <Centered>
+                <Typography.Title level={4} type="secondary">
+                  Pull Request description
                 </Typography.Title>
               </Centered>
             ))}

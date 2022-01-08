@@ -185,3 +185,40 @@ export const exampleDevices = [
     productId: "0x4358",
   },
 ];
+
+export const examplePrs = [
+  {
+    headCommitId: "217c02e6e06b4500edbb0eca99b5d1d077111aab",
+    id: "1333",
+    name: "wimalopaan:wm1333",
+  },
+  {
+    headCommitId: "2fceb40b70432378d9e0693e0d3939221799ba86",
+    id: "984",
+    name: "EdgeTX:crsf-support-lua-command-id",
+  },
+  {
+    headCommitId: "621a6833106e744b7e4b616ad6218af7c7d47e19",
+    id: "1009",
+    name: "jfrickmann:LCD",
+  },
+  {
+    headCommitId: "ceafdea344cd9bc021dd083fe4a487393edb1458",
+    id: "980",
+    name: "EdgeTX:nv14-bigger-controls",
+  },
+  {
+    headCommitId: "c05c7066af63dfd30df28fbf1355ef19eca0f574",
+    id: "1115",
+    name: "stronnag:add_MP_header_to_Telem_Mirror",
+  },
+];
+
+export const examplePrCommits = [
+  {
+    id: "217c02e6e06b4500edbb0eca99b5d1d077111aab",
+  },
+  {
+    id: "b9319c5428aab118b9473e98fcde996355333c8c",
+  },
+];
