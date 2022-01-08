@@ -99,6 +99,8 @@ const PrTargetForm: React.FC<Props> = ({
         required
       >
         <Select
+          showSearch
+          optionFilterProp="children"
           value={pullRequests.selectedId}
           allowClear={false}
           placeholder={
@@ -132,6 +134,8 @@ const PrTargetForm: React.FC<Props> = ({
         required
       >
         <Select
+          showSearch
+          optionFilterProp="children"
           value={commits.selectedId}
           allowClear={false}
           placeholder={

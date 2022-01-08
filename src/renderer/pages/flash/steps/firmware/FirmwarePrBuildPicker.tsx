@@ -23,6 +23,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
         edgeTxPrs {
           id
           name
+          headCommitId
         }
       }
     `)

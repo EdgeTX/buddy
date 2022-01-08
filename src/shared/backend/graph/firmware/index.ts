@@ -135,7 +135,7 @@ const resolvers: Resolvers = {
       const prs = await github("GET /repos/{owner}/{repo}/pulls", {
         owner: config.github.organization,
         repo: config.github.repos.firmware,
-        sort: "updated",
+        sort: "created",
         state: "open",
       });
 
