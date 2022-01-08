@@ -86,6 +86,7 @@ module.exports = (_, { mode }) => ({
     }),
     new webpack.EnvironmentPlugin({
       GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
+      GITHUB_PR_BUILDS_KEY: process.env.GITHUB_PR_BUILDS_KEY ?? null,
     }),
     ...(process.env.REPORT
       ? [
