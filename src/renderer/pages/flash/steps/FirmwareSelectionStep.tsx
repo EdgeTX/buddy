@@ -85,6 +85,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
             tabBarExtraContent={
               <Dropdown
                 placement="bottomRight"
+                trigger={["click"]}
                 overlay={
                   <Menu
                     onClick={(item) => {

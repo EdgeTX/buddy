@@ -137,6 +137,7 @@ const resolvers: Resolvers = {
         repo: config.github.repos.firmware,
         sort: "created",
         state: "open",
+        direction: "desc",
       });
 
       return prs.data.map((pr) => ({
