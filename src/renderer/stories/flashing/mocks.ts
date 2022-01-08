@@ -339,6 +339,49 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
   delay: 1000,
 };
 
+export const firmwarePrBuildInfoQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          name
+          commit(id: $commitId) {
+            id
+            firmwareBundle {
+              id
+              target(id: $target) {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+      commitId: examplePrs[0]?.headCommitId,
+      target: "nv-14",
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        name: examplePrs[0]?.name,
+        commit: {
+          id: examplePrs[0]?.headCommitId,
+          firmwareBundle: {
+            id: "",
+            target: exampleTargetsList[0],
+          },
+        },
+      },
+    },
+  },
+  delay: 1000,
+};
+
 export const flashJobQuery = (
   jobId: string,
   error?: boolean,

@@ -63,7 +63,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
       setActiveTab("file");
-    } else if (version?.startsWith("pr") && activeTab !== "pr") {
+    } else if (version && isPrVersion(version) && activeTab !== "pr") {
       setActiveTab("pr");
     }
   }, [setActiveTab, version, activeTab]);
