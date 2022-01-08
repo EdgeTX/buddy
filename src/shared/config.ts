@@ -35,6 +35,8 @@ export default {
     // when writing tests
     apiKey:
       process.env.NODE_ENV === "test" ? undefined : process.env.GITHUB_API_KEY,
+    // This is for now required to download PR builds
+    prBuildsKey: process.env.GITHUB_PR_BUILDS_KEY,
     organization: "EdgeTX",
     repos: {
       firmware: "edgetx",
