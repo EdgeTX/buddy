@@ -47,6 +47,12 @@ type PrVersion = { prId?: string; commitId?: string };
 export const isPrVersion = (version: string): boolean =>
   version.startsWith("pr-");
 export const decodePrVersion = (version: string): PrVersion => {
+  if (!isPrVersion(version)) {
+    return {
+      prId: undefined,
+      commitId: undefined,
+    };
+  }
   const [prId, commitId] = version.slice(3).split("@");
 
   return {

@@ -150,22 +150,22 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   return (
     <PrTargetForm
       targets={{
-        available: commitBuildTargets ?? [],
+        available: commitBuildTargets ?? null,
         loading: commitBuildQuery.loading,
         error: !!commitBuildQuery.error,
         selectedId: target,
       }}
       pullRequests={{
-        available: prs ?? [],
+        available: prs ?? null,
         loading: prsQuery.loading,
         error: !!prsQuery.error,
         selectedId: prId,
       }}
       commits={{
-        available: prCommits ?? [],
-        loading: prsQuery.loading,
-        error: !!prsQuery.error,
-        selectedId: prId,
+        available: prCommits ?? null,
+        loading: commitsQuery.loading,
+        error: !!commitsQuery.error,
+        selectedId: commitId,
       }}
       onChanged={(newValues) => {
         onChanged({

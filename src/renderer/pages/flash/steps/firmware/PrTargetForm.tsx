@@ -29,123 +29,163 @@ const PrTargetForm: React.FC<Props> = ({
   commits,
   targets,
   disabled,
-}) => (
-  <Form
-    layout="vertical"
-    onValuesChange={(_, values) =>
-      onChanged({ ...values } as Parameters<typeof onChanged>[0])
+}) => {
+  const noAvailableTargets =
+    !targets.loading && !targets.error && !targets.available;
+
+  const renderCommitsPlaceholder = (): string | null => {
+    if (noAvailableTargets) {
+      return null;
     }
-    fields={Object.entries({
-      target: targets.selectedId,
-      version: pullRequests.selectedId,
-    }).map(([key, value]) => ({ name: [key], value }))}
-    size="large"
-  >
-    <Form.Item
-      label="Pull request"
-      name="pullRequest"
-      tooltip={
-        pullRequests.tooltip
-          ? {
-              title: pullRequests.tooltip,
-              icon: <InfoCircleOutlined />,
-            }
-          : pullRequests.tooltip
+
+    return !commits.selectedId
+      ? "Select commit to load build info"
+      : targets.placeholder ?? "Select radio model";
+  };
+
+  const renderCommitsHelpText = (): string | null => {
+    if (
+      commits.selectedId &&
+      !commits.loading &&
+      commits.available &&
+      noAvailableTargets
+    ) {
+      return "No firmware built for commit";
+    }
+
+    return commits.error ? "Could not load commits" : null;
+  };
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const commitsValidationStatus = () => {
+    if (
+      commits.selectedId &&
+      !commits.loading &&
+      commits.available &&
+      noAvailableTargets
+    ) {
+      return "warning";
+    }
+
+    return commits.error ? "error" : undefined;
+  };
+
+  return (
+    <Form
+      layout="vertical"
+      onValuesChange={(_, values) =>
+        onChanged({ ...values } as Parameters<typeof onChanged>[0])
       }
-      help={pullRequests.error ? "Could not load pull requests" : null}
-      validateStatus={pullRequests.error ? "error" : undefined}
-      required
+      fields={Object.entries({
+        target: targets.selectedId,
+        pullRequest: pullRequests.selectedId,
+        commit: commits.selectedId,
+      }).map(([key, value]) => ({ name: [key], value }))}
+      size="large"
     >
-      <Select
-        value={pullRequests.selectedId}
-        allowClear={false}
-        placeholder={
-          pullRequests.loading
-            ? "Loading pull requests..."
-            : pullRequests.placeholder ?? "Select pull request"
+      <Form.Item
+        label="Pull request"
+        name="pullRequest"
+        tooltip={
+          pullRequests.tooltip
+            ? {
+                title: pullRequests.tooltip,
+                icon: <InfoCircleOutlined />,
+              }
+            : pullRequests.tooltip
         }
-        loading={pullRequests.loading}
-        disabled={!!pullRequests.error || disabled}
+        help={pullRequests.error ? "Could not load pull requests" : null}
+        validateStatus={pullRequests.error ? "error" : undefined}
+        required
       >
-        {pullRequests.available?.map((pr) => (
-          <Select.Option key={pr.id} value={pr.id}>
-            {pr.name ?? pr.id}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-    <Form.Item
-      label="Commits"
-      name="commit"
-      tooltip={
-        commits.tooltip
-          ? {
-              title: commits.tooltip,
-              icon: <InfoCircleOutlined />,
-            }
-          : commits.tooltip
-      }
-      help={commits.error ? "Could not load commits" : null}
-      validateStatus={commits.error ? "error" : undefined}
-      required
-    >
-      <Select
-        value={commits.selectedId}
-        allowClear={false}
-        placeholder={
-          commits.loading
-            ? "Loading commits..."
-            : commits.placeholder ?? "Select build"
+        <Select
+          value={pullRequests.selectedId}
+          allowClear={false}
+          placeholder={
+            pullRequests.loading
+              ? "Loading pull requests..."
+              : pullRequests.placeholder ?? "Select pull request"
+          }
+          loading={pullRequests.loading}
+          disabled={!!pullRequests.error || disabled}
+        >
+          {pullRequests.available?.map((pr) => (
+            <Select.Option key={pr.id} value={pr.id}>
+              {pr.name ?? pr.id}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label="Commit"
+        name="commit"
+        tooltip={
+          commits.tooltip
+            ? {
+                title: commits.tooltip,
+                icon: <InfoCircleOutlined />,
+              }
+            : commits.tooltip
         }
-        loading={commits.loading}
-        disabled={!!commits.error || disabled}
+        help={renderCommitsHelpText()}
+        validateStatus={commitsValidationStatus()}
+        required
       >
-        {commits.available?.map((c) => (
-          <Select.Option key={c.id} value={c.id}>
-            {c.name ?? c.id}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-    <Form.Item
-      label="Radio model"
-      name="target"
-      tooltip={
-        targets.tooltip
-          ? {
-              title: "The type of radio you want to flash",
-              icon: <InfoCircleOutlined />,
-            }
-          : undefined
-      }
-      help={targets.error ? "Could not load targets" : undefined}
-      required
-      validateStatus={targets.error ? "error" : undefined}
-    >
-      <Select
-        value={targets.selectedId}
-        allowClear={false}
-        loading={targets.loading}
-        disabled={
-          !commits.selectedId ||
-          !!targets.error ||
-          !!targets.loading ||
-          disabled
+        <Select
+          value={commits.selectedId}
+          allowClear={false}
+          placeholder={
+            commits.loading
+              ? "Loading commits..."
+              : commits.placeholder ?? "Select commit"
+          }
+          loading={commits.loading}
+          disabled={!!commits.error || disabled}
+        >
+          {commits.available?.map((c) => (
+            <Select.Option key={c.id} value={c.id}>
+              {c.name ?? c.id}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label="Radio model"
+        name="target"
+        tooltip={
+          targets.tooltip
+            ? {
+                title: "The type of radio you want to flash",
+                icon: <InfoCircleOutlined />,
+              }
+            : undefined
         }
-        placeholder={
-          !commits.selectedId
-            ? "Select commit to see available models"
-            : targets.placeholder ?? "Select radio model"
-        }
+        help={targets.error ? "Could not load targets" : undefined}
+        required
+        validateStatus={targets.error ? "error" : undefined}
       >
-        {targets.available?.map((t) => (
-          <Select.Option key={t.id} value={t.id}>
-            {t.name ?? t.id}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-  </Form>
-);
+        <Select
+          value={targets.selectedId}
+          allowClear={false}
+          loading={targets.loading}
+          disabled={
+            !commits.selectedId ||
+            !!targets.error ||
+            !!targets.loading ||
+            (targets.available?.length ?? 0) < 1 ||
+            disabled
+          }
+          placeholder={renderCommitsPlaceholder()}
+        >
+          {targets.available?.map((t) => (
+            <Select.Option key={t.id} value={t.id}>
+              {t.name ?? t.id}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+    </Form>
+  );
+};
 
 export default PrTargetForm;

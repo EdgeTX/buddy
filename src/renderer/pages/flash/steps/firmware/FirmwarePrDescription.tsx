@@ -1,5 +1,5 @@
 import { useQuery, gql } from "@apollo/client";
-import { Skeleton, Typography } from "antd";
+import { Divider, Skeleton, Typography } from "antd";
 import React from "react";
 import Markdown from "renderer/components/Markdown";
 
@@ -27,7 +27,7 @@ const FirmwarePrDescription: React.FC<Props> = ({ prId }) => {
   );
 
   if (loading) {
-    return <Skeleton />;
+    return <Skeleton title />;
   }
 
   const description = data?.edgeTxPr?.description;
@@ -40,7 +40,8 @@ const FirmwarePrDescription: React.FC<Props> = ({ prId }) => {
   return (
     <div>
       <Typography.Title level={3}>{title}</Typography.Title>
-      <Markdown>{description}</Markdown>
+      <Divider />
+      {description && <Markdown>{description}</Markdown>}
     </div>
   );
 };

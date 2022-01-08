@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Button, Divider, Typography } from "antd";
+import { Tabs, Button, Divider, Typography, Dropdown, Menu } from "antd";
 import {
   BranchesOutlined,
+  EllipsisOutlined,
   RocketOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
@@ -81,6 +82,37 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               });
               setActiveTab(key);
             }}
+            tabBarExtraContent={
+              <Dropdown
+                placement="bottomRight"
+                overlay={
+                  <Menu
+                    onClick={(item) => {
+                      setActiveTab(item.key);
+                    }}
+                    selectedKeys={[activeTab]}
+                  >
+                    <Menu.Item key="pr" icon={<BranchesOutlined />}>
+                      PR Builds
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button
+                  type="text"
+                  style={
+                    ["pr"].includes(activeTab)
+                      ? {
+                          color: "var(--ant-primary-color)",
+                          borderColor: "var(--ant-primary-color)",
+                        }
+                      : undefined
+                  }
+                >
+                  <EllipsisOutlined />
+                </Button>
+              </Dropdown>
+            }
           >
             <Tabs.TabPane
               tab={
@@ -132,15 +164,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 )}
               </div>
             </Tabs.TabPane>
-            <Tabs.TabPane
-              tab={
-                <span>
-                  <BranchesOutlined />
-                  PR Builds
-                </span>
-              }
-              key="pr"
-            >
+            <Tabs.TabPane key="pr">
               <FirmwarePrBuildPicker
                 version={version}
                 target={target}
