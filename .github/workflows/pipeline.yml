@@ -228,7 +228,7 @@ jobs:
       - name: Output
         uses: actions/upload-artifact@v2
         with:
-          name: electron-builds
+          name: app-builds
           retention-days: 15
           if-no-files-found: error
           path: |
@@ -275,7 +275,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: compiled-${{ matrix.os }}
-          path: electron-builds
+          path: app-builds
 
       - name: Preview
         id: storybook-preview
@@ -305,15 +305,15 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
-  release-binary:
-    needs: build
+  release-app:
+    needs: build-app
     runs-on: ubuntu-latest
     steps:
       - name: Fetch binaries
         uses: actions/download-artifact@v2
         with:
-          name: electron-builds
-          path: electron-builds
+          name: app-builds
+          path: app-builds
 
       - name: Release latest build
         if: github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/v')
@@ -321,7 +321,7 @@ jobs:
         with:
           title: "Latest Build"
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: electron-builds/*
+          files: app-builds/*
           automatic_release_tag: "latest"
           prerelease: true
 
@@ -330,5 +330,5 @@ jobs:
         uses: marvinpinto/action-automatic-releases@4edd7a5aabb1bc62e6dc99b3302d587bf3134e20
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: electron-builds/*
+          files: app-builds/*
           prerelease: false
