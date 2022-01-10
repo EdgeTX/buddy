@@ -268,7 +268,7 @@ jobs:
       #     NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-web:
-    Fneeds: compile
+    needs: compile
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
