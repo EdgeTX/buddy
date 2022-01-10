@@ -125,11 +125,8 @@ jobs:
       - name: Build
         run: yarn build-storybook
 
-  build:
+  compile:
     runs-on: ${{ matrix.os }}
-    env:
-      DISPLAY: :0
-
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -156,6 +153,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
@@ -168,9 +166,64 @@ jobs:
           sudo apt-get update && sudo apt-get install -y libudev-dev
 
       - name: Build
-        run: yarn build
+        run: yarn compile:production
         env:
           GITUHB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
+
+      - name: Store compiled source
+        uses: actions/upload-artifact@v2
+        with:
+          name: compiled-${{ matrix.os }}
+          retention-days: 1
+          if-no-files-found: error
+          path: build
+
+  build-app:
+    runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: :0
+
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    needs: compile
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Fetch compiled source
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-${{ matrix.os }}
+          path: build
+
+      - name: Build
+        run: yarn run pack
 
       - name: Output
         uses: actions/upload-artifact@v2
@@ -212,30 +265,51 @@ jobs:
       #     args: deploy --dir=packages/configurator/build/renderer
       #   env:
       #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_ID }}
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #     NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
-      # - name: Preview demo URL
-      #   if: github.ref != 'refs/heads/master' && matrix.os == 'ubuntu-latest'
-      #   uses: peter-evans/commit-comment@v1
-      #   with:
-      #     body: |
-      #       The configurator has been automatically deployed to Netlify.
-      #       🔍 Inspect: ${{ steps.preview-demo.outputs.NETLIFY_LOGS_URL }}
-      #       ✅ Preview: ${{ steps.preview-demo.outputs.NETLIFY_URL }}?mocked=true
-      # - name: Publish demo
-      #   if: github.ref == 'refs/heads/master' && matrix.os == 'ubuntu-latest'
-      #   uses: netlify/actions/cli@master
-      #   with:
-      #     args: deploy --dir=packages/configurator/build/renderer --prod
-      #   env:
-      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_ID }}
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  release-web:
+    Fneeds: compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch compiled source
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-${{ matrix.os }}
+          path: electron-builds
 
-  release:
+      - name: Preview
+        id: storybook-preview
+        if: github.ref != 'refs/heads/main'
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=packages/configurator/storybook-static
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+
+      - name: Comment preview URL
+        if: github.ref != 'refs/heads/master'
+        uses: peter-evans/commit-comment@v1
+        with:
+          body: |
+            EdgeTX Buddy has been automatically deployed to Netlify.
+            🔍 Inspect: ${{ steps.preview-demo.outputs.NETLIFY_LOGS_URL }}
+            ✅ Preview: ${{ steps.preview-demo.outputs.NETLIFY_URL }}
+
+      - name: Publish
+        if: github.ref == 'refs/heads/main'
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=packages/configurator/build/renderer --prod
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+
+  release-binary:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifacts
+      - name: Fetch binaries
         uses: actions/download-artifact@v2
         with:
           name: electron-builds
