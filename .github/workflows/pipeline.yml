@@ -274,8 +274,8 @@ jobs:
       - name: Fetch compiled source
         uses: actions/download-artifact@v2
         with:
-          name: compiled-${{ matrix.os }}
-          path: app-builds
+          name: compiled-ubuntu-latest
+          path: build
 
       - name: Preview
         id: storybook-preview
