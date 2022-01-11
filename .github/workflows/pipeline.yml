@@ -125,6 +125,14 @@ jobs:
       - name: Build
         run: yarn build-storybook
 
+      - name: Store storybook
+        uses: actions/upload-artifact@v2
+        with:
+          name: storybook-static
+          retention-days: 1
+          if-no-files-found: error
+          path: storybook-static
+
   compile:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -277,12 +285,19 @@ jobs:
           name: compiled-ubuntu-latest
           path: build
 
+      - name: Fetch storybook build
+        if: github.event_name == 'pull_request'
+        uses: actions/download-artifact@v2
+        with:
+          name: storybook-static
+          path: build/renderer/storybook
+
       - name: Preview
-        id: storybook-preview
-        if: github.ref == 'pull_request'
+        id: netlify-preview
+        if: github.event_name == 'pull_request'
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=packages/configurator/storybook-static
+          args: deploy --dir=build/renderer
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
@@ -293,14 +308,15 @@ jobs:
         with:
           body: |
             EdgeTX Buddy has been automatically deployed to Netlify.
-            🔍 Inspect: ${{ steps.preview-demo.outputs.NETLIFY_LOGS_URL }}
-            ✅ Preview: ${{ steps.preview-demo.outputs.NETLIFY_URL }}
+            🔍 Inspect: ${{ steps.netlify-preview.outputs.NETLIFY_LOGS_URL }}
+            ✅ Preview: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}
+            ✅ Storybook: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}/storybook
 
       - name: Publish
-        if: github.ref != 'pull_request'
+        if: github.event_name!= 'pull_request'
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=packages/configurator/build/renderer --prod
+          args: deploy --dir=build/renderer --prod
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
