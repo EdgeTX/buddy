@@ -14,7 +14,6 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   target,
   version,
 }) => {
-  // version string should be in the format `pr-${prId}@${commit}`
   const { prId, commitId } = decodePrVersion(version ?? "");
 
   const prsQuery = useQuery(
@@ -30,7 +29,8 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   );
 
   const prs = prsQuery.data?.edgeTxPrs;
-  const validPr = !!prs?.find((pr) => pr.id === prId);
+  const selectedPr = prs?.find((pr) => pr.id === prId);
+  const validPr = !!selectedPr;
 
   useEffect(() => {
     if (prId && !prsQuery.loading && !validPr) {
@@ -84,6 +84,29 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
     commitsQuery.loading,
     validPrCommit,
     commitId,
+    onChanged,
+  ]);
+
+  useEffect(() => {
+    if (
+      prId &&
+      !prsQuery.loading &&
+      validPr &&
+      !commitId &&
+      !commitsQuery.error
+    ) {
+      onChanged({
+        version: `pr-${prId}@${selectedPr.headCommitId}`,
+        target: undefined,
+      });
+    }
+  }, [
+    prId,
+    validPr,
+    prsQuery.loading,
+    commitId,
+    selectedPr,
+    commitsQuery,
     onChanged,
   ]);
 
@@ -164,6 +187,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
       }}
       commits={{
         available: prCommits ?? null,
+        latestId: selectedPr?.headCommitId,
         loading: commitsQuery.loading,
         error: !!commitsQuery.error,
         selectedId: commitId,

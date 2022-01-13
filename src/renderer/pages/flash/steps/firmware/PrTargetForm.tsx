@@ -4,6 +4,7 @@ import React from "react";
 
 type FormItem = {
   selectedId?: string;
+  latestId?: string;
   available: { id: string; name?: string }[] | null;
   loading?: boolean;
   error?: boolean;
@@ -148,7 +149,8 @@ const PrTargetForm: React.FC<Props> = ({
         >
           {commits.available?.map((c) => (
             <Select.Option key={c.id} value={c.id}>
-              {c.name ?? c.id}
+              {c.name ?? c.id.slice(0, 7)}{" "}
+              {commits.latestId && commits.latestId === c.id ? "(Latest)" : ""}
             </Select.Option>
           ))}
         </Select>
