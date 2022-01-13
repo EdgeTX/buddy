@@ -273,7 +273,7 @@ jobs:
       #     args: deploy --dir=packages/configurator/build/renderer
       #   env:
       #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_ID }}
-      #     NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-web:
     needs: compile
@@ -300,7 +300,7 @@ jobs:
           args: deploy --dir=build/renderer
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
       - name: Comment preview URL
         if: github.event_name == 'pull_request'
@@ -319,7 +319,7 @@ jobs:
           args: deploy --dir=build/renderer --prod
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-app:
     needs: build-app
