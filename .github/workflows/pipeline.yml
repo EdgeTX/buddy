@@ -123,7 +123,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build
-        run: yarn build-storybook
+        run: yarn build:storybook
 
       - name: Store storybook
         uses: actions/upload-artifact@v2
@@ -176,7 +176,7 @@ jobs:
       - name: Build
         run: yarn compile:production
         env:
-          GITUHB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
+          GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
       - name: Store compiled source
         uses: actions/upload-artifact@v2

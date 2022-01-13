@@ -105,7 +105,7 @@
     "fmt:check": "prettier --check '**/*.{ts,tsx,js,jsx}'",
     "postinstall": "yarn codegen && husky install",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
+    "build:storybook": "build-storybook",
     "release": "electron-builder --publish always"
   },
   "lint-staged": {
