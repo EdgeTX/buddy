@@ -266,14 +266,6 @@ jobs:
       #       packages/configurator/e2e/output/*.webm
       #       packages/configurator/e2e/output/trace/*.zip
       # - name: Preview demo
-      #   id: preview-demo
-      #   if: github.ref != 'refs/heads/master' && matrix.os == 'ubuntu-latest'
-      #   uses: netlify/actions/cli@master
-      #   with:
-      #     args: deploy --dir=packages/configurator/build/renderer
-      #   env:
-      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_ID }}
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-web:
     needs: compile
