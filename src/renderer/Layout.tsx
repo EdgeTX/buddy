@@ -5,6 +5,7 @@ import useMedia from "use-media";
 import styled from "styled-components";
 import EdgeTxIcon from "./assets/logo.webp";
 import WindowsNav from "./components/WindowsNav";
+import useIsMobile from "./hooks/useIsMobile";
 
 const { Header, Content, Footer } = Layout;
 
@@ -23,6 +24,12 @@ const DragableHeader = styled(Header)`
   li {
     -webkit-app-region: no-drag;
   }
+`;
+
+const MainLayout = styled(Layout)`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 // TODO: use this if we want the menu labels to spill over multiple lines
@@ -49,12 +56,17 @@ const AppLayout: React.FC<Props> = ({
   windowsFrameless,
 }) => {
   const isWide = useMedia({ minWidth: "1200px" });
+  const isMobile = useIsMobile();
   const location = useLocation();
   return (
-    <Layout
-      style={{ height: "100%", display: "flex", flexDirection: "column" }}
+    <MainLayout
+      style={{
+        height: !isMobile ? "100%" : undefined,
+      }}
     >
-      <DragableHeader>
+      <DragableHeader
+        style={isMobile ? { padding: "0", paddingLeft: "16px" } : undefined}
+      >
         <div
           style={{
             float: "left",
@@ -112,8 +124,10 @@ const AppLayout: React.FC<Props> = ({
           className="site-layout-background"
           style={{
             padding: 24,
-            height: "100%",
+            minHeight: "100%",
+            height: !isMobile ? "100%" : undefined,
             display: "flex",
+            flex: 1,
             flexDirection: "column",
           }}
         >
@@ -130,7 +144,7 @@ const AppLayout: React.FC<Props> = ({
           source
         </a>
       </Footer>
-    </Layout>
+    </MainLayout>
   );
 };
 

@@ -18,6 +18,7 @@ import { Centered, FullHeight } from "renderer/shared/layouts";
 import useVersionFilters from "renderer/hooks/useVersionFilters";
 import { decodePrVersion, isPrVersion } from "shared/tools";
 import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
+import useIsMobile from "renderer/hooks/useIsMobile";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
@@ -42,6 +43,18 @@ const Container = styled.div`
     flex: 0;
     margin-left: 16px;
   }
+
+  @media screen and (max-width: 800px) {
+    > * {
+      display: none;
+    }
+
+    > :first-child {
+      display: unset;
+    }
+
+    flex-direction: column;
+  }
 `;
 
 const DescriptionContainer = styled.div`
@@ -58,6 +71,7 @@ const DownloadFirmwareContainer = styled.div`
 `;
 
 const FirmwareStep: StepComponent = ({ onNext }) => {
+  const isMobile = useIsMobile();
   const { parseParam, updateParams } = useQueryParams<
     "version" | "target" | "filters"
   >();
@@ -98,40 +112,42 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               setActiveTab(key);
             }}
             tabBarExtraContent={
-              <Dropdown
-                placement="bottomRight"
-                trigger={["click"]}
-                overlay={
-                  <Menu
-                    onClick={(item) => {
-                      updateParams({
-                        version: undefined,
-                        target: undefined,
-                      });
-                      setActiveTab(item.key);
-                    }}
-                    selectedKeys={[activeTab]}
-                  >
-                    <Menu.Item key="pr" icon={<BranchesOutlined />}>
-                      PR Builds
-                    </Menu.Item>
-                  </Menu>
-                }
-              >
-                <Button
-                  type="text"
-                  style={
-                    ["pr"].includes(activeTab)
-                      ? {
-                          color: "var(--ant-primary-color)",
-                          borderColor: "var(--ant-primary-color)",
-                        }
-                      : undefined
+              !isMobile && (
+                <Dropdown
+                  placement="bottomRight"
+                  trigger={["click"]}
+                  overlay={
+                    <Menu
+                      onClick={(item) => {
+                        updateParams({
+                          version: undefined,
+                          target: undefined,
+                        });
+                        setActiveTab(item.key);
+                      }}
+                      selectedKeys={[activeTab]}
+                    >
+                      <Menu.Item key="pr" icon={<BranchesOutlined />}>
+                        PR Builds
+                      </Menu.Item>
+                    </Menu>
                   }
                 >
-                  <EllipsisOutlined />
-                </Button>
-              </Dropdown>
+                  <Button
+                    type="text"
+                    style={
+                      ["pr"].includes(activeTab)
+                        ? {
+                            color: "var(--ant-primary-color)",
+                            borderColor: "var(--ant-primary-color)",
+                          }
+                        : undefined
+                    }
+                  >
+                    <EllipsisOutlined />
+                  </Button>
+                </Dropdown>
+              )
             }
           >
             <Tabs.TabPane

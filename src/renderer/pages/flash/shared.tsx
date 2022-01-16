@@ -1,5 +1,6 @@
 import { Space } from "antd";
 import React from "react";
+import useIsMobile from "renderer/hooks/useIsMobile";
 
 export const StepControlsContainer: React.FC = ({ children }) => (
   <div
@@ -19,7 +20,7 @@ export const StepContentContainer: React.FC = ({ children }) => (
     style={{
       minHeight: 0,
       height: "100%",
-      padding: "16px",
+      padding: useIsMobile() ? "0px" : "16px",
     }}
   >
     {children}

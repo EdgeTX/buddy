@@ -29,21 +29,7 @@ const link = ApolloLink.from([
   await createBusLink(),
 ]);
 
-const typePolicies: StrictTypedTypePolicies = {
-  EdgeTxFirmwareBundle: {
-    fields: {
-      target: {
-        read: (_, { args, toReference }) =>
-          toReference({
-            __typename: "EdgeTxFirmwareTarget",
-            // We know this has to be given
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            id: args!.id as string,
-          }),
-      },
-    },
-  },
-};
+const typePolicies: StrictTypedTypePolicies = {};
 
 export default new ApolloClient({
   cache: new InMemoryCache({

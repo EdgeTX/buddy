@@ -33,6 +33,7 @@ const FirmwareSummary: React.FC<{
       }
     `),
     {
+      fetchPolicy: "cache-first",
       variables: {
         target,
         version,
@@ -40,6 +41,8 @@ const FirmwareSummary: React.FC<{
       skip: isFile || isPr || loading,
     }
   );
+
+  console.log(releaseInfoQuery, target, version, loading, isPr, isFile);
 
   const firmwareFileQuery = useQuery(
     gql(/* GraphQL */ `

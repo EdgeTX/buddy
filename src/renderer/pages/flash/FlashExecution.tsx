@@ -10,6 +10,7 @@ import {
   FullHeightCentered,
 } from "renderer/shared/layouts";
 import { RocketTwoTone } from "@ant-design/icons";
+import useIsMobile from "renderer/hooks/useIsMobile";
 import FlashJobTimeline from "./execution/FlashJobTimeline";
 import FirmwareSummary from "./components/FirmwareSummary";
 
@@ -33,6 +34,7 @@ const Container = styled.div`
 `;
 
 const FlashExecution: React.FC = () => {
+  const isMobile = useIsMobile();
   const { jobId } = useParams();
   const navigate = useNavigate();
   const { data, subscribeToMore, error, loading } = useQuery(
@@ -203,70 +205,84 @@ const FlashExecution: React.FC = () => {
     return undefined;
   }, [jobId, cancelJob]);
 
+  const completed = data?.flashJobStatus?.stages.flash.completed;
+  const firmwareSummary = (
+    <FirmwareSummary
+      hideIcon
+      loading={loading && !data}
+      target={data?.flashJobStatus?.meta.firmware.target ?? ""}
+      version={data?.flashJobStatus?.meta.firmware.version ?? ""}
+    />
+  );
+
+  const renderFlashResult = (): React.ReactNode => (
+    <>
+      <Result
+        style={{ padding: 8 }}
+        icon={<RocketTwoTone style={{ fontSize: 48 }} />}
+        title="Your radio has been flashed with EdgeTX"
+      />
+      {firmwareSummary}
+      <Result
+        style={{ padding: 8, textAlign: "center" }}
+        icon={<div />}
+        title={null}
+      >
+        <Typography.Text>
+          You may now want to <Link to="/sdcard">setup your SD Card</Link>
+        </Typography.Text>
+      </Result>
+    </>
+  );
+
   return (
     <Container>
-      <FullHeight
-        style={{
-          paddingTop: "100px",
-          textAlign: "center",
-          maxWidth: jobCompleted ? "100%" : "400px",
-          flex: 1,
-        }}
-      >
-        <Centered>
-          {!data?.flashJobStatus?.stages.flash.completed ? (
-            <>
-              <div
-                style={{
-                  marginBottom: "32px",
-                }}
-              >
-                <Typography.Title level={1}>Flashing EdgeTX</Typography.Title>
-                <FirmwareSummary
-                  hideIcon
-                  loading={loading && !data}
-                  target={data?.flashJobStatus?.meta.firmware.target ?? ""}
-                  version={data?.flashJobStatus?.meta.firmware.version ?? ""}
-                />
-              </div>
-              <Typography.Text>
-                Please leave this window open whilst your radio is being flashed
-              </Typography.Text>
-            </>
-          ) : (
-            <>
-              <Result
-                style={{ padding: 8 }}
-                icon={<RocketTwoTone style={{ fontSize: 48 }} />}
-                title="Your radio has been flashed with EdgeTX"
-              />
-              <FirmwareSummary
-                hideIcon
-                loading={loading && !data}
-                target={data.flashJobStatus.meta.firmware.target}
-                version={data.flashJobStatus.meta.firmware.version}
-              />
-              <Result
-                style={{ padding: 8, textAlign: "center" }}
-                icon={<div />}
-                title={null}
-              >
-                <Typography.Text>
-                  You may now want to{" "}
-                  <Link to="/sdcard">setup your SD Card</Link>
-                </Typography.Text>
-              </Result>
-            </>
-          )}
-        </Centered>
-      </FullHeight>
-      <Divider className="divider" type="vertical" style={{ height: "100%" }} />
+      {!isMobile && (
+        <>
+          <FullHeight
+            style={{
+              paddingTop: "100px",
+              textAlign: "center",
+              maxWidth: jobCompleted ? "100%" : "400px",
+              flex: 1,
+            }}
+          >
+            <Centered>
+              {!completed ? (
+                <>
+                  <div
+                    style={{
+                      marginBottom: "32px",
+                    }}
+                  >
+                    <Typography.Title level={1}>
+                      Flashing EdgeTX
+                    </Typography.Title>
+                    {firmwareSummary}
+                  </div>
+                  <Typography.Text>
+                    Please leave this window open whilst your radio is being
+                    flashed
+                  </Typography.Text>
+                </>
+              ) : (
+                renderFlashResult()
+              )}
+            </Centered>
+          </FullHeight>
+          <Divider
+            className="divider"
+            type="vertical"
+            style={{ height: "100%" }}
+          />
+        </>
+      )}
       <FullHeight
         style={{
           justifyContent: "center",
           alignItems: "center",
           flex: 1,
-          maxWidth: jobCompleted ? "300px" : "100%",
+          maxWidth: jobCompleted && !isMobile ? "300px" : "100%",
         }}
       >
         <FullHeightCentered
@@ -275,9 +291,10 @@ const FlashExecution: React.FC = () => {
             width: "100%",
           }}
         >
-          {data?.flashJobStatus && (
+          {data?.flashJobStatus && (!isMobile || !completed) && (
             <FlashJobTimeline state={data.flashJobStatus.stages} />
           )}
+          {completed && isMobile && renderFlashResult()}
         </FullHeightCentered>
         <div
           style={{

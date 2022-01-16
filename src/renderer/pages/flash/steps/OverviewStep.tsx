@@ -10,24 +10,26 @@ import { Centered, FullHeight } from "renderer/shared/layouts";
 import DeviceSummary from "renderer/pages/flash/components/DeviceSummary";
 import FirmwareSummary from "renderer/pages/flash/components/FirmwareSummary";
 import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
+import useIsMobile from "renderer/hooks/useIsMobile";
 
-const Container = styled.div`
+const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
   height: 100%;
-  flex-direction: row;
+  flex-direction: ${({ isMobile }) => (isMobile ? "column" : "row")};
   justify-content: space-around;
   width: 100%;
-  max-height: 300px;
+  max-height: ${({ isMobile }) => (!isMobile ? "300px" : "unset")};
   margin-top: 32px;
   margin-bottom: 32px;
 
   .flash-component {
     text-align: center;
-    width: 200px;
+    width: ${({ isMobile }) => (!isMobile ? "200px" : "unset")};
   }
 `;
 
 const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
+  const isMobile = useIsMobile();
   const { parseParam } = useQueryParams<"deviceId" | "target" | "version">();
   const navigate = useNavigate();
 
@@ -58,9 +60,10 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
 
   return (
     <FullHeight>
-      <Centered style={{ height: "100%" }}>
+      <Centered style={{ height: isMobile ? undefined : "100%" }}>
         <Card
           bodyStyle={{
+            padding: isMobile ? "8px" : undefined,
             height: "100%",
           }}
           style={{
@@ -81,7 +84,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
               </Typography.Text>
             </Centered>
             <Centered style={{ height: "100%" }}>
-              <Container>
+              <Container isMobile={isMobile}>
                 <div className="flash-component">
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
                     Firmware
@@ -98,8 +101,10 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                 <DoubleRightOutlined
                   style={{
                     fontSize: "24px",
-                    marginTop: "64px",
+                    marginTop: isMobile ? "32px" : "64px",
+                    marginBottom: isMobile ? "32px" : undefined,
                     color: "var(--ant-primary-4)",
+                    transform: isMobile ? "rotate(90deg)" : undefined,
                   }}
                 />
                 <div className="flash-component">

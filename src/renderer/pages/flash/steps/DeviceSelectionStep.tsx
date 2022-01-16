@@ -14,6 +14,7 @@ import {
 } from "renderer/pages/flash/shared";
 import { Centered, FullHeight } from "renderer/shared/layouts";
 import { StepComponent } from "renderer/pages/flash/types";
+import useIsMobile from "renderer/hooks/useIsMobile";
 import DeviceList from "./device/DeviceList";
 
 const Main = styled.div`
@@ -47,6 +48,7 @@ const DevicesQuery = gql(/* GraphQL */ `
 const DeviceSelectionStep: StepComponent<{
   variant: "web" | "electron";
 }> = ({ variant, onNext, onPrevious }) => {
+  const isMobile = useIsMobile();
   const { parseParam, updateParams } = useQueryParams<"deviceId">();
   const selectedDeviceId = parseParam("deviceId");
 
@@ -117,7 +119,10 @@ const DeviceSelectionStep: StepComponent<{
           </Typography.Text>
 
           <Card
-            style={{ height: "100%", overflowY: "auto" }}
+            style={{
+              height: isMobile ? "300px" : "100%",
+              overflowY: "auto",
+            }}
             bodyStyle={{ height: "100%", padding: 8 }}
           >
             {loading || devicesAvailable ? (
