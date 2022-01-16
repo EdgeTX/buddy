@@ -3,9 +3,13 @@ import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/client";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, message } from "antd";
 import client from "./gql/client";
 import App from "./App";
+
+message.config({
+  top: 64,
+});
 
 ReactDOM.render(
   <React.StrictMode>

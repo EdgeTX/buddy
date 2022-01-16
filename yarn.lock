@@ -10632,7 +10632,6 @@ __metadata:
     iso-639-1: ^2.1.11
     jest: ^27.4.3
     jest-mock: ^27.4.2
-    js-file-download: ^0.4.12
     ky: ^0.28.7
     ky-universal: ^0.9.1
     lint-staged: ^12.1.2
@@ -16086,13 +16085,6 @@ __metadata:
   version: 0.2.0
   resolution: "jpeg-js@npm:0.2.0"
   checksum: 2a57b19e252a86b583e9b1e917ddb1c3617170493fee6dfd01bf8ff5e0e43123cb988c0066681f7ea19c093cf1b61d19c47c88258d03395f16946e35856135bc
-  languageName: node
-  linkType: hard
-
-"js-file-download@npm:^0.4.12":
-  version: 0.4.12
-  resolution: "js-file-download@npm:0.4.12"
-  checksum: a03847eef0184fbf34a7b7fd365ea6aa1a6cc142efeac52c4baa0cdde845dc93718eb66808dfcffd6c91b37ddc9d058d352ac9698b4280744bad3587240c93b6
   languageName: node
   linkType: hard
 

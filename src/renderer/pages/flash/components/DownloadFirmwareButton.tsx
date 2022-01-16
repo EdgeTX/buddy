@@ -3,7 +3,6 @@ import { gql, useApolloClient } from "@apollo/client";
 import { Button, message } from "antd";
 import React, { useState } from "react";
 import { decodePrVersion, isPrVersion } from "shared/tools";
-import downloadFile from "js-file-download";
 import * as base64ArrayBuffer from "base64-arraybuffer";
 
 type Props = {
@@ -24,6 +23,26 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   const validPrVersion = isPr && prId && commitId && target;
 
   const client = useApolloClient();
+
+  const promptAndDownload = async (
+    name: string,
+    data: ArrayBufferLike
+  ): Promise<void> => {
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: name,
+      types: [
+        {
+          description: "Firmware data",
+          accept: {
+            "application/octet-stream": [".bin"],
+          },
+        },
+      ],
+    });
+    const writable = await fileHandle.createWritable();
+    await writable.write(data);
+    await writable.close();
+  };
 
   const download = async (): Promise<void> => {
     if (validPrVersion) {
@@ -56,10 +75,9 @@ const DownloadFirmwareButton: React.FC<Props> = ({
         response.data.edgeTxPr?.commit?.firmwareBundle?.target?.base64Data;
 
       if (fileData) {
-        downloadFile(
-          base64ArrayBuffer.decode(fileData),
+        await promptAndDownload(
           `${target}-${commitId.slice(0, 7)}.bin`,
-          "application/octet-stream"
+          base64ArrayBuffer.decode(fileData)
         );
       }
     } else if (!isLocal && target && version) {
@@ -78,16 +96,19 @@ const DownloadFirmwareButton: React.FC<Props> = ({
             }
           }
         `),
+        variables: {
+          target,
+          version,
+        },
       });
 
       const fileData =
         response.data.edgeTxRelease?.firmwareBundle.target?.base64Data;
 
       if (fileData) {
-        downloadFile(
-          base64ArrayBuffer.decode(fileData),
+        await promptAndDownload(
           `${target}-${version}.bin`,
-          "application/octet-stream"
+          base64ArrayBuffer.decode(fileData)
         );
       }
     }
@@ -102,9 +123,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       size="small"
       onClick={async () => {
         setDownloading(true);
-        await download().catch((e: Error) => {
-          void message.error(`Could not download firmware: ${e.message}`);
-        });
+        await download()
+          .then(() => message.success("Firmware file saved"))
+          .catch((e: Error) =>
+            message.error(`Could not download firmware: ${e.message}`)
+          );
         setDownloading(false);
       }}
     >
