@@ -121,6 +121,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
               id
               targets {
                 id
+                code
                 name
               }
             }
@@ -138,7 +139,9 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   );
 
   const commitBuildTargets =
-    commitBuildQuery.data?.edgeTxPr?.commit?.firmwareBundle?.targets;
+    commitBuildQuery.data?.edgeTxPr?.commit?.firmwareBundle?.targets.map(
+      (t) => ({ id: t.code, name: t.name })
+    );
   const validTarget = !!commitBuildTargets?.find((t) => t.id === target);
 
   useEffect(() => {

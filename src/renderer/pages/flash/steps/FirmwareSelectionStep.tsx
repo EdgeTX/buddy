@@ -17,6 +17,7 @@ import {
 import { Centered, FullHeight } from "renderer/shared/layouts";
 import useVersionFilters from "renderer/hooks/useVersionFilters";
 import { decodePrVersion, isPrVersion } from "shared/tools";
+import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
@@ -50,6 +51,12 @@ const DescriptionContainer = styled.div`
   height: 100%;
 `;
 
+const DownloadFirmwareContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const FirmwareStep: StepComponent = ({ onNext }) => {
   const { parseParam, updateParams } = useQueryParams<
     "version" | "target" | "filters"
@@ -67,6 +74,14 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
       setActiveTab("pr");
     }
   }, [setActiveTab, version, activeTab]);
+
+  const downloadButton = (
+    <DownloadFirmwareContainer>
+      <DownloadFirmwareButton target={target} version={version}>
+        Download .bin
+      </DownloadFirmwareButton>
+    </DownloadFirmwareContainer>
+  );
 
   return (
     <FullHeight>
@@ -89,6 +104,10 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 overlay={
                   <Menu
                     onClick={(item) => {
+                      updateParams({
+                        version: undefined,
+                        target: undefined,
+                      });
                       setActiveTab(item.key);
                     }}
                     selectedKeys={[activeTab]}
@@ -137,6 +156,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   }
                 }}
               />
+              {downloadButton}
             </Tabs.TabPane>
             <Tabs.TabPane
               tab={
@@ -175,6 +195,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   }
                 }}
               />
+              {downloadButton}
             </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />

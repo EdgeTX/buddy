@@ -24,7 +24,7 @@ const FirmwareSummary: React.FC<{
           name
           firmwareBundle {
             id
-            target(id: $target) {
+            target(code: $target) {
               id
               name
             }
@@ -37,7 +37,7 @@ const FirmwareSummary: React.FC<{
         target,
         version,
       },
-      skip: isFile || loading,
+      skip: isFile || isPr || loading,
     }
   );
 
@@ -70,7 +70,7 @@ const FirmwareSummary: React.FC<{
             id
             firmwareBundle {
               id
-              target(id: $target) {
+              target(code: $target) {
                 id
                 name
               }
@@ -80,7 +80,7 @@ const FirmwareSummary: React.FC<{
       }
     `),
     {
-      skip: !isPr,
+      skip: !isPr || loading,
       variables: {
         prId: prVersion.prId ?? "",
         commitId: prVersion.commitId ?? "",

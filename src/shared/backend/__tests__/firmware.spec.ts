@@ -109,6 +109,7 @@ describe("Query", () => {
                 firmwareBundle {
                   targets {
                     id
+                    code
                     name
                   }
                 }
@@ -123,83 +124,103 @@ describe("Query", () => {
             "firmwareBundle": Object {
               "targets": Array [
                 Object {
-                  "id": "nv14",
+                  "code": "nv14",
+                  "id": "nv14-50406116",
                   "name": "Flysky NV14",
                 },
                 Object {
-                  "id": "x10",
+                  "code": "x10",
+                  "id": "x10-50406116",
                   "name": "Frsky Horus X10",
                 },
                 Object {
-                  "id": "x10-access",
+                  "code": "x10-access",
+                  "id": "x10-access-50406116",
                   "name": "Frsky Horus X10 Access",
                 },
                 Object {
-                  "id": "x12s",
+                  "code": "x12s",
+                  "id": "x12s-50406116",
                   "name": "Frsky Horus X12s",
                 },
                 Object {
-                  "id": "x7",
+                  "code": "x7",
+                  "id": "x7-50406116",
                   "name": "Frsky QX7",
                 },
                 Object {
-                  "id": "x7-access",
+                  "code": "x7-access",
+                  "id": "x7-access-50406116",
                   "name": "Frsky QX7 Access",
                 },
                 Object {
-                  "id": "x9d",
+                  "code": "x9d",
+                  "id": "x9d-50406116",
                   "name": "Frsky X9D",
                 },
                 Object {
-                  "id": "x9dp",
+                  "code": "x9dp",
+                  "id": "x9dp-50406116",
                   "name": "Frsky X9D Plus",
                 },
                 Object {
-                  "id": "x9dp2019",
+                  "code": "x9dp2019",
+                  "id": "x9dp2019-50406116",
                   "name": "Frsky X9D Plus 2019",
                 },
                 Object {
-                  "id": "x9lite",
+                  "code": "x9lite",
+                  "id": "x9lite-50406116",
                   "name": "Frsky X9 Lite",
                 },
                 Object {
-                  "id": "x9lites",
+                  "code": "x9lites",
+                  "id": "x9lites-50406116",
                   "name": "Frsky X9 Lite S",
                 },
                 Object {
-                  "id": "xlite",
+                  "code": "xlite",
+                  "id": "xlite-50406116",
                   "name": "Frsky X-Lite",
                 },
                 Object {
-                  "id": "xlites",
+                  "code": "xlites",
+                  "id": "xlites-50406116",
                   "name": "Frsky X-Lite S",
                 },
                 Object {
-                  "id": "t8",
+                  "code": "t8",
+                  "id": "t8-50406116",
                   "name": "Jumper T8",
                 },
                 Object {
-                  "id": "t12",
+                  "code": "t12",
+                  "id": "t12-50406116",
                   "name": "Jumper T12",
                 },
                 Object {
-                  "id": "t16",
+                  "code": "t16",
+                  "id": "t16-50406116",
                   "name": "Jumper T16",
                 },
                 Object {
-                  "id": "t18",
+                  "code": "t18",
+                  "id": "t18-50406116",
                   "name": "Jumper T18",
                 },
                 Object {
-                  "id": "tlite",
+                  "code": "tlite",
+                  "id": "tlite-50406116",
                   "name": "Jumper T-Lite",
                 },
                 Object {
-                  "id": "tx12",
+                  "code": "tx12",
+                  "id": "tx12-50406116",
                   "name": "Radiomaster TX12",
                 },
                 Object {
-                  "id": "tx16s",
+                  "code": "tx16s",
+                  "id": "tx16s-50406116",
                   "name": "Radiomaster TX16s",
                 },
               ],
@@ -222,8 +243,9 @@ describe("Query", () => {
                   id
                   name
                   firmwareBundle {
-                    target(id: "t8") {
+                    target(code: "t8") {
                       id
+                      code
                       name
                     }
                   }
@@ -237,7 +259,8 @@ describe("Query", () => {
             Object {
               "firmwareBundle": Object {
                 "target": Object {
-                  "id": "t8",
+                  "code": "t8",
+                  "id": "t8-50406116",
                   "name": "Jumper T8",
                 },
               },
@@ -258,8 +281,9 @@ describe("Query", () => {
                   id
                   name
                   firmwareBundle {
-                    target(id: "some-weird-radio-id") {
+                    target(code: "some-weird-radio-id") {
                       id
+                      code
                       name
                     }
                   }
@@ -438,7 +462,7 @@ describe("Query", () => {
                       id
                       firmwareBundle {
                         id
-                        target(id: "nv14") {
+                        target(code: "nv14") {
                           id
                           name
                         }
@@ -460,7 +484,7 @@ describe("Query", () => {
                   "firmwareBundle": Object {
                     "id": "135237194",
                     "target": Object {
-                      "id": "nv14",
+                      "id": "nv14-135237194",
                       "name": "Flysky NV14",
                     },
                   },

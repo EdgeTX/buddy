@@ -7493,6 +7493,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base64-arraybuffer@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "base64-arraybuffer@npm:1.0.1"
+  checksum: 04b6fe6818b1c79774fa8aea169063521ad177f2ba04d2a4a0f00fca297d516319b551a3cda76050263da751b4ffb07d939fc1b5eb155f0e429659733e60afb0
+  languageName: node
+  linkType: hard
+
 "base64-js@npm:^1.0.2, base64-js@npm:^1.3.1, base64-js@npm:^1.5.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
@@ -10584,6 +10591,7 @@ __metadata:
     apollo-bus-link: ^0.4.4
     apollo-link-logger: ^2.0.0
     babel-loader: ^8.2.3
+    base64-arraybuffer: ^1.0.1
     confusing-browser-globals: ^1.0.10
     cors-anywhere: ^0.4.4
     css-loader: ^6.5.1
@@ -10624,6 +10632,7 @@ __metadata:
     iso-639-1: ^2.1.11
     jest: ^27.4.3
     jest-mock: ^27.4.2
+    js-file-download: ^0.4.12
     ky: ^0.28.7
     ky-universal: ^0.9.1
     lint-staged: ^12.1.2
@@ -16077,6 +16086,13 @@ __metadata:
   version: 0.2.0
   resolution: "jpeg-js@npm:0.2.0"
   checksum: 2a57b19e252a86b583e9b1e917ddb1c3617170493fee6dfd01bf8ff5e0e43123cb988c0066681f7ea19c093cf1b61d19c47c88258d03395f16946e35856135bc
+  languageName: node
+  linkType: hard
+
+"js-file-download@npm:^0.4.12":
+  version: 0.4.12
+  resolution: "js-file-download@npm:0.4.12"
+  checksum: a03847eef0184fbf34a7b7fd365ea6aa1a6cc142efeac52c4baa0cdde845dc93718eb66808dfcffd6c91b37ddc9d058d352ac9698b4280744bad3587240c93b6
   languageName: node
   linkType: hard
 

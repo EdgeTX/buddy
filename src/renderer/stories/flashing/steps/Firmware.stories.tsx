@@ -10,6 +10,7 @@ import {
   prsQuery,
   prDescriptionQuery,
   prCommitsQuery,
+  prBuildFirmwareDataQuery,
 } from "renderer/stories/flashing/mocks";
 
 export default {
@@ -28,6 +29,7 @@ export const initialRender = () => (
         prsQuery,
         prDescriptionQuery,
         prCommitsQuery,
+        prBuildFirmwareDataQuery,
       ]}
     >
       <FirmwareSelectionStep />

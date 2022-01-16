@@ -39,6 +39,7 @@ export const targetsQuery: MockedResponse = {
             id
             targets {
               id
+              code
               name
             }
           }
@@ -162,6 +163,7 @@ export const prCommitBuildQuery: MockedResponse = {
               id
               targets {
                 id
+                code
                 name
               }
             }
@@ -203,6 +205,7 @@ export const prCommitBuildNotAvailableQuery: MockedResponse = {
               id
               targets {
                 id
+                code
                 name
               }
             }
@@ -312,7 +315,7 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
           name
           firmwareBundle {
             id
-            target(id: $target) {
+            target(code: $target) {
               id
               name
             }
@@ -350,7 +353,7 @@ export const firmwarePrBuildInfoQuery: MockedResponse = {
             id
             firmwareBundle {
               id
-              target(id: $target) {
+              target(code: $target) {
                 id
                 name
               }
@@ -380,6 +383,51 @@ export const firmwarePrBuildInfoQuery: MockedResponse = {
     },
   },
   delay: 1000,
+};
+
+export const prBuildFirmwareDataQuery: MockedResponse = {
+  request: {
+    query: gql`
+      query PrBuildFirmwareData($prId: ID!, $commitId: ID!, $target: ID!) {
+        edgeTxPr(id: $prId) {
+          id
+          commit(id: $commitId) {
+            id
+            firmwareBundle {
+              id
+              target(code: $target) {
+                id
+                base64Data
+              }
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      prId: examplePrs[0]?.id,
+      commitId: examplePrs[0]?.headCommitId,
+      target: "nv14",
+    },
+  },
+  result: {
+    data: {
+      edgeTxPr: {
+        id: "32345345",
+        commit: {
+          id: examplePrs[0]?.headCommitId,
+          firmwareBundle: {
+            id: "349345",
+            target: {
+              id: "nv14",
+              code: "nv14",
+              base64Data: Buffer.from("some-data").toString("base64"),
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 export const flashJobQuery = (

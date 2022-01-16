@@ -53,83 +53,103 @@ export const exampleReleasesList = [
 
 export const exampleTargetsList = [
   {
-    id: "nv14",
+    code: "nv14",
+    id: "nv14-50406116",
     name: "Flysky NV14",
   },
   {
-    id: "x10",
+    code: "x10",
+    id: "x10-50406116",
     name: "Frsky Horus X10",
   },
   {
-    id: "x10-access",
+    code: "x10-access",
+    id: "x10-access-50406116",
     name: "Frsky Horus X10 Access",
   },
   {
-    id: "x12s",
+    code: "x12s",
+    id: "x12s-50406116",
     name: "Frsky Horus X12s",
   },
   {
-    id: "x7",
+    code: "x7",
+    id: "x7-50406116",
     name: "Frsky QX7",
   },
   {
-    id: "x7-access",
+    code: "x7-access",
+    id: "x7-access-50406116",
     name: "Frsky QX7 Access",
   },
   {
-    id: "x9d",
+    code: "x9d",
+    id: "x9d-50406116",
     name: "Frsky X9D",
   },
   {
-    id: "x9dp",
+    code: "x9dp",
+    id: "x9dp-50406116",
     name: "Frsky X9D Plus",
   },
   {
-    id: "x9dp2019",
+    code: "x9dp2019",
+    id: "x9dp2019-50406116",
     name: "Frsky X9D Plus 2019",
   },
   {
-    id: "x9lite",
+    code: "x9lite",
+    id: "x9lite-50406116",
     name: "Frsky X9 Lite",
   },
   {
-    id: "x9lites",
+    code: "x9lites",
+    id: "x9lites-50406116",
     name: "Frsky X9 Lite S",
   },
   {
-    id: "xlite",
+    code: "xlite",
+    id: "xlite-50406116",
     name: "Frsky X-Lite",
   },
   {
-    id: "xlites",
+    code: "xlites",
+    id: "xlites-50406116",
     name: "Frsky X-Lite S",
   },
   {
-    id: "t8",
+    code: "t8",
+    id: "t8-50406116",
     name: "Jumper T8",
   },
   {
-    id: "t12",
+    code: "t12",
+    id: "t12-50406116",
     name: "Jumper T12",
   },
   {
-    id: "t16",
+    code: "t16",
+    id: "t16-50406116",
     name: "Jumper T16",
   },
   {
-    id: "t18",
+    code: "t18",
+    id: "t18-50406116",
     name: "Jumper T18",
   },
   {
-    id: "tlite",
+    code: "tlite",
+    id: "tlite-50406116",
     name: "Jumper T-Lite",
   },
   {
-    id: "tx12",
+    code: "tx12",
+    id: "tx12-50406116",
     name: "Radiomaster TX12",
   },
   {
-    id: "tx16s",
+    code: "tx16s",
+    id: "tx16s-50406116",
     name: "Radiomaster TX16s",
   },
 ];

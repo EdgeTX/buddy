@@ -43,6 +43,7 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
             id
             targets {
               id
+              code
               name
             }
           }
@@ -65,7 +66,9 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   const sortedReleases = useSorted(releases, () => 0);
   const selectedFirmware = releases?.find((release) => release.id === version);
   const targets =
-    releaseTargetsQuery.data?.edgeTxRelease?.firmwareBundle.targets;
+    releaseTargetsQuery.data?.edgeTxRelease?.firmwareBundle.targets.map(
+      (t) => ({ id: t.code, name: t.name })
+    );
 
   const sortedTargets = useSorted(targets, (r1, r2) =>
     r1.name.localeCompare(r2.name)

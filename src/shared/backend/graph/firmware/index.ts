@@ -54,6 +54,7 @@ const typeDefs = gql`
 
   type EdgeTxFirmwareTarget {
     id: ID!
+    code: ID!
     name: String!
     bundleUrl: String!
     base64Data: String!
@@ -69,7 +70,7 @@ const typeDefs = gql`
     id: ID!
     url: String!
     targets: [EdgeTxFirmwareTarget!]!
-    target(id: ID!): EdgeTxFirmwareTarget
+    target(code: ID!): EdgeTxFirmwareTarget
   }
 `;
 
@@ -255,20 +256,22 @@ const resolvers: Resolvers = {
         .firmwareTargets(firmwareBundle.url)
         .then((firmwareTargets) =>
           firmwareTargets.map((target) => ({
-            id: target.code,
+            id: `${target.code}-${firmwareBundle.id}`,
+            code: target.code,
             bundleUrl: firmwareBundle.url,
             base64Data: "",
             name: target.name,
           }))
         ),
-    target: (firmwareBundle, { id }, { firmwareStore }) =>
+    target: (firmwareBundle, { code }, { firmwareStore }) =>
       firmwareStore
         .firmwareTargets(firmwareBundle.url)
         .then((firmwareTargets) => {
-          const target = firmwareTargets.find(({ code }) => code === id);
+          const target = firmwareTargets.find((t) => t.code === code);
           return target
             ? {
-                id: target.code,
+                id: `${target.code}-${firmwareBundle.id}`,
+                code: target.code,
                 bundleUrl: firmwareBundle.url,
                 base64Data: "",
                 name: target.name,
@@ -280,7 +283,7 @@ const resolvers: Resolvers = {
     base64Data: async (target, _, { firmwareStore }) => {
       const firmware = await firmwareStore.fetchFirmware(
         target.bundleUrl,
-        target.id
+        target.code
       );
       return firmware.toString("base64");
     },

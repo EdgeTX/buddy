@@ -9,6 +9,7 @@ import { StepComponent } from "renderer/pages/flash/types";
 import { Centered, FullHeight } from "renderer/shared/layouts";
 import DeviceSummary from "renderer/pages/flash/components/DeviceSummary";
 import FirmwareSummary from "renderer/pages/flash/components/FirmwareSummary";
+import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
 
 const Container = styled.div`
   display: flex;
@@ -21,6 +22,7 @@ const Container = styled.div`
   margin-bottom: 32px;
 
   .flash-component {
+    text-align: center;
     width: 200px;
   }
 `;
@@ -84,7 +86,14 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
                     Firmware
                   </Typography.Title>
-                  <FirmwareSummary target={target} version={version} />
+                  <Space size="large" direction="vertical">
+                    <div>
+                      <FirmwareSummary target={target} version={version} />
+                    </div>
+                    <DownloadFirmwareButton target={target} version={version}>
+                      Download
+                    </DownloadFirmwareButton>
+                  </Space>
                 </div>
                 <DoubleRightOutlined
                   style={{

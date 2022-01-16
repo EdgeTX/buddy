@@ -6,6 +6,7 @@ import {
   devicesQuery,
   firmwareReleaseDescriptionQuery,
   firmwaresQuery,
+  prBuildFirmwareDataQuery,
   prCommitBuildQuery,
   prCommitsQuery,
   prDescriptionQuery,
@@ -30,6 +31,7 @@ export const usable: React.FC = () => (
         prDescriptionQuery,
         prCommitsQuery,
         devicesQuery,
+        prBuildFirmwareDataQuery,
       ]}
     >
       <FlashingWizard />
