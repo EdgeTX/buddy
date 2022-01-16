@@ -42,8 +42,6 @@ const FirmwareSummary: React.FC<{
     }
   );
 
-  console.log(releaseInfoQuery, target, version, loading, isPr, isFile);
-
   const firmwareFileQuery = useQuery(
     gql(/* GraphQL */ `
       query LocalFirmwareInfo($fileId: ID!) {
