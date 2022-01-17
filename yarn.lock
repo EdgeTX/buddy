@@ -10632,6 +10632,7 @@ __metadata:
     iso-639-1: ^2.1.11
     jest: ^27.4.3
     jest-mock: ^27.4.2
+    js-file-download: ^0.4.12
     ky: ^0.28.7
     ky-universal: ^0.9.1
     lint-staged: ^12.1.2
@@ -10662,6 +10663,7 @@ __metadata:
     typescript: ^4.5.2
     unzipit: ^1.3.6
     usb: 2.0.3
+    use-local-storage: ^2.2.6
     use-media: ^1.4.0
     uuid: ^8.3.2
     web-streams-polyfill: ^3.2.0
@@ -16085,6 +16087,13 @@ __metadata:
   version: 0.2.0
   resolution: "jpeg-js@npm:0.2.0"
   checksum: 2a57b19e252a86b583e9b1e917ddb1c3617170493fee6dfd01bf8ff5e0e43123cb988c0066681f7ea19c093cf1b61d19c47c88258d03395f16946e35856135bc
+  languageName: node
+  linkType: hard
+
+"js-file-download@npm:^0.4.12":
+  version: 0.4.12
+  resolution: "js-file-download@npm:0.4.12"
+  checksum: a03847eef0184fbf34a7b7fd365ea6aa1a6cc142efeac52c4baa0cdde845dc93718eb66808dfcffd6c91b37ddc9d058d352ac9698b4280744bad3587240c93b6
   languageName: node
   linkType: hard
 
@@ -24371,6 +24380,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: f0cb3a49119e14ed46db8a946b1aa17b838b8834c8a652bde314877ede6057c55b50654a97ee802597a5839c070180195e58ea3a756b7c33db7f540642f0ddea
+  languageName: node
+  linkType: hard
+
+"use-local-storage@npm:^2.2.6":
+  version: 2.2.6
+  resolution: "use-local-storage@npm:2.2.6"
+  peerDependencies:
+    react: ">=16.8.1"
+  checksum: 57bb1cff17a25a9adec9b7d0a4eabf82bfacdf80aeb07623ce015beb60f8209d5dbb7a0cd94b85a00176e5f8f6d07c12a2a94150bd919cd59f17518b652a0034
   languageName: node
   linkType: hard
 

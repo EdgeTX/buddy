@@ -4,17 +4,25 @@ import { Button, message } from "antd";
 import React, { useState } from "react";
 import { decodePrVersion, isPrVersion } from "shared/tools";
 import * as base64ArrayBuffer from "base64-arraybuffer";
+import { ButtonSize, ButtonType } from "antd/lib/button";
+import { hasFilesystemApi } from "renderer/compatibility/checks";
+import legacyDownload from "js-file-download";
+import config from "shared/config";
 
 type Props = {
   target?: string;
   version?: string;
   children: string;
+  type?: ButtonType;
+  size?: ButtonSize;
 };
 
 const DownloadFirmwareButton: React.FC<Props> = ({
   target,
   version,
   children,
+  type,
+  size,
 }) => {
   const [downloading, setDownloading] = useState(false);
   const isPr = isPrVersion(version ?? "");
@@ -28,6 +36,10 @@ const DownloadFirmwareButton: React.FC<Props> = ({
     name: string,
     data: ArrayBufferLike
   ): Promise<void> => {
+    if (!hasFilesystemApi || config.isElectron) {
+      legacyDownload(data, name, "application/octet-stream");
+      return;
+    }
     const fileHandle = await window.showSaveFilePicker({
       suggestedName: name,
       types: [
@@ -116,18 +128,20 @@ const DownloadFirmwareButton: React.FC<Props> = ({
 
   return (
     <Button
-      type="link"
+      type={type}
       icon={<DownloadOutlined />}
       loading={downloading}
-      disabled={!target || !version}
-      size="small"
+      disabled={!target || !version || isLocal}
+      size={size}
       onClick={async () => {
         setDownloading(true);
         await download()
-          .then(() => message.success("Firmware file saved"))
-          .catch((e: Error) =>
-            message.error(`Could not download firmware: ${e.message}`)
-          );
+          .then(() => {
+            void message.success("Firmware file saved");
+          })
+          .catch((e: Error) => {
+            void message.error(`Could not download firmware: ${e.message}`);
+          });
         setDownloading(false);
       }}
     >

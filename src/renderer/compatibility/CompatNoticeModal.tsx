@@ -3,32 +3,46 @@ import {
   CheckCircleOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
-import { Button, Modal, Result, Typography } from "antd";
+import { Button, Checkbox, Modal, Result, Typography } from "antd";
 import React from "react";
-import { FullHeightCentered } from "./shared/layouts";
+import { FullHeightCentered } from "renderer/shared/layouts";
 
 type Props = {
   missingUsbApi?: boolean;
   missingFilesystemApi?: boolean;
+  onDontShowAgain?: (show: boolean) => void;
+  visible?: boolean;
+  onClose?: () => void;
 };
 
 const WebCompatInfo: React.FC<Props> = ({
   missingFilesystemApi,
   missingUsbApi,
+  onDontShowAgain,
+  visible,
+  onClose,
 }) => (
   <Modal
     style={{ maxWidth: "500px" }}
     width="100%"
-    visible
-    closable={false}
-    closeIcon={false}
-    footer={null}
+    visible={visible}
+    onCancel={onClose}
+    closable
+    footer={
+      <Checkbox
+        onChange={(e) => {
+          onDontShowAgain?.(e.target.checked);
+        }}
+      >
+        Don&apos;t show again
+      </Checkbox>
+    }
   >
     <FullHeightCentered>
       <Result
         status="warning"
         title="Your browser doesn't support EdgeTX Buddy"
-        subTitle="You can install the app, or use an update-to-date version of a Chromium based browser"
+        subTitle="You can install the app, or use an update-to-date Chromium based browser"
         extra={
           <Button
             href="https://github.com/EdgeTX/buddy/releases/tag/latest"
@@ -78,7 +92,7 @@ const WebCompatInfo: React.FC<Props> = ({
               <CheckCircleOutlined
                 style={{ color: "var(--ant-success-color)" }}
               />{" "}
-              We have File System Acess API access
+              We have File System Access API access
             </>
           )}
         </Typography.Paragraph>

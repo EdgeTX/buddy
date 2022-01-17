@@ -63,6 +63,7 @@
     "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "^2.12.6",
     "iso-639-1": "^2.1.11",
+    "js-file-download": "^0.4.12",
     "ky": "^0.28.7",
     "ky-universal": "^0.9.1",
     "markdown-to-jsx": "^7.1.5",
@@ -80,6 +81,7 @@
     "type-guards": "^0.15.0",
     "unzipit": "^1.3.6",
     "usb": "2.0.3",
+    "use-local-storage": "^2.2.6",
     "use-media": "^1.4.0",
     "uuid": "^8.3.2",
     "web-streams-polyfill": "^3.2.0"

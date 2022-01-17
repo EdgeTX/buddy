@@ -4,7 +4,7 @@ import {
   UsbOutlined,
   FolderOutlined,
 } from "@ant-design/icons";
-import { Button, Typography, Divider } from "antd";
+import { Button, Typography, Divider, Tooltip } from "antd";
 import React from "react";
 import {
   FullHeightCentered,
@@ -14,6 +14,8 @@ import {
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
+import config from "shared/config";
+import { hasFilesystemApi } from "renderer/compatibility/checks";
 
 const Container = styled.div`
   display: flex;
@@ -37,6 +39,8 @@ const Step = styled.div`
   display: flex;
   align-items: center;
 `;
+
+const notAvailable = !config.isElectron && !hasFilesystemApi;
 
 const SelectSdcardScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -95,19 +99,32 @@ const SelectSdcardScreen: React.FC = () => {
       <Divider type="vertical" style={{ height: "100%" }} />
       <FullHeightCentered style={{ flex: 1, maxWidth: "600px" }}>
         <Centered>
-          <FolderOpenTwoTone style={{ fontSize: "48px", margin: "16px" }} />
-          <Button
-            onClick={() => {
-              void selectDirectory().then((result) => {
-                if (result.data?.pickSdcardDirectory) {
-                  const directory = result.data.pickSdcardDirectory;
-                  navigate(`/sdcard/${directory.id}`);
-                }
-              });
+          <FolderOpenTwoTone
+            style={{
+              fontSize: "48px",
+              margin: "16px",
+              opacity: notAvailable ? "0.2" : undefined,
             }}
+          />
+          <Tooltip
+            trigger={notAvailable ? ["hover"] : []}
+            placement="bottom"
+            title="This feature is not supported by your browser"
           >
-            Select SD Card
-          </Button>
+            <Button
+              disabled={notAvailable}
+              onClick={() => {
+                void selectDirectory().then((result) => {
+                  if (result.data?.pickSdcardDirectory) {
+                    const directory = result.data.pickSdcardDirectory;
+                    navigate(`/sdcard/${directory.id}`);
+                  }
+                });
+              }}
+            >
+              Select SD Card
+            </Button>
+          </Tooltip>
         </Centered>
       </FullHeightCentered>
     </Container>

@@ -93,9 +93,16 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                     <div>
                       <FirmwareSummary target={target} version={version} />
                     </div>
-                    <DownloadFirmwareButton target={target} version={version}>
-                      Download
-                    </DownloadFirmwareButton>
+                    {version !== "local" && (
+                      <DownloadFirmwareButton
+                        size="small"
+                        type="link"
+                        target={target}
+                        version={version}
+                      >
+                        Download
+                      </DownloadFirmwareButton>
+                    )}
                   </Space>
                 </div>
                 <DoubleRightOutlined

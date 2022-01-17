@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Button, Divider, Typography, Dropdown, Menu } from "antd";
+import {
+  Tabs,
+  Button,
+  Divider,
+  Typography,
+  Dropdown,
+  Menu,
+  Tooltip,
+} from "antd";
 import {
   BranchesOutlined,
   EllipsisOutlined,
   RocketOutlined,
   UploadOutlined,
+  UsbOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import styled from "styled-components";
@@ -19,6 +29,8 @@ import useVersionFilters from "renderer/hooks/useVersionFilters";
 import { decodePrVersion, isPrVersion } from "shared/tools";
 import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
+import { hasUsbApi } from "renderer/compatibility/checks";
+import config from "shared/config";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
@@ -64,11 +76,7 @@ const DescriptionContainer = styled.div`
   height: 100%;
 `;
 
-const DownloadFirmwareContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-`;
+const flashingAvailable = config.isElectron || hasUsbApi;
 
 const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
@@ -88,14 +96,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
       setActiveTab("pr");
     }
   }, [setActiveTab, version, activeTab]);
-
-  const downloadButton = (
-    <DownloadFirmwareContainer>
-      <DownloadFirmwareButton target={target} version={version}>
-        Download .bin
-      </DownloadFirmwareButton>
-    </DownloadFirmwareContainer>
-  );
 
   return (
     <FullHeight>
@@ -172,7 +172,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   }
                 }}
               />
-              {downloadButton}
             </Tabs.TabPane>
             <Tabs.TabPane
               tab={
@@ -211,7 +210,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   }
                 }}
               />
-              {downloadButton}
             </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />
@@ -272,17 +270,27 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        <Button
-          disabled={!target || !version}
-          type="primary"
-          onClick={() => {
-            if (target && version) {
-              onNext?.();
-            }
-          }}
+        <DownloadFirmwareButton size="small" target={target} version={version}>
+          Download .bin
+        </DownloadFirmwareButton>
+        <Tooltip
+          trigger={!flashingAvailable ? ["hover"] : []}
+          placement="top"
+          title="Not supported by your browser"
         >
-          Next
-        </Button>
+          <Button
+            disabled={!target || !version || !flashingAvailable}
+            type="primary"
+            icon={flashingAvailable ? <UsbOutlined /> : <WarningOutlined />}
+            onClick={() => {
+              if (target && version) {
+                onNext?.();
+              }
+            }}
+          >
+            Flash via USB
+          </Button>
+        </Tooltip>
       </StepControlsContainer>
     </FullHeight>
   );

@@ -1,30 +1,30 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import Layout from "renderer/Layout";
-import WebCompatInfo from "renderer/WebCompatInfo";
+import CompatNoticeModal from "renderer/compatibility/CompatNoticeModal";
 
 export default {
-  title: "WebCompatInfo",
-  component: WebCompatInfo,
+  title: "CompatNoticeModal",
+  component: CompatNoticeModal,
 };
 
 export const missingEverything: React.FC = () => (
   <MemoryRouter>
     <Layout>Something</Layout>
-    <WebCompatInfo missingFilesystemApi missingUsbApi />
+    <CompatNoticeModal missingFilesystemApi missingUsbApi visible />
   </MemoryRouter>
 );
 
 export const missingFilesystemApi: React.FC = () => (
   <MemoryRouter>
     <Layout>Something</Layout>
-    <WebCompatInfo missingFilesystemApi />
+    <CompatNoticeModal missingFilesystemApi visible />
   </MemoryRouter>
 );
 
 export const missingWebUSBApiAccess: React.FC = () => (
   <MemoryRouter>
     <Layout>Something</Layout>
-    <WebCompatInfo missingUsbApi />
+    <CompatNoticeModal missingUsbApi visible />
   </MemoryRouter>
 );
