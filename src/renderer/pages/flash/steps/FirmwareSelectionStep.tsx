@@ -36,6 +36,7 @@ import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
 import FirmwarePrBuildPicker from "./firmware/FirmwarePrBuildPicker";
 import FirmwarePrDescription from "./firmware/FirmwarePrDescription";
+import CopyUrlButton from "./firmware/CopyUrlButton";
 
 const Container = styled.div`
   display: flex;
@@ -172,6 +173,8 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   }
                 }}
               />
+              <Divider />
+              <CopyUrlButton target={target} version={version} />
             </Tabs.TabPane>
             <Tabs.TabPane
               tab={
@@ -210,6 +213,8 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   }
                 }}
               />
+              <Divider />
+              <CopyUrlButton target={target} version={version} />
             </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />
@@ -270,7 +275,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        <DownloadFirmwareButton size="small" target={target} version={version}>
+        <DownloadFirmwareButton target={target} version={version}>
           Download .bin
         </DownloadFirmwareButton>
         <Tooltip
