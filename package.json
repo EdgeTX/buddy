@@ -32,9 +32,7 @@
     "files": [
       "!**/*",
       "./build/main/*",
-      "./build/renderer/*",
-      "!./build/renderer/*.js",
-      "!./build/renderer/*.map",
+      "./build/renderer/index.html",
       "./build/renderer/main-*.js",
       "./build/renderer/main-*.map"
     ],
