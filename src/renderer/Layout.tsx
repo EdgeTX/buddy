@@ -3,6 +3,7 @@ import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import useMedia from "use-media";
 import styled from "styled-components";
+import { ArrowRightOutlined, GithubOutlined } from "@ant-design/icons";
 import EdgeTxIcon from "./assets/logo.webp";
 import WindowsNav from "./components/WindowsNav";
 import useIsMobile from "./hooks/useIsMobile";
@@ -30,6 +31,29 @@ const MainLayout = styled(Layout)`
   min-height: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+const FooterElements = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 16px;
+  padding-right: 16px;
+  text-align: center;
+
+  @media screen and (max-width: 800px) {
+    justify-content: center;
+  }
+`;
+
+const MenuIcons = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding-right: 32px;
+  line-height: normal;
 `;
 
 // TODO: use this if we want the menu labels to spill over multiple lines
@@ -109,6 +133,16 @@ const AppLayout: React.FC<Props> = ({
             <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
         </Menu>
+        <MenuIcons>
+          <a
+            type="text"
+            target="_blank"
+            href="https://github.com/EdgeTX"
+            rel="noreferrer"
+          >
+            <GithubOutlined style={{ color: "white", fontSize: "32px" }} />
+          </a>
+        </MenuIcons>
         {windowsFrameless && <WindowsNav />}
       </DragableHeader>
       <Content
@@ -134,15 +168,38 @@ const AppLayout: React.FC<Props> = ({
           {children}
         </div>
       </Content>
-      <Footer style={{ textAlign: "center", padding: "8px" }}>
-        Built with ♥ by the EdgeTX contributors -{" "}
-        <a
-          target="_blank"
-          href="https://github.com/EdgeTX/buddy"
-          rel="noreferrer"
-        >
-          source
-        </a>
+      <Footer
+        style={{
+          padding: "8px",
+          backgroundColor: "#e6f7ff",
+          position: "sticky",
+          bottom: 0,
+        }}
+      >
+        <FooterElements>
+          {!isMobile && (
+            <div>
+              Built with ♥ by the EdgeTX contributors -{" "}
+              <a
+                target="_blank"
+                href="https://github.com/EdgeTX/buddy"
+                rel="noreferrer"
+              >
+                source
+              </a>
+            </div>
+          )}
+          <div>
+            Donate and support EdgeTX development{" "}
+            <a
+              target="_blank"
+              href="https://opencollective.com/edgetx"
+              rel="noreferrer"
+            >
+              <ArrowRightOutlined />
+            </a>
+          </div>
+        </FooterElements>
       </Footer>
     </MainLayout>
   );

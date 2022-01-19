@@ -22,3 +22,11 @@ export const windows: React.FC = () => (
     </Layout>
   </MemoryRouter>
 );
+
+export const macOs: React.FC = () => (
+  <MemoryRouter>
+    <Layout macFrameless>
+      <div>The layout</div>
+    </Layout>
+  </MemoryRouter>
+);
