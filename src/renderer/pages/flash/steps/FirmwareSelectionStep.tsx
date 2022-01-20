@@ -219,18 +219,11 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
           </Tabs>
           <Divider className="divider" type="vertical" />
 
-          {activeTab === "releases" &&
-            (version ? (
-              <DescriptionContainer>
-                <FirmwareReleaseDescription releaseId={version} />
-              </DescriptionContainer>
-            ) : (
-              <Centered>
-                <Typography.Title level={4} type="secondary">
-                  Release notes
-                </Typography.Title>
-              </Centered>
-            ))}
+          {activeTab === "releases" && (
+            <DescriptionContainer>
+              <FirmwareReleaseDescription releaseId={version} />
+            </DescriptionContainer>
+          )}
           {activeTab === "pr" &&
             (version && isPrVersion(version) ? (
               <DescriptionContainer>
