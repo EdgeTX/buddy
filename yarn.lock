@@ -10637,6 +10637,7 @@ __metadata:
     html-webpack-plugin: ^5.5.0
     husky: ^7.0.0
     is-ci: ^3.0.1
+    is-mobile: ^3.0.0
     iso-639-1: ^2.1.11
     jest: ^27.4.3
     jest-mock: ^27.4.2
@@ -14959,6 +14960,13 @@ __metadata:
   version: 2.0.2
   resolution: "is-map@npm:2.0.2"
   checksum: ace3d0ecd667bbdefdb1852de601268f67f2db725624b1958f279316e13fecb8fa7df91fd60f690d7417b4ec180712f5a7ee967008e27c65cfd475cc84337728
+  languageName: node
+  linkType: hard
+
+"is-mobile@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "is-mobile@npm:3.0.0"
+  checksum: 523b4da1c7c9a2eacd803f979de1621675a488630d30b157d352b30e5cedabd520da8ff6b9f49a51f55881b1d04f25873a3e79ba7aa01bf00543179c8df17992
   languageName: node
   linkType: hard
 

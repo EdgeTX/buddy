@@ -107,7 +107,7 @@ const SelectSdcardScreen: React.FC = () => {
             }}
           />
           <Tooltip
-            trigger={notAvailable ? ["hover"] : []}
+            trigger={notAvailable ? ["hover", "click"] : []}
             placement="bottom"
             title="This feature is not supported by your browser"
           >

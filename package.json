@@ -61,6 +61,7 @@
     "graphql": "^16.0.1",
     "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "^2.12.6",
+    "is-mobile": "^3.0.0",
     "iso-639-1": "^2.1.11",
     "js-file-download": "^0.4.12",
     "ky": "^0.28.7",

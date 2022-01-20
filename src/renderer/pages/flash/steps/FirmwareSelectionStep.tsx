@@ -98,6 +98,25 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
     }
   }, [setActiveTab, version, activeTab]);
 
+  const firmwareUploadArea = (
+    <FirmwareUploader
+      selectedFile={version === "local" ? target : undefined}
+      onFileUploaded={(fileId) => {
+        if (fileId) {
+          updateParams({
+            target: fileId,
+            version: "local",
+          });
+        } else {
+          updateParams({
+            target: undefined,
+            version: undefined,
+          });
+        }
+      }}
+    />
+  );
+
   return (
     <FullHeight>
       <StepContentContainer>
@@ -186,7 +205,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               key="file"
             >
               <div style={{ marginTop: "16px" }}>
-                {!target && (
+                {!target && !isMobile ? (
                   <>
                     <div>
                       <Typography.Text type="secondary">
@@ -200,6 +219,8 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                       </Typography.Text>
                     </div>
                   </>
+                ) : (
+                  firmwareUploadArea
                 )}
               </div>
             </Tabs.TabPane>
@@ -246,22 +267,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   maxHeight: "600px",
                 }}
               >
-                <FirmwareUploader
-                  selectedFile={version === "local" ? target : undefined}
-                  onFileUploaded={(fileId) => {
-                    if (fileId) {
-                      updateParams({
-                        target: fileId,
-                        version: "local",
-                      });
-                    } else {
-                      updateParams({
-                        target: undefined,
-                        version: undefined,
-                      });
-                    }
-                  }}
-                />
+                {firmwareUploadArea}
               </FullHeight>
             </Centered>
           )}
@@ -272,7 +278,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
           Download .bin
         </DownloadFirmwareButton>
         <Tooltip
-          trigger={!flashingAvailable ? ["hover"] : []}
+          trigger={!flashingAvailable ? ["hover", "click"] : []}
           placement="top"
           title="Not supported by your browser"
         >
