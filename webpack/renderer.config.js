@@ -14,6 +14,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const HTMLInlineCSSWebpackPlugin =
   require("html-inline-css-webpack-plugin").default;
+const WorkboxPlugin = require("workbox-webpack-plugin");
 
 module.exports = (_, { mode }) => ({
   target: "es2020",
@@ -141,6 +142,10 @@ module.exports = (_, { mode }) => ({
     new FaviconsWebpackPlugin("./assets/icon.png"),
     new HtmlWebpackPlugin({
       template: "./src/renderer/index.html",
+    }),
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
     }),
     new HTMLInlineCSSWebpackPlugin(),
     // Only typecheck in production

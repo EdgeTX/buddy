@@ -83,7 +83,8 @@
     "use-local-storage": "^2.2.6",
     "use-media": "^1.4.0",
     "uuid": "^8.3.2",
-    "web-streams-polyfill": "^3.2.0"
+    "web-streams-polyfill": "^3.2.0",
+    "workbox-webpack-plugin": "^6.4.2"
   },
   "scripts": {
     "start": "yarn compile:main && yarn start:renderer",
