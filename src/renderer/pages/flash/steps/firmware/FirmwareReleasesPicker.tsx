@@ -62,6 +62,10 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
     (release) => !release.isPrerelease || filters.includePrereleases
   );
 
+  const isPreviewRelease = !!releasesQuery.data?.edgeTxReleases.find(
+    (release) => release.id === version
+  )?.isPrerelease;
+
   // TODO: sort releases by date, need to add date to schema
   const sortedReleases = useSorted(releases, () => 0);
   const selectedFirmware = releases?.find((release) => release.id === version);
@@ -100,9 +104,25 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   // deselect
   useEffect(() => {
     if (releases && version && !selectedFirmware) {
-      onChanged({ version: undefined, target: undefined, filters });
+      if (isPreviewRelease && !filters.includePrereleases) {
+        onChanged({
+          version,
+          target,
+          filters: { ...filters, includePrereleases: true },
+        });
+      } else {
+        onChanged({ version: undefined, target: undefined, filters });
+      }
     }
-  }, [releases, version, onChanged, selectedFirmware, filters]);
+  }, [
+    releases,
+    version,
+    onChanged,
+    selectedFirmware,
+    filters,
+    isPreviewRelease,
+    target,
+  ]);
 
   useEffect(() => {
     if (sortedReleases.length > 0 && !version && !releasesQuery.loading) {
