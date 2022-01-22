@@ -220,7 +220,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                     </div>
                   </>
                 ) : (
-                  firmwareUploadArea
+                  isMobile && firmwareUploadArea
                 )}
               </div>
             </Tabs.TabPane>
