@@ -143,7 +143,7 @@ const AppLayout: React.FC<Props> = ({
           </Menu.Item>
           {settings.expertMode && (
             <Menu.Item key="dev">
-              <Link to="/dev/flash">Dev</Link>
+              <Link to="/dev">Dev</Link>
             </Menu.Item>
           )}
         </Menu>

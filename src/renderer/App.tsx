@@ -8,6 +8,7 @@ import FlashExecution from "./components/flash/FlashExecution";
 import SdcardEditor from "./components/sdcard/SdcardEditor";
 import SelectSdcardScreen from "./components/sdcard/SelectSdcardScreen";
 import CompatNoticeHandler from "./compatibility/CompatNoticeHandler";
+import DevPage from "./components/dev/DevPage";
 
 const isMobileOs = isMobile({ tablet: true });
 
@@ -21,11 +22,7 @@ const NextGeneration: React.FC = () => (
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />
         <Route path="/flash/:jobId" element={<FlashExecution />} />
-        <Route
-          path="/dev/flash"
-          element={<FlashingWizard key="dev" type="dev" />}
-        />
-        <Route path="/dev/flash/:jobId" element={<FlashExecution />} />
+        <Route path="/dev" element={<DevPage />} />
         <Route path="/sdcard" element={<SelectSdcardScreen />} />
         <Route path="/sdcard/:directoryId" element={<SdcardEditor />} />
         <Route path="/sdcard/:directoryId/:tab" element={<SdcardEditor />} />
