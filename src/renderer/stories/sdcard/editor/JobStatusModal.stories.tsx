@@ -1,5 +1,5 @@
 import React from "react";
-import JobStatusModal from "renderer/pages/sdcard/editor/JobStatusModal";
+import JobStatusModal from "renderer/components/sdcard/editor/JobStatusModal";
 
 export default {
   title: "Sdcard/Execution/JobStatusModal",

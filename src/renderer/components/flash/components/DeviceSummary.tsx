@@ -2,7 +2,7 @@ import { UsbOutlined } from "@ant-design/icons";
 import { Skeleton, Space, Typography } from "antd";
 import React from "react";
 import { Centered } from "renderer/shared/layouts";
-import { Device } from "renderer/pages/flash/types";
+import { Device } from "renderer/components/flash/types";
 import { gql, useQuery } from "@apollo/client";
 
 const DeviceDetails: React.FC<{ device?: Device; loading?: boolean }> = ({

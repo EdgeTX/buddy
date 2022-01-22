@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import DeviceSelectionStep from "renderer/pages/flash/steps/DeviceSelectionStep";
+import DeviceSelectionStep from "renderer/components/flash/steps/DeviceSelectionStep";
 import { devicesQuery } from "renderer/stories/flashing/mocks";
 
 export default {
@@ -12,7 +12,7 @@ export default {
 export const web: React.FC = () => (
   <MemoryRouter>
     <MockedProvider mocks={[devicesQuery]}>
-      <DeviceSelectionStep variant="web" />
+      <DeviceSelectionStep wizardType="user" variant="web" />
     </MockedProvider>
   </MemoryRouter>
 );
@@ -20,7 +20,7 @@ export const web: React.FC = () => (
 export const electron: React.FC = () => (
   <MemoryRouter>
     <MockedProvider mocks={[devicesQuery]}>
-      <DeviceSelectionStep variant="electron" />
+      <DeviceSelectionStep wizardType="user" variant="electron" />
     </MockedProvider>
   </MemoryRouter>
 );
@@ -28,7 +28,7 @@ export const electron: React.FC = () => (
 export const webNoDevices: React.FC = () => (
   <MemoryRouter>
     <MockedProvider mocks={[]}>
-      <DeviceSelectionStep variant="web" />
+      <DeviceSelectionStep wizardType="user" variant="web" />
     </MockedProvider>
   </MemoryRouter>
 );
@@ -36,7 +36,7 @@ export const webNoDevices: React.FC = () => (
 export const electronNoDevices: React.FC = () => (
   <MemoryRouter>
     <MockedProvider mocks={[]}>
-      <DeviceSelectionStep variant="electron" />
+      <DeviceSelectionStep wizardType="user" variant="electron" />
     </MockedProvider>
   </MemoryRouter>
 );

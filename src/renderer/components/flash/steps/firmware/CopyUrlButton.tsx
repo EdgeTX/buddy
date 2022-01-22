@@ -8,9 +8,14 @@ import { CopyOutlined } from "@ant-design/icons";
 type Props = {
   target?: string;
   version?: string;
+  basePath?: string;
 };
 
-const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
+const CopyUrlButton: React.FC<Props> = ({
+  version,
+  target,
+  basePath = "/flash",
+}) => {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (copied) {
@@ -37,7 +42,7 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
             copy(
               `${
                 config.isElectron ? "buddy.edgetx.org" : window.location.host
-              }/#/flash?version=${version}&target=${target}`
+              }/#${basePath}?version=${version}&target=${target}`
             );
             setCopied(true);
           }

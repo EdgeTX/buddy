@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import OverviewStep from "renderer/pages/flash/steps/OverviewStep";
+import OverviewStep from "renderer/components/flash/steps/OverviewStep";
 import {
   deviceQuery,
   firmwarePrBuildInfoQuery,
@@ -18,7 +18,7 @@ export default {
 export const withReleaseFirmware: React.FC = () => (
   <MemoryRouter initialEntries={["/?version=v2.5.0&target=nv-14&deviceId=1"]}>
     <MockedProvider mocks={[firmwareReleaseInfoQuery, deviceQuery]}>
-      <OverviewStep />
+      <OverviewStep wizardType="user" />
     </MockedProvider>
   </MemoryRouter>
 );
@@ -33,7 +33,7 @@ export const withPrBuildFirmware: React.FC = () => (
     ]}
   >
     <MockedProvider mocks={[firmwarePrBuildInfoQuery, deviceQuery]}>
-      <OverviewStep />
+      <OverviewStep wizardType="user" />
     </MockedProvider>
   </MemoryRouter>
 );

@@ -32,7 +32,9 @@ const flashSteps = [
 
 type FlashStepComponent = typeof flashSteps[number]["component"];
 
-const FlashingWizard: React.FC = () => {
+const FlashingWizard: React.FC<{ type?: "user" | "dev" }> = ({
+  type = "user",
+}) => {
   const { parseParam, updateParams } = useQueryParams<"step">();
   const current = parseParam("step", Number) ?? 1;
   const isMobile = useIsMobile();
@@ -47,6 +49,7 @@ const FlashingWizard: React.FC = () => {
 
   const renderComponent = (Component: FlashStepComponent): React.ReactNode => (
     <Component
+      wizardType={type}
       onNext={() => updateParams({ step: current + 1 }, true)}
       onPrevious={() => updateParams({ step: current - 1 }, true)}
       onRestart={() => updateParams({ step: undefined }, true)}

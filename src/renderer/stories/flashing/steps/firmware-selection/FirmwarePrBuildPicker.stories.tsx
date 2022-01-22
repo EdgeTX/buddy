@@ -9,7 +9,7 @@ import {
   prDescriptionQuery,
   prsQuery,
 } from "renderer/stories/flashing/mocks";
-import FirmwarePrBuildPicker from "renderer/pages/flash/steps/firmware/FirmwarePrBuildPicker";
+import FirmwarePrBuildPicker from "renderer/components/flash/steps/firmware/FirmwarePrBuildPicker";
 import { encodePrVersion } from "shared/tools";
 import {
   examplePrCommits,

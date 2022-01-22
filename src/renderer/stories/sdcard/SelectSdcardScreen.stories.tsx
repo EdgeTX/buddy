@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Layout from "renderer/Layout";
-import SelectSdcardScreen from "renderer/pages/sdcard/SelectSdcardScreen";
+import SelectSdcardScreen from "renderer/components/sdcard/SelectSdcardScreen";
 import { pickSdcardDirectoryMutation } from "./mocks";
 
 export default {

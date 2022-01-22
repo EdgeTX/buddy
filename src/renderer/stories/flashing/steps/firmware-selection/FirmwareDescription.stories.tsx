@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import Layout from "renderer/Layout";
-import FirmwareReleaseDescription from "renderer/pages/flash/steps/firmware/FirmwareReleaseDescription";
+import FirmwareReleaseDescription from "renderer/components/flash/steps/firmware/FirmwareReleaseDescription";
 
 import { firmwareReleaseDescriptionQuery } from "renderer/stories/flashing/mocks";
 

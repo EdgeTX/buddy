@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import FlashingWizard from "renderer/pages/flash/FlashingWizard";
+import FlashingWizard from "renderer/components/flash/FlashingWizard";
 import {
   devicesQuery,
   firmwareReleaseDescriptionQuery,
@@ -35,6 +35,26 @@ export const usable: React.FC = () => (
       ]}
     >
       <FlashingWizard />
+    </MockedProvider>
+  </MemoryRouter>
+);
+
+export const devWizard: React.FC = () => (
+  <MemoryRouter>
+    <MockedProvider
+      mocks={[
+        firmwaresQuery,
+        targetsQuery,
+        firmwareReleaseDescriptionQuery,
+        prCommitBuildQuery,
+        prsQuery,
+        prDescriptionQuery,
+        prCommitsQuery,
+        devicesQuery,
+        prBuildFirmwareDataQuery,
+      ]}
+    >
+      <FlashingWizard type="dev" />
     </MockedProvider>
   </MemoryRouter>
 );

@@ -5,11 +5,11 @@ import { Card, Button, Space, Typography, message } from "antd";
 import styled from "styled-components";
 import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { StepComponent } from "renderer/pages/flash/types";
+import { StepComponent } from "renderer/components/flash/types";
 import { Centered, FullHeight } from "renderer/shared/layouts";
-import DeviceSummary from "renderer/pages/flash/components/DeviceSummary";
-import FirmwareSummary from "renderer/pages/flash/components/FirmwareSummary";
-import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
+import DeviceSummary from "renderer/components/flash/components/DeviceSummary";
+import FirmwareSummary from "renderer/components/flash/components/FirmwareSummary";
+import DownloadFirmwareButton from "renderer/components/flash/components/DownloadFirmwareButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
 
 const Container = styled.div<{ isMobile: boolean }>`
@@ -139,7 +139,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                       .then((jobCreateResult) => {
                         if (jobCreateResult.data) {
                           navigate(
-                            `/flash/${jobCreateResult.data.createFlashJob.id}`
+                            `./${jobCreateResult.data.createFlashJob.id}`
                           );
                         } else {
                           throw new Error(

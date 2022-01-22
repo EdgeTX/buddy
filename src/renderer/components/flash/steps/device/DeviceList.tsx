@@ -2,7 +2,7 @@ import { UsbOutlined } from "@ant-design/icons";
 import { List, Skeleton, Typography } from "antd";
 import React from "react";
 import { times } from "shared/tools";
-import { Device } from "renderer/pages/flash/types";
+import { Device } from "renderer/components/flash/types";
 import SelectableItemList from "renderer/components/SelectableListItem";
 
 type Props = {

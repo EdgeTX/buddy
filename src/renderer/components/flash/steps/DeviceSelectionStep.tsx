@@ -11,9 +11,9 @@ import styled from "styled-components";
 import {
   StepContentContainer,
   StepControlsContainer,
-} from "renderer/pages/flash/shared";
+} from "renderer/components/flash/shared";
 import { Centered, FullHeight } from "renderer/shared/layouts";
-import { StepComponent } from "renderer/pages/flash/types";
+import { StepComponent } from "renderer/components/flash/types";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import DeviceList from "./device/DeviceList";
 

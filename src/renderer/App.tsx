@@ -3,10 +3,10 @@ import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import config from "shared/config";
 import isMobile from "is-mobile";
 import Layout from "./Layout";
-import FlashingWizard from "./pages/flash/FlashingWizard";
-import FlashExecution from "./pages/flash/FlashExecution";
-import SdcardEditor from "./pages/sdcard/SdcardEditor";
-import SelectSdcardScreen from "./pages/sdcard/SelectSdcardScreen";
+import FlashingWizard from "./components/flash/FlashingWizard";
+import FlashExecution from "./components/flash/FlashExecution";
+import SdcardEditor from "./components/sdcard/SdcardEditor";
+import SelectSdcardScreen from "./components/sdcard/SelectSdcardScreen";
 import CompatNoticeHandler from "./compatibility/CompatNoticeHandler";
 
 const isMobileOs = isMobile({ tablet: true });
@@ -21,6 +21,11 @@ const NextGeneration: React.FC = () => (
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />
         <Route path="/flash/:jobId" element={<FlashExecution />} />
+        <Route
+          path="/dev/flash"
+          element={<FlashingWizard key="dev" type="dev" />}
+        />
+        <Route path="/dev/flash/:jobId" element={<FlashExecution />} />
         <Route path="/sdcard" element={<SelectSdcardScreen />} />
         <Route path="/sdcard/:directoryId" element={<SdcardEditor />} />
         <Route path="/sdcard/:directoryId/:tab" element={<SdcardEditor />} />

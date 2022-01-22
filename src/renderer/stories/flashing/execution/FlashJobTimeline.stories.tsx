@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import FlashJobTimeline from "renderer/pages/flash/execution/FlashJobTimeline";
+import FlashJobTimeline from "renderer/components/flash/execution/FlashJobTimeline";
 
 export default {
   title: "Flashing/Execution/FlashJobTimeline",

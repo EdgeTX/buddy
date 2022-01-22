@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { Card } from "antd";
 import React from "react";
-import DeviceSummary from "renderer/pages/flash/components/DeviceSummary";
+import DeviceSummary from "renderer/components/flash/components/DeviceSummary";
 import { Centered } from "renderer/shared/layouts";
 import { deviceQuery } from "renderer/stories/flashing/mocks";
 
