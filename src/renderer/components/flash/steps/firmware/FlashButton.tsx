@@ -8,10 +8,15 @@ const FLASHING_AVAILABLE = config.isElectron || hasUsbApi;
 
 type Props = {
   disabled?: boolean;
+  loading?: boolean;
   onClick?: () => void;
 };
 
-const FlashButton: React.FC<Props> = ({ onClick, disabled = false }) => (
+const FlashButton: React.FC<Props> = ({
+  onClick,
+  disabled = false,
+  loading = false,
+}) => (
   <Tooltip
     trigger={!FLASHING_AVAILABLE ? ["hover", "click"] : []}
     placement="top"
@@ -19,6 +24,7 @@ const FlashButton: React.FC<Props> = ({ onClick, disabled = false }) => (
   >
     <Button
       disabled={disabled || !FLASHING_AVAILABLE}
+      loading={loading}
       type="primary"
       icon={FLASHING_AVAILABLE ? <UsbOutlined /> : <WarningOutlined />}
       onClick={onClick}

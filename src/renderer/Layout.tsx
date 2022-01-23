@@ -1,7 +1,6 @@
 import React from "react";
 import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
-import useMedia from "use-media";
 import styled from "styled-components";
 import { ArrowRightOutlined, GithubOutlined } from "@ant-design/icons";
 import EdgeTxIcon from "./assets/logo.webp";
@@ -9,6 +8,7 @@ import WindowsNav from "./components/WindowsNav";
 import useIsMobile from "./hooks/useIsMobile";
 import { useSettings } from "./settings";
 import SettingsMenu from "./components/SettingsMenu";
+import useIsWide from "./hooks/useIsWide";
 
 const { Header, Content, Footer } = Layout;
 
@@ -86,7 +86,7 @@ const AppLayout: React.FC<Props> = ({
   macFrameless,
   windowsFrameless,
 }) => {
-  const isWide = useMedia({ minWidth: "1200px" });
+  const isWide = useIsWide();
   const isMobile = useIsMobile();
   const location = useLocation();
   const [settings] = useSettings();
@@ -142,8 +142,8 @@ const AppLayout: React.FC<Props> = ({
             <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
           {settings.expertMode && (
-            <Menu.Item key="dev">
-              <Link to="/dev">Dev</Link>
+            <Menu.Item key="advanced">
+              <Link to="/advanced">Advanced</Link>
             </Menu.Item>
           )}
         </Menu>

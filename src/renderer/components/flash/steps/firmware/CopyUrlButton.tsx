@@ -4,18 +4,14 @@ import config from "shared/config";
 import copy from "copy-text-to-clipboard";
 import { Button, Tooltip } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
+import { useLocation } from "react-router-dom";
 
 type Props = {
   target?: string;
   version?: string;
-  basePath?: string;
 };
 
-const CopyUrlButton: React.FC<Props> = ({
-  version,
-  target,
-  basePath = "/flash",
-}) => {
+const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (copied) {
@@ -28,6 +24,7 @@ const CopyUrlButton: React.FC<Props> = ({
 
     return undefined;
   }, [copied]);
+  const location = useLocation();
 
   return (
     <Tooltip
@@ -38,16 +35,18 @@ const CopyUrlButton: React.FC<Props> = ({
     >
       <Button
         onClick={() => {
-          if (version && target) {
+          if (version) {
             copy(
               `${
                 config.isElectron ? "buddy.edgetx.org" : window.location.host
-              }/#${basePath}?version=${version}&target=${target}`
+              }/#${location.pathname}?version=${version}${
+                target ? `&target=${target}` : ""
+              }`
             );
             setCopied(true);
           }
         }}
-        disabled={!version || !target}
+        disabled={!version}
         type="link"
         size="small"
         icon={<CopyOutlined />}

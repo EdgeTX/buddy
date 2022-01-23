@@ -1,4 +1,3 @@
-import { gql, useMutation } from "@apollo/client";
 import { Button, Divider, Result, Typography } from "antd";
 import React, { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -12,6 +11,7 @@ import {
 import { RocketTwoTone } from "@ant-design/icons";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import useFlashJobStatus from "renderer/hooks/useFlashJobStatus";
+import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
 import FlashJobTimeline from "./execution/FlashJobTimeline";
 import FirmwareSummary from "./components/FirmwareSummary";
 
@@ -55,18 +55,7 @@ const FlashExecution: React.FC = () => {
     }
   }, [jobId, loading, jobExists, error, jobCancelled, navigate]);
 
-  const [cancelJob] = useMutation(
-    gql(/* GraphQL */ `
-      mutation CancelFlashJob($jobId: ID!) {
-        cancelFlashJob(jobId: $jobId)
-      }
-    `),
-    {
-      variables: {
-        jobId: jobId ?? "",
-      },
-    }
-  );
+  const cancelJob = useCancelFlashJob();
 
   const isRunning = !!(
     jobId &&

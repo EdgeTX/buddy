@@ -54,7 +54,7 @@ export default (jobId?: string) => {
 
   useEffect(() => {
     if (jobId) {
-      subscribeToMore({
+      const unsub = subscribeToMore({
         document: gql(/* GraphQL */ `
           subscription FlashJobUpdates($jobId: ID!) {
             flashJobStatusUpdates(jobId: $jobId) {
@@ -101,12 +101,16 @@ export default (jobId?: string) => {
           },
         }),
       });
+
+      return unsub;
     }
+
+    return undefined;
   }, [jobId, subscribeToMore]);
 
-  const jobCancelled = data?.flashJobStatus?.cancelled;
-  const jobExists = data?.flashJobStatus;
-  const jobCompleted = data?.flashJobStatus?.stages.flash.completed;
+  const jobCancelled = !!data?.flashJobStatus?.cancelled;
+  const jobExists = !!data?.flashJobStatus;
+  const jobCompleted = !!data?.flashJobStatus?.stages.flash.completed;
   const jobError = Object.values(data?.flashJobStatus?.stages ?? {}).some(
     (stage) => stage && typeof stage !== "string" && stage.error
   );

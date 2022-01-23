@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import useQueryParams from "renderer/hooks/useQueryParams";
-import { gql, useMutation } from "@apollo/client";
 import { Card, Button, Space, Typography, message } from "antd";
 import styled from "styled-components";
 import { DoubleRightOutlined, PlayCircleOutlined } from "@ant-design/icons";
@@ -11,6 +10,7 @@ import DeviceSummary from "renderer/components/flash/components/DeviceSummary";
 import FirmwareSummary from "renderer/components/flash/components/FirmwareSummary";
 import DownloadFirmwareButton from "renderer/components/flash/components/DownloadFirmwareButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
+import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
 
 const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -44,15 +44,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
     }
   }, [invalidState, onRestart]);
 
-  const [createFlashJob, { loading: creatingJob }] = useMutation(
-    gql(/* GraphQL */ `
-      mutation CreateFlashJob($firmware: FlashFirmwareInput!, $deviceId: ID!) {
-        createFlashJob(firmware: $firmware, deviceId: $deviceId) {
-          id
-        }
-      }
-    `)
-  );
+  const [createFlashJob, { loading: creatingJob }] = useCreateFlashJob();
 
   if (invalidState) {
     return null;
@@ -133,21 +125,9 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                   disabled={creatingJob}
                   icon={<PlayCircleOutlined />}
                   onClick={() => {
-                    createFlashJob({
-                      variables: { firmware: { target, version }, deviceId },
-                    })
-                      .then((jobCreateResult) => {
-                        if (jobCreateResult.data) {
-                          navigate(
-                            `./${jobCreateResult.data.createFlashJob.id}`
-                          );
-                        } else {
-                          throw new Error(
-                            jobCreateResult.errors
-                              ?.map((error) => error.message)
-                              .join(",") ?? ""
-                          );
-                        }
+                    createFlashJob({ firmware: { target, version }, deviceId })
+                      .then((jobId) => {
+                        navigate(`./${jobId}`);
                       })
                       .catch((e: Error) => {
                         void message.error(
