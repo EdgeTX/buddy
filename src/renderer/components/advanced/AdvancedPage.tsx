@@ -1,6 +1,6 @@
 import { BranchesOutlined, UsbOutlined } from "@ant-design/icons";
 import { Menu } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import useIsWide from "renderer/hooks/useIsWide";
 import { FullHeight } from "renderer/shared/layouts";
@@ -14,21 +14,41 @@ const Container = styled.div`
 `;
 
 const AdvancedPage: React.FC<{ route?: string }> = ({ route = "" }) => {
+  const [openedMenus, setOpenedMenus] = useState<string[]>([]);
   const location = useLocation();
   const isWide = useIsWide();
 
   const [sub, page] = location.pathname.replace(route, "").split("/");
+
+  useEffect(() => {
+    if (sub) {
+      setOpenedMenus((existing) =>
+        existing.includes(sub) ? existing : existing.concat(sub)
+      );
+    }
+  }, [sub, setOpenedMenus]);
+
   return (
     <FullHeight>
       <Container>
         <Menu
-          onClick={() => {}}
-          style={{ maxWidth: isWide ? 300 : "min-content" }}
+          style={{ maxWidth: isWide ? 300 : 180 }}
           selectedKeys={[sub ?? "", page ?? ""]}
-          openKeys={[sub ?? ""]}
+          openKeys={openedMenus}
           mode="inline"
         >
-          <Menu.SubMenu key="flash" icon={<UsbOutlined />} title="Firmware">
+          <Menu.SubMenu
+            onTitleClick={(e) => {
+              setOpenedMenus(
+                openedMenus.includes(e.key)
+                  ? openedMenus.filter((m) => m !== e.key)
+                  : openedMenus.concat([e.key])
+              );
+            }}
+            key="flash"
+            icon={<UsbOutlined />}
+            title="Firmware"
+          >
             <Menu.Item icon={<BranchesOutlined />} key="pr">
               PR Builds
             </Menu.Item>
