@@ -5,13 +5,13 @@
  */
 import { Steps } from "antd";
 import React, { useEffect } from "react";
-import config from "shared/config";
 import { Centered } from "renderer/shared/layouts";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import DeviceSelectionStep from "./steps/DeviceSelectionStep";
 import FirmwareSelectionStep from "./steps/FirmwareSelectionStep";
 import OverviewStep from "./steps/OverviewStep";
+import { StepComponent } from "./types";
 
 const { Step } = Steps;
 
@@ -30,8 +30,6 @@ const flashSteps = [
   },
 ];
 
-type FlashStepComponent = typeof flashSteps[number]["component"];
-
 const FlashingWizard: React.FC = () => {
   const { parseParam, updateParams } = useQueryParams<"step">();
   const current = parseParam("step", Number) ?? 1;
@@ -45,12 +43,11 @@ const FlashingWizard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderComponent = (Component: FlashStepComponent): React.ReactNode => (
+  const renderComponent = (Component: StepComponent): React.ReactNode => (
     <Component
       onNext={() => updateParams({ step: current + 1 }, true)}
       onPrevious={() => updateParams({ step: current - 1 }, true)}
       onRestart={() => updateParams({ step: undefined }, true)}
-      variant={config.isElectron ? "electron" : "web"}
     />
   );
 

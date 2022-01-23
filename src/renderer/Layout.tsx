@@ -1,12 +1,14 @@
 import React from "react";
 import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
-import useMedia from "use-media";
 import styled from "styled-components";
 import { ArrowRightOutlined, GithubOutlined } from "@ant-design/icons";
 import EdgeTxIcon from "./assets/logo.webp";
 import WindowsNav from "./components/WindowsNav";
 import useIsMobile from "./hooks/useIsMobile";
+import { useSettings } from "./settings";
+import SettingsMenu from "./components/SettingsMenu";
+import useIsWide from "./hooks/useIsWide";
 
 const { Header, Content, Footer } = Layout;
 
@@ -54,6 +56,11 @@ const MenuIcons = styled.div`
   align-items: center;
   padding-right: 32px;
   line-height: normal;
+
+  > * {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 `;
 
 // TODO: use this if we want the menu labels to spill over multiple lines
@@ -79,9 +86,11 @@ const AppLayout: React.FC<Props> = ({
   macFrameless,
   windowsFrameless,
 }) => {
-  const isWide = useMedia({ minWidth: "1200px" });
+  const isWide = useIsWide();
   const isMobile = useIsMobile();
   const location = useLocation();
+  const [settings] = useSettings();
+
   return (
     <MainLayout
       style={{
@@ -132,16 +141,17 @@ const AppLayout: React.FC<Props> = ({
           <Menu.Item key="sdcard">
             <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
+          {settings.expertMode && (
+            <Menu.Item key="dev">
+              <Link to="/dev">Dev tools</Link>
+            </Menu.Item>
+          )}
         </Menu>
-        <MenuIcons>
-          <a
-            type="text"
-            target="_blank"
-            href="https://github.com/EdgeTX"
-            rel="noreferrer"
-          >
-            <GithubOutlined style={{ color: "white", fontSize: "32px" }} />
+        <MenuIcons style={{ paddingRight: windowsFrameless ? 0 : undefined }}>
+          <a target="_blank" href="https://github.com/EdgeTX" rel="noreferrer">
+            <GithubOutlined style={{ color: "white", fontSize: "16px" }} />
           </a>
+          <SettingsMenu />
         </MenuIcons>
         {windowsFrameless && <WindowsNav />}
       </DragableHeader>

@@ -1,4 +1,3 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
 import { Button, Divider, Result, Typography } from "antd";
 import React, { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -11,8 +10,10 @@ import {
 } from "renderer/shared/layouts";
 import { RocketTwoTone } from "@ant-design/icons";
 import useIsMobile from "renderer/hooks/useIsMobile";
-import FlashJobTimeline from "./execution/FlashJobTimeline";
-import FirmwareSummary from "./components/FirmwareSummary";
+import useFlashJobStatus from "renderer/hooks/useFlashJobStatus";
+import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
+import FlashJobTimeline from "renderer/components/flashing/FlashJobTimeline";
+import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 
 const Container = styled.div`
   height: 100%;
@@ -37,113 +38,15 @@ const FlashExecution: React.FC = () => {
   const isMobile = useIsMobile();
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const { data, subscribeToMore, error, loading } = useQuery(
-    gql(/* GraphQL */ `
-      query FlashJobStatus($jobId: ID!) {
-        flashJobStatus(jobId: $jobId) {
-          id
-          cancelled
-          meta {
-            firmware {
-              target
-              version
-            }
-            deviceId
-          }
-          stages {
-            connect {
-              ...FlashJobStageData
-            }
-            build {
-              ...FlashJobStageData
-            }
-            download {
-              ...FlashJobStageData
-            }
-            erase {
-              ...FlashJobStageData
-            }
-            flash {
-              ...FlashJobStageData
-            }
-          }
-        }
-      }
-
-      fragment FlashJobStageData on FlashStage {
-        started
-        completed
-        progress
-        error
-      }
-    `),
-    {
-      variables: {
-        jobId: jobId ?? "",
-      },
-      skip: !jobId,
-      fetchPolicy: "cache-and-network",
-    }
-  );
-
-  useEffect(() => {
-    if (jobId) {
-      subscribeToMore({
-        document: gql(/* GraphQL */ `
-          subscription FlashJobUpdates($jobId: ID!) {
-            flashJobStatusUpdates(jobId: $jobId) {
-              id
-              cancelled
-              stages {
-                connect {
-                  ...FlashJobStageData
-                }
-                build {
-                  ...FlashJobStageData
-                }
-                download {
-                  ...FlashJobStageData
-                }
-                erase {
-                  ...FlashJobStageData
-                }
-                flash {
-                  ...FlashJobStageData
-                }
-              }
-            }
-          }
-
-          fragment FlashJobStageData on FlashStage {
-            started
-            completed
-            progress
-            error
-          }
-        `),
-        variables: {
-          jobId,
-        },
-        onError: (subscriptionError) => {
-          console.log(subscriptionError);
-        },
-        updateQuery: (existing, { subscriptionData }) => ({
-          flashJobStatus: {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            ...existing.flashJobStatus!,
-            ...subscriptionData.data.flashJobStatusUpdates,
-          },
-        }),
-      });
-    }
-  }, [jobId, subscribeToMore]);
-
-  const jobCancelled = data?.flashJobStatus?.cancelled;
-  const jobExists = data?.flashJobStatus;
-  const jobCompleted = data?.flashJobStatus?.stages.flash.completed;
-  const jobError = Object.values(data?.flashJobStatus?.stages ?? {}).some(
-    (stage) => stage && typeof stage !== "string" && stage.error
-  );
+  const {
+    data,
+    error,
+    loading,
+    jobCancelled,
+    jobCompleted,
+    jobExists,
+    jobError,
+  } = useFlashJobStatus(jobId);
 
   useEffect(() => {
     if (!jobId || (!loading && !jobExists) || error || jobCancelled) {
@@ -152,18 +55,7 @@ const FlashExecution: React.FC = () => {
     }
   }, [jobId, loading, jobExists, error, jobCancelled, navigate]);
 
-  const [cancelJob] = useMutation(
-    gql(/* GraphQL */ `
-      mutation CancelFlashJob($jobId: ID!) {
-        cancelFlashJob(jobId: $jobId)
-      }
-    `),
-    {
-      variables: {
-        jobId: jobId ?? "",
-      },
-    }
-  );
+  const cancelJob = useCancelFlashJob(jobId);
 
   const isRunning = !!(
     jobId &&

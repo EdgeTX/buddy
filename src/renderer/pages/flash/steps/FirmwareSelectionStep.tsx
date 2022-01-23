@@ -1,21 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  Tabs,
-  Button,
-  Divider,
-  Typography,
-  Dropdown,
-  Menu,
-  Tooltip,
-} from "antd";
-import {
-  BranchesOutlined,
-  EllipsisOutlined,
-  RocketOutlined,
-  UploadOutlined,
-  UsbOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import { Tabs, Divider, Typography } from "antd";
+import { RocketOutlined, UploadOutlined } from "@ant-design/icons";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import styled from "styled-components";
 
@@ -26,17 +11,13 @@ import {
 } from "renderer/pages/flash/shared";
 import { Centered, FullHeight } from "renderer/shared/layouts";
 import useVersionFilters from "renderer/hooks/useVersionFilters";
-import { decodePrVersion, isPrVersion } from "shared/tools";
-import DownloadFirmwareButton from "renderer/pages/flash/components/DownloadFirmwareButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
-import { hasUsbApi } from "renderer/compatibility/checks";
-import config from "shared/config";
+import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
+import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
+import FlashButton from "renderer/components/flashing/FlashButton";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
-import FirmwarePrBuildPicker from "./firmware/FirmwarePrBuildPicker";
-import FirmwarePrDescription from "./firmware/FirmwarePrDescription";
-import CopyUrlButton from "./firmware/CopyUrlButton";
 
 const Container = styled.div`
   display: flex;
@@ -77,8 +58,6 @@ const DescriptionContainer = styled.div`
   height: 100%;
 `;
 
-const flashingAvailable = config.isElectron || hasUsbApi;
-
 const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
   const { parseParam, updateParams } = useQueryParams<
@@ -93,8 +72,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
       setActiveTab("file");
-    } else if (version && isPrVersion(version) && activeTab !== "pr") {
-      setActiveTab("pr");
     }
   }, [setActiveTab, version, activeTab]);
 
@@ -131,44 +108,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               });
               setActiveTab(key);
             }}
-            tabBarExtraContent={
-              !isMobile && (
-                <Dropdown
-                  placement="bottomRight"
-                  trigger={["click"]}
-                  overlay={
-                    <Menu
-                      onClick={(item) => {
-                        updateParams({
-                          version: undefined,
-                          target: undefined,
-                        });
-                        setActiveTab(item.key);
-                      }}
-                      selectedKeys={[activeTab]}
-                    >
-                      <Menu.Item key="pr" icon={<BranchesOutlined />}>
-                        PR Builds
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <Button
-                    type="text"
-                    style={
-                      ["pr"].includes(activeTab)
-                        ? {
-                            color: "var(--ant-primary-color)",
-                            borderColor: "var(--ant-primary-color)",
-                          }
-                        : undefined
-                    }
-                  >
-                    <EllipsisOutlined />
-                  </Button>
-                </Dropdown>
-              )
-            }
           >
             <Tabs.TabPane
               tab={
@@ -195,6 +134,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               <Divider />
               <CopyUrlButton target={target} version={version} />
             </Tabs.TabPane>
+            ,
             <Tabs.TabPane
               tab={
                 <span>
@@ -224,19 +164,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 )}
               </div>
             </Tabs.TabPane>
-            <Tabs.TabPane key="pr">
-              <FirmwarePrBuildPicker
-                version={version}
-                target={target}
-                onChanged={(params) => {
-                  if (activeTab === "pr") {
-                    updateParams(params);
-                  }
-                }}
-              />
-              <Divider />
-              <CopyUrlButton target={target} version={version} />
-            </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />
 
@@ -245,18 +172,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               <FirmwareReleaseDescription releaseId={version} />
             </DescriptionContainer>
           )}
-          {activeTab === "pr" &&
-            (version && isPrVersion(version) ? (
-              <DescriptionContainer>
-                <FirmwarePrDescription prId={decodePrVersion(version).prId} />
-              </DescriptionContainer>
-            ) : (
-              <Centered>
-                <Typography.Title level={4} type="secondary">
-                  Pull Request description
-                </Typography.Title>
-              </Centered>
-            ))}
           {activeTab === "file" && (
             <Centered>
               <FullHeight
@@ -277,24 +192,12 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         <DownloadFirmwareButton target={target} version={version}>
           Download .bin
         </DownloadFirmwareButton>
-        <Tooltip
-          trigger={!flashingAvailable ? ["hover", "click"] : []}
-          placement="top"
-          title="Not supported by your browser"
-        >
-          <Button
-            disabled={!target || !version || !flashingAvailable}
-            type="primary"
-            icon={flashingAvailable ? <UsbOutlined /> : <WarningOutlined />}
-            onClick={() => {
-              if (target && version) {
-                onNext?.();
-              }
-            }}
-          >
-            Flash via USB
-          </Button>
-        </Tooltip>
+        <FlashButton
+          disabled={!target || !version}
+          onClick={() => {
+            onNext?.();
+          }}
+        />
       </StepControlsContainer>
     </FullHeight>
   );

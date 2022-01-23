@@ -63,7 +63,7 @@ const JobExecutionModal: React.FC<Props> = ({
 
   useEffect(() => {
     if (jobId) {
-      subscribeToMore({
+      const unsub = subscribeToMore({
         document: gql(/* GraphQL */ `
           subscription SdcardJobUpdates($jobId: ID!) {
             sdcardWriteJobUpdates(jobId: $jobId) {
@@ -105,7 +105,11 @@ const JobExecutionModal: React.FC<Props> = ({
           sdcardWriteJobStatus: subscriptionData.data.sdcardWriteJobUpdates,
         }),
       });
+
+      return unsub;
     }
+
+    return undefined;
   }, [jobId, subscribeToMore]);
 
   const jobCancelled = data?.sdcardWriteJobStatus?.cancelled;
