@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Tabs } from "antd";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import AssetsTab from "renderer/components/sdcard/editor/AssetsTab";
+import AssetsTab from "renderer/pages/sdcard/editor/AssetsTab";
 
 export default {
   title: "Sdcard/Editor/AssetsTab",

@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Layout from "renderer/Layout";
-import SdcardEditor from "renderer/components/sdcard/SdcardEditor";
+import SdcardEditor from "renderer/pages/sdcard/SdcardEditor";
 import {
   sdcardAssetInfoQuery,
   sdcardInfoQuery,

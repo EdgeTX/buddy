@@ -142,8 +142,8 @@ const AppLayout: React.FC<Props> = ({
             <Link to="/sdcard">SD Card content</Link>
           </Menu.Item>
           {settings.expertMode && (
-            <Menu.Item key="advanced">
-              <Link to="/advanced">Advanced</Link>
+            <Menu.Item key="dev">
+              <Link to="/dev">Dev tools</Link>
             </Menu.Item>
           )}
         </Menu>
