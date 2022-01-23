@@ -6,7 +6,6 @@ import { ApolloProvider } from "@apollo/client";
 import { ConfigProvider, message } from "antd";
 import client from "./gql/client";
 import App from "./App";
-import { LocalStorageSettingsProvider } from "./settings";
 
 message.config({
   top: 64,
@@ -15,11 +14,9 @@ message.config({
 ReactDOM.render(
   <React.StrictMode>
     <ConfigProvider>
-      <LocalStorageSettingsProvider>
-        <ApolloProvider client={client}>
-          <App />
-        </ApolloProvider>
-      </LocalStorageSettingsProvider>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
     </ConfigProvider>
   </React.StrictMode>,
   document.getElementById("root")

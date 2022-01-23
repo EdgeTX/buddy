@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom";
+import "jest-styled-components";
 import dotenv from "dotenv";
 import { jest, beforeEach } from "@jest/globals";
 import nock from "nock";
@@ -18,6 +20,15 @@ dotenv.config();
 jest.mock("dfu", () => ({
   WebDFU: () => {},
 }));
+
+jest.mock("styled-components", () => {
+  const actual = jest.requireActual(
+    "styled-components"
+  ) as typeof import("styled-components");
+  const styled = actual.default;
+
+  return Object.assign(styled, actual);
+});
 
 // @ts-expect-error Oh well
 navigator.usb = {

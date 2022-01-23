@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Markdown /> should return the given markdown string as html 1`] = `
+<DocumentFragment>
+  <div>
+    <h1
+      class="ant-typography"
+    >
+      This is my markdown
+    </h1>
+    <ul>
+      <li>
+        <article
+          class="ant-typography"
+        >
+          A bullet point
+        </article>
+      </li>
+    </ul>
+    <p>
+      A paragraphy
+    </p>
+    <p>
+      <a
+        class="ant-typography"
+        href="https://google.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        A link
+      </a>
+    </p>
+  </div>
+</DocumentFragment>
+`;

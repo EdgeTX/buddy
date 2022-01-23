@@ -9,7 +9,7 @@ module.exports = {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   clearMocks: true,
-  setupFilesAfterEnv: ["./.jest/setupAfterEnv.ts"],
+  setupFilesAfterEnv: ["./.jest/setupAfterEnv.ts", "jest-localstorage-mock"],
   testPathIgnorePatterns: [
     "/node_modules/",
     "/dist/",

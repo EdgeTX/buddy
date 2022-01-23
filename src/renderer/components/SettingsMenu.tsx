@@ -3,6 +3,10 @@ import { CodeOutlined, SettingOutlined } from "@ant-design/icons";
 import React from "react";
 import { useSettings } from "renderer/settings";
 
+const options = [
+  { key: "expertMode", icon: <CodeOutlined />, text: "Expert mode" },
+] as const;
+
 const SettingsMenu: React.FC = () => {
   const [settings, setSettings] = useSettings();
 
@@ -13,18 +17,25 @@ const SettingsMenu: React.FC = () => {
       arrow
       overlay={
         <Menu>
-          <Menu.Item icon={<CodeOutlined />}>
-            <Checkbox
-              checked={settings.expertMode}
-              onChange={(e) => setSettings({ expertMode: e.target.checked })}
-            >
-              Expert mode
-            </Checkbox>
-          </Menu.Item>
+          {options.map((option) => (
+            <Menu.Item key={option.key} icon={option.icon}>
+              <Checkbox
+                checked={settings[option.key]}
+                onChange={(e) =>
+                  setSettings({ [option.key]: e.target.checked })
+                }
+              >
+                {option.text}
+              </Checkbox>
+            </Menu.Item>
+          ))}
         </Menu>
       }
     >
-      <SettingOutlined style={{ fontSize: "16px", color: "white" }} />
+      <SettingOutlined
+        style={{ fontSize: "16px", color: "white" }}
+        title="settings"
+      />
     </Dropdown>
   );
 };

@@ -57,17 +57,24 @@ const WindowsNav: React.FC = () => (
   <Buttons>
     <Button
       className="min-button"
+      title="Window minimize"
       onClick={() => {
         window.electronMinimize?.();
       }}
     >
       &#xE921;
     </Button>
-    <Button className="max-button" style={{ opacity: 0.5 }}>
+    <Button
+      className="max-button"
+      title="Window maximize"
+      aria-disabled="true"
+      style={{ opacity: 0.5 }}
+    >
       &#xE922;
     </Button>
     <Button
       className="close-button"
+      title="Window close"
       onClick={() => {
         window.electronClose?.();
       }}

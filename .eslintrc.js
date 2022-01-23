@@ -9,6 +9,7 @@ module.exports = {
     "functional",
     "jest",
     "file-progress",
+    "testing-library",
   ],
   extends: [
     "airbnb",
@@ -107,6 +108,10 @@ module.exports = {
       rules: {
         "import/prefer-default-export": "error",
       },
+    },
+    {
+      files: ["src/renderer/**/*.spec.tsx"],
+      extends: ["plugin:testing-library/react"],
     },
     {
       files: [
