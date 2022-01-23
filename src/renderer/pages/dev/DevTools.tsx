@@ -37,7 +37,7 @@ const DevTools: React.FC<{ route?: string }> = ({ route = "" }) => {
     <FullHeight>
       <Container>
         <Menu
-          style={{ maxWidth: isWide ? 300 : 180 }}
+          style={{ maxWidth: isWide ? 300 : 150 }}
           selectedKeys={[sub ?? "", page ?? ""]}
           openKeys={openedMenus}
           mode="inline"
