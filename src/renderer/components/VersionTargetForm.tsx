@@ -16,7 +16,7 @@ type FormItem = {
 };
 
 type Props = {
-  onChanged: (values: {
+  onChanged?: (values: {
     target?: string;
     version?: string;
     filters: VersionFilters;
@@ -37,7 +37,7 @@ const VersionTargetForm: React.FC<Props> = ({
   <Form
     layout="vertical"
     onValuesChange={(_, values) =>
-      onChanged({ ...values, filters } as Parameters<typeof onChanged>[0])
+      onChanged?.({ ...values, filters } as Parameters<typeof onChanged>[0])
     }
     fields={Object.entries({
       target: targets.selectedId,
@@ -64,7 +64,7 @@ const VersionTargetForm: React.FC<Props> = ({
             <VersionFiltersDropdown
               filters={filters}
               onChange={(newFilters) => {
-                onChanged({
+                onChanged?.({
                   version: versions.selectedId,
                   target: targets.selectedId,
                   filters: newFilters,

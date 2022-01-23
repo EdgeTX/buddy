@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+
 declare module "native-file-system-adapter/src/getOriginPrivateDirectory" {
   export default function getOriginPrivateDirectory(
     driver?: object | undefined,
@@ -46,4 +47,10 @@ declare module "@jest/globals" {
   export declare const beforeEach: Global.GlobalAdditions["beforeEach"];
   export declare const afterEach: Global.GlobalAdditions["afterEach"];
   export declare const afterAll: Global.GlobalAdditions["afterAll"];
+}
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+declare interface Window {
+  ipcRenderer?: typeof import("electron")["ipcRenderer"];
+  electronMinimize?: () => void;
+  electronClose?: () => void;
 }

@@ -20,5 +20,6 @@
     "types": ["wicg-file-system-access", "w3c-web-usb", "node"],
     "baseUrl": "./src"
   },
-  "include": ["src", "./.jest"]
+  "include": ["./src", "./.jest"],
+  "exclude": ["**/node_modules", "build"]
 }
