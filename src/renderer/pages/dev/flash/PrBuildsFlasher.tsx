@@ -30,7 +30,6 @@ const PrOptionsContainer = styled.div`
 `;
 
 const Controls = styled.div`
-  padding-top: 32px;
   display: flex;
   justify-content: center;
 `;

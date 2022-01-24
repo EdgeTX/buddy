@@ -14,7 +14,6 @@ const Container = styled.div`
 
   .dev-tools-page {
     flex: 1;
-    padding: 16px;
   }
 `;
 
