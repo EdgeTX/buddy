@@ -27,7 +27,7 @@
 
 ## Development
 
-### Prerequisits
+### Prerequisites
 
 This application uses `node-usb` when running in electron. In order to compile the bindings
 some build libraries are required depending on platform. For MacOS and Windows, these should
@@ -36,12 +36,22 @@ already be built in.
 Linux
 
 ```bash
-$ sudo apt-get install build-essentials libudev-dev
+$ sudo apt-get install build-essential libudev-dev
 ```
 
 This software is designed to run on `node@16` which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
 
 ### Commands
+
+Enable or install yarn package manager
+
+```bash
+# For Node.js <16.10
+$ npm i -g corepack
+
+# For Node.js >=16.10
+$ corepack enable
+```
 
 Install deps
 
