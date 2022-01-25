@@ -1,11 +1,3 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  jest,
-} from "@jest/globals";
 import gql from "graphql-tag";
 import { MockedFunction } from "jest-mock";
 import nock from "nock";

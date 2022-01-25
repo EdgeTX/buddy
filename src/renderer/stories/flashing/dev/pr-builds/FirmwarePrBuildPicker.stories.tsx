@@ -8,7 +8,7 @@ import {
   prCommitsQuery,
   prDescriptionQuery,
   prsQuery,
-} from "renderer/stories/flashing/mocks";
+} from "test-utils/mocks";
 import FirmwarePrBuildPicker from "renderer/pages/dev/flash/components/FirmwarePrBuildPicker";
 import { encodePrVersion } from "shared/tools";
 import {

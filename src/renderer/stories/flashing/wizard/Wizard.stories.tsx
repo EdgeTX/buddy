@@ -7,7 +7,7 @@ import {
   firmwareReleaseDescriptionQuery,
   firmwaresQuery,
   targetsQuery,
-} from "renderer/stories/flashing/mocks";
+} from "test-utils/mocks";
 
 export default {
   title: "Flashing/wizard/Wizard",
@@ -21,7 +21,7 @@ export const usable: React.FC = () => (
         firmwaresQuery,
         targetsQuery,
         firmwareReleaseDescriptionQuery,
-        devicesQuery,
+        devicesQuery(),
       ]}
     >
       <FlashingWizard />

@@ -3,7 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import FirmwareReleasesPicker from "renderer/pages/flash/steps/firmware/FirmwareReleasesPicker";
 import { action } from "@storybook/addon-actions";
 import { exampleReleasesList, exampleTargetsList } from "test-utils/data";
-import { firmwaresQuery, targetsQuery } from "renderer/stories/flashing/mocks";
+import { firmwaresQuery, targetsQuery } from "test-utils/mocks";
 
 export default {
   title: "Flashing/wizard/steps/Firmware Selection/FirmwareReleasesPicker",

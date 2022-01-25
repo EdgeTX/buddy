@@ -1,4 +1,3 @@
-import { describe, jest } from "@jest/globals";
 import React from "react";
 import { render } from "test-utils/testing-library";
 import WindowsNav from "renderer/components/WindowsNav";

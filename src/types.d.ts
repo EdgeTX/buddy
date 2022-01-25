@@ -26,28 +26,6 @@ declare module "*.worker.ts" {
 
 declare module "*.webp";
 
-declare module "@jest/globals" {
-  import "@types/jest";
-  import "@testing-library/jest-dom";
-
-  import type { Jest } from "@jest/environment";
-  import type { Global } from "@jest/types";
-
-  export declare const jest: Jest;
-  export { expect };
-  export declare const it: Global.GlobalAdditions["it"];
-  export declare const test: Global.GlobalAdditions["test"];
-  export declare const fit: Global.GlobalAdditions["fit"];
-  export declare const xit: Global.GlobalAdditions["xit"];
-  export declare const xtest: Global.GlobalAdditions["xtest"];
-  export declare const describe: Global.GlobalAdditions["describe"];
-  export declare const xdescribe: Global.GlobalAdditions["xdescribe"];
-  export declare const fdescribe: Global.GlobalAdditions["fdescribe"];
-  export declare const beforeAll: Global.GlobalAdditions["beforeAll"];
-  export declare const beforeEach: Global.GlobalAdditions["beforeEach"];
-  export declare const afterEach: Global.GlobalAdditions["afterEach"];
-  export declare const afterAll: Global.GlobalAdditions["afterAll"];
-}
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 declare interface Window {
   ipcRenderer?: typeof import("electron")["ipcRenderer"];

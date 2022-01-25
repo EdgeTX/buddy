@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import Layout from "renderer/Layout";
 import FirmwareReleaseDescription from "renderer/pages/flash/steps/firmware/FirmwareReleaseDescription";
 
-import { firmwareReleaseDescriptionQuery } from "renderer/stories/flashing/mocks";
+import { firmwareReleaseDescriptionQuery } from "test-utils/mocks";
 
 export default {
   title: "Flashing/wizard/steps/Firmware Selection/FirmwareReleaseDescription",

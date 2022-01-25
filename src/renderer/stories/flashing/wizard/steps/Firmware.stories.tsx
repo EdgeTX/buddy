@@ -11,7 +11,7 @@ import {
   prDescriptionQuery,
   prCommitsQuery,
   prBuildFirmwareDataQuery,
-} from "renderer/stories/flashing/mocks";
+} from "test-utils/mocks";
 
 export default {
   title: "Flashing/wizard/Steps/FirmwareSelectionStep",

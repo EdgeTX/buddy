@@ -259,7 +259,10 @@ export const prDescriptionQuery: MockedResponse = {
   },
 };
 
-export const devicesQuery: MockedResponse = {
+export const devicesQuery = (
+  delay = 2000,
+  devices = exampleDevices
+): MockedResponse => ({
   request: {
     query: gql`
       query Devices {
@@ -273,13 +276,13 @@ export const devicesQuery: MockedResponse = {
       }
     `,
   },
-  delay: 2000,
+  delay,
   result: {
     data: {
-      flashableDevices: exampleDevices,
+      flashableDevices: devices,
     },
   },
-};
+});
 
 export const deviceQuery: MockedResponse = {
   request: {

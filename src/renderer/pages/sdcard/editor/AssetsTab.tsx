@@ -309,7 +309,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
                         />
                       ) : (
                         <SelectableListItem
-                          selected={
+                          aria-selected={
                             !!selectedSounds && item.id === selectedSounds.id
                           }
                           style={{ textAlign: "center" }}

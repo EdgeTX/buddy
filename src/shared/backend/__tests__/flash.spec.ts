@@ -1,4 +1,3 @@
-import { afterAll, describe, expect, it, jest } from "@jest/globals";
 import gql from "graphql-tag";
 import { createExecutor } from "test-utils/backend";
 import { MockedFunction } from "jest-mock";

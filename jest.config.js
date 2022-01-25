@@ -1,5 +1,6 @@
 module.exports = {
-  preset: "ts-jest/presets/default-esm", // or other ESM presets
+  preset: "ts-jest/presets/js-with-ts-esm", // or other ESM presets
+  resolver: "./.jest/esmHackResolver",
   globals: {
     "ts-jest": {
       useESM: true,
@@ -39,6 +40,11 @@ module.exports = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   moduleDirectories: ["node_modules", "src"],
+  transformIgnorePatterns: [
+    // Jest ESM bug https://github.com/apollographql/apollo-client/issues/9156
+    // Doesn't play well with these packages so they need to be compiled
+    "<rootDir>/node_modules/(?!(ts-invariant/process|tslib))",
+  ],
   transform: {
     "^.+\\.worker.tsx?$": "workerloader-jest-transformer",
   },

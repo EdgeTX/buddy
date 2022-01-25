@@ -43,7 +43,8 @@ const DeviceList: React.FC<Props> = ({
       renderItem={(device) => (
         <Skeleton loading={!!loading} active avatar paragraph={{ rows: 1 }}>
           <SelectableItemList
-            selected={device.id === selectedDeviceId}
+            role="row"
+            aria-selected={device.id === selectedDeviceId}
             key={device.id}
             onClick={() => {
               onSelected?.(device.id);

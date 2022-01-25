@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it } from "@jest/globals";
 import { fireEvent, screen } from "@testing-library/react";
 import React from "react";
 import SettingsMenu from "renderer/components/SettingsMenu";

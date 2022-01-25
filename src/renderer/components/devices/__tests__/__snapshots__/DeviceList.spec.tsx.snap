@@ -1,0 +1,245 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<DeviceList /> should render a device as selected 1`] = `
+.c0 {
+  background-color: var(--ant-primary-1);
+}
+
+.c0:hover {
+  cursor: pointer;
+  background-color: var(--ant-primary-1);
+}
+
+<li
+  aria-selected="true"
+  class="ant-list-item c0"
+  role="row"
+>
+  <div
+    class="ant-list-item-meta"
+  >
+    <div
+      class="ant-list-item-meta-avatar"
+    >
+      <span
+        aria-label="usb"
+        class="anticon anticon-usb"
+        role="img"
+        style="font-size: 24px;"
+      >
+        <svg
+          aria-hidden="true"
+          data-icon="usb"
+          fill="currentColor"
+          focusable="false"
+          height="1em"
+          viewBox="64 64 896 896"
+          width="1em"
+        >
+          <path
+            d="M760 432V144c0-17.7-14.3-32-32-32H296c-17.7 0-32 14.3-32 32v288c-66.2 0-120 52.1-120 116v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-24.3 21.6-44 48.1-44h495.8c26.5 0 48.1 19.7 48.1 44v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-63.9-53.8-116-120-116zm-424 0V184h352v248H336zm120-184h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm160 0h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8z"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="ant-list-item-meta-content"
+    >
+      <h4
+        class="ant-list-item-meta-title"
+      >
+        <span
+          class="ant-typography"
+        >
+          STEM32 Bootloader
+        </span>
+      </h4>
+      <div
+        class="ant-list-item-meta-description"
+      >
+        375897983475
+      </div>
+    </div>
+  </div>
+  <ul
+    class="ant-list-item-action"
+  >
+    <li>
+      <span
+        class="ant-typography ant-typography-secondary"
+      >
+        0x3453
+        :
+        0x4358
+      </span>
+    </li>
+  </ul>
+</li>
+`;
+
+exports[`<DeviceList /> should render a device details 1`] = `
+.c0:hover {
+  cursor: pointer;
+  background-color: var(--ant-primary-1);
+}
+
+<li
+  aria-selected="false"
+  class="ant-list-item c0"
+  role="row"
+>
+  <div
+    class="ant-list-item-meta"
+  >
+    <div
+      class="ant-list-item-meta-avatar"
+    >
+      <span
+        aria-label="usb"
+        class="anticon anticon-usb"
+        role="img"
+        style="font-size: 24px;"
+      >
+        <svg
+          aria-hidden="true"
+          data-icon="usb"
+          fill="currentColor"
+          focusable="false"
+          height="1em"
+          viewBox="64 64 896 896"
+          width="1em"
+        >
+          <path
+            d="M760 432V144c0-17.7-14.3-32-32-32H296c-17.7 0-32 14.3-32 32v288c-66.2 0-120 52.1-120 116v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-24.3 21.6-44 48.1-44h495.8c26.5 0 48.1 19.7 48.1 44v356c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V548c0-63.9-53.8-116-120-116zm-424 0V184h352v248H336zm120-184h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm160 0h-48c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8z"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="ant-list-item-meta-content"
+    >
+      <h4
+        class="ant-list-item-meta-title"
+      >
+        <span
+          class="ant-typography"
+        >
+          STEM32 Bootloader
+        </span>
+      </h4>
+      <div
+        class="ant-list-item-meta-description"
+      >
+        375897983475
+      </div>
+    </div>
+  </div>
+  <ul
+    class="ant-list-item-action"
+  >
+    <li>
+      <span
+        class="ant-typography ant-typography-secondary"
+      >
+        0x3453
+        :
+        0x4358
+      </span>
+    </li>
+  </ul>
+</li>
+`;
+
+exports[`<DeviceList /> should render loading when device list is loading 1`] = `
+<DocumentFragment>
+  <div
+    class="ant-list ant-list-lg ant-list-split"
+    style="height: 100%; min-width: 350px;"
+  >
+    <div
+      class="ant-spin-nested-loading"
+    >
+      <div
+        class="ant-spin-container"
+      >
+        <ul
+          class="ant-list-items"
+        >
+          <div
+            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active"
+          >
+            <div
+              class="ant-skeleton-header"
+            >
+              <span
+                class="ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-circle"
+              />
+            </div>
+            <div
+              class="ant-skeleton-content"
+            >
+              <h3
+                class="ant-skeleton-title"
+                style="width: 50%;"
+              />
+              <ul
+                class="ant-skeleton-paragraph"
+              >
+                <li />
+              </ul>
+            </div>
+          </div>
+          <div
+            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active"
+          >
+            <div
+              class="ant-skeleton-header"
+            >
+              <span
+                class="ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-circle"
+              />
+            </div>
+            <div
+              class="ant-skeleton-content"
+            >
+              <h3
+                class="ant-skeleton-title"
+                style="width: 50%;"
+              />
+              <ul
+                class="ant-skeleton-paragraph"
+              >
+                <li />
+              </ul>
+            </div>
+          </div>
+          <div
+            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active"
+          >
+            <div
+              class="ant-skeleton-header"
+            >
+              <span
+                class="ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-circle"
+              />
+            </div>
+            <div
+              class="ant-skeleton-content"
+            >
+              <h3
+                class="ant-skeleton-title"
+                style="width: 50%;"
+              />
+              <ul
+                class="ant-skeleton-paragraph"
+              >
+                <li />
+              </ul>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

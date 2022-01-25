@@ -1,4 +1,3 @@
-import { describe, it, expect } from "@jest/globals";
 import React from "react";
 import { render } from "test-utils/testing-library";
 import Markdown from "renderer/components/Markdown";

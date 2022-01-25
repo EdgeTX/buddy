@@ -2,10 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import FlashExecution from "renderer/pages/flash/FlashExecution";
-import {
-  flashJobQuery,
-  firmwareReleaseInfoQuery,
-} from "renderer/stories/flashing/mocks";
+import { flashJobQuery, firmwareReleaseInfoQuery } from "test-utils/mocks";
 
 export default {
   title: "Flashing/wizard/FlashExecution",

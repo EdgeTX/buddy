@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import "jest-styled-components";
 import dotenv from "dotenv";
-import { jest, beforeEach } from "@jest/globals";
+import { jest } from "@jest/globals";
 import nock from "nock";
 import isCI from "is-ci";
 import { dirname } from "path";
@@ -28,6 +28,13 @@ jest.mock("styled-components", () => {
   const styled = actual.default;
 
   return Object.assign(styled, actual);
+});
+
+jest.mock("use-media", () => {
+  const actual = jest.requireActual("use-media") as typeof import("use-media");
+  const useMedia = actual.default;
+
+  return Object.assign(useMedia, actual);
 });
 
 Object.defineProperty(window, "matchMedia", {
@@ -57,3 +64,7 @@ nock.back.fixtures = `${dirname(
 beforeEach(() => {
   nock.back.setMode(isCI ? "lockdown" : "record");
 });
+
+// For ESM, jest isn't available globally, so let's set it
+// @ts-expect-error
+globalThis.jest = jest;

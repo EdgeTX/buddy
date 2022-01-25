@@ -6,7 +6,7 @@ import {
   deviceQuery,
   firmwarePrBuildInfoQuery,
   firmwareReleaseInfoQuery,
-} from "renderer/stories/flashing/mocks";
+} from "test-utils/mocks";
 import { encodePrVersion } from "shared/tools";
 import { examplePrs } from "test-utils/data";
 

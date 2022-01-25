@@ -7,7 +7,7 @@ import {
   prCommitBuildQuery,
   prCommitsQuery,
   prsQuery,
-} from "renderer/stories/flashing/mocks";
+} from "test-utils/mocks";
 
 export default {
   title: "Flashing/dev/PR Builds/PrBuildsFlasher",
@@ -17,7 +17,7 @@ export default {
 export const usable: React.FC = () => (
   <MemoryRouter>
     <MockedProvider
-      mocks={[prsQuery, prCommitsQuery, prCommitBuildQuery, devicesQuery]}
+      mocks={[prsQuery, prCommitsQuery, prCommitBuildQuery, devicesQuery()]}
     >
       <PrBuildsFlasher />
     </MockedProvider>

@@ -3,7 +3,7 @@ import { Card } from "antd";
 import React from "react";
 import DeviceSummary from "renderer/components/devices/DeviceSummary";
 import { Centered } from "renderer/shared/layouts";
-import { deviceQuery } from "renderer/stories/flashing/mocks";
+import { deviceQuery } from "test-utils/mocks";
 
 export default {
   title: "Flashing/components/DeviceSummary",

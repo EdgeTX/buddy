@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "test-utils/testing-library";
 import VersionTargetForm from "renderer/components/VersionTargetForm";
 import { fireEvent, screen } from "@testing-library/react";
-import { jest } from "@jest/globals";
+
 import snapshotDiff from "snapshot-diff";
 
 const onChanged = jest.fn();

@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import DeviceSelector from "renderer/components/devices/DeviceSelector";
-import { devicesQuery } from "renderer/stories/flashing/mocks";
+import { devicesQuery } from "test-utils/mocks";
 
 export default {
   title: "Flashing/components/DeviceSelector",
