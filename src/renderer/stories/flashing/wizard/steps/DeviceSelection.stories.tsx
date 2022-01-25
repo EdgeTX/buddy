@@ -11,7 +11,7 @@ export default {
 
 export const devices: React.FC = () => (
   <MemoryRouter>
-    <MockedProvider mocks={[devicesQuery]}>
+    <MockedProvider mocks={[devicesQuery()]}>
       <DeviceSelectionStep />
     </MockedProvider>
   </MemoryRouter>

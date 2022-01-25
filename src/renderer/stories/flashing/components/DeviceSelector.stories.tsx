@@ -11,7 +11,7 @@ export default {
 
 export const web: React.FC = () => (
   <MemoryRouter>
-    <MockedProvider mocks={[devicesQuery]}>
+    <MockedProvider mocks={[devicesQuery()]}>
       <DeviceSelector variant="web" />
     </MockedProvider>
   </MemoryRouter>
@@ -19,7 +19,7 @@ export const web: React.FC = () => (
 
 export const electron: React.FC = () => (
   <MemoryRouter>
-    <MockedProvider mocks={[devicesQuery]}>
+    <MockedProvider mocks={[devicesQuery()]}>
       <DeviceSelector variant="electron" />
     </MockedProvider>
   </MemoryRouter>
