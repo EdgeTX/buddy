@@ -115,12 +115,12 @@ describe("Query", () => {
               "name": "Jumper T-Lite",
             },
             Object {
-              "id": "t12",
-              "name": "Jumper T12",
+              "id": "tpro",
+              "name": "Jumper T-Pro",
             },
             Object {
-              "id": "t8",
-              "name": "Jumper T8",
+              "id": "t12",
+              "name": "Jumper T12",
             },
             Object {
               "id": "x7",
@@ -147,8 +147,16 @@ describe("Query", () => {
               "name": "Frsky X9 Lite S",
             },
             Object {
+              "id": "t8",
+              "name": "RadioMaster T8",
+            },
+            Object {
               "id": "tx12",
               "name": "Radiomaster TX12",
+            },
+            Object {
+              "id": "zorro",
+              "name": "RadioMaster Zorro",
             },
             Object {
               "id": "x9d",

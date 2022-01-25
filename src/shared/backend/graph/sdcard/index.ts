@@ -29,10 +29,10 @@ const targetsToAssets = [
   { name: "Frsky X-Lite S", asset: "taranis-x7.zip", id: "xlites" },
   { name: "Frsky X9 Lite", asset: "taranis-x7.zip", id: "x9lite" },
   { name: "Frsky X9 Lite S", asset: "taranis-x7.zip", id: "x9lites" },
-  { name: "RadioMaster T8", asset: "taranis-x7.zip", id: "t8" },  
+  { name: "RadioMaster T8", asset: "taranis-x7.zip", id: "t8" },
   { name: "Radiomaster TX12", asset: "taranis-x7.zip", id: "tx12" },
   { name: "Radiomaster TX16s", asset: "horus.zip", id: "tx16s" },
-  { name: "RadioMaster Zorro", asset: "taranis-x7.zip", id: "zorro" },  
+  { name: "RadioMaster Zorro", asset: "taranis-x7.zip", id: "zorro" },
 ];
 
 const EXPECTED_ROOT_ENTRIES = [
