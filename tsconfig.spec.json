@@ -3,5 +3,10 @@
   "compilerOptions": {
     "allowJs": true
   },
-  "include": ["./src/**/*.spec.tsx", "./src/**/*.spec.ts", "./src/types.d.ts"]
+  "include": [
+    "./src/**/*.spec.tsx",
+    "./src/**/*.spec.ts",
+    "./src/types.d.ts",
+    "./src/renderer/__generated__"
+  ]
 }
