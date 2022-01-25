@@ -15,8 +15,8 @@ const targetsToAssets = [
   { name: "Jumper T16", asset: "horus.zip", id: "t16" },
   { name: "Jumper T18", asset: "horus.zip", id: "t18" },
   { name: "Jumper T-Lite", asset: "taranis-x7.zip", id: "tlite" },
+  { name: "Jumper T-Pro", asset: "taranis-x7.zip", id: "tpro" },
   { name: "Jumper T12", asset: "taranis-x7.zip", id: "t12" },
-  { name: "Jumper T8", asset: "taranis-x7.zip", id: "t8" },
   { name: "Frsky Horus X10", asset: "horus.zip", id: "x10" },
   { name: "Frsky Horus X10 Access", asset: "horus.zip", id: "x10-access" },
   { name: "Frsky Horus X12s", asset: "horus.zip", id: "x12s" },
@@ -29,8 +29,10 @@ const targetsToAssets = [
   { name: "Frsky X-Lite S", asset: "taranis-x7.zip", id: "xlites" },
   { name: "Frsky X9 Lite", asset: "taranis-x7.zip", id: "x9lite" },
   { name: "Frsky X9 Lite S", asset: "taranis-x7.zip", id: "x9lites" },
+  { name: "RadioMaster T8", asset: "taranis-x7.zip", id: "t8" },  
   { name: "Radiomaster TX12", asset: "taranis-x7.zip", id: "tx12" },
   { name: "Radiomaster TX16s", asset: "horus.zip", id: "tx16s" },
+  { name: "RadioMaster Zorro", asset: "taranis-x7.zip", id: "zorro" },  
 ];
 
 const EXPECTED_ROOT_ENTRIES = [
