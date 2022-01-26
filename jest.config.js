@@ -1,13 +1,13 @@
+const { convertTsConfig } = require("tsconfig-to-swcconfig");
+const tsconfig = require("./tsconfig.spec.json");
+const swcConfig = convertTsConfig({
+  ...tsconfig.compilerOptions,
+  target: "es2022",
+});
+
 module.exports = {
-  preset: "ts-jest/presets/js-with-ts-esm", // or other ESM presets
+  // preset: "ts-jest/presets/js-with-ts-esm", // or other ESM presets
   resolver: "./.jest/esmHackResolver",
-  globals: {
-    "ts-jest": {
-      useESM: true,
-      isolatedModules: true,
-      tsconfig: "./tsconfig.spec.json",
-    },
-  },
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
@@ -46,6 +46,17 @@ module.exports = {
     "<rootDir>/node_modules/(?!(ts-invariant/process|tslib))",
   ],
   transform: {
-    "^.+\\.worker.tsx?$": "workerloader-jest-transformer",
+    "^.+\\.worker.tsx?$": [
+      "jest-chain-transform",
+      {
+        transformers: [
+          ["@swc/jest", swcConfig],
+          [require.resolve("./.jest/workerTransform")],
+        ],
+      },
+    ],
+    "^.+\\.(t|j)sx?$": ["@swc/jest", swcConfig],
   },
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  maxWorkers: 4,
 };
