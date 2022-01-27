@@ -29,6 +29,20 @@ describe("CopyUrlButton", () => {
     );
   });
 
+  it("should copy the url to the firmware version configuration", () => {
+    render(
+      <MemoryRouter initialEntries={["/current-page"]} initialIndex={0}>
+        <CopyUrlButton version="v2.7.0" />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText("Copy URL"));
+
+    expect(copyMock).toHaveBeenCalledWith(
+      "localhost/#/current-page?version=v2.7.0"
+    );
+  });
+
   it("should show a tooltip for 2 seconds when the url is copied", async () => {
     jest.useFakeTimers("modern");
 
@@ -63,5 +77,17 @@ describe("CopyUrlButton", () => {
     });
 
     expect(tooltipContainer).toHaveClass("ant-tooltip-hidden");
+  });
+
+  it("should be disabled when target and firmware not given", () => {
+    render(
+      <MemoryRouter initialEntries={["/current-page"]} initialIndex={0}>
+        <CopyUrlButton />
+      </MemoryRouter>
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access
+    const button = screen.getByText("Copy URL").parentElement;
+    expect(button).toBeDisabled();
   });
 });

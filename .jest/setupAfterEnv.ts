@@ -55,6 +55,8 @@ jest.unstable_mockModule("copy-text-to-clipboard", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("js-file-download", () => jest.fn());
+
 // @ts-expect-error Oh well
 navigator.usb = {
   requestDevice: () => {},
