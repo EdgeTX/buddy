@@ -42,7 +42,7 @@ module.exports = {
   transformIgnorePatterns: [
     // Jest ESM bug https://github.com/apollographql/apollo-client/issues/9156
     // Doesn't play well with these packages so they need to be compiled
-    "<rootDir>/node_modules/(?!(ts-invariant/process|tslib))",
+    "<rootDir>/node_modules/(?!(ts-invariant/process|tslib|react-router-dom))",
   ],
   transform: {
     "^.+\\.worker.tsx?$": [

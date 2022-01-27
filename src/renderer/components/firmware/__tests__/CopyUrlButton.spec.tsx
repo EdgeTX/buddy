@@ -1,5 +1,5 @@
 import React from "react";
-import router from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { render } from "test-utils/testing-library";
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import { fireEvent, screen } from "@testing-library/react";
@@ -9,8 +9,6 @@ import { act } from "react-dom/test-utils";
 
 // Previously mocked in `.jest/setupAfterEnv`
 const copyMock = mocked(copy);
-
-const { MemoryRouter } = router;
 
 afterEach(() => {
   jest.useRealTimers();

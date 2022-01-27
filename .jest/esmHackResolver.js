@@ -1,5 +1,5 @@
 // Jest ESM bug https://github.com/apollographql/apollo-client/issues/9156
-const ESM_BUG_FIX_PACKAGES = ["tslib", "@apollo/client"];
+const ESM_BUG_FIX_PACKAGES = ["tslib", "@apollo/client", "react-router-dom"];
 
 module.exports = (request, options) => {
   return options.defaultResolver(request, {

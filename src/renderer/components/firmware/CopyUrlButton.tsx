@@ -4,14 +4,12 @@ import config from "shared/config";
 import copy from "copy-text-to-clipboard";
 import { Button, Tooltip } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import router from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 type Props = {
   target?: string;
   version?: string;
 };
-
-const { useLocation } = router;
 
 const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
   const [copied, setCopied] = useState(false);
