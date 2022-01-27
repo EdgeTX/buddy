@@ -6,7 +6,6 @@ const swcConfig = convertTsConfig({
 });
 
 module.exports = {
-  // preset: "ts-jest/presets/js-with-ts-esm", // or other ESM presets
   resolver: "./.jest/esmHackResolver",
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
@@ -58,5 +57,4 @@ module.exports = {
     "^.+\\.(t|j)sx?$": ["@swc/jest", swcConfig],
   },
   extensionsToTreatAsEsm: [".ts", ".tsx"],
-  maxWorkers: 4,
 };

@@ -11,13 +11,13 @@ export default {
 };
 
 export const example: React.FC = () => (
-  <MockedProvider mocks={[deviceQuery]}>
+  <MockedProvider mocks={[deviceQuery()]}>
     <DeviceSummary deviceId="1" />
   </MockedProvider>
 );
 
 export const inCard: React.FC = () => (
-  <MockedProvider mocks={[deviceQuery]}>
+  <MockedProvider mocks={[deviceQuery()]}>
     <Card style={{ width: 500 }}>
       <Centered>
         <DeviceSummary deviceId="1" />

@@ -284,7 +284,7 @@ export const devicesQuery = (
   },
 });
 
-export const deviceQuery: MockedResponse = {
+export const deviceQuery = (delay = 2000): MockedResponse => ({
   request: {
     query: gql`
       query DeviceInfo($deviceId: ID!) {
@@ -301,13 +301,13 @@ export const deviceQuery: MockedResponse = {
       deviceId: "1",
     },
   },
-  delay: 2000,
+  delay,
   result: {
     data: {
       flashableDevice: exampleDevices[4],
     },
   },
-};
+});
 
 export const firmwareReleaseInfoQuery: MockedResponse = {
   request: {
