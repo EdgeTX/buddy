@@ -51,6 +51,10 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
+jest.unstable_mockModule("copy-text-to-clipboard", () => ({
+  default: jest.fn(),
+}));
+
 // @ts-expect-error Oh well
 navigator.usb = {
   requestDevice: () => {},
@@ -68,3 +72,18 @@ beforeEach(() => {
 // For ESM, jest isn't available globally, so let's set it
 // @ts-expect-error
 globalThis.jest = jest;
+
+const origConsoleError = console.error;
+
+console.error = (message, ...others) => {
+  // Ant is doing something weird with popinner, oh well don't spam the console
+  if (others.includes("PopupInner")) {
+    return;
+  }
+
+  return origConsoleError.call(console, message, ...others);
+};
+
+afterAll(() => {
+  console.error = origConsoleError;
+});
