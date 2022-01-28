@@ -56,6 +56,7 @@ jest.unstable_mockModule("copy-text-to-clipboard", () => ({
 }));
 
 jest.mock("js-file-download", () => jest.fn());
+jest.mock("renderer/assets/logo.webp", () => "logo-image-data");
 
 // @ts-expect-error Oh well
 navigator.usb = {

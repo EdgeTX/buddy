@@ -10927,6 +10927,7 @@ __metadata:
     jest-localstorage-mock: ^2.4.18
     jest-mock: ^27.4.2
     jest-styled-components: ^7.0.8
+    jest-transform-stub: ^2.0.0
     js-file-download: ^0.4.12
     ky: ^0.28.7
     ky-universal: ^0.9.1
@@ -16182,6 +16183,13 @@ __metadata:
   peerDependencies:
     styled-components: ">= 5"
   checksum: 0fc3a71c54ece55b8fd4c8304a9db283acac97cdfd8350ff27ff3b0c3da8e798dca87c7ee5fc004b1b0577d632dec44ebea31750238b82395152c0f8a471ea7c
+  languageName: node
+  linkType: hard
+
+"jest-transform-stub@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "jest-transform-stub@npm:2.0.0"
+  checksum: c46134257e5fb047f5952e4a4a1339925dd009da15aa8d3310ba1d3e4d22266ed6c675cd18e58c9d5ca2246718d6cc8ff00ea6a4b6f3b2a6b285b6426f6ae8fe
   languageName: node
   linkType: hard
 

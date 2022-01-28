@@ -309,7 +309,7 @@ export const deviceQuery = (delay = 2000): MockedResponse => ({
   },
 });
 
-export const firmwareReleaseInfoQuery: MockedResponse = {
+export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
   request: {
     query: gql`
       query ReleaseInfo($version: ID!, $target: ID!) {
@@ -334,7 +334,7 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
   result: {
     data: {
       edgeTxRelease: {
-        ...exampleReleasesList[0],
+        ...exampleReleasesList[1],
         firmwareBundle: {
           id: "",
           target: exampleTargetsList[3],
@@ -342,8 +342,8 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
       },
     },
   },
-  delay: 1000,
-};
+  delay,
+});
 
 export const firmwarePrBuildInfoQuery: MockedResponse = {
   request: {

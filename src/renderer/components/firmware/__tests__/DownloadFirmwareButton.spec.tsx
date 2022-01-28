@@ -41,4 +41,14 @@ describe("<DownloadFirmwareButton />", () => {
       "application/octet-stream"
     );
   });
+
+  it("should be disabled when target and version are not given", () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <DownloadFirmwareButton>Download firmware</DownloadFirmwareButton>
+      </MockedProvider>
+    );
+
+    expect(screen.getByRole("button")).toBeDisabled();
+  });
 });
