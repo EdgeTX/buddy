@@ -17,7 +17,7 @@ export default {
 
 export const withReleaseFirmware: React.FC = () => (
   <MemoryRouter initialEntries={["/?version=v2.5.0&target=nv-14&deviceId=1"]}>
-    <MockedProvider mocks={[firmwareReleaseInfoQuery, deviceQuery()]}>
+    <MockedProvider mocks={[firmwareReleaseInfoQuery(), deviceQuery()]}>
       <OverviewStep />
     </MockedProvider>
   </MemoryRouter>
@@ -32,7 +32,7 @@ export const withPrBuildFirmware: React.FC = () => (
       })!}&target=nv-14&deviceId=1`,
     ]}
   >
-    <MockedProvider mocks={[firmwarePrBuildInfoQuery, deviceQuery()]}>
+    <MockedProvider mocks={[firmwarePrBuildInfoQuery(), deviceQuery()]}>
       <OverviewStep />
     </MockedProvider>
   </MemoryRouter>

@@ -86,8 +86,7 @@ describe("CopyUrlButton", () => {
       </MemoryRouter>
     );
 
-    // eslint-disable-next-line testing-library/no-node-access
-    const button = screen.getByText("Copy URL").parentElement;
+    const button = screen.getByRole("button");
     expect(button).toBeDisabled();
   });
 });

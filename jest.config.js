@@ -55,6 +55,8 @@ module.exports = {
       },
     ],
     "^.+\\.(t|j)sx?$": ["@swc/jest", swcConfig],
+    "^.+\\.(css|styl|less|sass|scss|png|webp|jpg|ttf|woff|woff2)$":
+      "jest-transform-stub",
   },
   extensionsToTreatAsEsm: [".ts", ".tsx"],
 };

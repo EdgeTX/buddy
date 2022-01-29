@@ -3,9 +3,10 @@ import { Skeleton } from "antd";
 import React from "react";
 import { Centered } from "renderer/shared/layouts";
 import { decodePrVersion, isPrVersion } from "shared/tools";
-import FirmwareFileSummary from "./FirmwareFileSummary";
-import FirmwarePrBuildSummary from "./FirmwarePrBuildSummary";
-import FirmwareReleaseSummary from "./FirmwareReleaseSummary";
+import FirmwareFileSummary from "./summary-variants/FirmwareFileSummary";
+import FirmwarePrBuildSummary from "./summary-variants/FirmwarePrBuildSummary";
+import FirmwareReleaseSummary from "./summary-variants/FirmwareReleaseSummary";
+import FirmwareUnknownSummary from "./summary-variants/FirmwareUnknownSummary";
 
 const FirmwareSummary: React.FC<{
   target: string;
@@ -144,12 +145,16 @@ const FirmwareSummary: React.FC<{
     );
   }
 
-  return (
-    <FirmwareFileSummary
-      hideIcon={hideIcon}
-      name={firmwareFileQuery.data?.localFirmware?.name ?? "Unknown"}
-    />
-  );
+  if (isFile && firmwareFileQuery.data) {
+    return (
+      <FirmwareFileSummary
+        hideIcon={hideIcon}
+        name={firmwareFileQuery.data.localFirmware?.name ?? "Unknown"}
+      />
+    );
+  }
+
+  return <FirmwareUnknownSummary hideIcon={hideIcon} />;
 };
 
 export default FirmwareSummary;

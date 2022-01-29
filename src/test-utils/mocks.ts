@@ -309,7 +309,7 @@ export const deviceQuery = (delay = 2000): MockedResponse => ({
   },
 });
 
-export const firmwareReleaseInfoQuery: MockedResponse = {
+export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
   request: {
     query: gql`
       query ReleaseInfo($version: ID!, $target: ID!) {
@@ -334,7 +334,7 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
   result: {
     data: {
       edgeTxRelease: {
-        ...exampleReleasesList[0],
+        ...exampleReleasesList[1],
         firmwareBundle: {
           id: "",
           target: exampleTargetsList[3],
@@ -342,10 +342,35 @@ export const firmwareReleaseInfoQuery: MockedResponse = {
       },
     },
   },
-  delay: 1000,
-};
+  delay,
+});
 
-export const firmwarePrBuildInfoQuery: MockedResponse = {
+export const localFirmwareInfoQuery = (delay = 1000): MockedResponse => ({
+  request: {
+    query: gql`
+      query LocalFirmwareInfo($fileId: ID!) {
+        localFirmware(byId: $fileId) {
+          id
+          name
+        }
+      }
+    `,
+    variables: {
+      fileId: "file-id-abcd",
+    },
+  },
+  result: {
+    data: {
+      localFirmware: {
+        id: "",
+        name: "xlite-28cdb40.bin",
+      },
+    },
+  },
+  delay,
+});
+
+export const firmwarePrBuildInfoQuery = (delay = 1000): MockedResponse => ({
   request: {
     query: gql`
       query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
@@ -374,6 +399,7 @@ export const firmwarePrBuildInfoQuery: MockedResponse = {
   result: {
     data: {
       edgeTxPr: {
+        id: "",
         name: examplePrs[0]?.name,
         commit: {
           id: examplePrs[0]?.headCommitId,
@@ -385,8 +411,8 @@ export const firmwarePrBuildInfoQuery: MockedResponse = {
       },
     },
   },
-  delay: 1000,
-};
+  delay,
+});
 
 export const prBuildFirmwareDataQuery: MockedResponse = {
   request: {
