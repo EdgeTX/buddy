@@ -10961,7 +10961,6 @@ __metadata:
     typescript: ^4.5.5
     unzipit: ^1.3.6
     usb: 2.0.3
-    use-local-storage: ^2.2.6
     use-media: ^1.4.0
     uuid: ^8.3.2
     web-streams-polyfill: ^3.2.0
@@ -24711,15 +24710,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: f0cb3a49119e14ed46db8a946b1aa17b838b8834c8a652bde314877ede6057c55b50654a97ee802597a5839c070180195e58ea3a756b7c33db7f540642f0ddea
-  languageName: node
-  linkType: hard
-
-"use-local-storage@npm:^2.2.6":
-  version: 2.2.6
-  resolution: "use-local-storage@npm:2.2.6"
-  peerDependencies:
-    react: ">=16.8.1"
-  checksum: 57bb1cff17a25a9adec9b7d0a4eabf82bfacdf80aeb07623ce015beb60f8209d5dbb7a0cd94b85a00176e5f8f6d07c12a2a94150bd919cd59f17518b652a0034
   languageName: node
   linkType: hard
 

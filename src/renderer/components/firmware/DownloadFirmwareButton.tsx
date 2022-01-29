@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { decodePrVersion, isPrVersion } from "shared/tools";
 import * as base64ArrayBuffer from "base64-arraybuffer";
 import { ButtonSize, ButtonType } from "antd/lib/button";
-import { hasFilesystemApi } from "renderer/compatibility/checks";
+import checks from "renderer/compatibility/checks";
 import legacyDownload from "js-file-download";
 import config from "shared/config";
 
@@ -36,7 +36,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
     name: string,
     data: ArrayBufferLike
   ): Promise<void> => {
-    if (!hasFilesystemApi || config.isElectron) {
+    if (!checks.hasFilesystemApi || config.isElectron) {
       legacyDownload(data, name, "application/octet-stream");
       return;
     }

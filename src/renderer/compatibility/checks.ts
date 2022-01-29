@@ -1,6 +1,9 @@
-export const hasUsbApi = !!(
+const hasUsbApi = !!(
   (!!navigator.usb as boolean) && navigator.usb.requestDevice
 );
-export const hasFilesystemApi =
+
+const hasFilesystemApi =
   (!!window.showDirectoryPicker as boolean) &&
   (!!window.showSaveFilePicker as boolean);
+
+export default { hasFilesystemApi, hasUsbApi } as const;
