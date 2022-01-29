@@ -1,7 +1,7 @@
 import { InboxOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Upload, Button, message, Card } from "antd";
 import React, { useState } from "react";
-import FirmwareFileSummary from "renderer/components/firmware/FirmwareFileSummary";
+import FirmwareFileSummary from "renderer/components/firmware/summary-variants/FirmwareFileSummary";
 import styled from "styled-components";
 import { Centered, FullHeight } from "renderer/shared/layouts";
 

@@ -1,10 +1,10 @@
 import { Card } from "antd";
 import React from "react";
-import FirmwarePrBuildSummary from "renderer/components/firmware/FirmwarePrBuildSummary";
+import FirmwarePrBuildSummary from "renderer/components/firmware/summary-variants/FirmwarePrBuildSummary";
 import { Centered } from "renderer/shared/layouts";
 
 export default {
-  title: "Flashing/components/FirmwarePrBuildSummary",
+  title: "Flashing/components/FirmwareSummaryVariants/FirmwarePrBuildSummary",
   component: FirmwarePrBuildSummary,
 };
 

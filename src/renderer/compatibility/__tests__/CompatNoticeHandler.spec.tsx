@@ -4,11 +4,19 @@ import CompatNoticeHandler from "renderer/compatibility/CompatNoticeHandler";
 import checks from "renderer/compatibility/checks";
 import { fireEvent, screen } from "@testing-library/react";
 
+const setHasFsApi = (value: boolean) => {
+  // @ts-expect-error don't care about this
+  checks.hasFilesystemApi = value;
+};
+
+const setHasUsbApi = (value: boolean) => {
+  // @ts-expect-error don't care about this
+  checks.hasUsbApi = value;
+};
+
 beforeEach(() => {
-  // @ts-expect-error don't care about this
-  checks.hasFilesystemApi = false;
-  // @ts-expect-error don't care about this
-  checks.hasUsbApi = false;
+  setHasFsApi(false);
+  setHasUsbApi(false);
 
   window.localStorage.clear();
 });
@@ -23,10 +31,9 @@ describe("<CompatNoticeHandler />", () => {
   });
 
   it("should not display a modal when browser is compatible", () => {
-    // @ts-expect-error don't care about this
-    checks.hasFilesystemApi = true;
-    // @ts-expect-error don't care about this
-    checks.hasUsbApi = true;
+    setHasFsApi(true);
+    setHasUsbApi(true);
+
     render(<CompatNoticeHandler />);
 
     expect(
@@ -59,5 +66,23 @@ describe("<CompatNoticeHandler />", () => {
     expect(
       screen.queryByText("Your browser doesn't support EdgeTX Buddy")
     ).toBeFalsy();
+  });
+
+  it("should display when the file system api is missing", () => {
+    setHasUsbApi(true);
+    render(<CompatNoticeHandler />);
+
+    expect(screen.getByText("Missing File System Access API -")).toBeVisible();
+    expect(screen.getByText("We have WebUSB API access")).toBeVisible();
+  });
+
+  it("should display when the usb api is missing", () => {
+    setHasFsApi(true);
+    render(<CompatNoticeHandler />);
+
+    expect(screen.getByText("Missing WebUSB API -")).toBeVisible();
+    expect(
+      screen.getByText("We have File System Access API access")
+    ).toBeVisible();
   });
 });
