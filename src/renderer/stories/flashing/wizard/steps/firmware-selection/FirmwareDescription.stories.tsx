@@ -12,7 +12,7 @@ export default {
 };
 
 export const releaseSelected: React.FC = () => (
-  <MockedProvider mocks={[firmwareReleaseDescriptionQuery]}>
+  <MockedProvider mocks={[firmwareReleaseDescriptionQuery()]}>
     <div style={{ height: "100%", overflowY: "scroll" }}>
       <FirmwareReleaseDescription releaseId="v2.5.0" />
     </div>
@@ -20,13 +20,13 @@ export const releaseSelected: React.FC = () => (
 );
 
 export const releaseDescriptionNotAvailable: React.FC = () => (
-  <MockedProvider mocks={[firmwareReleaseDescriptionQuery]}>
+  <MockedProvider mocks={[firmwareReleaseDescriptionQuery()]}>
     <FirmwareReleaseDescription releaseId="v2.5.1" />
   </MockedProvider>
 );
 
 export const contained: React.FC = () => (
-  <MockedProvider mocks={[firmwareReleaseDescriptionQuery]}>
+  <MockedProvider mocks={[firmwareReleaseDescriptionQuery()]}>
     <MemoryRouter>
       <Layout>
         <div

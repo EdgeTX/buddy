@@ -18,9 +18,9 @@ export const usable: React.FC = () => (
   <MemoryRouter>
     <MockedProvider
       mocks={[
-        firmwaresQuery,
-        targetsQuery,
-        firmwareReleaseDescriptionQuery,
+        firmwaresQuery(),
+        targetsQuery(),
+        firmwareReleaseDescriptionQuery(),
         devicesQuery(),
       ]}
     >

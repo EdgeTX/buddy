@@ -9,7 +9,7 @@ import {
   exampleTargetsList,
 } from "test-utils/data";
 
-export const firmwaresQuery: MockedResponse = {
+export const firmwaresQuery = (delay = 100): MockedResponse => ({
   request: {
     query: gql`
       query Releases {
@@ -26,10 +26,10 @@ export const firmwaresQuery: MockedResponse = {
       edgeTxReleases: exampleReleasesList,
     },
   },
-  delay: 100,
-};
+  delay,
+});
 
-export const targetsQuery: MockedResponse = {
+export const targetsQuery = (delay = 1000): MockedResponse => ({
   request: {
     query: gql`
       query ReleaseTargets($releaseId: ID!) {
@@ -62,8 +62,8 @@ export const targetsQuery: MockedResponse = {
       },
     },
   },
-  delay: 1000,
-};
+  delay,
+});
 
 const releaseDescription = times(10)
   .map(
@@ -79,7 +79,9 @@ My release, it is great, it has lots of things.
   )
   .join("");
 
-export const firmwareReleaseDescriptionQuery: MockedResponse = {
+export const firmwareReleaseDescriptionQuery = (
+  delay = 2000
+): MockedResponse => ({
   request: {
     query: gql`
       query FirmwareReleaseDescription($releaseId: ID!) {
@@ -93,7 +95,7 @@ export const firmwareReleaseDescriptionQuery: MockedResponse = {
       releaseId: "v2.5.0",
     },
   },
-  delay: 2000,
+  delay,
   result: {
     data: {
       edgeTxRelease: {
@@ -103,7 +105,7 @@ export const firmwareReleaseDescriptionQuery: MockedResponse = {
       },
     },
   },
-};
+});
 
 export const prsQuery: MockedResponse = {
   request: {

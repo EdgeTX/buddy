@@ -12,7 +12,7 @@ import DevTools from "./pages/dev/DevTools";
 
 const isMobileOs = isMobile({ tablet: true });
 
-const NextGeneration: React.FC = () => (
+const App: React.FC = () => (
   <HashRouter>
     {!config.isElectron && !isMobileOs && <CompatNoticeHandler />}
     <Layout
@@ -32,4 +32,4 @@ const NextGeneration: React.FC = () => (
   </HashRouter>
 );
 
-export default NextGeneration;
+export default App;

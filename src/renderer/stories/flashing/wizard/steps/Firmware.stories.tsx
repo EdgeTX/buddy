@@ -22,9 +22,9 @@ export const initialRender = () => (
   <MemoryRouter>
     <MockedProvider
       mocks={[
-        firmwaresQuery,
-        targetsQuery,
-        firmwareReleaseDescriptionQuery,
+        firmwaresQuery(),
+        targetsQuery(),
+        firmwareReleaseDescriptionQuery(),
         prCommitBuildQuery,
         prsQuery,
         prDescriptionQuery,
@@ -41,9 +41,9 @@ export const dev = () => (
   <MemoryRouter>
     <MockedProvider
       mocks={[
-        firmwaresQuery,
-        targetsQuery,
-        firmwareReleaseDescriptionQuery,
+        firmwaresQuery(),
+        targetsQuery(),
+        firmwareReleaseDescriptionQuery(),
         prCommitBuildQuery,
         prsQuery,
         prDescriptionQuery,

@@ -65,6 +65,7 @@ const FlashingWizard: React.FC = () => {
             <Step
               key={item.title}
               title={item.title}
+              data-testid={`step-indicator-${stepNum}`}
               description={
                 stepNum + 1 === current &&
                 isMobile &&

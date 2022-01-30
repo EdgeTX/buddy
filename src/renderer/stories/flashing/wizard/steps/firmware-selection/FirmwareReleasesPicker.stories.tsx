@@ -23,7 +23,7 @@ export default {
 export const loadSuccessfully: React.FC<
   Parameters<typeof FirmwareReleasesPicker>
 > = (args) => (
-  <MockedProvider mocks={[firmwaresQuery, targetsQuery]}>
+  <MockedProvider mocks={[firmwaresQuery(), targetsQuery()]}>
     <FirmwareReleasesPicker
       filters={{ includePrereleases: false }}
       onChanged={action("onChanged")}
@@ -35,7 +35,7 @@ export const loadSuccessfully: React.FC<
 export const includePrereleases: React.FC<
   Parameters<typeof FirmwareReleasesPicker>
 > = (args) => (
-  <MockedProvider mocks={[firmwaresQuery, targetsQuery]}>
+  <MockedProvider mocks={[firmwaresQuery(), targetsQuery()]}>
     <FirmwareReleasesPicker
       filters={{ includePrereleases: true }}
       onChanged={action("onChanged")}

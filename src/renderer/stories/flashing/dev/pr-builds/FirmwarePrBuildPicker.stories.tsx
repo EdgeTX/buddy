@@ -23,7 +23,7 @@ export default {
 };
 
 const mocks = [
-  firmwareReleaseDescriptionQuery,
+  firmwareReleaseDescriptionQuery(),
   prCommitBuildNotAvailableQuery,
   prCommitBuildQuery,
   prsQuery,
