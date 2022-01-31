@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["dom", "dom.iterable", "es2021"],
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -12,20 +11,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "useUnknownInCatchVariables": true,
-    "module": "es2022",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "noEmit": true,
-    "jsx": "react",
-    "types": [
-      "wicg-file-system-access",
-      "w3c-web-usb",
-      "node",
-      "jest",
-      "testing-library__jest-dom"
-    ],
-    "baseUrl": "./src"
+    "resolveJsonModule": true
   },
-  "include": ["./src", "./.jest", "./tests"],
-  "exclude": ["**/node_modules", "build"]
+  "include": ["./"],
+  "exclude": ["**/node_modules"]
 }

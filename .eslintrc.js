@@ -57,6 +57,7 @@ module.exports = {
       {
         devDependencies: [
           "**/*.spec.{ts,tsx}",
+          "**/tests/**/*.{ts,tsx}",
           "**/*.stories.{ts,tsx}",
           "src/test-utils/**/*",
           "**/.jest/*.{ts,tsx,js}",
@@ -119,6 +120,7 @@ module.exports = {
         "**/__mocks__/**/*",
         "src/test-utils/**/*",
         "**/*.stories.{ts,tsx}",
+        "**/tests/**/*.{ts,tsx}",
       ],
       env: {
         jest: true,
