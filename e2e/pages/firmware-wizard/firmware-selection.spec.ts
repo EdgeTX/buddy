@@ -101,7 +101,14 @@ test("Copy URL button copies a link to the selected firmware", async ({
   await (await queries.findByText("FrSky Horus X10")).click();
 
   await (await queries.getByText("Copy URL")).click();
-  expect(await clipboardy.read()).toBe(
-    "localhost:8081/#/flash?version=v2.6.0&target=x10"
-  );
+
+  if (process.env.CI) {
+    await page.context().grantPermissions(["clipboard-read"]);
+  }
+
+  const copiedUrl = process.env.CI
+    ? await page.evaluate(() => navigator.clipboard.readText())
+    : await clipboardy.read();
+
+  expect(copiedUrl).toBe("localhost:8081/#/flash?version=v2.6.0&target=x10");
 });

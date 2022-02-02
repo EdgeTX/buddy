@@ -47,7 +47,7 @@ const config: Config<PlaywrightWorkerOptions & PlaywrightTestOptions> = {
   preserveOutput: process.env.CI ? "failures-only" : "always",
   retries: process.env.CI ? 3 : 0,
   reporter: process.env.CI
-    ? [["dot"], ["github"], ["html", { open: "on-failure" }]]
+    ? [["list"], ["github"], ["html", { open: "on-failure" }]]
     : [["list"], ["html", { open: "on-failure" }]],
   projects: [],
   webServer: {
