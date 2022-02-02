@@ -327,6 +327,9 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
         run: yarn --immutable
 
+      - name: Install chrome
+        run: yarn playwright install-deps chromium
+
       - name: Fetch compiled source
         uses: actions/download-artifact@v2
         with:

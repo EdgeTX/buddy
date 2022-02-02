@@ -18,6 +18,7 @@ module.exports = {
     "/build/",
     "/storybook-static/",
     "/__generated__/",
+    "/tests/",
   ],
   collectCoverageFrom: [
     "**/src/**/*.{ts,tsx}",
