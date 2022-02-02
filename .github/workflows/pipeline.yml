@@ -357,6 +357,7 @@ jobs:
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
+          HEADED: "true"
 
       - uses: actions/upload-artifact@v1
         if: ${{ failure() }}
