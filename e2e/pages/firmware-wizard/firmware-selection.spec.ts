@@ -87,17 +87,12 @@ test("Can download the selected firmware target", async ({ queries, page }) => {
 
 test("Copy URL button copies a link to the selected firmware", async ({
   queries,
+  page,
 }) => {
   await (await queries.findByLabelText("Firmware version")).click();
-  await (
-    await queries.findByTitle(
-      'EdgeTX "Santa" v2.6.0',
-      { selector: '[aria-selected="false"],[aria-selected="true"]' },
-      {
-        timeout: 10000,
-      }
-    )
-  ).click();
+  await page
+    .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
+    .click();
 
   const radioSelector = await queries.findByLabelText("Radio model");
   await radioSelector.waitForElementState("enabled");
