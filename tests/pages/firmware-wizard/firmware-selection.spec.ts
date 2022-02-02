@@ -90,9 +90,13 @@ test("Copy URL button copies a link to the selected firmware", async ({
 }) => {
   await (await queries.findByLabelText("Firmware version")).click();
   await (
-    await queries.findByText('EdgeTX "Santa" v2.6.0', undefined, {
-      timeout: 20000,
-    })
+    await queries.findByTitle(
+      'EdgeTX "Santa" v2.6.0',
+      { selector: ".ant-select-item-option" },
+      {
+        timeout: 20000,
+      }
+    )
   ).click();
 
   const radioSelector = await queries.findByLabelText("Radio model");

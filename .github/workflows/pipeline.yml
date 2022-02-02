@@ -32,6 +32,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Lint
@@ -59,6 +62,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Format
@@ -87,6 +93,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Test
@@ -120,6 +129,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Test types
@@ -153,6 +165,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Build
@@ -328,7 +343,11 @@ jobs:
         run: yarn --immutable
 
       - name: Install chrome
-        run: yarn playwright install-deps chromium && yarn playwright install chromium
+        run: yarn playwright install-deps chromium
+
+      - name: Install clipboard deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y xsel
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v2
