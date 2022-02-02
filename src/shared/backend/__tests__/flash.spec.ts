@@ -1,12 +1,13 @@
 import gql from "graphql-tag";
 import { createExecutor } from "test-utils/backend";
 import { MockedFunction } from "jest-mock";
-import { createDfuEvents, connect } from "shared/backend/mocks/dfu";
+import { createDfuEvents } from "shared/backend/mocks/dfu";
 import nock from "nock";
 import { waitForStageCompleted } from "test-utils/tools";
 import { FlashJob } from "shared/backend/graph/__generated__";
 import { WebDFU } from "dfu";
 import md5 from "md5";
+import { connect } from "shared/backend/services/dfu";
 
 const requestDeviceMock = jest.fn() as MockedFunction<
   typeof navigator.usb.requestDevice
