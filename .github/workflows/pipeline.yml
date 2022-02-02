@@ -65,7 +65,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --mode=skip-build
 
       - name: Format
         run: yarn fmt:check
@@ -341,14 +341,10 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-        run: yarn --immutable
+        run: yarn --immutable --mode=skip-build
 
       - name: Install chrome
         run: yarn playwright install --with-deps chromium chromium
-
-      - name: Install clipboard deps
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y xsel
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v2
@@ -366,7 +362,7 @@ jobs:
         if: ${{ failure() }}
         with:
           name: video-web-linux-test-results
-          path: test-results
+          path: playwright-report
 
   release-web:
     needs: e2e-web
