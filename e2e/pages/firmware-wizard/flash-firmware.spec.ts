@@ -47,13 +47,11 @@ test("Flash v2.5.0 firmware", async ({ queries }) => {
       await queries.findByText("Downloaded", undefined, { timeout: 60000 })
     ).isVisible()
   ).toBeTruthy();
-  expect(await (await queries.findByText("Erasing")).isVisible()).toBeTruthy();
   expect(
     await (
       await queries.findByText("Erased", undefined, { timeout: 60000 })
     ).isVisible()
   ).toBeTruthy();
-  expect(await (await queries.findByText("Flashing")).isVisible()).toBeTruthy();
   expect(
     await (
       await queries.findByText("Flashed", undefined, { timeout: 60000 })

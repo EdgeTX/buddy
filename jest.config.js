@@ -18,7 +18,7 @@ module.exports = {
     "/build/",
     "/storybook-static/",
     "/__generated__/",
-    "/tests/",
+    "/e2e/",
   ],
   collectCoverageFrom: [
     "**/src/**/*.{ts,tsx}",

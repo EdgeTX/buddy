@@ -13,7 +13,7 @@ const createBusLink = async (): Promise<ApolloLink> => {
   const { default: Worker } = await import("webworker/backend.bootstrap");
 
   const link = createWebWorkerBusLink<WorkerArgs>(Worker);
-  void link.initialiseBackend({ mocked: config.isMocked });
+  void link.initialiseBackend({ mocked: config.isMocked, e2e: config.isE2e });
   return link;
 };
 

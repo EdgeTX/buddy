@@ -7,15 +7,15 @@ test.beforeEach(async ({ page }) => {
   await page.goto(firmwarePage);
 });
 
-test("Latest firmware is pre selected by default", async ({ queries }) => {
+test("Latest firmware is pre selected by default", async ({
+  queries,
+  page,
+}) => {
   await (await queries.findByLabelText("Firmware version")).click();
-  await queries.findByRole(
-    "option",
-    {
-      selector: "[aria-selected=true]",
-    },
-    { timeout: 20000 }
-  );
+
+  await page
+    .locator('[role=option][aria-selected="true"]')
+    .waitFor({ state: "attached" });
   expect(await (await queries.findByText("Copy URL")).isEnabled()).toBeTruthy();
 });
 
@@ -92,9 +92,9 @@ test("Copy URL button copies a link to the selected firmware", async ({
   await (
     await queries.findByTitle(
       'EdgeTX "Santa" v2.6.0',
-      { selector: ".ant-select-item-option" },
+      { selector: '[aria-selected="false"],[aria-selected="true"]' },
       {
-        timeout: 20000,
+        timeout: 10000,
       }
     )
   ).click();

@@ -26,6 +26,6 @@
     ],
     "baseUrl": "./src"
   },
-  "include": ["./src", "./.jest", "./tests"],
+  "include": ["./src", "./.jest"],
   "exclude": ["**/node_modules", "build"]
 }

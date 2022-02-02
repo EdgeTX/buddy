@@ -5,13 +5,7 @@ import {
   createSchemaExecutor,
 } from "apollo-bus-link/core";
 import { webWorkerBus } from "apollo-bus-link/webworker";
-import {
-  createContext,
-  createMockContext,
-  FileSystemApi,
-  schema,
-  UsbApi,
-} from "shared/backend";
+import { createContext, FileSystemApi, schema, UsbApi } from "shared/backend";
 import { showDirectoryPicker, requestDevice } from "./crossboundary/functions";
 import { WorkerArgs } from "./types";
 
@@ -43,13 +37,16 @@ const usb: UsbApi = {
 
 const backend = createBusLinkBackend<WorkerArgs>({
   registerBus: webWorkerBus(self),
-  createExecutor: (args) =>
+  createExecutor: async (args) =>
     createSchemaExecutor({
       schema,
       context: args.mocked
-        ? createMockContext({
-            fileSystem,
-          })
+        ? (await import("shared/backend/mocks/context")).createMockContext(
+            {
+              fileSystem,
+            },
+            { faster: args.e2e }
+          )
         : createContext({
             fileSystem,
             usb,
@@ -57,5 +54,5 @@ const backend = createBusLinkBackend<WorkerArgs>({
     }),
 });
 
-void backend.initialise({ mocked: false });
+void backend.initialise({ mocked: false, e2e: false });
 backend.listen();

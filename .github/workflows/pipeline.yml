@@ -340,10 +340,11 @@ jobs:
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         run: yarn --immutable
 
       - name: Install chrome
-        run: yarn playwright install-deps chromium
+        run: yarn playwright install --with-deps chromium chromium
 
       - name: Install clipboard deps
         if: runner.os == 'Linux'
@@ -356,9 +357,16 @@ jobs:
           path: build
 
       - name: Run tests
-        run: yarn e2e:web
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn e2e:web
         env:
           CI: "true"
+          PWTEST_VIDEO: "true"
+
+      - uses: actions/upload-artifact@v1
+        if: ${{ failure() }}
+        with:
+          name: video-web-linux-test-results
+          path: test-results
 
   release-web:
     needs: e2e-web
