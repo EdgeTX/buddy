@@ -28,7 +28,7 @@ export default {
   isElectron,
   proxyUrl: process.env.PROXY_URL,
   isProduction: PRODUCTION,
-  isE2e: E2E,
+  isE2e: isMain ? E2E : extractParam("e2e") === "true",
   github: {
     // If you need the API key to record new APIs, change this
     // line. The github API limits are 50/hour you should be ok

@@ -4,15 +4,12 @@ import type {
   PlaywrightWorkerOptions,
 } from "@playwright/test";
 import * as path from "path";
-import { CoverageWorkerOptions } from "./coverageFixtures";
 
 process.env.PWPAGE_IMPL = "electron";
 
 const outputDir = path.join(__dirname, "..", "..", "test-results");
 const testDir = path.join(__dirname, "..");
-const config: Config<
-  CoverageWorkerOptions & PlaywrightWorkerOptions & PlaywrightTestOptions
-> = {
+const config: Config<PlaywrightWorkerOptions & PlaywrightTestOptions> = {
   testDir,
   outputDir,
   timeout: 30000,
@@ -36,21 +33,19 @@ const metadata = {
   video: false,
 };
 
-config.projects.push({
-  name: "chromium", // We use 'chromium' here to share screenshots with chromium.
+config.projects?.push({
+  name: "chromium",
   use: {
     browserName: "chromium",
-    coverageName: "electron",
   },
   testDir: path.join(testDir, "electron"),
   metadata,
 });
 
-config.projects.push({
-  name: "chromium", // We use 'chromium' here to share screenshots with chromium.
+config.projects?.push({
+  name: "chromium",
   use: {
     browserName: "chromium",
-    coverageName: "electron",
   },
   testDir: path.join(testDir, "page"),
   metadata,

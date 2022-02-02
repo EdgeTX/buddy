@@ -59,7 +59,8 @@ const test = baseTest.extend<
     await run(_contextFactory);
   },
 
-  createUserDataDir: async (_, run) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  createUserDataDir: async ({ hasTouch: _ }, run) => {
     const dirs: string[] = [];
     // We do not put user data dir in testOutputPath,
     // because we do not want to upload them as test result artifacts.

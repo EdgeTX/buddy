@@ -300,8 +300,46 @@ jobs:
       #       packages/configurator/e2e/output/trace/*.zip
       # - name: Preview demo
 
-  release-web:
+  e2e-web:
     needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Fetch compiled source
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-ubuntu-latest
+          path: build
+
+      - name: Run tests
+        run: yarn e2e:web
+        env:
+          CI: "true"
+
+  release-web:
+    needs: e2e-web
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source

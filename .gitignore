@@ -35,3 +35,4 @@ schema.graphql
 .env
 dist/
 storybook-static/
+playwright-report/

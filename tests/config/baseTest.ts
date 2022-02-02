@@ -1,5 +1,8 @@
 import { test, TestType, Fixtures } from "@playwright/test";
-import { commonFixtures, CommonFixtures } from "./commonFixtures";
+import {
+  fixtures,
+  TestingLibraryFixtures,
+} from "@playwright-testing-library/test/fixture";
 import { platformTest } from "./platformFixtures";
 
 type TestTypeEx<TestArgs, WorkerArgs> = {
@@ -17,7 +20,7 @@ export const base = test as TestTypeEx<BaseT, BaseW>;
 // eslint-disable-next-line no-underscore-dangle
 export const baseTest = base
   ._extendTest(platformTest)
-  .extend<CommonFixtures>(commonFixtures)
+  .extend<TestingLibraryFixtures>(fixtures)
   .extend<Record<never, never>, { _snapshotSuffix: string }>({
     _snapshotSuffix: ["", { scope: "worker" }],
   });

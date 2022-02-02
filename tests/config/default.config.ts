@@ -3,21 +3,26 @@ import type {
   PlaywrightTestOptions,
   PlaywrightWorkerOptions,
 } from "@playwright/test";
-import * as path from "path";
+import path from "path";
 
 type BrowserName = "chromium" | "firefox" | "webkit";
 
 const getExecutablePath = (browserName: BrowserName) => {
-  if (browserName === "chromium" && process.env.CRPATH)
+  if (browserName === "chromium" && process.env.CRPATH) {
     return process.env.CRPATH;
-  if (browserName === "firefox" && process.env.FFPATH)
+  }
+  if (browserName === "firefox" && process.env.FFPATH) {
     return process.env.FFPATH;
-  if (browserName === "webkit" && process.env.WKPATH) return process.env.WKPATH;
+  }
+  if (browserName === "webkit" && process.env.WKPATH) {
+    return process.env.WKPATH;
+  }
+  return undefined;
 };
 
 const mode = process.env.PW_OUT_OF_PROCESS_DRIVER
   ? "driver"
-  : ((process.env.PWTEST_MODE || "default") as
+  : ((process.env.PWTEST_MODE ?? "default") as
       | "default"
       | "driver"
       | "service");
@@ -38,20 +43,18 @@ const config: Config<PlaywrightWorkerOptions & PlaywrightTestOptions> = {
   globalTimeout: 5400000,
   workers: process.env.CI ? 1 : undefined,
   forbidOnly: !!process.env.CI,
+  reportSlowTests: { max: 0, threshold: 60000 },
   preserveOutput: process.env.CI ? "failures-only" : "always",
   retries: process.env.CI ? 3 : 0,
   reporter: process.env.CI
-    ? [["dot"], ["json", { outputFile: path.join(outputDir, "report.json") }]]
-    : [["html", { open: "on-failure" }]],
+    ? "github"
+    : [["list"], ["html", { open: "on-failure" }]],
   projects: [],
-  webServer:
-    mode === "service"
-      ? {
-          command: "npx playwright experimental-grid-server",
-          port: 3333,
-          reuseExistingServer: true,
-        }
-      : undefined,
+  webServer: {
+    command: "yarn serve:web",
+    reuseExistingServer: !process.env.CI,
+    port: 8081,
+  },
 };
 
 const browserNames = ["chromium", "webkit", "firefox"] as BrowserName[];
@@ -59,17 +62,19 @@ const browserNames = ["chromium", "webkit", "firefox"] as BrowserName[];
 for (const browserName of browserNames) {
   const executablePath = getExecutablePath(browserName);
   if (executablePath && !process.env.TEST_WORKER_INDEX)
+    // eslint-disable-next-line no-console
     console.error(`Using executable at ${executablePath}`);
   const devtools = process.env.DEVTOOLS === "1";
   const testIgnore: RegExp[] = browserNames
     .filter((b) => b !== browserName)
     .map((b) => new RegExp(b));
   testIgnore.push(/android/, /electron/, /playwright-test/);
-  config.projects.push({
+  config.projects?.push({
     name: browserName,
     testDir,
     testIgnore,
     use: {
+      baseURL: "http://localhost:8081/?mocked=true&e2e=true",
       browserName,
       headless: !headed,
       channel,
