@@ -17,7 +17,6 @@ module.exports = {
     "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:jest/recommended",
     "prettier",
   ],
   rules: {
@@ -57,6 +56,7 @@ module.exports = {
       {
         devDependencies: [
           "**/*.spec.{ts,tsx}",
+          "**/e2e/**/*.{ts,tsx}",
           "**/*.stories.{ts,tsx}",
           "src/test-utils/**/*",
           "**/.jest/*.{ts,tsx,js}",
@@ -96,6 +96,10 @@ module.exports = {
       },
     },
     {
+      files: ["src/**/*.spec.tsx"],
+      extends: ["plugin:jest/recommended"],
+    },
+    {
       files: ["src/webworker/**/*"],
       rules: {
         "no-restricted-globals": ["error"].concat(
@@ -119,6 +123,7 @@ module.exports = {
         "**/__mocks__/**/*",
         "src/test-utils/**/*",
         "**/*.stories.{ts,tsx}",
+        "**/e2e/**/*.{ts,tsx}",
       ],
       env: {
         jest: true,

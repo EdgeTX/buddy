@@ -35,3 +35,5 @@ schema.graphql
 .env
 dist/
 storybook-static/
+playwright-report/
+e2e-results/

@@ -42,7 +42,7 @@ const main = async (): Promise<void> => {
 
   await app.whenReady();
 
-  startBackend();
+  await startBackend();
   createWindow();
 };
 
@@ -117,7 +117,7 @@ const createWindow = (): void => {
   WindowControls.initMain();
 };
 
-const startBackend = (): void => {
+const startBackend = async (): Promise<void> => {
   const mocked = config.isMocked || config.isE2e;
   if (mocked) {
     console.log("Creating backend in mocked mode");
@@ -128,9 +128,14 @@ const startBackend = (): void => {
     executor: createSchemaExecutor({
       schema: backend.schema,
       context: mocked
-        ? backend.createMockContext({
-            fileSystem: fileSystemApi(),
-          })
+        ? (await import("shared/backend/mocks/context")).createMockContext(
+            {
+              fileSystem: fileSystemApi(),
+            },
+            {
+              faster: config.isE2e,
+            }
+          )
         : backend.createContext({
             fileSystem: fileSystemApi(),
             usb: usbApi(),

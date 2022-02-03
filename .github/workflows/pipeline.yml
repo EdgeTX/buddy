@@ -32,6 +32,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Lint
@@ -59,7 +62,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
-        run: yarn --immutable
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable --mode=skip-build
 
       - name: Format
         run: yarn fmt:check
@@ -87,6 +93,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Test
@@ -120,6 +129,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Test types
@@ -153,6 +165,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
         run: yarn --immutable
 
       - name: Build
@@ -300,8 +315,57 @@ jobs:
       #       packages/configurator/e2e/output/trace/*.zip
       # - name: Preview demo
 
-  release-web:
+  e2e-web:
     needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+        run: yarn --immutable --mode=skip-build
+
+      - name: Install chrome
+        run: yarn playwright install --with-deps chromium chromium
+
+      - name: Fetch compiled source
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-ubuntu-latest
+          path: build
+
+      - name: Run tests
+        run: yarn e2e:web
+        env:
+          CI: "true"
+          PWTEST_VIDEO: "true"
+
+      - uses: actions/upload-artifact@v1
+        if: ${{ failure() }}
+        with:
+          name: video-web-linux-test-results
+          path: playwright-report
+
+  release-web:
+    needs: e2e-web
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source

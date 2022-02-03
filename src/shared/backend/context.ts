@@ -6,8 +6,6 @@ import * as flashJobs from "./services/flashJobs";
 import { github } from "./services/github";
 
 import { FileSystemApi, UsbApi } from "./types";
-import { mockDeviceList } from "./mocks/devices";
-import * as mockDfu from "./mocks/dfu";
 
 export type Context = {
   github: typeof github;
@@ -29,18 +27,5 @@ export const createContext =
     sdcardAssets,
     flashJobs,
     sdcardJobs,
-    ...extras,
-  });
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const createMockContext = (extras: { fileSystem: FileSystemApi }) =>
-  createContext({
-    usb: {
-      deviceList: () => Promise.resolve(mockDeviceList),
-      requestDevice: () => {
-        throw new Error("No request device implemented in mocked mode");
-      },
-    },
-    dfu: mockDfu,
     ...extras,
   });
