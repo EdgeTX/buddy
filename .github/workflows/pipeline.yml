@@ -139,9 +139,6 @@ jobs:
         env:
           CI: true
 
-      - name: Publish Coverage
-        uses: codecov/codecov-action@v2
-
   storybook:
     runs-on: ubuntu-latest
 
