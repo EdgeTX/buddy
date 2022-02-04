@@ -80,7 +80,7 @@ const stageConfigs: StageConfig[] = [
     titles: { pre: "Download", active: "Downloading", post: "Downloaded" },
     stage: "download",
     description: {
-      pre: "Download firmeware data",
+      pre: "Download firmware data",
       active: "Downloading firmware data to be ready for flashing",
       post: "Firmware downloaded, ready to flash",
       error: "Could not download firmware",
@@ -94,7 +94,7 @@ const stageConfigs: StageConfig[] = [
       pre: "Remove existing firmware",
       active: "Removing existing firmware from radio",
       post: "Existing firmware erased",
-      error: "Could not erase existing firmeware",
+      error: "Could not erase existing firmware",
     },
     Icon: DeleteOutlined,
     showProgess: true,
