@@ -48,7 +48,7 @@ const metadata = {
 };
 
 config.projects?.push({
-  name: "chromium",
+  name: "electron",
   use: {
     browserName: "chromium",
   },
@@ -57,7 +57,7 @@ config.projects?.push({
 });
 
 config.projects?.push({
-  name: "chromium",
+  name: "electron",
   use: {
     browserName: "chromium",
   },
