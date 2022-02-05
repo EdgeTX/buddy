@@ -305,6 +305,7 @@ jobs:
           CI: "true"
           PWTEST_VIDEO: "true"
           DEBUG: "pw:api"
+          HEADFUL: "true"
 
       - name: Upload test results
         uses: actions/upload-artifact@v1
