@@ -15,12 +15,16 @@ if (dev && !pathExists(electronMain)) {
   throw new Error("Production e2e tests expect buddy to be built");
 }
 
+const trace = !!process.env.PWTEST_TRACE;
+const video = !!process.env.PWTEST_VIDEO;
+const headed = !!process.env.HEADFUL;
+
 const outputDir = path.join(__dirname, "..", "..", "e2e-recordings");
 const testDir = path.join(__dirname, "..");
 const config: Config<PlaywrightWorkerOptions & PlaywrightTestOptions> = {
   testDir,
   outputDir,
-  timeout: 30000,
+  timeout: video ? 60000 : 30000,
   globalTimeout: 5400000,
   reportSlowTests: { max: 0, threshold: 60000 },
   workers: process.env.CI ? 1 : undefined,
@@ -32,10 +36,6 @@ const config: Config<PlaywrightWorkerOptions & PlaywrightTestOptions> = {
     : [["list"], ["html", { open: "on-failure" }]],
   projects: [],
 };
-
-const trace = !!process.env.PWTEST_TRACE;
-const video = !!process.env.PWTEST_VIDEO;
-const headed = !!process.env.HEADFUL;
 
 const metadata = {
   platform: process.platform,

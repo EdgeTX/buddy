@@ -306,14 +306,14 @@ jobs:
           HEADFUL: "true"
 
       - name: Upload test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-test-results
           path: playwright-report
 
       - name: Upload video recordings
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-recordings
