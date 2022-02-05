@@ -68,7 +68,7 @@ const createWindow = (): void => {
   const searchQuery = ``;
   if (!config.isProduction) {
     console.log("loading renderer in development");
-    void mainWindow.loadURL(`http://localhost:8081/index.html?next=true`);
+    void mainWindow.loadURL(`http://localhost:8081/index.html`);
   } else {
     console.log("loading renderer");
     void mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {

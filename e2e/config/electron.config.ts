@@ -3,9 +3,36 @@ import type {
   PlaywrightTestOptions,
   PlaywrightWorkerOptions,
 } from "@playwright/test";
-import * as path from "path";
+import path from "path";
+import fs from "fs";
+import os from "os";
 
 process.env.PWPAGE_IMPL = "electron";
+
+const exists = (filePath: string) => {
+  try {
+    fs.accessSync(filePath);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+const binaryPath = () => {
+  switch (os.platform()) {
+    case "linux":
+      return path.join(__dirname, "dist/linux-unpacked/edgetx-buddy");
+    case "darwin":
+      return path.join(
+        __dirname,
+        "dist/mac/EdgeTX Buddy.app/Contents/MacOS/EdgeTX Buddy"
+      );
+    case "win32":
+      return path.join(__dirname, "dist/win-unpacked/EdgeTX Buddy.exe");
+    default:
+      throw new Error("Unknown OS");
+  }
+};
 
 const outputDir = path.join(__dirname, "..", "..", "test-results");
 const testDir = path.join(__dirname, "..");
