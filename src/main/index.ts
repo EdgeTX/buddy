@@ -61,11 +61,8 @@ const createWindow = (): void => {
     resizable: !config.isProduction,
     show: false,
     webPreferences: {
-      sandbox: !config.isE2e,
       allowRunningInsecureContent: false,
       // Need these enabled when e2e is running
-      nodeIntegration: config.isE2e,
-      enableRemoteModule: config.isE2e,
       contextIsolation: false,
       preload: `${__dirname}/preload.js`,
     } as electron.WebPreferences,
