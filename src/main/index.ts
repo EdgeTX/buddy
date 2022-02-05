@@ -2,7 +2,13 @@ import "source-map-support/register";
 import "./polyfills";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import electron, { BrowserWindow, app, dialog, ipcMain } from "electron";
+import electron, {
+  BrowserWindow,
+  app,
+  dialog,
+  ipcMain,
+  session,
+} from "electron";
 import path from "path";
 import WindowControls from "electron-window-controls";
 
@@ -65,6 +71,24 @@ const createWindow = (): void => {
     } as electron.WebPreferences,
   });
 
+  if (config.isE2e) {
+    session
+      .fromPartition("default")
+      .setPermissionRequestHandler((_, permission, callback) => {
+        const allowedPermissions: typeof permission[] = ["clipboard-read"];
+
+        if (allowedPermissions.includes(permission)) {
+          callback(true);
+        } else {
+          console.error(
+            `The application tried to request permission for '${permission}'. This permission was not whitelisted and has been blocked.`
+          );
+
+          callback(false);
+        }
+      });
+  }
+
   const searchQuery = ``;
   if (!config.isProduction) {
     console.log("loading renderer in development");
@@ -88,6 +112,13 @@ const createWindow = (): void => {
     void electron.shell.openExternal(details.url);
     return { action: "deny" };
   });
+
+  const { downloadDirectory } = config;
+  if (downloadDirectory) {
+    mainWindow.webContents.session.on("will-download", (_, item) => {
+      item.setSavePath(path.join(downloadDirectory, item.getFilename()));
+    });
+  }
 
   mainWindow.once("ready-to-show", async () => {
     if (process.env.HEADLESS !== "true") {

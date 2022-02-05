@@ -2,3 +2,6 @@
 **/*.js
 **/__generated__
 storybook-static/
+**/*.json
+build
+dist

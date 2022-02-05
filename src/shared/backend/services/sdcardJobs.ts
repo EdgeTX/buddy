@@ -3,12 +3,12 @@ import { PubSub } from "graphql-subscriptions";
 import debounce from "debounce";
 import pLimit from "p-limit";
 import * as uuid from "uuid";
-import {
+import type {
   SdcardWriteFileStatus,
   SdcardWriteJob,
   SdcardWriteJobStages,
 } from "shared/backend/graph/__generated__";
-import { Context } from "shared/backend/context";
+import type { Context } from "shared/backend/context";
 import { isNotUndefined } from "type-guards";
 
 type WriteMeta = {

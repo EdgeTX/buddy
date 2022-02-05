@@ -2,9 +2,9 @@ import debounce from "debounce";
 import { WebDFU } from "dfu";
 import { PubSub } from "graphql-subscriptions";
 import * as uuid from "uuid";
-import { Context } from "shared/backend/context";
+import type { Context } from "shared/backend/context";
 
-import {
+import type {
   FlashJob,
   FlashStage,
   FlashStages,

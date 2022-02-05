@@ -1,18 +1,7 @@
 {
+  "extends": "../tsconfig.base",
   "compilerOptions": {
-    "target": "esnext",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "useUnknownInCatchVariables": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true
+    "types": []
   },
   "include": ["./"],
   "exclude": ["**/node_modules"]

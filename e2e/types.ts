@@ -1,5 +1,5 @@
 import type { Page, ViewportSize } from "playwright-core";
-import { VideoMode } from "@playwright/test";
+import { ElectronApplication, VideoMode } from "@playwright/test";
 
 export { expect } from "@playwright/test";
 
@@ -23,4 +23,9 @@ export type PageWorkerFixtures = {
   browserMajorVersion: number;
   isAndroid: boolean;
   isElectron: boolean;
+};
+
+export type ElectronTestFixtures = PageTestFixtures & {
+  electronApp: ElectronApplication;
+  newWindow: () => Promise<Page>;
 };

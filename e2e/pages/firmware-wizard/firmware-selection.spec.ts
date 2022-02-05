@@ -1,17 +1,19 @@
 import md5 from "md5";
 import { Readable } from "stream";
 import clipboardy from "clipboardy";
-import { test, expect, firmwarePage } from "../pageTest";
+import fs from "fs/promises";
+import path from "path";
+import { test, expect, waitFor } from "../pageTest";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto(firmwarePage);
+test.beforeEach(async ({ queries }) => {
+  await (await queries.findByText("Radio firmware")).click();
 });
 
 test("Latest firmware is pre selected by default", async ({
   queries,
   page,
 }) => {
-  await (await queries.findByLabelText("Firmware version")).click();
+  await (await queries.findByLabelText("Firmware version")).press("Enter");
 
   await page
     .locator('[role=option][aria-selected="true"]')
@@ -29,7 +31,7 @@ test("Flash via USB is disabled if model is not selected", async ({
   };
 
   await expectFlashButtonIsDisabled();
-  await (await queries.findByLabelText("Firmware version")).click();
+  await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (
     await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
       timeout: 20000,
@@ -59,8 +61,13 @@ const streamToString = (stream: Readable): Promise<string> => {
   });
 };
 
-test("Can download the selected firmware target", async ({ queries, page }) => {
-  await (await queries.findByLabelText("Firmware version")).click();
+test("Can download the selected firmware target", async ({
+  queries,
+  page,
+  isElectron,
+  tempDownloadDir,
+}) => {
+  await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (
     await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
       timeout: 20000,
@@ -75,21 +82,38 @@ test("Can download the selected firmware target", async ({ queries, page }) => {
 
   const [download] = await Promise.all([
     // Start waiting for the download
-    page.waitForEvent("download"),
+    !isElectron ? page.waitForEvent("download") : undefined,
     // Perform the action that initiates download
     (await queries.getByText("Download .bin")).click(),
   ]);
-  expect(download.suggestedFilename()).toBe("xlites-v2.5.0.bin");
-  expect(md5(await streamToString((await download.createReadStream())!))).toBe(
-    "496807b5624fab15c4c2d11130d651c2"
-  );
+
+  const expectedFileName = "xlites-v2.5.0.bin";
+  let fileContents: string;
+
+  // In browser we can use the download event
+  if (download) {
+    expect(download.suggestedFilename()).toBe(expectedFileName);
+    fileContents = await streamToString((await download.createReadStream())!);
+  } else {
+    // In electron we have to read the download path
+    const expectedFilePath = path.join(tempDownloadDir, expectedFileName);
+    await waitFor(async () => {
+      await fs.readFile(expectedFilePath);
+    });
+
+    fileContents = (await fs.readFile(expectedFilePath)).toString();
+  }
+
+  expect(md5(fileContents)).toBe("496807b5624fab15c4c2d11130d651c2");
 });
 
 test("Copy URL button copies a link to the selected firmware", async ({
   queries,
   page,
+  isLinux,
+  isElectron,
 }) => {
-  await (await queries.findByLabelText("Firmware version")).click();
+  await (await queries.findByLabelText("Firmware version")).press("Enter");
   await page
     .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
     .click();
@@ -102,13 +126,19 @@ test("Copy URL button copies a link to the selected firmware", async ({
 
   await (await queries.getByText("Copy URL")).click();
 
-  if (process.env.CI) {
+  if (isLinux && !isElectron) {
     await page.context().grantPermissions(["clipboard-read"]);
   }
 
-  const copiedUrl = process.env.CI
+  const copiedUrl = isLinux
     ? await page.evaluate(() => navigator.clipboard.readText())
     : await clipboardy.read();
 
-  expect(copiedUrl).toBe("localhost:8081/#/flash?version=v2.6.0&target=x10");
+  if (isElectron) {
+    expect(copiedUrl).toBe(
+      "buddy.edgetx.org/#/flash?version=v2.6.0&target=x10"
+    );
+  } else {
+    expect(copiedUrl).toBe("localhost:8081/#/flash?version=v2.6.0&target=x10");
+  }
 });

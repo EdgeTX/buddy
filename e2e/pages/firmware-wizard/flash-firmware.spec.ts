@@ -1,14 +1,14 @@
 import { test, expect } from "../pageTest";
 
-const firmwarePage = "#/flash";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(firmwarePage);
+test.beforeEach(async ({ queries }) => {
+  await (
+    await queries.findByText("Radio firmware", undefined, { timeout: 10000 })
+  ).click();
 });
 
 test("Flash v2.5.0 firmware", async ({ queries }) => {
   // First page
-  await (await queries.findByLabelText("Firmware version")).click();
+  await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (await queries.findByText('EdgeTX "Dauntless" 2.5.0')).click();
 
   const radioSelector = await queries.findByLabelText("Radio model");

@@ -1,4 +1,9 @@
 import { test } from "@playwright/test";
+import tmp from "tmp-promise";
+
+export type PlatformTestFixtures = {
+  tempDownloadDir: string;
+};
 
 export type PlatformWorkerFixtures = {
   platform: "win32" | "darwin" | "linux";
@@ -8,7 +13,7 @@ export type PlatformWorkerFixtures = {
 };
 
 export const platformTest = test.extend<
-  Record<never, never>,
+  PlatformTestFixtures,
   PlatformWorkerFixtures
 >({
   platform: [
@@ -18,4 +23,13 @@ export const platformTest = test.extend<
   isWindows: [process.platform === "win32", { scope: "worker" }],
   isMac: [process.platform === "darwin", { scope: "worker" }],
   isLinux: [process.platform === "linux", { scope: "worker" }],
+  // eslint-disable-next-line no-empty-pattern
+  tempDownloadDir: async ({}, run) => {
+    await tmp.withDir(
+      async (tempDirectory) => {
+        await run(tempDirectory.path);
+      },
+      { unsafeCleanup: true }
+    );
+  },
 });

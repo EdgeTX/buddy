@@ -82,13 +82,36 @@ module.exports = {
     "import/prefer-default-export": "off",
     "@typescript-eslint/return-await": "error",
     "no-void": "off",
-    "import/no-relative-parent-imports": "error",
   },
   parserOptions: {
-    project: "./tsconfig.json",
+    project: "./tsconfig.eslint.json",
     warnOnUnsupportedTypeScriptVersion: false,
   },
+  settings: {
+    "import/resolver": {
+      node: {
+        // baseUrl
+        moduleDirectory: ["node_modules", "./src"],
+      },
+    },
+  },
   overrides: [
+    {
+      files: ["src/**/*"],
+      rules: {
+        "no-restricted-imports": [
+          "error",
+          {
+            patterns: [
+              {
+                group: ["../*"],
+                message: "Usage of relative parent imports is not allowed.",
+              },
+            ],
+          },
+        ],
+      },
+    },
     {
       files: ["src/{renderer,webworker}/**/*"],
       env: {
