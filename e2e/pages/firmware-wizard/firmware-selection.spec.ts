@@ -6,7 +6,9 @@ import path from "path";
 import { test, expect, waitFor } from "../pageTest";
 
 test.beforeEach(async ({ queries }) => {
-  await (await queries.findByText("Radio firmware")).click();
+  await (
+    await queries.findByText("Radio firmware", undefined, { timeout: 10000 })
+  ).click();
 });
 
 test("Latest firmware is pre selected by default", async ({
