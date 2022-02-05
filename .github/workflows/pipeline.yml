@@ -288,7 +288,7 @@ jobs:
             dist/latest-mac.yml
             dist/latest-linux.yml
 
-      - run: npx playwright install --with-deps ${{ matrix.browser }} chromium
+      - run: yarn playwright install --with-deps ${{ matrix.browser }} chromium
 
       - name: Run tests
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn e2e:electron
