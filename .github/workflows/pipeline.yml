@@ -303,7 +303,6 @@ jobs:
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
-          DEBUG: "pw:browser"
           HEADFUL: "true"
 
       - name: Upload test results
@@ -390,7 +389,7 @@ jobs:
           path: playwright-report
 
   release-web:
-    needs: [e2e-web, test]
+    needs: [e2e-web, test, storybook]
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
