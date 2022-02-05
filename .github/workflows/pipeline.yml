@@ -428,7 +428,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-app:
-    needs: build-app
+    needs: build-and-test-app
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
