@@ -4,8 +4,16 @@ import type {
   PlaywrightWorkerOptions,
 } from "@playwright/test";
 import path from "path";
+import { electronMain, pathExists, binaryPath } from "./utils";
+import { dev } from "./env";
 
 process.env.PWPAGE_IMPL = "electron";
+
+if (dev && !pathExists(electronMain)) {
+  throw new Error("E2E tests expect buddy to be running");
+} else if (!dev && !pathExists(binaryPath())) {
+  throw new Error("Production e2e tests expect buddy to be built");
+}
 
 const outputDir = path.join(__dirname, "..", "..", "e2e-recordings");
 const testDir = path.join(__dirname, "..");
