@@ -186,8 +186,6 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
-    needs: [test, test-types, lint, format]
-
     steps:
       - uses: actions/checkout@v1
 
@@ -231,7 +229,7 @@ jobs:
           if-no-files-found: error
           path: build
 
-  build-app:
+  build-and-test-app:
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
@@ -278,7 +276,7 @@ jobs:
       - name: Build
         run: yarn run pack
 
-      - name: Output
+      - name: Upload build
         uses: actions/upload-artifact@v2
         with:
           name: app-builds
@@ -291,6 +289,35 @@ jobs:
             dist/*.dmg
             dist/latest-mac.yml
             dist/latest-linux.yml
+
+      - run: yarn playwright install --with-deps ${{ matrix.browser }} chromium
+
+      - name: Setup xvfb (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          # start xvfb in the background
+          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+
+      - name: Run tests
+        run: yarn e2e:app
+        env:
+          CI: "true"
+          PWTEST_VIDEO: "true"
+          HEADFUL: "true"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: electron-${{ matrix.os }}-test-results
+          path: playwright-report
+
+      - name: Upload video recordings
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: electron-${{ matrix.os }}-recordings
+          path: e2e-recordings
 
       # - name: Setup xvfb (Linux)
       #   if: runner.os == 'Linux'
@@ -362,7 +389,7 @@ jobs:
           path: playwright-report
 
   release-web:
-    needs: e2e-web
+    needs: [e2e-web, test, storybook]
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
@@ -408,7 +435,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-app:
-    needs: build-app
+    needs: [build-and-test-app, test]
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:

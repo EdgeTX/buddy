@@ -36,4 +36,4 @@ schema.graphql
 dist/
 storybook-static/
 playwright-report/
-e2e-results/
+e2e-recordings/

@@ -93,7 +93,8 @@
     "start:web": "WEB_ONLY=true yarn start:renderer",
     "start:cors": "node cors.js",
     "e2e:web": "playwright test --config=e2e/config/default.config.ts --project=chromium",
-    "e2e:electron": "playwright test --config=e2e/config/electron.config.ts --project=chromium",
+    "e2e:app": "playwright test --config=e2e/config/electron.config.ts",
+    "e2e:app:dev": "DEV=1 playwright test --config=e2e/config/electron.config.ts",
     "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js",
     "test:types": "tsc -p tsconfig.spec.json",
     "build": "yarn compile:production && yarn run pack",
@@ -106,7 +107,7 @@
     "compile:deps": "electron-rebuild",
     "codegen": "graphql-codegen --config codegen.yml",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx",
-    "lint:all": "yarn lint src",
+    "lint:all": "yarn lint '**/*.{ts,tsx,js,jsx}'",
     "fmt": "prettier --write '**/*.{ts,tsx,js,jsx}'",
     "fmt:check": "prettier --check '**/*.{ts,tsx,js,jsx}'",
     "postinstall": "yarn codegen && husky install",
@@ -116,7 +117,7 @@
     "serve:web": "serve build/renderer -p 8081"
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": [
+    "**/*.{ts,tsx,js,jsx}": [
       "eslint --fix"
     ],
     "**/*.{json,js,jsx,ts,tsx}": [

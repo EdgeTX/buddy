@@ -1,5 +1,5 @@
 const { convertTsConfig } = require("tsconfig-to-swcconfig");
-const tsconfig = require("./tsconfig.spec.json");
+const tsconfig = require("./tsconfig.base.json");
 const swcConfig = convertTsConfig({
   ...tsconfig.compilerOptions,
   target: "es2022",
@@ -22,6 +22,7 @@ module.exports = {
   ],
   collectCoverageFrom: [
     "**/src/**/*.{ts,tsx}",
+    "!**/e2e/**",
     "!**/node_modules/**",
     "!**/stories/**",
     "!**/__generated__/**",
@@ -39,6 +40,7 @@ module.exports = {
   ],
   coverageProvider: "v8",
   testEnvironment: "jsdom",
+  // baseUrl
   moduleDirectories: ["node_modules", "src"],
   transformIgnorePatterns: [
     // Jest ESM bug https://github.com/apollographql/apollo-client/issues/9156

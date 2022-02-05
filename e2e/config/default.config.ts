@@ -31,7 +31,7 @@ const channel = process.env.PWTEST_CHANNEL as any;
 const video = !!process.env.PWTEST_VIDEO;
 const trace = !!process.env.PWTEST_TRACE;
 
-const outputDir = path.join(__dirname, "..", "..", "e2e-results");
+const outputDir = path.join(__dirname, "..", "..", "e2e-recordings");
 const testDir = path.join(__dirname, "..");
 const config: Config<PlaywrightWorkerOptions & PlaywrightTestOptions> = {
   testDir,

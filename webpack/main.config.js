@@ -3,7 +3,7 @@ const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const WebpackBar = require("webpackbar");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const tsconfig = require("../tsconfig.json");
+const tsconfig = require("../tsconfig.base.json");
 const webpack = require("webpack");
 const path = require("path");
 

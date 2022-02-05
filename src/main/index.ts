@@ -2,7 +2,13 @@ import "source-map-support/register";
 import "./polyfills";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import electron, { BrowserWindow, app, dialog, ipcMain } from "electron";
+import electron, {
+  BrowserWindow,
+  app,
+  dialog,
+  ipcMain,
+  session,
+} from "electron";
 import path from "path";
 import WindowControls from "electron-window-controls";
 
@@ -55,20 +61,35 @@ const createWindow = (): void => {
     resizable: !config.isProduction,
     show: false,
     webPreferences: {
-      sandbox: !config.isE2e,
       allowRunningInsecureContent: false,
       // Need these enabled when e2e is running
-      nodeIntegration: config.isE2e,
-      enableRemoteModule: config.isE2e,
       contextIsolation: false,
       preload: `${__dirname}/preload.js`,
     } as electron.WebPreferences,
   });
 
+  if (config.isE2e) {
+    session
+      .fromPartition("default")
+      .setPermissionRequestHandler((_, permission, callback) => {
+        const allowedPermissions: typeof permission[] = ["clipboard-read"];
+
+        if (allowedPermissions.includes(permission)) {
+          callback(true);
+        } else {
+          console.error(
+            `The application tried to request permission for '${permission}'. This permission was not whitelisted and has been blocked.`
+          );
+
+          callback(false);
+        }
+      });
+  }
+
   const searchQuery = ``;
   if (!config.isProduction) {
     console.log("loading renderer in development");
-    void mainWindow.loadURL(`http://localhost:8081/index.html?next=true`);
+    void mainWindow.loadURL(`http://localhost:8081/index.html`);
   } else {
     console.log("loading renderer");
     void mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {
@@ -88,6 +109,13 @@ const createWindow = (): void => {
     void electron.shell.openExternal(details.url);
     return { action: "deny" };
   });
+
+  const { downloadDirectory } = config;
+  if (downloadDirectory) {
+    mainWindow.webContents.session.on("will-download", (_, item) => {
+      item.setSavePath(path.join(downloadDirectory, item.getFilename()));
+    });
+  }
 
   mainWindow.once("ready-to-show", async () => {
     if (process.env.HEADLESS !== "true") {

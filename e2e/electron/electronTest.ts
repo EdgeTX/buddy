@@ -1,14 +1,10 @@
-import * as path from "path";
-import { ElectronApplication, Page } from "playwright";
+import path from "path";
 import { baseTest } from "../config/baseTest";
-import { PageTestFixtures, PageWorkerFixtures } from "../types";
+import { dev, headed, video } from "../config/env";
+import { binaryPath, electronMain } from "../config/utils";
+import { ElectronTestFixtures, PageWorkerFixtures } from "../types";
 
 export { expect } from "@playwright/test";
-
-type ElectronTestFixtures = PageTestFixtures & {
-  electronApp: ElectronApplication;
-  newWindow: () => Promise<Page>;
-};
 
 // eslint-disable-next-line
 const electronVersion = require("electron/package.json").version as string;
@@ -26,13 +22,26 @@ export const electronTest = baseTest.extend<
   isAndroid: [false, { scope: "worker" }],
   isElectron: [true, { scope: "worker" }],
 
-  electronApp: async ({ playwright }, run) => {
+  electronApp: async ({ playwright, tempDownloadDir }, run) => {
     // This env prevents 'Electron Security Policy' console message.
     process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
     // eslint-disable-next-line no-underscore-dangle
     const electronApp = await playwright._electron.launch({
-      args: [path.join(__dirname, "electron-app.js")],
+      executablePath: !dev ? binaryPath() : undefined,
+      args: !dev ? undefined : [electronMain],
+      env: {
+        ...process.env,
+        E2E: "true",
+        HEADLESS: !headed ? "true" : "false",
+        DOWNLOAD_DIR: tempDownloadDir,
+      },
+      recordVideo: video
+        ? {
+            dir: path.join(__dirname, "../../e2e-recordings"),
+          }
+        : undefined,
     });
+
     await run(electronApp);
     await electronApp.close();
   },

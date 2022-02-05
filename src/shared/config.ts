@@ -27,6 +27,7 @@ export default {
   isMain,
   isElectron,
   proxyUrl: process.env.PROXY_URL,
+  downloadDirectory: process.env.DOWNLOAD_DIR,
   isProduction: PRODUCTION,
   isE2e: isMain ? E2E : extractParam("e2e") === "true",
   github: {
