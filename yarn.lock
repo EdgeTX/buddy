@@ -11594,6 +11594,7 @@ __metadata:
     react: ^17.0.2
     react-dev-utils: ^11.0.4
     react-dom: ^17.0.2
+    react-ga: ^3.3.0
     react-router-dom: ^6.0.2
     react-svg-loader: ^3.0.3
     semver: ^7.3.5
@@ -21813,6 +21814,16 @@ __metadata:
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
   checksum: 8ef272c825ae329f61633ce4ce7f15aa5b84e5214d88bc0823880236e03e985a13195befa2c7a4eda7db3b017dc7985729152d88445823f652403cf36c2b86aa
+  languageName: node
+  linkType: hard
+
+"react-ga@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "react-ga@npm:3.3.0"
+  peerDependencies:
+    prop-types: ^15.6.0
+    react: ^15.6.2 || ^16.0 || ^17
+  checksum: b4f5b0ed3a5d7ea781397d6a1f8dacae2284fe7f03f72dde330958dd0a64732f8766c6fa26cf0f1a8fb1303fa02aa51f23cf0b261e52981d0275262b831c7fea
   languageName: node
   linkType: hard
 
