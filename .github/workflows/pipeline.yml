@@ -231,6 +231,8 @@ jobs:
 
   build-and-test-app:
     runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: :0
 
     strategy:
       fail-fast: false
@@ -290,12 +292,19 @@ jobs:
 
       - run: yarn playwright install --with-deps ${{ matrix.browser }} chromium
 
+      - name: Setup xvfb (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          # start xvfb in the background
+          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+
       - name: Run tests
         run: yarn e2e:app
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
           DEBUG: "pw:browser"
+          HEADFUL: "true"
 
       - name: Upload test results
         uses: actions/upload-artifact@v1
