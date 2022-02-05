@@ -186,8 +186,6 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
-    needs: [test, test-types, lint, format]
-
     steps:
       - uses: actions/checkout@v1
 
@@ -391,7 +389,7 @@ jobs:
           path: playwright-report
 
   release-web:
-    needs: e2e-web
+    needs: [e2e-web, test]
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
@@ -437,7 +435,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   release-app:
-    needs: build-and-test-app
+    needs: [build-and-test-app, test]
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
