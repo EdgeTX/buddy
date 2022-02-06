@@ -3,7 +3,7 @@ import { pageview, initialize } from "react-ga/core";
 import { useLocation } from "react-router-dom";
 
 export const setupTracking = (): void =>
-  initialize("G-ZDNY1Z191B", {
+  initialize("UA-219544404-1", {
     gaOptions: {
       storage: "none",
     },
