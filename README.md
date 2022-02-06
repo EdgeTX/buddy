@@ -88,6 +88,15 @@ Run tests
 $ yarn test
 ```
 
+Run e2e tests - requires web or app to be built
+
+```bash
+# Web app tests
+$ yarn e2e:web
+# Electron app tests
+$ yarn e2e:app
+```
+
 Lint
 
 ```bash
