@@ -16,7 +16,7 @@ const isMobileOs = isMobile({ tablet: true });
 const App: React.FC = () => (
   <HashRouter>
     {!config.isElectron && !isMobileOs && <CompatNoticeHandler />}
-    {!config.isElectron && <RouteTracker />}
+    <RouteTracker />
     <Layout
       macFrameless={config.isElectron && config.os === "Mac OS"}
       windowsFrameless={config.isElectron && !!config.os?.startsWith("Windows")}

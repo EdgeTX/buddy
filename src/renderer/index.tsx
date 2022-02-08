@@ -13,7 +13,7 @@ message.config({
   top: 64,
 });
 
-if (!config.isElectron && config.isProduction && !config.isE2e) {
+if (config.isProduction && !config.isE2e) {
   setupTracking();
 }
 
