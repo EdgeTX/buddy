@@ -84,7 +84,6 @@ Promise<void> => {
         return entries;
       })
       .catch((e: Error) => {
-        console.error(e);
         updateStageStatus(jobId, "download", {
           error: e.message,
         });
@@ -112,6 +111,7 @@ Promise<void> => {
           return true;
         })
         .catch((e: Error) => {
+          console.error(e);
           updateStageStatus(jobId, "erase", { error: e.message });
           return false;
         });

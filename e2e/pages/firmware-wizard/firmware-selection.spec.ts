@@ -90,23 +90,23 @@ test("Can download the selected firmware target", async ({
   ]);
 
   const expectedFileName = "xlites-v2.5.0.bin";
-  let fileContents: string;
+  const expectedFileHash = "496807b5624fab15c4c2d11130d651c2";
 
   // In browser we can use the download event
   if (download) {
     expect(download.suggestedFilename()).toBe(expectedFileName);
-    fileContents = await streamToString((await download.createReadStream())!);
+    expect(
+      md5(await streamToString((await download.createReadStream())!))
+    ).toBe(expectedFileHash);
   } else {
     // In electron we have to read the download path
     const expectedFilePath = path.join(tempDownloadDir, expectedFileName);
     await waitFor(async () => {
-      await fs.readFile(expectedFilePath);
+      expect(md5((await fs.readFile(expectedFilePath)).toString())).toBe(
+        expectedFileHash
+      );
     });
-
-    fileContents = (await fs.readFile(expectedFilePath)).toString();
   }
-
-  expect(md5(fileContents)).toBe("496807b5624fab15c4c2d11130d651c2");
 });
 
 test("Copy URL button copies a link to the selected firmware", async ({

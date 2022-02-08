@@ -11,6 +11,7 @@ import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
+import { exception } from "react-ga/core";
 
 const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -130,6 +131,11 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                         navigate(`./${jobId}`);
                       })
                       .catch((e: Error) => {
+                        exception({
+                          description: `Error creating flash job: ${e.message}`,
+                          fatal: true,
+                        });
+
                         void message.error(
                           `Could not create job: ${e.message}`
                         );

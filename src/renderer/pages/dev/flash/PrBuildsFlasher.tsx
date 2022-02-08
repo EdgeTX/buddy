@@ -11,6 +11,7 @@ import { FullHeight } from "renderer/shared/layouts";
 import config from "shared/config";
 import styled from "styled-components";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
+import { exception } from "react-ga/core";
 import ExecutionOverlay from "./ExecuationOverlay";
 
 const Container = styled.div`
@@ -107,6 +108,10 @@ const PrBuildsFlasher: React.FC = () => {
                     updateParams({ flashJob: jobId });
                   })
                   .catch((e: Error) => {
+                    exception({
+                      description: `Error creating PR flash job: ${e.message}`,
+                      fatal: true,
+                    });
                     void message.error(`Could not create job: ${e.message}`);
                   });
               }}
