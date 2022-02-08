@@ -30,6 +30,8 @@ jest.mock("styled-components", () => {
   return Object.assign(styled, actual);
 });
 
+jest.mock("react-ga", () => ({ exception: jest.fn() }));
+
 jest.mock("use-media", () => {
   const actual = jest.requireActual("use-media") as typeof import("use-media");
   const useMedia = actual.default;

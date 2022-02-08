@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { message } from "antd";
 import { useMutation, gql, useQuery } from "@apollo/client";
-import { exception } from "react-ga/core";
+import { exception } from "react-ga";
 import FirmwareUploadArea from "./FirmwareUploadArea";
 
 type FirmwareUploaderProps = {

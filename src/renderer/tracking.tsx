@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { pageview, initialize } from "react-ga/core";
+import { pageview, initialize } from "react-ga";
 import { useLocation } from "react-router-dom";
 
 export const setupTracking = (): void =>

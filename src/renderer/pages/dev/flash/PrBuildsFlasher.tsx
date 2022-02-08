@@ -11,7 +11,7 @@ import { FullHeight } from "renderer/shared/layouts";
 import config from "shared/config";
 import styled from "styled-components";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
-import { exception } from "react-ga/core";
+import { exception } from "react-ga";
 import ExecutionOverlay from "./ExecuationOverlay";
 
 const Container = styled.div`

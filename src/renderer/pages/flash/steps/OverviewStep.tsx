@@ -11,7 +11,7 @@ import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
-import { exception } from "react-ga/core";
+import { exception } from "react-ga";
 
 const Container = styled.div<{ isMobile: boolean }>`
   display: flex;

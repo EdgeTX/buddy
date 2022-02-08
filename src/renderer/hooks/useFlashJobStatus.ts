@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { exception } from "react-ga/core";
+import { exception } from "react-ga";
 import { useEffect } from "react";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
