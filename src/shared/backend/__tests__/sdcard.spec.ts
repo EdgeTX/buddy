@@ -83,6 +83,125 @@ describe("Query", () => {
           "name": "Latest",
           "targets": Array [
             Object {
+              "id": "x10",
+              "name": "FrSky Horus X10",
+            },
+            Object {
+              "id": "x10-access",
+              "name": "FrSky Horus X10 Access",
+            },
+            Object {
+              "id": "x12s",
+              "name": "FrSky Horus X12s",
+            },
+            Object {
+              "id": "t16",
+              "name": "Jumper T16",
+            },
+            Object {
+              "id": "t18",
+              "name": "Jumper T18",
+            },
+            Object {
+              "id": "tx16s",
+              "name": "RadioMaster TX16S",
+            },
+            Object {
+              "id": "nv14",
+              "name": "Flysky NV14",
+            },
+            Object {
+              "id": "x7",
+              "name": "FrSky QX7",
+            },
+            Object {
+              "id": "x7-access",
+              "name": "FrSky QX7 Access",
+            },
+            Object {
+              "id": "x9lite",
+              "name": "FrSky X9 Lite",
+            },
+            Object {
+              "id": "x9lites",
+              "name": "FrSky X9 Lite S",
+            },
+            Object {
+              "id": "xlite",
+              "name": "FrSky X-Lite",
+            },
+            Object {
+              "id": "xlites",
+              "name": "FrSky X-Lite S",
+            },
+            Object {
+              "id": "t12",
+              "name": "Jumper T12",
+            },
+            Object {
+              "id": "tlite",
+              "name": "Jumper T-Lite",
+            },
+            Object {
+              "id": "tpro",
+              "name": "Jumper T-Pro",
+            },
+            Object {
+              "id": "t8",
+              "name": "RadioMaster T8",
+            },
+            Object {
+              "id": "tx12",
+              "name": "RadioMaster TX12",
+            },
+            Object {
+              "id": "zorro",
+              "name": "RadioMaster Zorro",
+            },
+            Object {
+              "id": "x9d",
+              "name": "FrSky X9D",
+            },
+            Object {
+              "id": "x9dp",
+              "name": "FrSky X9D Plus",
+            },
+            Object {
+              "id": "x9dp2019",
+              "name": "FrSky X9D Plus 2019",
+            },
+          ],
+        }
+      `);
+
+      nockDone();
+    });
+
+    it("should return a default list of targets if the release version doesnt contain", async () => {
+      const { nockDone } = await nock.back("sdcard-pack-v2.6.0.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxSdcardPackRelease(id: "v2.6.0") {
+              id
+              name
+              targets {
+                id
+                name
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxSdcardPackRelease).toMatchInlineSnapshot(`
+        Object {
+          "id": "v2.6.0",
+          "name": "EdgeTX \\"Santa\\" v2.6.0 SD Card Pack ",
+          "targets": Array [
+            Object {
               "id": "t16",
               "name": "Jumper T16",
             },
