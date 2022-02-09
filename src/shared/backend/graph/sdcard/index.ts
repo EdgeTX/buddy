@@ -10,31 +10,6 @@ import ISO6391 from "iso-639-1";
 
 // TODO: Move SD card assets to own module
 
-const targetsToAssets = [
-  { name: "Flysky NV14", asset: "nv14.zip", id: "nv14" },
-  { name: "Jumper T16", asset: "horus.zip", id: "t16" },
-  { name: "Jumper T18", asset: "horus.zip", id: "t18" },
-  { name: "Jumper T-Lite", asset: "taranis-x7.zip", id: "tlite" },
-  { name: "Jumper T-Pro", asset: "taranis-x7.zip", id: "tpro" },
-  { name: "Jumper T12", asset: "taranis-x7.zip", id: "t12" },
-  { name: "Frsky Horus X10", asset: "horus.zip", id: "x10" },
-  { name: "Frsky Horus X10 Access", asset: "horus.zip", id: "x10-access" },
-  { name: "Frsky Horus X12s", asset: "horus.zip", id: "x12s" },
-  { name: "Frsky QX7", asset: "taranis-x7.zip", id: "x7" },
-  { name: "Frsky QX7 Access", asset: "taranis-x7.zip", id: "x7-access" },
-  { name: "Frsky X9D", asset: "taranis-x9.zip", id: "x9d" },
-  { name: "Frsky X9D Plus", asset: "taranis-x9.zip", id: "x9dp" },
-  { name: "Frsky X9D Plus 2019", asset: "taranis-x9.zip", id: "x9dp2019" },
-  { name: "Frsky X-Lite", asset: "taranis-x7.zip", id: "xlite" },
-  { name: "Frsky X-Lite S", asset: "taranis-x7.zip", id: "xlites" },
-  { name: "Frsky X9 Lite", asset: "taranis-x7.zip", id: "x9lite" },
-  { name: "Frsky X9 Lite S", asset: "taranis-x7.zip", id: "x9lites" },
-  { name: "RadioMaster T8", asset: "taranis-x7.zip", id: "t8" },
-  { name: "Radiomaster TX12", asset: "taranis-x7.zip", id: "tx12" },
-  { name: "Radiomaster TX16s", asset: "horus.zip", id: "tx16s" },
-  { name: "RadioMaster Zorro", asset: "taranis-x7.zip", id: "zorro" },
-];
-
 const EXPECTED_ROOT_ENTRIES = [
   "FIRMWARE",
   "THEMES",
@@ -63,7 +38,6 @@ const typeDefs = gql`
       id: ID
       isPrerelease: Boolean!
     ): EdgeTxSoundsRelease
-    sdcardTargets: [SdcardTarget!]!
     sdcardSounds: [SdcardSoundsAsset!]!
     sdcardDirectory(id: ID!): SdcardDirectory
     sdcardWriteJobStatus(jobId: ID!): SdcardWriteJob
@@ -333,19 +307,6 @@ const resolvers: Resolvers = {
         })),
       };
     },
-    sdcardTargets: async (_, __, { github }) => {
-      const release = (
-        await github("GET /repos/{owner}/{repo}/releases/latest", {
-          owner: config.github.organization,
-          repo: config.github.repos.sdcard,
-        })
-      ).data;
-
-      const sdcardAssets = release.assets;
-      return sdcardAssets.flatMap((asset) =>
-        targetsToAssets.filter((radio) => radio.asset === asset.name)
-      );
-    },
     sdcardSounds: async (_, __, { github }) => {
       const soundsRelease = (
         await github("GET /repos/{owner}/{repo}/releases/latest", {
@@ -469,8 +430,12 @@ const resolvers: Resolvers = {
         throw new GraphQLError("Folder id doesnt exist");
       }
 
+      const targets = pack
+        ? await context.sdcardAssets.fetchTargetsManifest(pack.version)
+        : [];
+
       const requiredPackName = pack
-        ? targetsToAssets.find(({ id }) => id === pack.target)?.asset
+        ? targets.find(({ id }) => id === pack.target)?.asset
         : undefined;
 
       if (pack && !requiredPackName) {
@@ -554,10 +519,13 @@ const resolvers: Resolvers = {
     },
   },
   EdgeTxSdcardPackRelease: {
-    targets: ({ artifacts }) =>
-      artifacts.flatMap((releaseArtifact) =>
-        targetsToAssets.filter((radio) => radio.asset === releaseArtifact.name)
-      ),
+    targets: async ({ artifacts, id }, _, { sdcardAssets }) => {
+      const targets = await sdcardAssets.fetchTargetsManifest(id);
+
+      return artifacts.flatMap((asset) =>
+        targets.filter((radio) => radio.asset === asset.name)
+      );
+    },
   },
   EdgeTxSoundsRelease: {
     sounds: ({ artifacts }) =>
