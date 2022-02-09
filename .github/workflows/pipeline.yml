@@ -290,7 +290,7 @@ jobs:
             dist/latest-mac.yml
             dist/latest-linux.yml
 
-      - run: yarn playwright install --with-deps ${{ matrix.browser }} chromium
+      - run: yarn playwright install --with-deps chromium chromium
 
       - name: Setup xvfb (Linux)
         if: runner.os == 'Linux'
@@ -367,8 +367,8 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         run: yarn --immutable --mode=skip-build
 
-      - name: Install chrome
-        run: yarn playwright install --with-deps chromium chromium
+      - name: Install browsers
+        run: yarn playwright install --with-deps
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v2

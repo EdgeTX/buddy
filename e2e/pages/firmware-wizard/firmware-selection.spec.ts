@@ -25,7 +25,9 @@ test("Latest firmware is pre selected by default", async ({
 
 test("Flash via USB is disabled if model is not selected", async ({
   queries,
+  browserName,
 }) => {
+  test.skip(browserName !== "chromium");
   const expectFlashButtonIsDisabled = async () => {
     expect(
       await (await queries.getByText("Flash via USB")).isDisabled()

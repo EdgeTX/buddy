@@ -6,7 +6,8 @@ test.beforeEach(async ({ queries }) => {
   ).click();
 });
 
-test("Flash v2.5.0 firmware", async ({ queries }) => {
+test("Flash v2.5.0 firmware", async ({ queries, browserName }) => {
+  test.skip(browserName !== "chromium");
   // First page
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (await queries.findByText('EdgeTX "Dauntless" 2.5.0')).click();
