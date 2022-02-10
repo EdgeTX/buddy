@@ -116,7 +116,9 @@ test("Copy URL button copies a link to the selected firmware", async ({
   page,
   isLinux,
   isElectron,
+  browserName,
 }) => {
+  test.skip(browserName !== "chromium");
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await page
     .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
