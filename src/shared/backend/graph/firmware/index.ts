@@ -17,25 +17,27 @@ const LocalEdgeTxFirmwareRef = schema.simpleObject("LocalEdgeTxFirmware", {
   }),
 });
 
-schema.mutationFields((t) => ({
-  registerLocalFirmware: t.field({
-    type: LocalEdgeTxFirmwareRef,
-    args: {
-      fileName: t.arg.string({
-        required: false,
-      }),
-      firmwareBase64Data: t.arg.string({ required: true }),
-    },
-    resolve: (_, { fileName, firmwareBase64Data }, { firmwareStore }) => {
-      const id = firmwareStore.registerFirmware(
-        Buffer.from(firmwareBase64Data, "base64"),
-        fileName ?? undefined
-      );
+schema.mutationType({
+  fields: (t) => ({
+    registerLocalFirmware: t.field({
+      type: LocalEdgeTxFirmwareRef,
+      args: {
+        fileName: t.arg.string({
+          required: false,
+        }),
+        firmwareBase64Data: t.arg.string({ required: true }),
+      },
+      resolve: (_, { fileName, firmwareBase64Data }, { firmwareStore }) => {
+        const id = firmwareStore.registerFirmware(
+          Buffer.from(firmwareBase64Data, "base64"),
+          fileName ?? undefined
+        );
 
-      return { id, name: fileName ?? id, base64Data: firmwareBase64Data };
-    },
+        return { id, name: fileName ?? id, base64Data: firmwareBase64Data };
+      },
+    }),
   }),
-}));
+});
 
 const EdgeTxFirmwareTarget = schema.simpleObject("EdgeTxFirmwareTarget", {
   fields: (t) => ({
@@ -46,7 +48,7 @@ const EdgeTxFirmwareTarget = schema.simpleObject("EdgeTxFirmwareTarget", {
   }),
 });
 
-const EdgeTxFirmwareBundle = schema.simpleObject("EdgeTxFirmwareTarget", {
+const EdgeTxFirmwareBundle = schema.simpleObject("EdgeTxFirmwareBundle", {
   fields: (t) => ({
     id: t.id(),
     url: t.string(),
@@ -56,10 +58,6 @@ const EdgeTxFirmwareBundle = schema.simpleObject("EdgeTxFirmwareTarget", {
 const EdgeTxPrCommit = schema.simpleObject("EdgeTxPrCommit", {
   fields: (t) => ({
     id: t.id(),
-    firmwareBundle: t.field({
-      type: EdgeTxFirmwareBundle,
-      nullable: true,
-    }),
   }),
 });
 
@@ -79,7 +77,6 @@ const EdgeTxReleaseRef = schema.simpleObject("EdgeTxRelease", {
     isPrerelease: t.boolean(),
     name: t.string(),
     description: t.string({ nullable: true }),
-    firmwareBundle: t.field({ type: EdgeTxFirmwareBundle }),
     assets: t.field({
       type: [
         schema.simpleObject("EdgeTxReleaseAsset", {
@@ -94,143 +91,137 @@ const EdgeTxReleaseRef = schema.simpleObject("EdgeTxRelease", {
   }),
 });
 
-schema.queryFields((t) => ({
-  edgeTxReleases: t.field({
-    type: [EdgeTxReleaseRef],
-    resolve: async (_, __, { github }) => {
-      const releasesRequest = await github(
-        "GET /repos/{owner}/{repo}/releases",
-        {
+schema.queryType({
+  fields: (t) => ({
+    edgeTxReleases: t.field({
+      type: [EdgeTxReleaseRef],
+      resolve: async (_, __, { github }) => {
+        const releasesRequest = await github(
+          "GET /repos/{owner}/{repo}/releases",
+          {
+            owner: config.github.organization,
+            repo: config.github.repos.firmware,
+          }
+        );
+
+        return releasesRequest.data.map((release) => ({
+          id: release.tag_name,
+          name: release.name ?? release.tag_name,
+          description: release.body_text,
+          isPrerelease: release.prerelease,
+          assets: release.assets.map((asset) => ({
+            id: asset.id.toString(),
+            name: asset.name,
+            url: asset.browser_download_url,
+          })),
+        }));
+      },
+    }),
+    edgeTxRelease: t.field({
+      type: EdgeTxReleaseRef,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { id }, { github }) => {
+        const releaseRequest = await github(
+          "GET /repos/{owner}/{repo}/releases/tags/{tag}",
+          {
+            owner: config.github.organization,
+            repo: config.github.repos.firmware,
+            tag: id.toString(),
+          }
+        ).catch((e: { status?: number } | Error) => {
+          if ("status" in e && e.status && e.status === 404) {
+            return undefined;
+          }
+          throw e as Error;
+        });
+
+        if (!releaseRequest) {
+          return null;
+        }
+        const release = releaseRequest.data;
+
+        return {
+          id: release.tag_name,
+          name: release.name ?? release.tag_name,
+          description: release.body,
+          isPrerelease: release.prerelease,
+          assets: release.assets.map((asset) => ({
+            id: asset.id.toString(),
+            name: asset.name,
+            url: asset.browser_download_url,
+          })),
+        };
+      },
+    }),
+    edgeTxPrs: t.field({
+      type: [EdgeTxPr],
+      resolve: async (_, __, { github }) => {
+        const prs = await github("GET /repos/{owner}/{repo}/pulls", {
           owner: config.github.organization,
           repo: config.github.repos.firmware,
+          sort: "created",
+          state: "open",
+          direction: "desc",
+        });
+
+        return prs.data.map((pr) => ({
+          id: pr.number,
+          name: pr.head.label,
+          headCommitId: pr.head.sha,
+          title: pr.title,
+          description: pr.body ?? null,
+        }));
+      },
+    }),
+    edgeTxPr: t.field({
+      type: EdgeTxPr,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { id }, { github }) => {
+        const pr = (
+          await github("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
+            owner: config.github.organization,
+            repo: config.github.repos.firmware,
+            pull_number: Number(id),
+          })
+        ).data;
+
+        return {
+          id: pr.number,
+          name: pr.head.label,
+          headCommitId: pr.head.sha,
+          title: pr.title,
+          description: pr.body ?? null,
+        };
+      },
+    }),
+    localFirmware: t.field({
+      type: LocalEdgeTxFirmwareRef,
+      nullable: true,
+      args: {
+        byId: t.arg.id({ required: true }),
+      },
+      resolve: (_, { byId }, { firmwareStore }) => {
+        const file = firmwareStore.getLocalFirmwareById(byId.toString());
+
+        if (!file) {
+          return null;
         }
-      );
 
-      return releasesRequest.data.map((release) => ({
-        id: release.tag_name,
-        name: release.name ?? release.tag_name,
-        description: release.body_text,
-        isPrerelease: release.prerelease,
-        // Will be resolved in the release object
-        firmwareBundle: {
-          id: "",
-          name: "",
-          url: "",
-        },
-        assets: release.assets.map((asset) => ({
-          id: asset.id.toString(),
-          name: asset.name,
-          url: asset.browser_download_url,
-        })),
-      }));
-    },
+        return {
+          id: file.id,
+          name: file.name ?? file.id,
+          base64Data: file.data.toString("base64"),
+        };
+      },
+    }),
   }),
-  edgeTxRelease: t.field({
-    type: EdgeTxReleaseRef,
-    nullable: true,
-    args: {
-      id: t.arg.id({ required: true }),
-    },
-    resolve: async (_, { id }, { github }) => {
-      const releaseRequest = await github(
-        "GET /repos/{owner}/{repo}/releases/tags/{tag}",
-        {
-          owner: config.github.organization,
-          repo: config.github.repos.firmware,
-          tag: id.toString(),
-        }
-      ).catch((e: { status?: number } | Error) => {
-        if ("status" in e && e.status && e.status === 404) {
-          return undefined;
-        }
-        throw e as Error;
-      });
-
-      if (!releaseRequest) {
-        return null;
-      }
-      const release = releaseRequest.data;
-
-      return {
-        id: release.tag_name,
-        name: release.name ?? release.tag_name,
-        description: release.body,
-        isPrerelease: release.prerelease,
-        firmwareBundle: {
-          id: "",
-          name: "",
-          url: "",
-        },
-        assets: release.assets.map((asset) => ({
-          id: asset.id.toString(),
-          name: asset.name,
-          url: asset.browser_download_url,
-        })),
-      };
-    },
-  }),
-  edgeTxPrs: t.field({
-    type: [EdgeTxPr],
-    resolve: async (_, __, { github }) => {
-      const prs = await github("GET /repos/{owner}/{repo}/pulls", {
-        owner: config.github.organization,
-        repo: config.github.repos.firmware,
-        sort: "created",
-        state: "open",
-        direction: "desc",
-      });
-
-      return prs.data.map((pr) => ({
-        id: pr.number.toString(),
-        name: pr.head.label,
-        headCommitId: pr.head.sha,
-        title: pr.title,
-        description: pr.body ?? null,
-      }));
-    },
-  }),
-  edgeTxPr: t.field({
-    type: EdgeTxPr,
-    nullable: true,
-    resolve: async (_, { id }, { github }) => {
-      const pr = (
-        await github("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
-          owner: config.github.organization,
-          repo: config.github.repos.firmware,
-          pull_number: Number(id),
-        })
-      ).data;
-
-      return {
-        id: pr.number.toString(),
-        name: pr.head.label,
-        headCommitId: pr.head.sha,
-        title: pr.title,
-        description: pr.body ?? null,
-      };
-    },
-  }),
-  localFirmware: t.field({
-    type: LocalEdgeTxFirmwareRef,
-    nullable: true,
-    args: {
-      byId: t.arg.id({ required: true }),
-    },
-    resolve: (_, { byId }, { firmwareStore }) => {
-      const file = firmwareStore.getLocalFirmwareById(byId.toString());
-
-      if (!file) {
-        return null;
-      }
-
-      return {
-        id: file.id,
-        name: file.name ?? file.id,
-        base64Data: file.data.toString("base64"),
-      };
-    },
-  }),
-}));
+});
 
 schema.objectFields(EdgeTxReleaseRef, (t) => ({
   firmwareBundle: t.field({
@@ -342,9 +333,6 @@ schema.objectFields(EdgeTxPrCommit, (t) => ({
   firmwareBundle: t.field({
     type: EdgeTxFirmwareBundle,
     nullable: true,
-    args: {
-      id: t.arg.id({ required: true }),
-    },
     resolve: async ({ id }, _, { firmwareStore }) => {
       const firmwareAsset = await firmwareStore.fetchPrBuild(id.toString());
 

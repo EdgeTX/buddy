@@ -1,8 +1,3 @@
-import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
-import graph from "./graph";
-
-export const schema = mergeSchemas({
-  schemas: [graph.schema, makeExecutableSchema(graph)],
-});
+export { default as schema } from "./schema";
 export { createContext } from "./context";
 export * from "./types";
