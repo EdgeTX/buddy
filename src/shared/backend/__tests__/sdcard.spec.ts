@@ -4,11 +4,11 @@ import nock from "nock";
 import { createExecutor } from "test-utils/backend";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
-import { SdcardWriteJob } from "shared/backend/graph/__generated__";
 import tmp from "tmp-promise";
 import fs from "fs/promises";
 import { directorySnapshot, waitForStageCompleted } from "test-utils/tools";
 import path from "path";
+import { SdcardWriteJobType } from "shared/backend/graph/sdcard";
 
 const requestWritableDirectory = jest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -966,7 +966,9 @@ describe("Mutation", () => {
 
 const waitForSdcardJobCompleted = async (jobId: string) => {
   const queue =
-    backend.context.sdcardJobs.jobUpdates.asyncIterator<SdcardWriteJob>(jobId);
+    backend.context.sdcardJobs.jobUpdates.asyncIterator<SdcardWriteJobType>(
+      jobId
+    );
 
   return waitForStageCompleted(queue, "write");
 };

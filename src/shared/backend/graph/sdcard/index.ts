@@ -101,6 +101,7 @@ const SdcardWriteJobWriteStage = builder.simpleObject(
 const SdcardWriteJobStages = builder.simpleObject("SdcardWriteJobStages", {
   fields: (t) => ({
     erase: t.field({
+      nullable: true,
       type: SdcardWriteJobStage,
     }),
     download: t.field({

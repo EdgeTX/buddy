@@ -4,10 +4,10 @@ import { MockedFunction } from "jest-mock";
 import { createDfuEvents } from "shared/backend/mocks/dfu";
 import nock from "nock";
 import { waitForStageCompleted } from "test-utils/tools";
-import { FlashJob } from "shared/backend/graph/__generated__";
 import { WebDFU } from "dfu";
 import md5 from "md5";
 import { connect } from "shared/backend/services/dfu";
+import { FlashJobType } from "shared/backend/graph/flash";
 
 const requestDeviceMock = jest.fn() as MockedFunction<
   typeof navigator.usb.requestDevice
@@ -317,7 +317,7 @@ describe("Mutation", () => {
 
   describe("Create flash job from release", () => {
     let jobId: string;
-    let jobUpdatesQueue: AsyncIterator<FlashJob, any, undefined>;
+    let jobUpdatesQueue: AsyncIterator<FlashJobType, any, undefined>;
 
     afterAll(async () => {
       if (jobId) {
@@ -353,7 +353,7 @@ describe("Mutation", () => {
       expect(jobId).toBeTruthy();
 
       jobUpdatesQueue =
-        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
+        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJobType>(jobId);
 
       await waitForStageCompleted(jobUpdatesQueue, "connect");
 
@@ -713,7 +713,7 @@ describe("Mutation", () => {
 
   describe("Create flash job from PR build", () => {
     let jobId: string;
-    let jobUpdatesQueue: AsyncIterator<FlashJob, any, undefined>;
+    let jobUpdatesQueue: AsyncIterator<FlashJobType, any, undefined>;
 
     afterAll(async () => {
       if (jobId) {
@@ -752,7 +752,7 @@ describe("Mutation", () => {
       expect(jobId).toBeTruthy();
 
       jobUpdatesQueue =
-        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
+        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJobType>(jobId);
 
       await waitForStageCompleted(jobUpdatesQueue, "connect");
       await waitForStageCompleted(jobUpdatesQueue, "download");
@@ -773,7 +773,7 @@ describe("Mutation", () => {
 
   describe("Create flash job from local file", () => {
     let jobId: string;
-    let jobUpdatesQueue: AsyncIterator<FlashJob, any, undefined>;
+    let jobUpdatesQueue: AsyncIterator<FlashJobType, any, undefined>;
 
     afterAll(async () => {
       if (jobId) {
@@ -822,7 +822,7 @@ describe("Mutation", () => {
       expect(job.stages.download).toBeNull();
 
       jobUpdatesQueue =
-        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
+        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJobType>(jobId);
 
       await waitForStageCompleted(jobUpdatesQueue, "connect");
 
