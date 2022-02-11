@@ -4,46 +4,6 @@ import { createBuilder } from "shared/backend/utils/builder";
 
 const builder = createBuilder();
 
-const LocalEdgeTxFirmwareRef = builder.simpleObject("LocalEdgeTxFirmware", {
-  fields: (t) => ({
-    id: t.id(),
-    name: t.string(),
-    base64Data: t.string(),
-  }),
-});
-
-const EdgeTxFirmwareTarget = builder.simpleObject("EdgeTxFirmwareTarget", {
-  fields: (t) => ({
-    id: t.id(),
-    code: t.string(),
-    name: t.string(),
-    bundleUrl: t.string(),
-  }),
-});
-
-const EdgeTxFirmwareBundle = builder.simpleObject("EdgeTxFirmwareBundle", {
-  fields: (t) => ({
-    id: t.id(),
-    url: t.string(),
-  }),
-});
-
-const EdgeTxPrCommit = builder.simpleObject("EdgeTxPrCommit", {
-  fields: (t) => ({
-    id: t.id(),
-  }),
-});
-
-const EdgeTxPr = builder.simpleObject("EdgeTxPr", {
-  fields: (t) => ({
-    id: t.id(),
-    name: t.string(),
-    title: t.string(),
-    description: t.string({ nullable: true }),
-    headCommitId: t.string(),
-  }),
-});
-
 const EdgeTxRelease = builder.simpleObject("EdgeTxRelease", {
   fields: (t) => ({
     id: t.id(),
@@ -61,6 +21,46 @@ const EdgeTxRelease = builder.simpleObject("EdgeTxRelease", {
         }),
       ],
     }),
+  }),
+});
+
+const EdgeTxPr = builder.simpleObject("EdgeTxPr", {
+  fields: (t) => ({
+    id: t.id(),
+    name: t.string(),
+    title: t.string(),
+    description: t.string({ nullable: true }),
+    headCommitId: t.string(),
+  }),
+});
+
+const EdgeTxPrCommit = builder.simpleObject("EdgeTxPrCommit", {
+  fields: (t) => ({
+    id: t.id(),
+  }),
+});
+
+const EdgeTxFirmwareTarget = builder.simpleObject("EdgeTxFirmwareTarget", {
+  fields: (t) => ({
+    id: t.id(),
+    code: t.string(),
+    name: t.string(),
+    bundleUrl: t.string(),
+  }),
+});
+
+const LocalEdgeTxFirmware = builder.simpleObject("LocalEdgeTxFirmware", {
+  fields: (t) => ({
+    id: t.id(),
+    name: t.string(),
+    base64Data: t.string(),
+  }),
+});
+
+const EdgeTxFirmwareBundle = builder.simpleObject("EdgeTxFirmwareBundle", {
+  fields: (t) => ({
+    id: t.id(),
+    url: t.string(),
   }),
 });
 
@@ -174,7 +174,7 @@ builder.queryType({
       },
     }),
     localFirmware: t.field({
-      type: LocalEdgeTxFirmwareRef,
+      type: LocalEdgeTxFirmware,
       nullable: true,
       args: {
         byId: t.arg.id({ required: true }),
@@ -199,7 +199,7 @@ builder.queryType({
 builder.mutationType({
   fields: (t) => ({
     registerLocalFirmware: t.field({
-      type: LocalEdgeTxFirmwareRef,
+      type: LocalEdgeTxFirmware,
       args: {
         fileName: t.arg.string({
           required: false,

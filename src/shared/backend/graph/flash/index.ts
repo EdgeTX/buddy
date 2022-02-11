@@ -82,9 +82,6 @@ const usbDeviceId = (device: USBDevice): string =>
   device.serialNumber ??
   `${hexString(device.vendorId)}:${hexString(device.productId)}`;
 
-const findDevice = (devices: USBDevice[], id: string): USBDevice | undefined =>
-  devices.find((d) => usbDeviceId(d) === id);
-
 const usbDeviceToFlashDevice = (
   device: USBDevice
 ): TypeOf<typeof FlashableDevice> => ({
@@ -94,6 +91,9 @@ const usbDeviceToFlashDevice = (
   vendorId: hexString(device.vendorId),
   productId: hexString(device.productId),
 });
+
+const findDevice = (devices: USBDevice[], id: string): USBDevice | undefined =>
+  devices.find((d) => usbDeviceId(d) === id);
 
 builder.mutationType({
   fields: (t) => ({
