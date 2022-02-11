@@ -216,7 +216,6 @@ builder.mutationType({
         return null;
       },
     }),
-
     requestFlashableDevice: t.field({
       type: FlashableDevice,
       nullable: true,
@@ -239,7 +238,6 @@ builder.queryType({
       resolve: (_, { jobId }, { flashJobs }) =>
         flashJobs.getJob(jobId.toString()) ?? null,
     }),
-
     flashableDevices: t.field({
       type: [FlashableDevice],
       resolve: (_, __, { usb }) =>
