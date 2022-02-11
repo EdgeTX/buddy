@@ -4181,6 +4181,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pothos/core@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@pothos/core@npm:3.1.2"
+  peerDependencies:
+    graphql: ">=15.1.0"
+  checksum: 1034c291d4ed7b241c94314f7d51afc37a5c1b332ac0ada938e08198dd7b29abcf14a0df15e2800fd11dd7f9045e56fd7ea872dbdfaa0135d4e983ebfb9c13bb
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-simple-objects@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@pothos/plugin-simple-objects@npm:3.0.1"
+  peerDependencies:
+    graphql: ">=15.1.0"
+  checksum: ef9495102f58bb1aba6d5e65c5af9d9a8e30397b67010fc37607b0ecd10e0f982624f920f2127ccf3b2497264ce256a834658adf2972620447f4f99c9382aa4d
+  languageName: node
+  linkType: hard
+
 "@rehooks/local-storage@npm:^2.4.4":
   version: 2.4.4
   resolution: "@rehooks/local-storage@npm:2.4.4"
@@ -7002,6 +7020,18 @@ __metadata:
     webpack-dev-server:
       optional: true
   checksum: 050a930b63653ae0002e135cc9b0810483dd0857acd8e7ae2f41011f48f8856a150dd60c787105597ef8814541031779be1dc015ef637d70a7524d373cbbf346
+  languageName: node
+  linkType: hard
+
+"@whatsgood/uniform-graphql@npm:^0.2.7":
+  version: 0.2.7
+  resolution: "@whatsgood/uniform-graphql@npm:0.2.7"
+  dependencies:
+    lodash: ^4.17.20
+    tslib: ^2.1.0
+  peerDependencies:
+    graphql: ^15.3.0
+  checksum: 8c6a75e5ccf058fb67ddd24f7e4559b27712d874e672184ec14f7e9339e4e2b417559c616f8e5297be677c1482b8c3f6b8d1cedd26b9d7df222140712b8e4e3e
   languageName: node
   linkType: hard
 
@@ -11492,6 +11522,8 @@ __metadata:
     "@octokit/core": ^3.5.1
     "@playwright-testing-library/test": ^4.0.1
     "@playwright/test": ^1.18.1
+    "@pothos/core": ^3.1.2
+    "@pothos/plugin-simple-objects": ^3.0.1
     "@rehooks/local-storage": ^2.4.4
     "@storybook/addon-actions": ^6.4.9
     "@storybook/addon-docs": ^6.4.9
@@ -11521,6 +11553,7 @@ __metadata:
     "@types/wicg-file-system-access": ^2020.9.4
     "@typescript-eslint/eslint-plugin": ^5.6.0
     "@typescript-eslint/parser": ^5.6.0
+    "@whatsgood/uniform-graphql": ^0.2.7
     antd: ^4.17.2
     apollo-bus-link: ^0.4.4
     apollo-link-logger: ^2.0.0
@@ -11559,6 +11592,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: ^6.4.2
     get-stream: ^6.0.1
     got: ^11.8.3
+    gqtx: ^0.8.1
     graphql: ^16.0.1
     graphql-subscriptions: ^2.0.0
     graphql-tag: ^2.12.6
@@ -14284,6 +14318,15 @@ __metadata:
     to-readable-stream: ^1.0.0
     url-parse-lax: ^3.0.0
   checksum: 941807bd9704bacf5eb401f0cc1212ffa1f67c6642f2d028fd75900471c221b1da2b8527f4553d2558f3faeda62ea1cf31665f8b002c6137f5de8732f07370b0
+  languageName: node
+  linkType: hard
+
+"gqtx@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "gqtx@npm:0.8.1"
+  peerDependencies:
+    graphql: ^15.1.0
+  checksum: dfcd24b940409d37d6e888f02a4da5d72285e5b9cb016e4c39d1f1f952395f2d0a2521645da2a8a463da7597aede03271144784d05d144d03857c084838fbfa6
   languageName: node
   linkType: hard
 

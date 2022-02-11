@@ -1,82 +1,103 @@
-import gql from "graphql-tag";
 import { GraphQLError } from "graphql";
-import {
-  EdgeTxFirmwareBundle,
-  Resolvers,
-} from "shared/backend/graph/__generated__";
 import config from "shared/config";
 
-const typeDefs = gql`
-  type Query {
-    edgeTxReleases: [EdgeTxRelease!]!
-    edgeTxRelease(id: ID!): EdgeTxRelease
-    edgeTxPrs: [EdgeTxPr!]!
-    edgeTxPr(id: ID!): EdgeTxPr
-    localFirmware(byId: ID!): LocalEdgeTxFirmware
-  }
+import { Context } from "shared/backend/context";
+import SchemaBuilder from "@pothos/core";
+import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 
-  type Mutation {
-    registerLocalFirmware(
-      fileName: String
-      firmwareBase64Data: String!
-    ): LocalEdgeTxFirmware!
-  }
+const schema = new SchemaBuilder<{ Context: Context }>({
+  plugins: [SimpleObjectsPlugin],
+});
 
-  type EdgeTxRelease {
-    id: ID!
-    isPrerelease: Boolean!
-    name: String!
-    description: String
-    firmwareBundle: EdgeTxFirmwareBundle!
-    assets: [EdgeTxReleaseAsset!]!
-  }
+const LocalEdgeTxFirmwareRef = schema.simpleObject("LocalEdgeTxFirmware", {
+  fields: (t) => ({
+    id: t.id(),
+    name: t.string(),
+    base64Data: t.string(),
+  }),
+});
 
-  type EdgeTxPr {
-    id: ID!
-    name: String!
-    title: String!
-    description: String
-    commits: [EdgeTxPrCommit!]!
-    commit(id: ID!): EdgeTxPrCommit
-    headCommitId: String!
-  }
+schema.mutationFields((t) => ({
+  registerLocalFirmware: t.field({
+    type: LocalEdgeTxFirmwareRef,
+    args: {
+      fileName: t.arg.string({
+        required: false,
+      }),
+      firmwareBase64Data: t.arg.string({ required: true }),
+    },
+    resolve: (_, { fileName, firmwareBase64Data }, { firmwareStore }) => {
+      const id = firmwareStore.registerFirmware(
+        Buffer.from(firmwareBase64Data, "base64"),
+        fileName ?? undefined
+      );
 
-  type EdgeTxPrCommit {
-    id: ID!
-    firmwareBundle: EdgeTxFirmwareBundle
-  }
+      return { id, name: fileName ?? id, base64Data: firmwareBase64Data };
+    },
+  }),
+}));
 
-  type EdgeTxReleaseAsset {
-    id: ID!
-    name: String!
-    url: String!
-  }
+const EdgeTxFirmwareTarget = schema.simpleObject("EdgeTxFirmwareTarget", {
+  fields: (t) => ({
+    id: t.id(),
+    code: t.string(),
+    name: t.string(),
+    bundleUrl: t.string(),
+  }),
+});
 
-  type EdgeTxFirmwareTarget {
-    id: ID!
-    code: ID!
-    name: String!
-    bundleUrl: String!
-    base64Data: String!
-  }
+const EdgeTxFirmwareBundle = schema.simpleObject("EdgeTxFirmwareTarget", {
+  fields: (t) => ({
+    id: t.id(),
+    url: t.string(),
+  }),
+});
 
-  type LocalEdgeTxFirmware {
-    id: ID!
-    name: String!
-    base64Data: String!
-  }
+const EdgeTxPrCommit = schema.simpleObject("EdgeTxPrCommit", {
+  fields: (t) => ({
+    id: t.id(),
+    firmwareBundle: t.field({
+      type: EdgeTxFirmwareBundle,
+      nullable: true,
+    }),
+  }),
+});
 
-  type EdgeTxFirmwareBundle {
-    id: ID!
-    url: String!
-    targets: [EdgeTxFirmwareTarget!]!
-    target(code: ID!): EdgeTxFirmwareTarget
-  }
-`;
+const EdgeTxPr = schema.simpleObject("EdgeTxPr", {
+  fields: (t) => ({
+    id: t.id(),
+    name: t.string(),
+    title: t.string(),
+    description: t.string({ nullable: true }),
+    headCommitId: t.string(),
+  }),
+});
 
-const resolvers: Resolvers = {
-  Query: {
-    edgeTxReleases: async (_, __, { github }) => {
+const EdgeTxReleaseRef = schema.simpleObject("EdgeTxRelease", {
+  fields: (t) => ({
+    id: t.id(),
+    isPrerelease: t.boolean(),
+    name: t.string(),
+    description: t.string({ nullable: true }),
+    firmwareBundle: t.field({ type: EdgeTxFirmwareBundle }),
+    assets: t.field({
+      type: [
+        schema.simpleObject("EdgeTxReleaseAsset", {
+          fields: (t_) => ({
+            id: t_.id(),
+            name: t_.string(),
+            url: t_.string(),
+          }),
+        }),
+      ],
+    }),
+  }),
+});
+
+schema.queryFields((t) => ({
+  edgeTxReleases: t.field({
+    type: [EdgeTxReleaseRef],
+    resolve: async (_, __, { github }) => {
       const releasesRequest = await github(
         "GET /repos/{owner}/{repo}/releases",
         {
@@ -90,7 +111,12 @@ const resolvers: Resolvers = {
         name: release.name ?? release.tag_name,
         description: release.body_text,
         isPrerelease: release.prerelease,
-        firmwareBundle: {} as EdgeTxFirmwareBundle,
+        // Will be resolved in the release object
+        firmwareBundle: {
+          id: "",
+          name: "",
+          url: "",
+        },
         assets: release.assets.map((asset) => ({
           id: asset.id.toString(),
           name: asset.name,
@@ -98,13 +124,20 @@ const resolvers: Resolvers = {
         })),
       }));
     },
-    edgeTxRelease: async (_, { id }, { github }) => {
+  }),
+  edgeTxRelease: t.field({
+    type: EdgeTxReleaseRef,
+    nullable: true,
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: async (_, { id }, { github }) => {
       const releaseRequest = await github(
         "GET /repos/{owner}/{repo}/releases/tags/{tag}",
         {
           owner: config.github.organization,
           repo: config.github.repos.firmware,
-          tag: id,
+          tag: id.toString(),
         }
       ).catch((e: { status?: number } | Error) => {
         if ("status" in e && e.status && e.status === 404) {
@@ -123,8 +156,11 @@ const resolvers: Resolvers = {
         name: release.name ?? release.tag_name,
         description: release.body,
         isPrerelease: release.prerelease,
-        // Will be resolved
-        firmwareBundle: {} as EdgeTxFirmwareBundle,
+        firmwareBundle: {
+          id: "",
+          name: "",
+          url: "",
+        },
         assets: release.assets.map((asset) => ({
           id: asset.id.toString(),
           name: asset.name,
@@ -132,7 +168,10 @@ const resolvers: Resolvers = {
         })),
       };
     },
-    edgeTxPrs: async (_, __, { github }) => {
+  }),
+  edgeTxPrs: t.field({
+    type: [EdgeTxPr],
+    resolve: async (_, __, { github }) => {
       const prs = await github("GET /repos/{owner}/{repo}/pulls", {
         owner: config.github.organization,
         repo: config.github.repos.firmware,
@@ -145,12 +184,15 @@ const resolvers: Resolvers = {
         id: pr.number.toString(),
         name: pr.head.label,
         headCommitId: pr.head.sha,
-        commits: [],
         title: pr.title,
         description: pr.body ?? null,
       }));
     },
-    edgeTxPr: async (_, { id }, { github }) => {
+  }),
+  edgeTxPr: t.field({
+    type: EdgeTxPr,
+    nullable: true,
+    resolve: async (_, { id }, { github }) => {
       const pr = (
         await github("GET /repos/{owner}/{repo}/pulls/{pull_number}", {
           owner: config.github.organization,
@@ -163,13 +205,19 @@ const resolvers: Resolvers = {
         id: pr.number.toString(),
         name: pr.head.label,
         headCommitId: pr.head.sha,
-        commits: [],
         title: pr.title,
         description: pr.body ?? null,
       };
     },
-    localFirmware: (_, { byId }, { firmwareStore }) => {
-      const file = firmwareStore.getLocalFirmwareById(byId);
+  }),
+  localFirmware: t.field({
+    type: LocalEdgeTxFirmwareRef,
+    nullable: true,
+    args: {
+      byId: t.arg.id({ required: true }),
+    },
+    resolve: (_, { byId }, { firmwareStore }) => {
+      const file = firmwareStore.getLocalFirmwareById(byId.toString());
 
       if (!file) {
         return null;
@@ -181,23 +229,13 @@ const resolvers: Resolvers = {
         base64Data: file.data.toString("base64"),
       };
     },
-  },
-  Mutation: {
-    registerLocalFirmware: (
-      _,
-      { fileName, firmwareBase64Data },
-      { firmwareStore }
-    ) => {
-      const id = firmwareStore.registerFirmware(
-        Buffer.from(firmwareBase64Data, "base64"),
-        fileName ?? undefined
-      );
+  }),
+}));
 
-      return { id, name: fileName ?? id, base64Data: firmwareBase64Data };
-    },
-  },
-  EdgeTxRelease: {
-    firmwareBundle: (release) => {
+schema.objectFields(EdgeTxReleaseRef, (t) => ({
+  firmwareBundle: t.field({
+    type: EdgeTxFirmwareBundle,
+    resolve: (release) => {
       const firmwareAsset = release.assets.find((asset) =>
         asset.name.includes("firmware")
       );
@@ -213,9 +251,65 @@ const resolvers: Resolvers = {
         targets: [],
       };
     },
-  },
-  EdgeTxPr: {
-    commits: async ({ id }, _, { github }) => {
+  }),
+}));
+
+schema.objectFields(EdgeTxFirmwareBundle, (t) => ({
+  target: t.field({
+    type: EdgeTxFirmwareTarget,
+    nullable: true,
+    args: {
+      code: t.arg.id({
+        required: true,
+      }),
+    },
+    resolve: (firmwareBundle, { code }, { firmwareStore }) =>
+      firmwareStore
+        .firmwareTargets(firmwareBundle.url)
+        .then((firmwareTargets) => {
+          const target = firmwareTargets.find((ft) => ft.code === code);
+          return target
+            ? {
+                id: `${target.code}-${firmwareBundle.id}`,
+                code: target.code,
+                bundleUrl: firmwareBundle.url,
+                name: target.name,
+              }
+            : null;
+        }),
+  }),
+  targets: t.field({
+    type: [EdgeTxFirmwareTarget],
+    resolve: (firmwareBundle, _, { firmwareStore }) =>
+      firmwareStore
+        .firmwareTargets(firmwareBundle.url)
+        .then((firmwareTargets) =>
+          firmwareTargets.map((target) => ({
+            id: `${target.code}-${firmwareBundle.id}`,
+            code: target.code,
+            bundleUrl: firmwareBundle.url,
+            name: target.name,
+          }))
+        ),
+  }),
+}));
+
+schema.objectFields(EdgeTxFirmwareTarget, (t) => ({
+  base64Data: t.string({
+    resolve: async (target, _, { firmwareStore }) => {
+      const firmware = await firmwareStore.fetchFirmware(
+        target.bundleUrl,
+        target.code
+      );
+      return firmware.toString("base64");
+    },
+  }),
+}));
+
+schema.objectFields(EdgeTxPr, (t) => ({
+  commits: t.field({
+    type: [EdgeTxPrCommit],
+    resolve: async ({ id }, _, { github }) => {
       const commits = await github(
         "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits",
         {
@@ -230,14 +324,29 @@ const resolvers: Resolvers = {
         firmwareBundle: null,
       }));
     },
-    commit: (_, { id }) => ({
-      id,
+  }),
+  commit: t.field({
+    type: EdgeTxPrCommit,
+    nullable: true,
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: (_, { id }) => ({
+      id: id.toString(),
       firmwareBundle: null,
     }),
-  },
-  EdgeTxPrCommit: {
-    firmwareBundle: async ({ id }, _, { firmwareStore }) => {
-      const firmwareAsset = await firmwareStore.fetchPrBuild(id);
+  }),
+}));
+
+schema.objectFields(EdgeTxPrCommit, (t) => ({
+  firmwareBundle: t.field({
+    type: EdgeTxFirmwareBundle,
+    nullable: true,
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: async ({ id }, _, { firmwareStore }) => {
+      const firmwareAsset = await firmwareStore.fetchPrBuild(id.toString());
 
       if (!firmwareAsset) {
         return null;
@@ -246,51 +355,11 @@ const resolvers: Resolvers = {
       return {
         id: firmwareAsset.id,
         url: firmwareAsset.url,
-        targets: [],
       };
     },
-  },
-  EdgeTxFirmwareBundle: {
-    targets: (firmwareBundle, _, { firmwareStore }) =>
-      firmwareStore
-        .firmwareTargets(firmwareBundle.url)
-        .then((firmwareTargets) =>
-          firmwareTargets.map((target) => ({
-            id: `${target.code}-${firmwareBundle.id}`,
-            code: target.code,
-            bundleUrl: firmwareBundle.url,
-            base64Data: "",
-            name: target.name,
-          }))
-        ),
-    target: (firmwareBundle, { code }, { firmwareStore }) =>
-      firmwareStore
-        .firmwareTargets(firmwareBundle.url)
-        .then((firmwareTargets) => {
-          const target = firmwareTargets.find((t) => t.code === code);
-          return target
-            ? {
-                id: `${target.code}-${firmwareBundle.id}`,
-                code: target.code,
-                bundleUrl: firmwareBundle.url,
-                base64Data: "",
-                name: target.name,
-              }
-            : null;
-        }),
-  },
-  EdgeTxFirmwareTarget: {
-    base64Data: async (target, _, { firmwareStore }) => {
-      const firmware = await firmwareStore.fetchFirmware(
-        target.bundleUrl,
-        target.code
-      );
-      return firmware.toString("base64");
-    },
-  },
-};
+  }),
+}));
 
 export default {
-  typeDefs,
-  resolvers,
+  schema: schema.toSchema({}),
 };
