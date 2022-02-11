@@ -1,9 +1,24 @@
 const { convertTsConfig } = require("tsconfig-to-swcconfig");
 const tsconfig = require("./tsconfig.base.json");
-const swcConfig = convertTsConfig({
-  ...tsconfig.compilerOptions,
-  target: "es2022",
-});
+const swcConfig = convertTsConfig(
+  {
+    ...tsconfig.compilerOptions,
+    target: "es2022",
+  },
+  {
+    module: {
+      type: "es6",
+    },
+    jsc: {
+      transform: {
+        hidden: {
+          jest: true,
+        },
+      },
+    },
+    minify: false,
+  }
+);
 
 module.exports = {
   resolver: "./.jest/esmHackResolver",
