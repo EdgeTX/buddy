@@ -3,24 +3,23 @@ import { WebDFU } from "dfu";
 import { PubSub } from "graphql-subscriptions";
 import * as uuid from "uuid";
 import type { Context } from "shared/backend/context";
-
 import type {
-  FlashJob,
-  FlashStage,
-  FlashStages,
-  FlashJobMeta,
-} from "shared/backend/graph/__generated__";
+  FlashJobType,
+  FlashStageType,
+  FlashStagesType,
+  FlashJobMetaType,
+} from "shared/backend/graph/flash";
 
 export const jobUpdates = new PubSub();
 
-const jobs: Record<string, FlashJob> = {};
+const jobs: Record<string, FlashJobType> = {};
 
 export const createJob = (
-  stages: (keyof Omit<FlashStages, "__typename">)[],
-  meta: FlashJobMeta
-): FlashJob => {
+  stages: (keyof FlashStagesType)[],
+  meta: FlashJobMetaType
+): FlashJobType => {
   const id = uuid.v1();
-  const job: FlashJob = {
+  const job: FlashJobType = {
     id,
     cancelled: false,
     meta,
@@ -33,7 +32,7 @@ export const createJob = (
           progress: 0,
         },
       ])
-    ) as unknown as FlashStages,
+    ) as unknown as FlashStagesType,
   };
   jobs[id] = job;
   return job;
@@ -64,7 +63,7 @@ export const startExecution = async (
 
   let cancelledListener: number | undefined = await jobUpdates.subscribe(
     jobId,
-    async (updatedJob: FlashJob) => {
+    async (updatedJob: FlashJobType) => {
       if (updatedJob.cancelled) {
         await cleanUp();
       }
@@ -128,21 +127,21 @@ export const startExecution = async (
     });
 };
 
-export const getJob = (jobId: string): FlashJob | undefined => jobs[jobId];
+export const getJob = (jobId: string): FlashJobType | undefined => jobs[jobId];
 
 const isCancelled = (jobId: string): boolean => jobs[jobId]?.cancelled ?? true;
 
 const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
 
-export const updateJob = (jobId: string, updatedJob: FlashJob): void => {
+export const updateJob = (jobId: string, updatedJob: FlashJobType): void => {
   jobs[jobId] = updatedJob;
   void debouncedPublish(jobId, updatedJob);
 };
 
 export const updateStageStatus = (
   jobId: string,
-  stage: keyof Omit<FlashStages, "__typename">,
-  status: Partial<Omit<FlashStage, "__typename">>
+  stage: keyof FlashStagesType,
+  status: Partial<FlashStageType>
 ): void => {
   const job = getJob(jobId);
   if (!job) {

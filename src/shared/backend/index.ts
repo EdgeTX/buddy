@@ -1,3 +1,3 @@
-export { default as schema } from "./schema";
+export { schema } from "./graph";
 export { createContext } from "./context";
 export * from "./types";

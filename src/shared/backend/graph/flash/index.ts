@@ -1,81 +1,93 @@
-import gql from "graphql-tag";
 import { GraphQLError } from "graphql";
-import {
-  FlashJob,
-  FlashableDevice,
-  Resolvers,
-} from "shared/backend/graph/__generated__";
 import config from "shared/config";
 import { decodePrVersion, hexString, isPrVersion } from "shared/tools";
+import { TypeOf } from "shared/backend/types";
+import { createBuilder } from "shared/backend/utils/builder";
 
-const typeDefs = gql`
-  type Mutation {
-    createFlashJob(firmware: FlashFirmwareInput!, deviceId: ID!): FlashJob!
-    cancelFlashJob(jobId: ID!): Boolean
-    requestFlashableDevice: FlashableDevice
-  }
+const builder = createBuilder();
 
-  type Query {
-    flashJobStatus(jobId: ID!): FlashJob
-    flashableDevices: [FlashableDevice!]!
-    flashableDevice(id: ID!): FlashableDevice
-  }
+const FlashableDevice = builder.simpleObject("FlashableDevice", {
+  fields: (t) => ({
+    id: t.string(),
+    productName: t.string({ nullable: true }),
+    serialNumber: t.string({ nullable: true }),
+    vendorId: t.string(),
+    productId: t.string(),
+  }),
+});
 
-  type Subscription {
-    flashJobStatusUpdates(jobId: ID!): FlashJob!
-  }
+const FlashStage = builder.simpleObject("FlashStage", {
+  fields: (t) => ({
+    progress: t.float(),
+    started: t.boolean(),
+    completed: t.boolean(),
+    error: t.string({ nullable: true }),
+  }),
+});
+export type FlashStageType = TypeOf<typeof FlashStage>;
 
-  type FlashableDevice {
-    id: String!
-    productName: String
-    serialNumber: String
-    vendorId: String!
-    productId: String!
-  }
+const FlashJobMeta = builder.simpleObject("FlashJobMeta", {
+  fields: (t_) => ({
+    firmware: t_.field({
+      type: builder.simpleObject("FlashFirmware", {
+        fields: (t__) => ({
+          version: t__.string(),
+          target: t__.string(),
+        }),
+      }),
+    }),
+    deviceId: t_.id(),
+  }),
+});
+export type FlashJobMetaType = TypeOf<typeof FlashJobMeta>;
 
-  type FlashJob {
-    id: ID!
-    cancelled: Boolean!
-    meta: FlashJobMeta!
-    stages: FlashStages!
-  }
+const FlashStages = builder.simpleObject("FlashStages", {
+  fields: (t_) => ({
+    connect: t_.field({
+      type: FlashStage,
+    }),
+    build: t_.field({
+      type: FlashStage,
+      nullable: true,
+    }),
+    download: t_.field({
+      type: FlashStage,
+      nullable: true,
+    }),
+    erase: t_.field({
+      type: FlashStage,
+    }),
+    flash: t_.field({
+      type: FlashStage,
+    }),
+  }),
+});
+export type FlashStagesType = TypeOf<typeof FlashStages>;
 
-  type FlashJobMeta {
-    firmware: FlashFirmware!
-    deviceId: ID!
-  }
-
-  type FlashStages {
-    connect: FlashStage!
-    build: FlashStage
-    download: FlashStage
-    erase: FlashStage!
-    flash: FlashStage!
-  }
-
-  type FlashStage {
-    progress: Float!
-    started: Boolean!
-    completed: Boolean!
-    error: String
-  }
-
-  input FlashFirmwareInput {
-    version: ID!
-    target: ID!
-  }
-
-  type FlashFirmware {
-    version: ID!
-    target: ID!
-  }
-`;
+const FlashJob = builder.simpleObject("FlashJob", {
+  fields: (t) => ({
+    id: t.id(),
+    cancelled: t.boolean(),
+    meta: t.field({
+      type: FlashJobMeta,
+    }),
+    stages: t.field({
+      type: FlashStages,
+    }),
+  }),
+});
+export type FlashJobType = TypeOf<typeof FlashJob>;
 
 const usbDeviceId = (device: USBDevice): string =>
   device.serialNumber ??
   `${hexString(device.vendorId)}:${hexString(device.productId)}`;
 
-const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
+const findDevice = (devices: USBDevice[], id: string): USBDevice | undefined =>
+  devices.find((d) => usbDeviceId(d) === id);
+
+const usbDeviceToFlashDevice = (
+  device: USBDevice
+): TypeOf<typeof FlashableDevice> => ({
   id: usbDeviceId(device),
   productName: device.productName,
   serialNumber: device.serialNumber,
@@ -83,133 +95,190 @@ const usbDeviceToFlashDevice = (device: USBDevice): FlashableDevice => ({
   productId: hexString(device.productId),
 });
 
-const findDevice = (devices: USBDevice[], id: string): USBDevice | undefined =>
-  devices.find((d) => usbDeviceId(d) === id);
-
-const resolvers: Resolvers = {
-  Mutation: {
-    createFlashJob: async (_, { firmware, deviceId }, context) => {
-      let firmwareData: Buffer | undefined;
-      let firmwareBundleUrl: string | undefined;
-      if (firmware.version === "local") {
-        const localFirmware = context.firmwareStore.getLocalFirmwareById(
-          firmware.target
-        );
-
-        firmwareData = localFirmware?.data;
-
-        if (!firmwareData) {
-          throw new GraphQLError("Specified firmware not found");
-        }
-      } else if (isPrVersion(firmware.version)) {
-        const { commitId } = decodePrVersion(firmware.version);
-        if (!commitId) {
-          throw new GraphQLError("Commit not specified for PR");
-        }
-        const prBuild = await context.firmwareStore.fetchPrBuild(commitId);
-
-        if (!prBuild) {
-          throw new GraphQLError("Could not find a build for given PR commit");
-        }
-
-        firmwareBundleUrl = prBuild.url;
-      } else {
-        firmwareBundleUrl = (
-          await context.github(
-            "GET /repos/{owner}/{repo}/releases/tags/{tag}",
-            {
-              owner: config.github.organization,
-              repo: config.github.repos.firmware,
-              tag: firmware.version,
-            }
-          )
-        ).data.assets.find((asset) =>
-          asset.name.includes("firmware")
-        )?.browser_download_url;
-
-        if (!firmwareBundleUrl) {
-          throw new GraphQLError("Could not find specified firmware");
-        }
-      }
-
-      const device = findDevice(await context.usb.deviceList(), deviceId);
-
-      if (!device) {
-        throw new GraphQLError("Device not found");
-      }
-
-      // If we already have the firmware we don't need to download
-      // So start the state off assuming no download step
-      const job = firmwareData
-        ? context.flashJobs.createJob(["connect", "erase", "flash"], {
-            firmware,
-            deviceId,
-          })
-        : context.flashJobs.createJob(
-            ["connect", "download", "erase", "flash"],
-            {
-              firmware,
-              deviceId,
-            }
+builder.mutationType({
+  fields: (t) => ({
+    createFlashJob: t.field({
+      type: FlashJob,
+      args: {
+        firmware: t.arg({
+          type: builder.inputType("FlashFirmwareInput", {
+            fields: (t__) => ({
+              version: t__.string({ required: true }),
+              target: t__.string({ required: true }),
+            }),
+          }),
+          required: true,
+        }),
+        deviceId: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { firmware, deviceId }, context) => {
+        let firmwareData: Buffer | undefined;
+        let firmwareBundleUrl: string | undefined;
+        if (firmware.version === "local") {
+          const localFirmware = context.firmwareStore.getLocalFirmwareById(
+            firmware.target
           );
 
-      await context.flashJobs.startExecution(
-        job.id,
-        {
-          device,
-          firmware: {
-            data: firmwareData,
-            url: firmwareBundleUrl,
-            target: firmware.target,
+          firmwareData = localFirmware?.data;
+
+          if (!firmwareData) {
+            throw new GraphQLError("Specified firmware not found");
+          }
+        } else if (isPrVersion(firmware.version)) {
+          const { commitId } = decodePrVersion(firmware.version);
+          if (!commitId) {
+            throw new GraphQLError("Commit not specified for PR");
+          }
+          const prBuild = await context.firmwareStore.fetchPrBuild(commitId);
+
+          if (!prBuild) {
+            throw new GraphQLError(
+              "Could not find a build for given PR commit"
+            );
+          }
+
+          firmwareBundleUrl = prBuild.url;
+        } else {
+          firmwareBundleUrl = (
+            await context.github(
+              "GET /repos/{owner}/{repo}/releases/tags/{tag}",
+              {
+                owner: config.github.organization,
+                repo: config.github.repos.firmware,
+                tag: firmware.version,
+              }
+            )
+          ).data.assets.find((asset) =>
+            asset.name.includes("firmware")
+          )?.browser_download_url;
+
+          if (!firmwareBundleUrl) {
+            throw new GraphQLError("Could not find specified firmware");
+          }
+        }
+
+        const device = findDevice(
+          await context.usb.deviceList(),
+          deviceId.toString()
+        );
+
+        if (!device) {
+          throw new GraphQLError("Device not found");
+        }
+
+        // If we already have the firmware we don't need to download
+        // So start the state off assuming no download step
+        const job = firmwareData
+          ? context.flashJobs.createJob(["connect", "erase", "flash"], {
+              firmware,
+              deviceId,
+            })
+          : context.flashJobs.createJob(
+              ["connect", "download", "erase", "flash"],
+              {
+                firmware,
+                deviceId,
+              }
+            );
+
+        await context.flashJobs.startExecution(
+          job.id.toString(),
+          {
+            device,
+            firmware: {
+              data: firmwareData,
+              url: firmwareBundleUrl,
+              target: firmware.target,
+            },
           },
-        },
-        context
-      );
+          context
+        );
 
-      return job;
-    },
-    cancelFlashJob: (_, { jobId }, { flashJobs }) => {
-      const job = flashJobs.getJob(jobId);
-      if (!job) {
-        throw new GraphQLError("Job doesnt exist");
-      }
+        return job;
+      },
+    }),
+    cancelFlashJob: t.boolean({
+      nullable: true,
+      args: {
+        jobId: t.arg.id({ required: true }),
+      },
+      resolve: (_, { jobId }, { flashJobs }) => {
+        const job = flashJobs.getJob(jobId.toString());
+        if (!job) {
+          throw new GraphQLError("Job doesnt exist");
+        }
 
-      if (job.cancelled) {
-        throw new GraphQLError("Job already cancelled");
-      }
-      flashJobs.cancelJob(jobId);
+        if (job.cancelled) {
+          throw new GraphQLError("Job already cancelled");
+        }
+        flashJobs.cancelJob(jobId.toString());
 
-      return null;
-    },
-    requestFlashableDevice: async (_, __, { usb }) => {
-      const device = await usb.requestDevice().catch(() => undefined);
-      return device ? usbDeviceToFlashDevice(device) : null;
-    },
-  },
-  Query: {
-    flashJobStatus: (_, { jobId }, { flashJobs }) =>
-      flashJobs.getJob(jobId) ?? null,
-    flashableDevices: (_, __, { usb }) =>
-      usb.deviceList().then((devices) => devices.map(usbDeviceToFlashDevice)),
-    flashableDevice: async (_, { id }, { usb }) => {
-      const device = findDevice(await usb.deviceList(), id);
+        return null;
+      },
+    }),
 
-      return device ? usbDeviceToFlashDevice(device) : null;
-    },
-  },
-  Subscription: {
-    flashJobStatusUpdates: {
+    requestFlashableDevice: t.field({
+      type: FlashableDevice,
+      nullable: true,
+      resolve: async (_, __, { usb }) => {
+        const device = await usb.requestDevice().catch(() => undefined);
+        return device ? usbDeviceToFlashDevice(device) : null;
+      },
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    flashJobStatus: t.field({
+      type: FlashJob,
+      nullable: true,
+      args: {
+        jobId: t.arg.id({ required: true }),
+      },
+      resolve: (_, { jobId }, { flashJobs }) =>
+        flashJobs.getJob(jobId.toString()) ?? null,
+    }),
+
+    flashableDevices: t.field({
+      type: [FlashableDevice],
+      resolve: (_, __, { usb }) =>
+        usb.deviceList().then((devices) => devices.map(usbDeviceToFlashDevice)),
+    }),
+    flashableDevice: t.field({
+      type: FlashableDevice,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { id }, { usb }) => {
+        const device = findDevice(await usb.deviceList(), id.toString());
+
+        return device ? usbDeviceToFlashDevice(device) : null;
+      },
+    }),
+  }),
+});
+
+builder.subscriptionType({
+  fields: (t) => ({
+    flashJobStatusUpdates: t.field({
+      type: FlashJob,
+      args: {
+        jobId: t.arg.id({ required: true }),
+      },
       subscribe: (_, { jobId }, { flashJobs }) => ({
         [Symbol.asyncIterator]() {
-          return flashJobs.jobUpdates.asyncIterator<FlashJob>(jobId);
+          return flashJobs.jobUpdates.asyncIterator<FlashJobType>(
+            jobId.toString()
+          );
         },
       }),
-      resolve: (value: FlashJob) => value,
-    },
-  },
-};
+      resolve: (value: FlashJobType) => value,
+    }),
+  }),
+});
 
 export default {
-  typeDefs,
-  resolvers,
+  schema: builder.toSchema({}),
 };
