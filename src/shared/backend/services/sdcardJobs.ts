@@ -3,13 +3,13 @@ import { PubSub } from "graphql-subscriptions";
 import debounce from "debounce";
 import pLimit from "p-limit";
 import * as uuid from "uuid";
-import type {
-  SdcardWriteFileStatus,
-  SdcardWriteJob,
-  SdcardWriteJobStages,
-} from "shared/backend/graph/__generated__";
 import type { Context } from "shared/backend/context";
 import { isNotUndefined } from "type-guards";
+import type {
+  SdcardWriteFileStatusType,
+  SdcardWriteJobStagesType,
+  SdcardWriteJobType,
+} from "shared/backend/graph/sdcard";
 
 type WriteMeta = {
   pack?: {
@@ -22,15 +22,15 @@ type WriteMeta = {
 };
 
 export const jobUpdates = new PubSub();
-const sdcardJobs: Record<string, SdcardWriteJob> = {};
+const sdcardJobs: Record<string, SdcardWriteJobType> = {};
 
 const NO_ERASE_DIRECTORIES = ["RADIO", "MODELS", "EEPROM"];
 
 export const createSdcardJob = (
-  stages: (keyof Omit<SdcardWriteJobStages, "__typename">)[]
-): SdcardWriteJob => {
+  stages: (keyof SdcardWriteJobStagesType)[]
+): SdcardWriteJobType => {
   const id = uuid.v1();
-  const job: SdcardWriteJob = {
+  const job: SdcardWriteJobType = {
     id,
     cancelled: false,
     stages: Object.fromEntries(
@@ -43,13 +43,13 @@ export const createSdcardJob = (
           ...(stage === "write" ? { writes: [] } : undefined),
         },
       ])
-    ) as unknown as SdcardWriteJobStages,
+    ) as unknown as SdcardWriteJobStagesType,
   };
   sdcardJobs[id] = job;
   return job;
 };
 
-export const getSdcardJob = (jobId: string): SdcardWriteJob | undefined =>
+export const getSdcardJob = (jobId: string): SdcardWriteJobType | undefined =>
   sdcardJobs[jobId];
 
 export const startExecution = async (
@@ -175,17 +175,18 @@ export const cancelSdcardJob = (jobId: string): void => {
 
 const debouncedPublish = debounce(jobUpdates.publish.bind(jobUpdates), 10);
 
-const updateSdcardJob = (jobId: string, updatedJob: SdcardWriteJob): void => {
+const updateSdcardJob = (
+  jobId: string,
+  updatedJob: SdcardWriteJobType
+): void => {
   sdcardJobs[jobId] = updatedJob;
   void debouncedPublish(jobId, updatedJob);
 };
 
-const updateStageStatus = <
-  S extends keyof Omit<SdcardWriteJobStages, "__typename">
->(
+const updateStageStatus = <S extends keyof SdcardWriteJobStagesType>(
   jobId: string,
   stage: S,
-  status: Partial<Omit<NonNullable<SdcardWriteJobStages[S]>, "__typename">>
+  status: Partial<NonNullable<SdcardWriteJobStagesType[S]>>
 ): void => {
   const job = getSdcardJob(jobId);
   if (!job) {
@@ -201,7 +202,9 @@ const updateStageStatus = <
 const updateSdcardWriteFileStatus = (
   jobId: string,
   fileName: string,
-  status: Partial<Pick<SdcardWriteFileStatus, "startTime" | "completedTime">>
+  status: Partial<
+    Pick<SdcardWriteFileStatusType, "startTime" | "completedTime">
+  >
 ): void => {
   const job = getSdcardJob(jobId);
   const existing = job?.stages.write.writes.find(
@@ -218,7 +221,7 @@ const updateSdcardWriteFileStatus = (
     ).concat([
       {
         ...existing,
-        ...(status as SdcardWriteFileStatus),
+        ...(status as SdcardWriteFileStatusType),
         name: fileName,
       },
     ]),

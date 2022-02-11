@@ -1,5 +1,8 @@
 {
   "extends": "./tsconfig.base",
   "include": ["./src", "./.jest"],
-  "exclude": ["**/node_modules", "build"]
+  "exclude": ["**/node_modules", "build"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

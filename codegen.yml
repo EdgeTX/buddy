@@ -1,17 +1,7 @@
 overwrite: true
 schema:
-  - "./src/shared/backend/graph/**/*.ts"
-  - "!**/__generated__/*.ts"
-
+  - "./codegen.schema.js"
 generates:
-  ./src/shared/backend/graph/__generated__/index.ts:
-    config:
-      overwrite: true
-      contextType: ../../context#Context
-    plugins:
-      - typescript
-      - typescript-resolvers
-
   ./schema.graphql:
     plugins:
       - schema-ast

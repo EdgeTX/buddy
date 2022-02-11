@@ -2212,6 +2212,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@boost/module@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@boost/module@npm:3.1.0"
+  peerDependencies:
+    typescript: ^4.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 321dc5e67d5e1cc1030597471ee73351f4c71150238b34e7aa88996f5b7da29a8bb8e6a008ae218144f723ac143c3091b7be6c036f6c196ea27ce5cfa8e0036f
+  languageName: node
+  linkType: hard
+
 "@cnakazawa/watch@npm:^1.0.3":
   version: 1.0.4
   resolution: "@cnakazawa/watch@npm:1.0.4"
@@ -2221,6 +2233,22 @@ __metadata:
   bin:
     watch: cli.js
   checksum: 88f395ca0af2f3c0665b8ce7bb29e83647ec5d141e8735712aeeee4117081555436712966b6957aa1c461f6f826a4d23b0034e379c443a10e919f81c8748bf29
+  languageName: node
+  linkType: hard
+
+"@cspotcode/source-map-consumer@npm:0.8.0":
+  version: 0.8.0
+  resolution: "@cspotcode/source-map-consumer@npm:0.8.0"
+  checksum: c0c16ca3d2f58898f1bd74c4f41a189dbcc202e642e60e489cbcc2e52419c4e89bdead02c886a12fb13ea37798ede9e562b2321df997ebc210ae9bd881561b4e
+  languageName: node
+  linkType: hard
+
+"@cspotcode/source-map-support@npm:0.7.0":
+  version: 0.7.0
+  resolution: "@cspotcode/source-map-support@npm:0.7.0"
+  dependencies:
+    "@cspotcode/source-map-consumer": 0.8.0
+  checksum: 9faddda7757cd778b5fd6812137b2cc265810043680d6399acc20441668fafcdc874053be9dccd0d9110087287bfad27eb3bf342f72bceca9aa9059f5d0c4be8
   languageName: node
   linkType: hard
 
@@ -2708,22 +2736,6 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: 3b490e7c54590a0cca82219e74fe7b9eca135d61540eda225ed18519d904466f02e4e16d25754207c9d051eddd63acbf4721fe123bb29ee3e9b167e805d158fa
-  languageName: node
-  linkType: hard
-
-"@graphql-codegen/typescript-resolvers@npm:^2.4.2":
-  version: 2.4.2
-  resolution: "@graphql-codegen/typescript-resolvers@npm:2.4.2"
-  dependencies:
-    "@graphql-codegen/plugin-helpers": ^2.3.0
-    "@graphql-codegen/typescript": ^2.4.1
-    "@graphql-codegen/visitor-plugin-common": 2.5.1
-    "@graphql-tools/utils": ^8.1.1
-    auto-bind: ~4.0.0
-    tslib: ~2.3.0
-  peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: e6770e2543415fa8a4ce55f866d8e733ab0d501c267f1cd0075cd0a63dfe21e339f06dc89e09973cfd797b93c2483ffca4e25eddc74d33e1ead65de5e60dc1a7
   languageName: node
   linkType: hard
 
@@ -4178,6 +4190,24 @@ __metadata:
   version: 2.11.0
   resolution: "@popperjs/core@npm:2.11.0"
   checksum: 84d6f197d3ddfd8a5b05c7276c3692d8404c96128a946ab0a800b25567d8fc231928319c1f97a67e0817e76ce2a1b735589ef0f38f8e8835692408660a2395a1
+  languageName: node
+  linkType: hard
+
+"@pothos/core@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@pothos/core@npm:3.1.2"
+  peerDependencies:
+    graphql: ">=15.1.0"
+  checksum: 1034c291d4ed7b241c94314f7d51afc37a5c1b332ac0ada938e08198dd7b29abcf14a0df15e2800fd11dd7f9045e56fd7ea872dbdfaa0135d4e983ebfb9c13bb
+  languageName: node
+  linkType: hard
+
+"@pothos/plugin-simple-objects@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@pothos/plugin-simple-objects@npm:3.0.1"
+  peerDependencies:
+    graphql: ">=15.1.0"
+  checksum: ef9495102f58bb1aba6d5e65c5af9d9a8e30397b67010fc37607b0ecd10e0f982624f920f2127ccf3b2497264ce256a834658adf2972620447f4f99c9382aa4d
   languageName: node
   linkType: hard
 
@@ -5746,6 +5776,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/node10@npm:^1.0.7":
+  version: 1.0.8
+  resolution: "@tsconfig/node10@npm:1.0.8"
+  checksum: b8d5fffbc6b17ef64ef74f7fdbccee02a809a063ade785c3648dae59406bc207f70ea2c4296f92749b33019fa36a5ae716e42e49cc7f1bbf0fd147be0d6b970a
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node12@npm:^1.0.7":
+  version: 1.0.9
+  resolution: "@tsconfig/node12@npm:1.0.9"
+  checksum: a01b2400ab3582b86b589c6d31dcd0c0656f333adecde85d6d7d4086adb059808b82692380bb169546d189bf771ae21d02544a75b57bd6da4a5dd95f8567bec9
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node14@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@tsconfig/node14@npm:1.0.1"
+  checksum: 976345e896c0f059867f94f8d0f6ddb8b1844fb62bf36b727de8a9a68f024857e5db97ed51d3325e23e0616a5e48c034ff51a8d595b3fe7e955f3587540489be
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node16@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@tsconfig/node16@npm:1.0.2"
+  checksum: ca94d3639714672bbfd55f03521d3f56bb6a25479bd425da81faf21f13e1e9d15f40f97377dedbbf477a5841c5b0c8f4cd1b391f33553d750b9202c54c2c07aa
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -7121,7 +7179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-walk@npm:^8.0.0":
+"acorn-walk@npm:^8.0.0, acorn-walk@npm:^8.1.1":
   version: 8.2.0
   resolution: "acorn-walk@npm:8.2.0"
   checksum: 1715e76c01dd7b2d4ca472f9c58968516a4899378a63ad5b6c2d668bba8da21a71976c14ec5f5b75f887b6317c4ae0b897ab141c831d741dc76024d8745f1ad1
@@ -11480,18 +11538,19 @@ __metadata:
     "@ant-design/icons": ^4.7.0
     "@apollo/client": ^3.5.5
     "@babel/core": ^7.16.0
+    "@boost/module": ^3.1.0
     "@graphql-codegen/cli": 2.3.0
     "@graphql-codegen/gql-tag-operations": ^1.2.4
     "@graphql-codegen/gql-tag-operations-preset": ^1.2.1
-    "@graphql-codegen/typescript": ^2.4.1
     "@graphql-codegen/typescript-apollo-client-helpers": ^2.1.8
-    "@graphql-codegen/typescript-resolvers": ^2.4.2
     "@graphql-tools/merge": ^8.2.1
     "@graphql-tools/schema": ^8.3.1
     "@jest/globals": ^27.4.2
     "@octokit/core": ^3.5.1
     "@playwright-testing-library/test": ^4.0.1
     "@playwright/test": ^1.18.1
+    "@pothos/core": ^3.1.2
+    "@pothos/plugin-simple-objects": ^3.0.1
     "@rehooks/local-storage": ^2.4.4
     "@storybook/addon-actions": ^6.4.9
     "@storybook/addon-docs": ^6.4.9
@@ -11559,6 +11618,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: ^6.4.2
     get-stream: ^6.0.1
     got: ^11.8.3
+    gqtx: ^0.8.1
     graphql: ^16.0.1
     graphql-subscriptions: ^2.0.0
     graphql-tag: ^2.12.6
@@ -11604,6 +11664,8 @@ __metadata:
     styled-components: ^5.3.3
     sucrase: ^3.20.3
     tmp-promise: ^3.0.3
+    ts-node: ^10.5.0
+    tsconfig-paths: ^3.12.0
     tsconfig-paths-webpack-plugin: ^3.5.2
     tsconfig-to-swcconfig: ^1.5.0
     type-guards: ^0.15.0
@@ -14284,6 +14346,15 @@ __metadata:
     to-readable-stream: ^1.0.0
     url-parse-lax: ^3.0.0
   checksum: 941807bd9704bacf5eb401f0cc1212ffa1f67c6642f2d028fd75900471c221b1da2b8527f4553d2558f3faeda62ea1cf31665f8b002c6137f5de8732f07370b0
+  languageName: node
+  linkType: hard
+
+"gqtx@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "gqtx@npm:0.8.1"
+  peerDependencies:
+    graphql: ^15.1.0
+  checksum: dfcd24b940409d37d6e888f02a4da5d72285e5b9cb016e4c39d1f1f952395f2d0a2521645da2a8a463da7597aede03271144784d05d144d03857c084838fbfa6
   languageName: node
   linkType: hard
 
@@ -24993,6 +25064,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-node@npm:^10.5.0":
+  version: 10.5.0
+  resolution: "ts-node@npm:10.5.0"
+  dependencies:
+    "@cspotcode/source-map-support": 0.7.0
+    "@tsconfig/node10": ^1.0.7
+    "@tsconfig/node12": ^1.0.7
+    "@tsconfig/node14": ^1.0.0
+    "@tsconfig/node16": ^1.0.2
+    acorn: ^8.4.1
+    acorn-walk: ^8.1.1
+    arg: ^4.1.0
+    create-require: ^1.1.0
+    diff: ^4.0.1
+    make-error: ^1.1.1
+    v8-compile-cache-lib: ^3.0.0
+    yn: 3.1.1
+  peerDependencies:
+    "@swc/core": ">=1.2.50"
+    "@swc/wasm": ">=1.2.50"
+    "@types/node": "*"
+    typescript: ">=2.7"
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    "@swc/wasm":
+      optional: true
+  bin:
+    ts-node: dist/bin.js
+    ts-node-cwd: dist/bin-cwd.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: d51ac8a9b3582ce3705cef8d35f3372e40caa277dbd7c7baeb651961538f13d2f11f22402614348f78d9b10501bd1cb5f05ec4f2ec9a74bd0e288de769c32335
+  languageName: node
+  linkType: hard
+
 "ts-node@npm:^9":
   version: 9.1.1
   resolution: "ts-node@npm:9.1.1"
@@ -25035,7 +25143,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.11.0, tsconfig-paths@npm:^3.9.0":
+"tsconfig-paths@npm:^3.11.0, tsconfig-paths@npm:^3.12.0, tsconfig-paths@npm:^3.9.0":
   version: 3.12.0
   resolution: "tsconfig-paths@npm:3.12.0"
   dependencies:
@@ -25841,6 +25949,13 @@ __metadata:
   version: 1.0.3
   resolution: "uzip-module@npm:1.0.3"
   checksum: fc286c44a04d75055577fae8293d3fee499d1e850f87e88c158b1e3657f4794a3a40ca2d34f73474ff82917176dd5ca9d1c0d1e375a083714e11afabd3afa423
+  languageName: node
+  linkType: hard
+
+"v8-compile-cache-lib@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "v8-compile-cache-lib@npm:3.0.0"
+  checksum: 674e312bbca796584b61dc915f33c7e7dc4e06d196e0048cb772c8964493a1ec723f1dd014d9419fd55c24a6eae148f60769da23f622e05cd13268063fa1ed6b
   languageName: node
   linkType: hard
 
