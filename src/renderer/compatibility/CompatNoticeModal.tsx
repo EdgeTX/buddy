@@ -23,7 +23,7 @@ const WebCompatInfo: React.FC<Props> = ({
   onClose,
 }) => (
   <Modal
-    style={{ maxWidth: "500px" }}
+    style={{ maxWidth: "500px", top: "50px" }}
     width="100%"
     visible={visible}
     onCancel={onClose}

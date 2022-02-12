@@ -26,9 +26,3 @@ if (isElectron) impl = electronTest;
 
 export const firmwarePage = "#/flash";
 export const test = impl;
-
-if (!isElectron) {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("#/");
-  });
-}

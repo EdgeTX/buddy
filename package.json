@@ -44,7 +44,6 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.5.5",
-    "@graphql-tools/merge": "^8.2.1",
     "@graphql-tools/schema": "^8.3.1",
     "@octokit/core": "^3.5.1",
     "@pothos/core": "^3.1.2",
@@ -96,7 +95,7 @@
     "start:renderer": "webpack-dev-server --hot --mode development --config webpack/renderer.config.js",
     "start:web": "WEB_ONLY=true yarn start:renderer",
     "start:cors": "node cors.js",
-    "e2e:web": "playwright test --config=e2e/config/default.config.ts --project=chromium",
+    "e2e:web": "playwright test --config=e2e/config/default.config.ts",
     "e2e:app": "playwright test --config=e2e/config/electron.config.ts",
     "e2e:app:dev": "DEV=1 playwright test --config=e2e/config/electron.config.ts",
     "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js",

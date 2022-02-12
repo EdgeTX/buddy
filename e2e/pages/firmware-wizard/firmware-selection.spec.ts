@@ -25,7 +25,9 @@ test("Latest firmware is pre selected by default", async ({
 
 test("Flash via USB is disabled if model is not selected", async ({
   queries,
+  browserName,
 }) => {
+  test.skip(browserName !== "chromium");
   const expectFlashButtonIsDisabled = async () => {
     expect(
       await (await queries.getByText("Flash via USB")).isDisabled()
@@ -114,7 +116,9 @@ test("Copy URL button copies a link to the selected firmware", async ({
   page,
   isLinux,
   isElectron,
+  browserName,
 }) => {
+  test.skip(browserName !== "chromium");
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await page
     .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
