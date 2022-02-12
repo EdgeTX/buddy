@@ -27,6 +27,8 @@ type BrowserTestTestFixtures = PageTestFixtures & {
   contextFactory: (options?: BrowserContextOptions) => Promise<BrowserContext>;
 };
 
+let cachedContext: BrowserContext | undefined;
+
 const test = baseTest.extend<
   BrowserTestTestFixtures,
   BrowserTestWorkerFixtures
@@ -94,9 +96,16 @@ const test = baseTest.extend<
     });
     if (persistentContext) await persistentContext.close();
   },
-  page: async ({ context, browserName }, run) => {
+  context: async ({ browser }, run) => {
+    if (!cachedContext) {
+      cachedContext = await browser.newContext();
+    }
+    await run(cachedContext);
+  },
+  page: async ({ browserName, context }, run) => {
     const page = await context.newPage();
     await page.goto("#/");
+    await page.evaluate(() => localStorage.clear());
     if (browserName !== "chromium") {
       const document = await getDocument(page);
       await queries.findByText(

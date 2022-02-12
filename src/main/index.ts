@@ -138,7 +138,7 @@ const createWindow = (): void => {
         // eslint-disable-next-line no-console
         console.log("Error loading Apollo DevTools: ", err)
       );
-      mainWindow?.webContents.openDevTools();
+      mainWindow?.webContents.openDevTools({ mode: "detach" });
     }
   });
 

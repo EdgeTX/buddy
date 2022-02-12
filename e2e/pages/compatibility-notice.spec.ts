@@ -1,5 +1,9 @@
 import { expect, test, waitFor } from "./pageTest";
 
+test.afterEach(async ({ page }) => {
+  await page.evaluate(() => localStorage.clear());
+});
+
 test("shows a compatibility notice for unsupported browsers", async ({
   page,
   queries,
