@@ -11543,7 +11543,6 @@ __metadata:
     "@graphql-codegen/gql-tag-operations": ^1.2.4
     "@graphql-codegen/gql-tag-operations-preset": ^1.2.1
     "@graphql-codegen/typescript-apollo-client-helpers": ^2.1.8
-    "@graphql-tools/merge": ^8.2.1
     "@graphql-tools/schema": ^8.3.1
     "@jest/globals": ^27.4.2
     "@octokit/core": ^3.5.1

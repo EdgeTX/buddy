@@ -44,7 +44,6 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.5.5",
-    "@graphql-tools/merge": "^8.2.1",
     "@graphql-tools/schema": "^8.3.1",
     "@octokit/core": "^3.5.1",
     "@pothos/core": "^3.1.2",

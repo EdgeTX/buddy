@@ -7,6 +7,7 @@ import type {
   BrowserType,
   Page,
 } from "playwright-core";
+import { getDocument, queries } from "@playwright-testing-library/test";
 import { PageTestFixtures, PageWorkerFixtures } from "../types";
 import { baseTest } from "./baseTest";
 
@@ -92,6 +93,23 @@ const test = baseTest.extend<
       return { context: persistentContext, page };
     });
     if (persistentContext) await persistentContext.close();
+  },
+  page: async ({ context, browserName }, run) => {
+    const page = await context.newPage();
+    await page.goto("#/");
+    if (browserName !== "chromium") {
+      const document = await getDocument(page);
+      await queries.findByText(
+        document,
+        "Your browser doesn't support EdgeTX Buddy"
+      );
+      await (
+        await queries.findByLabelText(document, "Close", { selector: "button" })
+      ).click();
+    }
+
+    await run(page);
+    await page.close();
   },
 });
 

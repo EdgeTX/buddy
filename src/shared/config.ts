@@ -23,6 +23,22 @@ const extractParam = (key: string): string | null =>
     ? new URLSearchParams(window.location.search.slice(1)).get(key)
     : null;
 
+const apiKey = (): string | undefined => {
+  // When running e2es (in electron), we should use a pr builds
+  if (E2E) {
+    return process.env.GITHUB_PR_BUILDS_KEY;
+  }
+
+  // If you need the API key to record new APIs, change this
+  // line. The github API limits are 50/hour you should be ok
+  // when writing tests
+  if (process.env.NODE_ENV === "test") {
+    return undefined;
+  }
+
+  return process.env.GITHUB_API_KEY;
+};
+
 export default {
   isMain,
   isElectron,
@@ -31,11 +47,7 @@ export default {
   isProduction: PRODUCTION,
   isE2e: isMain ? E2E : extractParam("e2e") === "true",
   github: {
-    // If you need the API key to record new APIs, change this
-    // line. The github API limits are 50/hour you should be ok
-    // when writing tests
-    apiKey:
-      process.env.NODE_ENV === "test" ? undefined : process.env.GITHUB_API_KEY,
+    apiKey: apiKey(),
     // This is for now required to download PR builds
     prBuildsKey: process.env.GITHUB_PR_BUILDS_KEY,
     organization: "EdgeTX",

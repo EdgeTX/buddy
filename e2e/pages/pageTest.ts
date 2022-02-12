@@ -26,16 +26,3 @@ if (isElectron) impl = electronTest;
 
 export const firmwarePage = "#/flash";
 export const test = impl;
-
-if (!isElectron) {
-  test.beforeEach(async ({ page, browserName, queries }) => {
-    await page.goto("#/");
-
-    if (browserName !== "chromium") {
-      await queries.findByText("Your browser doesn't support EdgeTX Buddy");
-      await (
-        await queries.findByLabelText("Close", { selector: "button" })
-      ).click();
-    }
-  });
-}
