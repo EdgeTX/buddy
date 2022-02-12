@@ -11,18 +11,17 @@ test("shows a compatibility notice for unsupported browsers", async ({
 }) => {
   test.skip(browserName === "chromium");
   await page.reload();
-  expect(
-    await (
-      await queries.findByText("Your browser doesn't support EdgeTX Buddy")
-    ).isVisible()
-  ).toBeTruthy();
+  const modal = await queries.findByText(
+    "Your browser doesn't support EdgeTX Buddy"
+  );
+  await waitFor(async () => {
+    expect(await modal.isVisible()).toBeTruthy();
+  });
+
   await (
     await queries.findByLabelText("Close", { selector: "button" })
   ).click();
 
-  const modal = await queries.findByText(
-    "Your browser doesn't support EdgeTX Buddy"
-  );
   await waitFor(async () => {
     expect(await modal.isVisible()).toBeFalsy();
   });
