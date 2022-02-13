@@ -4,6 +4,7 @@
     "./src/**/*.spec.tsx",
     "./src/**/*.spec.ts",
     "./src/types.d.ts",
+    "./src/locales.d.ts",
     "./src/renderer/__generated__"
   ]
 }

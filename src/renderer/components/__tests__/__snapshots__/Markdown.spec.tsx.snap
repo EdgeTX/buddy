@@ -31,5 +31,6 @@ exports[`<Markdown /> should return the given markdown string as html 1`] = `
       </a>
     </p>
   </div>
+  )
 </DocumentFragment>
 `;

@@ -14,6 +14,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const HTMLInlineCSSWebpackPlugin =
   require("html-inline-css-webpack-plugin").default;
+const i18nextWebpackPlugin = require("i18next-scanner-webpack");
+const languages = require("../locales/languages.json");
 
 module.exports = (_, { mode }) => ({
   target: "es2020",

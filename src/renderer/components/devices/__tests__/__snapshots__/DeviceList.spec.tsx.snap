@@ -241,5 +241,6 @@ exports[`<DeviceList /> should render loading when device list is loading 1`] = 
       </div>
     </div>
   </div>
+  )
 </DocumentFragment>
 `;

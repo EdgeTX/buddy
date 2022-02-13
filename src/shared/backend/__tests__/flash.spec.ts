@@ -792,7 +792,7 @@ describe("Mutation", () => {
 
       const createFlashMutation = await backend.mutate({
         mutation: gql`
-          mutation CreateFlashJob($target: ID!) {
+          mutation CreateFlashJob($target: String!) {
             createFlashJob(
               firmware: { target: $target, version: "local" }
               deviceId: "some-device-id"

@@ -25,6 +25,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import SelectableListItem from "renderer/components/SelectableListItem";
 import useSorted from "renderer/hooks/useSorted";
 import { times } from "shared/tools";
+import useIsoNames from "renderer/hooks/useIsoNames";
 import JobExecutionModal from "./JobExecutionModal";
 
 const Container = styled.div`
@@ -157,10 +158,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
         ) {
           id
           name
-          sounds {
-            id
-            name
-          }
+          sounds
         }
       }
     `),
@@ -185,19 +183,17 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
     sdcardPacksQuery.data?.edgeTxSdcardPackReleases.filter(
       (release) => !release.isPrerelease || filters.includePrereleases
     ) ?? [];
-  const availableSounds = useSorted(
-    sdcardSoundsQuery.data?.edgeTxSoundsRelease?.sounds,
-    (s1, s2) => s1.id.localeCompare(s2.id)
+  const availableSounds = useIsoNames(
+    useSorted(sdcardSoundsQuery.data?.edgeTxSoundsRelease?.sounds, (s1, s2) =>
+      s1.localeCompare(s2)
+    )
   );
 
   const sortedTargets = useSorted(selectedPack?.targets, (t1, t2) =>
     t1.name.localeCompare(t2.name)
   );
   const selectedTarget = selectedPack?.targets.find((t) => t.id === packTarget);
-  const selectedSounds =
-    sdcardSoundsQuery.data?.edgeTxSoundsRelease?.sounds.find(
-      (sound) => sound.id === soundsId
-    );
+  const selectedSounds = [soundsId];
   const foundSoundsVersion = sdcardSoundsQuery.data?.edgeTxSoundsRelease?.id;
 
   return (
@@ -310,7 +306,8 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
                       ) : (
                         <SelectableListItem
                           aria-selected={
-                            !!selectedSounds && item.id === selectedSounds.id
+                            selectedSounds.length > 0 &&
+                            selectedSounds.includes(item.id)
                           }
                           style={{ textAlign: "center" }}
                           key={item.id}
@@ -320,10 +317,9 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
                                 ? "none"
                                 : undefined;
                             updateParams({
-                              soundsId:
-                                selectedSounds?.id !== item.id
-                                  ? item.id
-                                  : emptySounds,
+                              soundsId: !selectedSounds.includes(item.id)
+                                ? item.id
+                                : emptySounds,
                             });
                           }}
                         >

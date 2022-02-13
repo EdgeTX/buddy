@@ -4,7 +4,6 @@ import config from "shared/config";
 import { arrayFromAsync, findAsync } from "shared/tools";
 import { isArrayOf, isNotUndefined, isString } from "type-guards";
 import semver from "semver";
-import ISO6391 from "iso-639-1";
 import { createBuilder } from "shared/backend/utils/builder";
 import type { TypeOf } from "shared/backend/types";
 
@@ -579,15 +578,7 @@ builder.objectFields(EdgeTxSdcardPackRelease, (t) => ({
 }));
 
 builder.objectFields(EdgeTxSoundsRelease, (t) => ({
-  sounds: t.field({
-    type: [
-      builder.simpleObject("SdcardSoundsAsset", {
-        fields: (t_) => ({
-          id: t_.id(),
-          name: t_.string(),
-        }),
-      }),
-    ],
+  sounds: t.idList({
     resolve: ({ artifacts }) =>
       artifacts
         .filter((artifact) => artifact.name.includes("edgetx-sdcard-sounds-"))
@@ -597,15 +588,7 @@ builder.objectFields(EdgeTxSoundsRelease, (t) => ({
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             artifact.name.split("edgetx-sdcard-sounds-")[1]!.split("-")[0]!
         )
-        .map((isoName) => {
-          const iso = SOUND_NAMES_TO_ISO[isoName] ?? isoName;
-          return {
-            id: isoName,
-            name: ISO6391.validate(iso)
-              ? ISO6391.getNativeName(iso)
-              : isoName.toUpperCase(),
-          };
-        }),
+        .map((isoName) => SOUND_NAMES_TO_ISO[isoName] ?? isoName),
   }),
 }));
 

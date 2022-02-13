@@ -3,6 +3,7 @@ import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { ArrowRightOutlined, GithubOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import EdgeTxIcon from "./assets/logo.webp";
 import WindowsNav from "./components/WindowsNav";
 import useIsMobile from "./hooks/useIsMobile";
@@ -90,6 +91,7 @@ const AppLayout: React.FC<Props> = ({
   const isMobile = useIsMobile();
   const location = useLocation();
   const [settings] = useSettings();
+  const { t } = useTranslation();
 
   return (
     <MainLayout
@@ -136,7 +138,7 @@ const AppLayout: React.FC<Props> = ({
           style={{ flex: 1, boxShadow: "none" }}
         >
           <Menu.Item key="flash">
-            <Link to="/flash">Radio firmware</Link>
+            <Link to="/flash">{t(`Radio firmware`)}</Link>
           </Menu.Item>
           <Menu.Item key="sdcard">
             <Link to="/sdcard">SD Card content</Link>

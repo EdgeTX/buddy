@@ -216,7 +216,15 @@ describe("<VersionTargetForm />", () => {
                       </div>
                       <span
                         aria-hidden=\\"true\\"
-                        class=\\"ant-select-arrow\\""
+                        class=\\"ant-select-arrow\\"
+      @@ -212,7 +212,6 @@
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+      -   )
+        </DocumentFragment>"
     `);
   });
 
@@ -258,7 +266,15 @@ describe("<VersionTargetForm />", () => {
                       </div>
                       <span
                         aria-hidden=\\"true\\"
-                        class=\\"ant-select-arrow\\""
+                        class=\\"ant-select-arrow\\"
+      @@ -211,7 +211,6 @@
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+      -   )
+        </DocumentFragment>"
     `);
   });
 });
