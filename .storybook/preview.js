@@ -1,6 +1,8 @@
 import "antd/dist/antd.variable.min.css";
 import "../src/renderer/index.css";
 import { ConfigProvider } from "antd";
+import i18n from "../src/test-utils/i18n";
+import { I18nextProvider } from "react-i18next";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -13,5 +15,9 @@ export const parameters = {
 };
 
 export const decorators = [
-  (story) => <ConfigProvider>{story()}</ConfigProvider>,
+  (story) => (
+    <I18nextProvider i18n={i18n}>
+      <ConfigProvider>{story()}</ConfigProvider>
+    </I18nextProvider>
+  ),
 ];

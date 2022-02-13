@@ -166,6 +166,7 @@ describe("<FirmwareSummary />", () => {
               </div>
             </div>
           </div>
+          )
         </DocumentFragment>"
     `);
   });

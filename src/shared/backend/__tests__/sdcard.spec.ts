@@ -331,10 +331,7 @@ describe("Query", () => {
             edgeTxSoundsRelease(forPack: "v2.5.0", isPrerelease: false) {
               id
               name
-              sounds {
-                id
-                name
-              }
+              sounds
             }
           }
         `,
@@ -346,42 +343,15 @@ describe("Query", () => {
           "id": "v2.5.3",
           "name": "2.5.3",
           "sounds": Array [
-            Object {
-              "id": "cn",
-              "name": "中文",
-            },
-            Object {
-              "id": "cz",
-              "name": "čeština",
-            },
-            Object {
-              "id": "de",
-              "name": "Deutsch",
-            },
-            Object {
-              "id": "en",
-              "name": "English",
-            },
-            Object {
-              "id": "es",
-              "name": "Español",
-            },
-            Object {
-              "id": "fr",
-              "name": "Français",
-            },
-            Object {
-              "id": "it",
-              "name": "Italiano",
-            },
-            Object {
-              "id": "pt",
-              "name": "Português",
-            },
-            Object {
-              "id": "ru",
-              "name": "Русский",
-            },
+            "zh",
+            "cs",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "pt",
+            "ru",
           ],
         }
       `);

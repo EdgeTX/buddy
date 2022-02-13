@@ -84,6 +84,7 @@ exports[`<DeviceSummary /> should show details about the given device 1`] = `
       </div>
     </div>
   </div>
+  )
 </DocumentFragment>
 `;
 
@@ -139,5 +140,5 @@ exports[`<DeviceSummary /> should show loading skeleton before displaying device
         </div>
       </div>
     </div>
-  </DocumentFragment>"
+    )"
 `;
