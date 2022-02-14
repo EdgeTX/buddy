@@ -1,0 +1,15 @@
+{
+  "Add a device to get started": "Add a device to get started",
+  "Add new device": "Add new device",
+  "Available devices": "Available devices",
+  "Copied to clipboard": "Copied to clipboard",
+  "Copy URL": "Copy URL",
+  "Could not download firmware: {{message}}": "Could not download firmware: {{message}}",
+  "Firmware data": "Firmware data",
+  "Firmware file saved": "Firmware file saved",
+  "Flash via USB": "Flash via USB",
+  "No devices found": "No devices found",
+  "Not supported by your browser": "Not supported by your browser",
+  "Refresh": "Refresh",
+  "Unknown firmware": "Unknown firmware"
+}

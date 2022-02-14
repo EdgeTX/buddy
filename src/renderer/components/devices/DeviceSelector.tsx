@@ -6,6 +6,7 @@ import {
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Button, Card, Empty, Typography } from "antd";
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import { Centered } from "renderer/shared/layouts";
 import styled from "styled-components";
@@ -52,6 +53,7 @@ const DeviceSelector: React.FC<Props> = ({
 }) => {
   const isMobile = useIsMobile();
   const { data, loading, refetch } = useQuery(DevicesQuery);
+  const { t } = useTranslation("flashing");
 
   const [requestDevice] = useMutation(
     gql(/* GraphQL */ `
@@ -87,7 +89,7 @@ const DeviceSelector: React.FC<Props> = ({
           void refetch();
         }}
       >
-        Refresh
+        {t(`Refresh`)}
       </Button>
     ) : (
       <Button
@@ -103,14 +105,14 @@ const DeviceSelector: React.FC<Props> = ({
           });
         }}
       >
-        Add new device
+        {t(`Add new device`)}
       </Button>
     );
 
   return (
     <Main>
       <Typography.Text>
-        Available devices ({data?.flashableDevices.length ?? 0})
+        {t(`Available devices`)} ({data?.flashableDevices.length ?? 0})
       </Typography.Text>
 
       <Card
@@ -145,8 +147,8 @@ const DeviceSelector: React.FC<Props> = ({
               }
               description={
                 variant === "electron"
-                  ? "No devices found"
-                  : "Add a device to get started"
+                  ? t(`No devices found`)
+                  : t(`Add a device to get started`)
               }
             >
               {actionButton}

@@ -3,7 +3,7 @@ import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { ArrowRightOutlined, GithubOutlined } from "@ant-design/icons";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import EdgeTxIcon from "./assets/logo.webp";
 import WindowsNav from "./components/WindowsNav";
 import useIsMobile from "./hooks/useIsMobile";
@@ -141,11 +141,11 @@ const AppLayout: React.FC<Props> = ({
             <Link to="/flash">{t(`Radio firmware`)}</Link>
           </Menu.Item>
           <Menu.Item key="sdcard">
-            <Link to="/sdcard">SD Card content</Link>
+            <Link to="/sdcard">{t(`SD Card content`)}</Link>
           </Menu.Item>
           {settings.expertMode && (
             <Menu.Item key="dev">
-              <Link to="/dev">Dev tools</Link>
+              <Link to="/dev">{t(`Dev tools`)}</Link>
             </Menu.Item>
           )}
         </Menu>
@@ -191,25 +191,29 @@ const AppLayout: React.FC<Props> = ({
         <FooterElements>
           {!isMobile && (
             <div>
-              Built with ♥ by the EdgeTX contributors -{" "}
-              <a
-                target="_blank"
-                href="https://github.com/EdgeTX/buddy"
-                rel="noreferrer"
-              >
-                source
-              </a>
+              <Trans>
+                Built with ♥ by the EdgeTX contributors -{" "}
+                <a
+                  target="_blank"
+                  href="https://github.com/EdgeTX/buddy"
+                  rel="noreferrer"
+                >
+                  source
+                </a>
+              </Trans>
             </div>
           )}
           <div>
-            Donate and support EdgeTX development{" "}
-            <a
-              target="_blank"
-              href="https://opencollective.com/edgetx"
-              rel="noreferrer"
-            >
-              <ArrowRightOutlined />
-            </a>
+            <Trans>
+              Donate and support EdgeTX development{" "}
+              <a
+                target="_blank"
+                href="https://opencollective.com/edgetx"
+                rel="noreferrer"
+              >
+                <ArrowRightOutlined />
+              </a>
+            </Trans>
           </div>
         </FooterElements>
       </Footer>

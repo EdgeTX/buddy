@@ -14,7 +14,7 @@ void i18n
       escapeValue: false,
     },
     defaultNS: "common",
-    ns: ["common"],
+    ns: ["common", "compatibility"],
   });
 
 export default i18n;

@@ -121,7 +121,8 @@
     "storybook": "start-storybook -p 6006",
     "build:storybook": "build-storybook",
     "release": "electron-builder --publish always",
-    "serve:web": "serve build/renderer -p 8081"
+    "serve:web": "serve build/renderer -p 8081",
+    "extract-locales": "i18next 'src/renderer/**/*.{ts,tsx}'"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
@@ -199,6 +200,7 @@
     "html-inline-css-webpack-plugin": "^1.11.1",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.0",
+    "i18next-parser": "^5.4.0",
     "is-ci": "^3.0.1",
     "jest": "^27.4.3",
     "jest-chain-transform": "^0.0.4",

@@ -1,6 +1,7 @@
 import { UsbOutlined, WarningOutlined } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import checks from "renderer/compatibility/checks";
 import config from "shared/config";
 
@@ -15,13 +16,14 @@ const FlashButton: React.FC<Props> = ({
   disabled = false,
   loading = false,
 }) => {
+  const { t } = useTranslation("flashing");
   const flashingAvailable = config.isElectron || checks.hasUsbApi;
 
   return (
     <Tooltip
       trigger={!flashingAvailable ? ["hover", "click"] : []}
       placement="top"
-      title="Not supported by your browser"
+      title={t(`Not supported by your browser`)}
     >
       <Button
         disabled={disabled || !flashingAvailable}
@@ -30,7 +32,7 @@ const FlashButton: React.FC<Props> = ({
         icon={flashingAvailable ? <UsbOutlined /> : <WarningOutlined />}
         onClick={onClick}
       >
-        Flash via USB
+        {t(`Flash via USB`)}
       </Button>
     </Tooltip>
   );

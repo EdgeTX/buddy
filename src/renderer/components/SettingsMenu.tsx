@@ -10,14 +10,10 @@ import { useTranslation } from "react-i18next";
 import languages from "renderer/i18n/languages";
 import useIsoNames from "renderer/hooks/useIsoNames";
 
-const options = [
-  { key: "expertMode", icon: <CodeOutlined />, text: "Expert mode" },
-] as const;
-
 const SettingsMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useSettings();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const availableLanguages = useIsoNames(languages);
 
   return (
@@ -29,7 +25,15 @@ const SettingsMenu: React.FC = () => {
       arrow
       overlay={
         <Menu onClick={() => {}}>
-          {options.map((option) => (
+          {(
+            [
+              {
+                key: "expertMode",
+                icon: <CodeOutlined />,
+                text: t(`Expert mode`),
+              },
+            ] as const
+          ).map((option) => (
             <Menu.Item key={option.key} icon={option.icon}>
               <Checkbox
                 checked={settings[option.key]}
@@ -61,7 +65,7 @@ const SettingsMenu: React.FC = () => {
     >
       <SettingOutlined
         style={{ fontSize: "16px", color: "white" }}
-        title="settings"
+        title={t(`settings`)}
       />
     </Dropdown>
   );

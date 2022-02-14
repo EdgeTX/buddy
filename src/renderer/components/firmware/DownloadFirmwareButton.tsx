@@ -8,6 +8,7 @@ import { ButtonSize, ButtonType } from "antd/lib/button";
 import checks from "renderer/compatibility/checks";
 import legacyDownload from "js-file-download";
 import config from "shared/config";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   target?: string;
@@ -24,6 +25,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   type,
   size,
 }) => {
+  const { t } = useTranslation("flashing");
   const [downloading, setDownloading] = useState(false);
   const isPr = isPrVersion(version ?? "");
   const isLocal = version === "local";
@@ -44,7 +46,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       suggestedName: name,
       types: [
         {
-          description: "Firmware data",
+          description: t(`Firmware data`),
           accept: {
             "application/octet-stream": [".bin"],
           },
@@ -137,10 +139,14 @@ const DownloadFirmwareButton: React.FC<Props> = ({
         setDownloading(true);
         await download()
           .then(() => {
-            void message.success("Firmware file saved");
+            void message.success(t(`Firmware file saved`));
           })
           .catch((e: Error) => {
-            void message.error(`Could not download firmware: ${e.message}`);
+            void message.error(
+              t(`Could not download firmware: {{message}}`, {
+                message: e.message,
+              })
+            );
           });
         setDownloading(false);
       }}

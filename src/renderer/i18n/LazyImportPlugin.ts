@@ -6,11 +6,11 @@ const LazyImportPlugin: BackendModule = {
   init() {},
   read(language, namespace, callback) {
     void fetchAntLocale(language);
-    void import(
-      /* webpackChunkName: "locales/[request]" */ `../../../locales/${language}/${namespace}.json`
-    ).then((obj: ResourceKey) => {
-      callback(null, obj);
-    });
+    void import(`../../../locales/${language}/${namespace}.json`).then(
+      (obj: ResourceKey) => {
+        callback(null, obj);
+      }
+    );
   },
   create() {},
 };

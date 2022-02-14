@@ -106,7 +106,10 @@ module.exports = (_, { mode }) => ({
   output: {
     path: `${__dirname}/../build/renderer`,
     filename: "[name]-[chunkhash].js",
-    chunkFilename: "[name]-[chunkhash].js",
+    chunkFilename: (pathData) =>
+      pathData.chunk.id.includes("locale")
+        ? "locales/[name]-[chunkhash].js"
+        : "[name]-[chunkhash].js",
     clean: true,
     chunkFormat: "array-push",
     chunkLoading: "jsonp",

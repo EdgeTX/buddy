@@ -5,6 +5,7 @@ import copy from "copy-text-to-clipboard";
 import { Button, Tooltip } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   target?: string;
@@ -12,6 +13,9 @@ type Props = {
 };
 
 const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
+  const { t } = useTranslation("flashing");
+  const location = useLocation();
+
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (copied) {
@@ -24,14 +28,13 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
 
     return undefined;
   }, [copied]);
-  const location = useLocation();
 
   return (
     <Tooltip
       visible={copied}
       trigger={[]}
       placement="top"
-      title="Copied to clipboard"
+      title={t(`Copied to clipboard`)}
     >
       <Button
         onClick={() => {
@@ -51,7 +54,7 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
         size="small"
         icon={<CopyOutlined />}
       >
-        Copy URL
+        {t(`Copy URL`)}
       </Button>
     </Tooltip>
   );

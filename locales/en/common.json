@@ -1,3 +1,20 @@
 {
-  "Radio firmware": "Radio firmware"
+  "Built with ♥ by the EdgeTX contributors - <2>source</2>": "Built with ♥ by the EdgeTX contributors - <2>source</2>",
+  "Could not load releases": "Could not load releases",
+  "Could not load targets": "Could not load targets",
+  "Dev tools": "Dev tools",
+  "Donate and support EdgeTX development <2><0></0></2>": "Donate and support EdgeTX development <2><0></0></2>",
+  "Expert mode": "Expert mode",
+  "Filters": "Filters",
+  "Firmware version": "Firmware version",
+  "Include pre-releases": "Include pre-releases",
+  "Loading releases...": "Loading releases...",
+  "Radio firmware": "Radio firmware",
+  "Radio model": "Radio model",
+  "SD Card content": "SD Card content",
+  "Select firmware to see available models": "Select firmware to see available models",
+  "Select firmware version": "Select firmware version",
+  "Select radio model": "Select radio model",
+  "settings": "settings",
+  "The type of radio you want to flash": "The type of radio you want to flash"
 }

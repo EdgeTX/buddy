@@ -1,6 +1,7 @@
 import { DownOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Checkbox, Dropdown, Form, Menu, Select } from "antd";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type VersionFilters = {
   includePrereleases: boolean;
@@ -33,113 +34,112 @@ const VersionTargetForm: React.FC<Props> = ({
   versions,
   targets,
   disabled,
-}) => (
-  <Form
-    layout="vertical"
-    onValuesChange={(_, values) =>
-      onChanged?.({ ...values, filters } as Parameters<typeof onChanged>[0])
-    }
-    fields={Object.entries({
-      target: targets.selectedId,
-      version: versions.selectedId,
-    }).map(([key, value]) => ({ name: [key], value }))}
-    size="large"
-  >
-    <Form.Item
-      label="Firmware version"
-      name="version"
-      tooltip={
-        versions.tooltip
-          ? {
-              title: versions.tooltip,
-              icon: <InfoCircleOutlined />,
-            }
-          : versions.tooltip
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Form
+      layout="vertical"
+      onValuesChange={(_, values) =>
+        onChanged?.({ ...values, filters } as Parameters<typeof onChanged>[0])
       }
-      help={
-        versions.error ? (
-          "Could not load releases"
-        ) : (
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <VersionFiltersDropdown
-              filters={filters}
-              onChange={(newFilters) => {
-                onChanged?.({
-                  version: versions.selectedId,
-                  target: targets.selectedId,
-                  filters: newFilters,
-                });
-              }}
-            />
-          </div>
-        )
-      }
-      validateStatus={versions.error ? "error" : undefined}
-      required
+      fields={Object.entries({
+        target: targets.selectedId,
+        version: versions.selectedId,
+      }).map(([key, value]) => ({ name: [key], value }))}
+      size="large"
     >
-      <Select
-        value={versions.selectedId}
-        allowClear={false}
-        placeholder={
-          versions.loading
-            ? "Loading releases..."
-            : versions.placeholder ?? "Select firmware version"
+      <Form.Item
+        label={t(`Firmware version`)}
+        name="version"
+        tooltip={
+          versions.tooltip
+            ? {
+                title: versions.tooltip,
+                icon: <InfoCircleOutlined />,
+              }
+            : versions.tooltip
         }
-        loading={versions.loading}
-        virtual={process.env.NODE_ENV !== "test"}
-        disabled={!!versions.error || disabled}
+        help={
+          versions.error ? (
+            t(`Could not load releases`)
+          ) : (
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <VersionFiltersDropdown
+                filters={filters}
+                onChange={(newFilters) => {
+                  onChanged?.({
+                    version: versions.selectedId,
+                    target: targets.selectedId,
+                    filters: newFilters,
+                  });
+                }}
+              />
+            </div>
+          )
+        }
+        validateStatus={versions.error ? "error" : undefined}
+        required
       >
-        {versions.available?.map((r) => (
-          <Select.Option key={r.id} value={r.id}>
-            {r.name}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-    <Form.Item
-      label="Radio model"
-      name="target"
-      tooltip={
-        targets.tooltip
-          ? {
-              title: "The type of radio you want to flash",
-              icon: <InfoCircleOutlined />,
-            }
-          : undefined
-      }
-      help={targets.error ? "Could not load targets" : undefined}
-      required
-      validateStatus={targets.error ? "error" : undefined}
-    >
-      <Select
-        value={targets.selectedId}
-        allowClear={false}
-        loading={targets.loading}
-        virtual={process.env.NODE_ENV !== "test"}
-        disabled={
-          !versions.selectedId ||
-          !!targets.error ||
-          !!targets.loading ||
-          disabled
+        <Select
+          value={versions.selectedId}
+          allowClear={false}
+          placeholder={
+            versions.loading
+              ? t(`Loading releases...`)
+              : versions.placeholder ?? t(`Select firmware version`)
+          }
+          loading={versions.loading}
+          virtual={process.env.NODE_ENV !== "test"}
+          disabled={!!versions.error || disabled}
+        >
+          {versions.available?.map((r) => (
+            <Select.Option key={r.id} value={r.id}>
+              {r.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label={t(`Radio model`)}
+        name="target"
+        tooltip={
+          targets.tooltip
+            ? {
+                title: t(`The type of radio you want to flash`),
+                icon: <InfoCircleOutlined />,
+              }
+            : undefined
         }
-        placeholder={
-          !versions.selectedId
-            ? "Select firmware to see available models"
-            : versions.placeholder ?? "Select radio model"
-        }
+        help={targets.error ? t(`Could not load targets`) : undefined}
+        required
+        validateStatus={targets.error ? "error" : undefined}
       >
-        {targets.available?.map((t) => (
-          <Select.Option key={t.id} value={t.id}>
-            {t.name}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-  </Form>
-);
-
-const filterNames: Record<keyof VersionFilters, string> = {
-  includePrereleases: "Include pre-releases",
+        <Select
+          value={targets.selectedId}
+          allowClear={false}
+          loading={targets.loading}
+          virtual={process.env.NODE_ENV !== "test"}
+          disabled={
+            !versions.selectedId ||
+            !!targets.error ||
+            !!targets.loading ||
+            disabled
+          }
+          placeholder={
+            !versions.selectedId
+              ? t(`Select firmware to see available models`)
+              : versions.placeholder ?? t(`Select radio model`)
+          }
+        >
+          {targets.available?.map((tar) => (
+            <Select.Option key={tar.id} value={tar.id}>
+              {tar.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+    </Form>
+  );
 };
 
 const VersionFiltersDropdown: React.FC<{
@@ -147,6 +147,11 @@ const VersionFiltersDropdown: React.FC<{
   onChange: (filters: VersionFilters) => void;
 }> = ({ filters, onChange }) => {
   const [visible, setVisible] = useState(false);
+  const { t } = useTranslation();
+
+  const filterNames: Record<keyof VersionFilters, string> = {
+    includePrereleases: t(`Include pre-releases`),
+  };
 
   return (
     <Dropdown
@@ -174,7 +179,7 @@ const VersionFiltersDropdown: React.FC<{
     >
       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-        Filters <DownOutlined />
+        {t(`Filters`)} <DownOutlined />
       </a>
     </Dropdown>
   );
