@@ -122,6 +122,7 @@ module.exports = (_, { mode }) => ({
         target: tsconfig.compilerOptions.target.toLowerCase(),
       }),
     ],
+    chunkIds: "named",
     usedExports: true,
   },
   plugins: [
