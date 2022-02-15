@@ -37,7 +37,7 @@ const Container = styled.div`
 
 const FlashExecution: React.FC = () => {
   const isMobile = useIsMobile();
-  const { t } = useTranslation();
+  const { t } = useTranslation("flashing");
   const { jobId } = useParams();
   const navigate = useNavigate();
   const {

@@ -19,7 +19,7 @@ const exhaustiveStringTuple =
 // so that we fetch all namespaces when we switch language
 const namespaces = exhaustiveStringTuple<
   keyof CustomTypeOptions["resources"]
->()("common", "compatibility", "sdcard", "flashing");
+>()("common", "compatibility", "sdcard", "flashing", "devtools");
 
 void i18n
   .use(LazyImportPlugin)

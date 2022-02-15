@@ -12,6 +12,7 @@ import config from "shared/config";
 import styled from "styled-components";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
 import { exception } from "react-ga";
+import { useTranslation } from "react-i18next";
 import ExecutionOverlay from "./ExecuationOverlay";
 
 const Container = styled.div`
@@ -36,6 +37,7 @@ const Controls = styled.div`
 `;
 
 const PrBuildsFlasher: React.FC = () => {
+  const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams();
 
   const version = parseParam("version");
@@ -88,7 +90,7 @@ const PrBuildsFlasher: React.FC = () => {
         <Controls>
           <Space size="small">
             <DownloadFirmwareButton target={target} version={version}>
-              Download .bin
+              {t(`Download .bin`)}
             </DownloadFirmwareButton>
             <FlashButton
               loading={creatingJob}
@@ -112,7 +114,11 @@ const PrBuildsFlasher: React.FC = () => {
                       description: `Error creating PR flash job: ${e.message}`,
                       fatal: true,
                     });
-                    void message.error(`Could not create job: ${e.message}`);
+                    void message.error(
+                      t(`Could not create job: {{message}}`, {
+                        message: e.message,
+                      })
+                    );
                   });
               }}
             />

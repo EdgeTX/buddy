@@ -1,6 +1,7 @@
 import { BranchesOutlined, UsbOutlined } from "@ant-design/icons";
 import { Menu } from "antd";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import useIsWide from "renderer/hooks/useIsWide";
 import { FullHeight } from "renderer/shared/layouts";
@@ -18,6 +19,7 @@ const Container = styled.div`
 `;
 
 const DevTools: React.FC<{ route?: string }> = ({ route = "" }) => {
+  const { t } = useTranslation("devtools");
   const [openedMenus, setOpenedMenus] = useState<string[]>([]);
   const location = useLocation();
   const isWide = useIsWide();
@@ -51,10 +53,10 @@ const DevTools: React.FC<{ route?: string }> = ({ route = "" }) => {
             }}
             key="flash"
             icon={<UsbOutlined />}
-            title="Firmware"
+            title={t(`Firmware`)}
           >
             <Menu.Item icon={<BranchesOutlined />} key="pr">
-              PR Builds
+              {t(`PR Builds`)}
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>

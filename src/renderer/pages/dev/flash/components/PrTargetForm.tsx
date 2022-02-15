@@ -1,6 +1,7 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Form, Select } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 type FormItem = {
   selectedId?: string;
@@ -31,6 +32,7 @@ const PrTargetForm: React.FC<Props> = ({
   targets,
   disabled,
 }) => {
+  const { t } = useTranslation("flashing");
   const noAvailableTargets =
     !targets.loading && !targets.error && !targets.available;
 
@@ -40,8 +42,8 @@ const PrTargetForm: React.FC<Props> = ({
     }
 
     return !commits.selectedId
-      ? "Select commit to load build info"
-      : targets.placeholder ?? "Select radio model";
+      ? t(`Select commit to load build info`)
+      : targets.placeholder ?? t(`Select radio model`);
   };
 
   const renderCommitsHelpText = (): string | null => {
@@ -51,10 +53,10 @@ const PrTargetForm: React.FC<Props> = ({
       commits.available &&
       noAvailableTargets
     ) {
-      return "No firmware built for commit";
+      return t(`No firmware built for commit`);
     }
 
-    return commits.error ? "Could not load commits" : null;
+    return commits.error ? t(`Could not load commits`) : null;
   };
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -85,7 +87,7 @@ const PrTargetForm: React.FC<Props> = ({
       size="large"
     >
       <Form.Item
-        label="Pull request"
+        label={t(`Pull request`)}
         name="pullRequest"
         tooltip={
           pullRequests.tooltip
@@ -106,8 +108,8 @@ const PrTargetForm: React.FC<Props> = ({
           allowClear={false}
           placeholder={
             pullRequests.loading
-              ? "Loading pull requests..."
-              : pullRequests.placeholder ?? "Select pull request"
+              ? t(`Loading pull requests...`)
+              : pullRequests.placeholder ?? t(`Select pull request`)
           }
           loading={pullRequests.loading}
           disabled={!!pullRequests.error || disabled}
@@ -141,8 +143,8 @@ const PrTargetForm: React.FC<Props> = ({
           allowClear={false}
           placeholder={
             commits.loading
-              ? "Loading commits..."
-              : commits.placeholder ?? "Select commit"
+              ? t(`Loading commits...`)
+              : commits.placeholder ?? t(`Select commit`)
           }
           loading={commits.loading}
           disabled={!!commits.error || disabled}
@@ -150,23 +152,25 @@ const PrTargetForm: React.FC<Props> = ({
           {commits.available?.map((c) => (
             <Select.Option key={c.id} value={c.id}>
               {c.name ?? c.id.slice(0, 7)}{" "}
-              {commits.latestId && commits.latestId === c.id ? "(Latest)" : ""}
+              {commits.latestId && commits.latestId === c.id
+                ? t(`(Latest)`)
+                : ""}
             </Select.Option>
           ))}
         </Select>
       </Form.Item>
       <Form.Item
-        label="Radio model"
+        label={t(`Radio model`)}
         name="target"
         tooltip={
           targets.tooltip
             ? {
-                title: "The type of radio you want to flash",
+                title: t(`The type of radio you want to flash`),
                 icon: <InfoCircleOutlined />,
               }
             : undefined
         }
-        help={targets.error ? "Could not load targets" : undefined}
+        help={targets.error ? t(`Could not load targets`) : undefined}
         required
         validateStatus={targets.error ? "error" : undefined}
       >
@@ -183,9 +187,9 @@ const PrTargetForm: React.FC<Props> = ({
           }
           placeholder={renderCommitsPlaceholder()}
         >
-          {targets.available?.map((t) => (
-            <Select.Option key={t.id} value={t.id}>
-              {t.name ?? t.id}
+          {targets.available?.map(({ id, name }) => (
+            <Select.Option key={id} value={id}>
+              {name ?? id}
             </Select.Option>
           ))}
         </Select>

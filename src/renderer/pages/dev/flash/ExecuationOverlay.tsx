@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { Button, Card, Skeleton } from "antd";
 import { FullHeightCentered, FullHeight } from "renderer/shared/layouts";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
+import { useTranslation } from "react-i18next";
 
 const Outside = styled.div`
   position: relative;
@@ -51,6 +52,7 @@ const ExecutionOverlay: React.FC<{ jobId?: string; onClose: () => void }> = ({
   onClose,
   children,
 }) => {
+  const { t } = useTranslation("flashing");
   const { data, loading, jobCompleted, jobExists, jobCancelled, jobError } =
     useFlashJobStatus(jobId);
   const cancelJob = useCancelFlashJob(jobId);
@@ -108,7 +110,7 @@ const ExecutionOverlay: React.FC<{ jobId?: string; onClose: () => void }> = ({
                     onClose();
                   }}
                 >
-                  Cancel
+                  {t(`Cancel`)}
                 </Button>
               )}
               {!active && (
@@ -117,7 +119,7 @@ const ExecutionOverlay: React.FC<{ jobId?: string; onClose: () => void }> = ({
                     onClose();
                   }}
                 >
-                  Done
+                  {t(`Done`)}
                 </Button>
               )}
             </div>

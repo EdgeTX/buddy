@@ -151,13 +151,14 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   <>
                     <div>
                       <Typography.Text type="secondary">
-                        {t(`• Local firmware file should be a binary (.bin)`)}
+                        • {t(`Local firmware file should be a binary (.bin)`)}
                       </Typography.Text>
                     </div>
                     <div>
                       <Typography.Text type="secondary">
+                        •{" "}
                         {t(
-                          `• These can be built locally or downloaded from the EdgeTX releases`
+                          `These can be built locally or downloaded from the EdgeTX releases`
                         )}
                       </Typography.Text>
                     </div>

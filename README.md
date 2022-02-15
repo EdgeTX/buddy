@@ -111,6 +111,23 @@ Format (this codebase has enforced formatting with prettier)
 $ yarn fmt
 ```
 
+Extract new translation strings
+
+```bash
+$ yarn extract-locales
+```
+
+### Translations
+
+Translation strings are stored in the [`./locales`](./locales/) directory.
+To contribute a language which doesn't already exist:
+
+1. Add the ISO code to the [`./locales/languages.json`](./locales/languages.json)
+1. Extract the strings to the new language files (`yarn extract-locales`)
+1. Translate the strings for their equivilent meanings
+
+The namespaces (common, flashing, etc), provide some context for what the strings relate to
+
 ### Structure
 
 The application is split into different contexts

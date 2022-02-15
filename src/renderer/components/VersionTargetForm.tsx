@@ -35,7 +35,7 @@ const VersionTargetForm: React.FC<Props> = ({
   targets,
   disabled,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("flashing");
   return (
     <Form
       layout="vertical"
@@ -147,7 +147,7 @@ const VersionFiltersDropdown: React.FC<{
   onChange: (filters: VersionFilters) => void;
 }> = ({ filters, onChange }) => {
   const [visible, setVisible] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useTranslation("flashing");
 
   const filterNames: Record<keyof VersionFilters, string> = {
     includePrereleases: t(`Include pre-releases`),
