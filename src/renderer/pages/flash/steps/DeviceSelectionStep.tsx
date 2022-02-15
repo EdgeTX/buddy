@@ -9,10 +9,12 @@ import { FullHeight } from "renderer/shared/layouts";
 import { StepComponent } from "renderer/pages/flash/types";
 import DeviceSelector from "renderer/components/devices/DeviceSelector";
 import config from "shared/config";
+import { useTranslation } from "react-i18next";
 
 const DeviceSelectionStep: StepComponent = ({ onNext, onPrevious }) => {
   const { parseParam, updateParams } = useQueryParams<"deviceId">();
   const selectedDeviceId = parseParam("deviceId");
+  const { t } = useTranslation("flashing");
 
   return (
     <FullHeight>
@@ -31,7 +33,7 @@ const DeviceSelectionStep: StepComponent = ({ onNext, onPrevious }) => {
             onPrevious?.();
           }}
         >
-          Go back
+          {t(`Go back`)}
         </Button>
         <Button
           type="primary"
@@ -42,7 +44,7 @@ const DeviceSelectionStep: StepComponent = ({ onNext, onPrevious }) => {
             }
           }}
         >
-          Next
+          {t(`Next`)}
         </Button>
       </StepControlsContainer>
     </FullHeight>

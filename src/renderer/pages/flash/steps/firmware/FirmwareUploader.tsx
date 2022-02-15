@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { message } from "antd";
 import { useMutation, gql, useQuery } from "@apollo/client";
 import { exception } from "react-ga";
+import { useTranslation } from "react-i18next";
 import FirmwareUploadArea from "./FirmwareUploadArea";
 
 type FirmwareUploaderProps = {
@@ -13,6 +14,7 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
   onFileUploaded,
   selectedFile,
 }) => {
+  const { t } = useTranslation("flashing");
   const { data, loading } = useQuery(
     gql(/* GraphQL */ `
       query LocalFirmwareInfo($fileId: ID!) {
@@ -73,7 +75,7 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
                 description: `Error uploading local firmware: ${e.message}`,
                 fatal: true,
               });
-              void message.error("Could not use firmware");
+              void message.error(t(`Could not use firmware`));
             });
         } else {
           onFileUploaded();

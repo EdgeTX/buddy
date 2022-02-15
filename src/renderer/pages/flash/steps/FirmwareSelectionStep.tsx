@@ -15,6 +15,7 @@ import useIsMobile from "renderer/hooks/useIsMobile";
 import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import FlashButton from "renderer/components/flashing/FlashButton";
+import { useTranslation } from "react-i18next";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
@@ -60,6 +61,7 @@ const DescriptionContainer = styled.div`
 
 const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams<
     "version" | "target" | "filters"
   >();
@@ -113,7 +115,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <RocketOutlined />
-                  Cloud
+                  {t(`Cloud`)}
                 </span>
               }
               key="releases"
@@ -139,7 +141,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <UploadOutlined />
-                  Local file
+                  {t(`Local file`)}
                 </span>
               }
               key="file"
@@ -149,13 +151,14 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   <>
                     <div>
                       <Typography.Text type="secondary">
-                        • Local firmware file should be a binary (.bin)
+                        {t(`• Local firmware file should be a binary (.bin)`)}
                       </Typography.Text>
                     </div>
                     <div>
                       <Typography.Text type="secondary">
-                        • These can be built locally or downloaded from the
-                        EdgeTX releases
+                        {t(
+                          `• These can be built locally or downloaded from the EdgeTX releases`
+                        )}
                       </Typography.Text>
                     </div>
                   </>
@@ -190,7 +193,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
       </StepContentContainer>
       <StepControlsContainer>
         <DownloadFirmwareButton target={target} version={version}>
-          Download .bin
+          {t(`Download .bin`)}
         </DownloadFirmwareButton>
         <FlashButton
           disabled={!target || !version}

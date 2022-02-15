@@ -1,14 +1,19 @@
 {
   "Built with ♥ by the EdgeTX contributors - <2>source</2>": "Built with ♥ by the EdgeTX contributors - <2>source</2>",
+  "Cancel": "Cancel",
   "Could not load releases": "Could not load releases",
   "Could not load targets": "Could not load targets",
   "Dev tools": "Dev tools",
   "Donate and support EdgeTX development <2><0></0></2>": "Donate and support EdgeTX development <2><0></0></2>",
+  "Done": "Done",
   "Expert mode": "Expert mode",
   "Filters": "Filters",
   "Firmware version": "固件版本",
+  "Flashing EdgeTX": "Flashing EdgeTX",
+  "Go back": "Go back",
   "Include pre-releases": "Include pre-releases",
   "Loading releases...": "Loading releases...",
+  "Please leave this window open whilst your radio is being flashed": "Please leave this window open whilst your radio is being flashed",
   "Radio firmware": "无线电固件",
   "Radio model": "Radio model",
   "SD Card content": "SD Card content",
@@ -16,5 +21,7 @@
   "Select firmware version": "Select firmware version",
   "Select radio model": "Select radio model",
   "settings": "settings",
-  "The type of radio you want to flash": "The type of radio you want to flash"
+  "The type of radio you want to flash": "The type of radio you want to flash",
+  "You may now want to <1>setup your SD Card</1>": "You may now want to <1>setup your SD Card</1>",
+  "Your radio has been flashed with EdgeTX": "Your radio has been flashed with EdgeTX"
 }

@@ -14,6 +14,7 @@ import useFlashJobStatus from "renderer/hooks/useFlashJobStatus";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
 import FlashJobTimeline from "renderer/components/flashing/FlashJobTimeline";
 import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
+import { Trans, useTranslation } from "react-i18next";
 
 const Container = styled.div`
   height: 100%;
@@ -36,6 +37,7 @@ const Container = styled.div`
 
 const FlashExecution: React.FC = () => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   const { jobId } = useParams();
   const navigate = useNavigate();
   const {
@@ -112,7 +114,7 @@ const FlashExecution: React.FC = () => {
       <Result
         style={{ padding: 8 }}
         icon={<RocketTwoTone style={{ fontSize: 48 }} />}
-        title="Your radio has been flashed with EdgeTX"
+        title={t(`Your radio has been flashed with EdgeTX`)}
       />
       {firmwareSummary}
       <Result
@@ -121,7 +123,9 @@ const FlashExecution: React.FC = () => {
         title={null}
       >
         <Typography.Text>
-          You may now want to <Link to="/sdcard">setup your SD Card</Link>
+          <Trans t={t}>
+            You may now want to <Link to="/sdcard">setup your SD Card</Link>
+          </Trans>
         </Typography.Text>
       </Result>
     </>
@@ -148,13 +152,14 @@ const FlashExecution: React.FC = () => {
                     }}
                   >
                     <Typography.Title level={1}>
-                      Flashing EdgeTX
+                      {t(`Flashing EdgeTX`)}
                     </Typography.Title>
                     {firmwareSummary}
                   </div>
                   <Typography.Text>
-                    Please leave this window open whilst your radio is being
-                    flashed
+                    {t(
+                      `Please leave this window open whilst your radio is being flashed`
+                    )}
                   </Typography.Text>
                 </>
               ) : (
@@ -203,7 +208,7 @@ const FlashExecution: React.FC = () => {
                 navigate("/flash", { replace: true });
               }}
             >
-              Done
+              {t(`Done`)}
             </Button>
           )}
           {!jobCompleted && !jobError && (
@@ -212,7 +217,7 @@ const FlashExecution: React.FC = () => {
                 void cancelJob();
               }}
             >
-              Cancel
+              {t(`Cancel`)}
             </Button>
           )}
           {jobError && (
@@ -221,7 +226,7 @@ const FlashExecution: React.FC = () => {
                 navigate("/flash", { replace: true });
               }}
             >
-              Go back
+              {t(`Go back`)}
             </Button>
           )}
         </div>

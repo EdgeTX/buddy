@@ -61,7 +61,7 @@ const WebCompatInfo: React.FC<Props> = ({
         >
           <Typography.Paragraph>
             {missingUsbApi ? (
-              <Trans>
+              <Trans t={t}>
                 <CloseCircleOutlined style={{ color: "red" }} /> Missing WebUSB
                 API -{" "}
                 <Typography.Link
@@ -72,7 +72,7 @@ const WebCompatInfo: React.FC<Props> = ({
                 </Typography.Link>
               </Trans>
             ) : (
-              <Trans>
+              <Trans t={t}>
                 <CheckCircleOutlined
                   style={{ color: "var(--ant-success-color)" }}
                 />{" "}
@@ -82,7 +82,7 @@ const WebCompatInfo: React.FC<Props> = ({
           </Typography.Paragraph>
           <Typography.Paragraph>
             {missingFilesystemApi ? (
-              <Trans>
+              <Trans t={t}>
                 <CloseCircleOutlined style={{ color: "red" }} /> Missing File
                 System Access API -{" "}
                 <Typography.Link
@@ -93,7 +93,7 @@ const WebCompatInfo: React.FC<Props> = ({
                 </Typography.Link>
               </Trans>
             ) : (
-              <Trans>
+              <Trans t={t}>
                 <CheckCircleOutlined
                   style={{ color: "var(--ant-success-color)" }}
                 />{" "}

@@ -8,7 +8,8 @@ import {
   UsbOutlined,
 } from "@ant-design/icons";
 import { Alert, Button, Progress, Steps, Typography } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 type FlashingStageStatus = {
   progress: number;
@@ -49,69 +50,83 @@ type StageConfig = {
 /**
  * TODO: Align titles with the ant step types: wait, process, finish, error
  */
-const stageConfigs: StageConfig[] = [
-  {
-    titles: {
-      pre: "Connect",
-      active: "Connecting",
-      post: "Connected",
-    },
-    stage: "connect",
-    description: {
-      pre: "Connect to DFU interface",
-      active: "Connecting to DFU interface and verifying configuration",
-      post: "DFU connection active",
-      error: "Could not connect to DFU interface",
-    },
-    Icon: UsbOutlined,
-  },
-  {
-    titles: { pre: "Build", active: "Building", post: "Built" },
-    stage: "build",
-    description: {
-      pre: "Start firmware build",
-      active: "Building firmware with specified configurations",
-      post: "Firmware build completed",
-      error: "Could not build firmware",
-    },
-    Icon: CloudSyncOutlined,
-  },
-  {
-    titles: { pre: "Download", active: "Downloading", post: "Downloaded" },
-    stage: "download",
-    description: {
-      pre: "Download firmware data",
-      active: "Downloading firmware data to be ready for flashing",
-      post: "Firmware downloaded, ready to flash",
-      error: "Could not download firmware",
-    },
-    Icon: CloudDownloadOutlined,
-  },
-  {
-    titles: { pre: "Erase", active: "Erasing", post: "Erased" },
-    stage: "erase",
-    description: {
-      pre: "Remove existing firmware",
-      active: "Removing existing firmware from radio",
-      post: "Existing firmware erased",
-      error: "Could not erase existing firmware",
-    },
-    Icon: DeleteOutlined,
-    showProgess: true,
-  },
-  {
-    titles: { pre: "Flash", active: "Flashing", post: "Flashed" },
-    stage: "flash",
-    description: {
-      pre: "Write new firmware",
-      active: "Writing new firmware to radio, this could take several minutes",
-      post: "New firmware flashed",
-      error: "Could not write new firmware to radio",
-    },
-    Icon: DoubleRightOutlined,
-    showProgess: true,
-  },
-];
+const useStateConfigs = (): StageConfig[] => {
+  const { t, i18n } = useTranslation("flashing");
+
+  return useMemo(
+    () => [
+      {
+        titles: {
+          pre: t(`Connect`),
+          active: t(`Connecting`),
+          post: t(`Connected`),
+        },
+        stage: "connect",
+        description: {
+          pre: t(`Connect to DFU interface`),
+          active: t(`Connecting to DFU interface and verifying configuration`),
+          post: t(`DFU connection active`),
+          error: t(`Could not connect to DFU interface`),
+        },
+        Icon: UsbOutlined,
+      },
+      {
+        titles: { pre: t(`Build`), active: t(`Building`), post: t(`Built`) },
+        stage: "build",
+        description: {
+          pre: t(`Start firmware build`),
+          active: t(`Building firmware with specified configurations`),
+          post: t(`Firmware build completed`),
+          error: t(`Could not build firmware`),
+        },
+        Icon: CloudSyncOutlined,
+      },
+      {
+        titles: {
+          pre: t(`Download`),
+          active: t(`Downloading`),
+          post: t(`Downloaded`),
+        },
+        stage: "download",
+        description: {
+          pre: t(`Download firmware data`),
+          active: t(`Downloading firmware data to be ready for flashing`),
+          post: t(`Firmware downloaded, ready to flash`),
+          error: t(`Could not download firmware`),
+        },
+        Icon: CloudDownloadOutlined,
+      },
+      {
+        titles: { pre: t(`Erase`), active: t(`Erasing`), post: t(`Erased`) },
+        stage: "erase",
+        description: {
+          pre: t(`Remove existing firmware`),
+          active: t(`Removing existing firmware from radio`),
+          post: t(`Existing firmware erased`),
+          error: t(`Could not erase existing firmware`),
+        },
+        Icon: DeleteOutlined,
+        showProgess: true,
+      },
+      {
+        titles: { pre: t(`Flash`), active: t(`Flashing`), post: t(`Flashed`) },
+        stage: "flash",
+        description: {
+          pre: t(`Write new firmware`),
+          active: t(
+            `Writing new firmware to radio, this could take several minutes`
+          ),
+          post: t(`New firmware flashed`),
+          error: t(`Could not write new firmware to radio`),
+        },
+        Icon: DoubleRightOutlined,
+        showProgess: true,
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t, i18n.language]
+  );
+};
 
 const stageTitle = (
   config: StageConfig,
@@ -204,6 +219,9 @@ const stepBaseStyle = {
 };
 
 const FlashJobTimeline: React.FC<Props> = ({ state }) => {
+  const { t } = useTranslation("flashing");
+  const stageConfigs = useStateConfigs();
+
   const lastStepCompleted =
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state[stageConfigs[stageConfigs.length - 1]!.stage]!.completed;
@@ -261,12 +279,12 @@ const FlashJobTimeline: React.FC<Props> = ({ state }) => {
                     {stageStatus.error && (
                       <Alert
                         style={{ marginTop: 16 }}
-                        message="Error"
+                        message={t(`Error`)}
                         description={stageStatus.error}
                         type="error"
                         action={
                           <Button disabled size="small" danger>
-                            Detail
+                            {t(`Details`)}
                           </Button>
                         }
                       />
@@ -280,7 +298,7 @@ const FlashJobTimeline: React.FC<Props> = ({ state }) => {
       }
       <Steps.Step
         status={lastStepCompleted ? "finish" : "wait"}
-        title="Flashing done"
+        title={t(`Flashing done`)}
         icon={lastStepCompleted ? undefined : <RocketOutlined />}
         style={{
           ...stepBaseStyle,

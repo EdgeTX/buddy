@@ -1,7 +1,6 @@
 const languages = require("./locales/languages.json");
 
 module.exports = {
-  createOldCatalogs: false,
   defaultNamespace: "common",
 
   indentation: 2,

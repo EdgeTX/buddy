@@ -8,6 +8,7 @@ import React, { useEffect } from "react";
 import { Centered } from "renderer/shared/layouts";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import useIsMobile from "renderer/hooks/useIsMobile";
+import { useTranslation } from "react-i18next";
 import DeviceSelectionStep from "./steps/DeviceSelectionStep";
 import FirmwareSelectionStep from "./steps/FirmwareSelectionStep";
 import OverviewStep from "./steps/OverviewStep";
@@ -15,22 +16,8 @@ import { StepComponent } from "./types";
 
 const { Step } = Steps;
 
-const flashSteps = [
-  {
-    title: "Select a firmware",
-    component: FirmwareSelectionStep,
-  },
-  {
-    title: "Connect radio",
-    component: DeviceSelectionStep,
-  },
-  {
-    title: "Overview & flash",
-    component: OverviewStep,
-  },
-];
-
 const FlashingWizard: React.FC = () => {
+  const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams<"step">();
   const current = parseParam("step", Number) ?? 1;
   const isMobile = useIsMobile();
@@ -51,6 +38,21 @@ const FlashingWizard: React.FC = () => {
     />
   );
 
+  const steps = [
+    {
+      title: t(`Select a firmware`),
+      component: FirmwareSelectionStep,
+    },
+    {
+      title: t(`Connect radio`),
+      component: DeviceSelectionStep,
+    },
+    {
+      title: t(`Overview & flash`),
+      component: OverviewStep,
+    },
+  ];
+
   return (
     <>
       <Centered>
@@ -61,7 +63,7 @@ const FlashingWizard: React.FC = () => {
           labelPlacement="vertical"
           style={{ maxWidth: "600px" }}
         >
-          {flashSteps.map((item, stepNum) => (
+          {steps.map((item, stepNum) => (
             <Step
               key={item.title}
               title={item.title}
@@ -79,7 +81,7 @@ const FlashingWizard: React.FC = () => {
       {!isMobile &&
         renderComponent(
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          flashSteps[current - 1]!.component
+          steps[current - 1]!.component
         )}
     </>
   );

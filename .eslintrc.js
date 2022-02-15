@@ -82,6 +82,7 @@ module.exports = {
     "import/prefer-default-export": "off",
     "@typescript-eslint/return-await": "error",
     "no-void": "off",
+    "react/no-unescaped-entities": "off",
   },
   parserOptions: {
     project: "./tsconfig.eslint.json",

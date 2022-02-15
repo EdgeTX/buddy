@@ -3,7 +3,7 @@ import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { ArrowRightOutlined, GithubOutlined } from "@ant-design/icons";
-import { useTranslation, Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import EdgeTxIcon from "./assets/logo.webp";
 import WindowsNav from "./components/WindowsNav";
 import useIsMobile from "./hooks/useIsMobile";
@@ -191,7 +191,7 @@ const AppLayout: React.FC<Props> = ({
         <FooterElements>
           {!isMobile && (
             <div>
-              <Trans>
+              <Trans t={t}>
                 Built with ♥ by the EdgeTX contributors -{" "}
                 <a
                   target="_blank"
@@ -204,7 +204,7 @@ const AppLayout: React.FC<Props> = ({
             </div>
           )}
           <div>
-            <Trans>
+            <Trans t={t}>
               Donate and support EdgeTX development{" "}
               <a
                 target="_blank"

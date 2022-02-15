@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import FirmwareFileSummary from "renderer/components/firmware/summary-variants/FirmwareFileSummary";
 import styled from "styled-components";
 import { Centered, FullHeight } from "renderer/shared/layouts";
+import { useTranslation } from "react-i18next";
 
 type FirmwareFile = {
   name: string;
@@ -31,6 +32,7 @@ const FirmwareUploadArea: React.FC<Props> = ({
   uploadedFile,
 }) => {
   const [encoding, setEncoding] = useState(false);
+  const { t } = useTranslation("flashing");
 
   const loadingState = encoding || loading;
 
@@ -58,7 +60,7 @@ const FirmwareUploadArea: React.FC<Props> = ({
               setEncoding(false);
             }
           } else {
-            await message.error("Not a firmware file");
+            await message.error(t(`Not a firmware file`));
           }
           return false;
         }}
@@ -70,8 +72,10 @@ const FirmwareUploadArea: React.FC<Props> = ({
 
         <p className="ant-upload-text">
           {!loadingState
-            ? "Click here to select firmware file, or drag it here to upload."
-            : "Verifying..."}
+            ? t(
+                `Click here to select firmware file, or drag it here to upload.`
+              )
+            : t(`Verifying...`)}
         </p>
       </Upload.Dragger>
     </FirmwareUploadContainer>
@@ -86,7 +90,7 @@ const FirmwareUploadArea: React.FC<Props> = ({
             name={uploadedFile.name}
             extra={
               <Button type="default" onClick={() => onFileSelected()}>
-                Remove
+                {t(`Remove`)}
               </Button>
             }
           />

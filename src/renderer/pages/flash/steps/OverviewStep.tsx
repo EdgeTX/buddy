@@ -12,6 +12,7 @@ import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwar
 import useIsMobile from "renderer/hooks/useIsMobile";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
 import { exception } from "react-ga";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -31,6 +32,7 @@ const Container = styled.div<{ isMobile: boolean }>`
 
 const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation("flashing");
   const { parseParam } = useQueryParams<"deviceId" | "target" | "version">();
   const navigate = useNavigate();
 
@@ -69,18 +71,19 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
           <FullHeight style={{ width: "100%" }}>
             <Centered style={{ textAlign: "center" }}>
               <Typography.Title level={5}>
-                You&apos;re all set!
+                {t(`You're all set!`)}
               </Typography.Title>
               <Typography.Text style={{ maxWidth: "400px" }}>
-                Please check everything is correct before proceeding. Flashing
-                can take a few minutes so please be patient
+                {t(
+                  `Please check everything is correct before proceeding. Flashing can take a few minutes so please be patient`
+                )}
               </Typography.Text>
             </Centered>
             <Centered style={{ height: "100%" }}>
               <Container isMobile={isMobile}>
                 <div className="flash-component">
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
-                    Firmware
+                    {t(`Firmware`)}
                   </Typography.Title>
                   <Space size="large" direction="vertical">
                     <div>
@@ -93,7 +96,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                         target={target}
                         version={version}
                       >
-                        Download
+                        {t(`Download`)}
                       </DownloadFirmwareButton>
                     )}
                   </Space>
@@ -109,7 +112,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                 />
                 <div className="flash-component">
                   <Typography.Title level={3} style={{ textAlign: "center" }}>
-                    Radio
+                    {t(`Radio`)}
                   </Typography.Title>
                   <DeviceSummary deviceId={deviceId} />
                 </div>
@@ -118,7 +121,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
             <Centered>
               <Space>
                 <Button onClick={onPrevious} disabled={creatingJob}>
-                  Go back
+                  {t(`Go back`)}
                 </Button>
                 <Button
                   size="large"
@@ -137,12 +140,14 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                         });
 
                         void message.error(
-                          `Could not create job: ${e.message}`
+                          t(`Could not create job: {{message}}`, {
+                            message: e.message,
+                          })
                         );
                       });
                   }}
                 >
-                  Start flashing
+                  {t(`Start flashing`)}
                 </Button>
               </Space>
             </Centered>

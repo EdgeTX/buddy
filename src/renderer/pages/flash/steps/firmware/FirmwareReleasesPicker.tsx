@@ -4,6 +4,7 @@ import useSorted from "renderer/hooks/useSorted";
 import VersionTargetForm, {
   VersionFilters,
 } from "renderer/components/VersionTargetForm";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onChanged: (values: {
@@ -22,6 +23,7 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   version,
   filters,
 }) => {
+  const { t } = useTranslation("flashing");
   const releasesQuery = useQuery(
     gql(/* GraphQL */ `
       query Releases {
@@ -71,13 +73,13 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   const selectedFirmware = releases?.find((release) => release.id === version);
   const targets =
     releaseTargetsQuery.data?.edgeTxRelease?.firmwareBundle.targets.map(
-      (t) => ({ id: t.code, name: t.name })
+      ({ code, name }) => ({ id: code, name })
     );
 
   const sortedTargets = useSorted(targets, (r1, r2) =>
     r1.name.localeCompare(r2.name)
   );
-  const selectedTarget = sortedTargets.find((t) => t.id === target);
+  const selectedTarget = sortedTargets.find(({ id }) => id === target);
 
   // If a target is selected which is not in the new list,
   // deselect
@@ -149,14 +151,14 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
         selectedId: selectedFirmware?.id,
         error: !!releasesQuery.error,
         loading: releasesQuery.loading,
-        tooltip: "The version of EdgeTX to flash",
+        tooltip: t(`The version of EdgeTX to flash`),
       }}
       targets={{
         available: sortedTargets,
         selectedId: selectedTarget?.id,
         error: !!releaseTargetsQuery.error,
         loading: releaseTargetsQuery.loading,
-        tooltip: "The type of radio you want to flash",
+        tooltip: t(`The type of radio you want to flash`),
       }}
     />
   );
