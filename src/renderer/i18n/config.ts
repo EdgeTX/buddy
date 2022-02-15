@@ -13,8 +13,7 @@ void i18n
       escapeValue: false,
     },
     defaultNS: "common",
-    ns: ["common", "compatibility"],
-    detection: {},
+    ns: ["common", "compatibility", "sdcard", "flashing"],
   });
 
 export default i18n;
