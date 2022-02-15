@@ -66,7 +66,7 @@ const SelectSdcardScreen: React.FC = () => {
           style={{ maxWidth: "500px", paddingBottom: 16 }}
           message={t(`The SD card editor is still in development`)}
           description={t(
-            `You may notice missing features or bugs, it's recommended continue use Flasher as your main SD Card tool`
+            `You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool`
           )}
         />
         <FullHeight
