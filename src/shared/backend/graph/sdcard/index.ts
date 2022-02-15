@@ -64,7 +64,7 @@ const SdcardWriteFileStatus = builder.simpleObject("SdcardWriteFileStatus", {
   fields: (t) => ({
     name: t.string(),
     startTime: t.string(),
-    completedTime: t.string(),
+    completedTime: t.string({ nullable: true }),
   }),
 });
 export type SdcardWriteFileStatusType = TypeOf<typeof SdcardWriteFileStatus>;
