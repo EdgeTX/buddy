@@ -1,10 +1,10 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import "react-i18next";
-import common from "../locales/en/common.json";
-import compatibility from "../locales/en/compatibility.json";
-import flashing from "../locales/en/flashing.json";
-import sdcard from "../locales/en/sdcard.json";
+import common from "../locales/zh/common.json";
+import compatibility from "../locales/zh/compatibility.json";
+import flashing from "../locales/zh/flashing.json";
+import sdcard from "../locales/zh/sdcard.json";
 
 // react-i18next versions higher than 11.11.0
 declare module "react-i18next" {

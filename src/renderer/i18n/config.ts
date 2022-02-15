@@ -4,10 +4,9 @@ import LazyImportPlugin from "./LazyImportPlugin";
 import languages from "./languages";
 
 void i18n
-  .use(detector)
   .use(LazyImportPlugin)
+  .use(detector)
   .init({
-    lng: "en",
     fallbackLng: "en",
     supportedLngs: languages,
     interpolation: {
@@ -15,6 +14,7 @@ void i18n
     },
     defaultNS: "common",
     ns: ["common", "compatibility"],
+    detection: {},
   });
 
 export default i18n;

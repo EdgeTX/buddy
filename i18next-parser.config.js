@@ -12,7 +12,7 @@ module.exports = {
   },
 
   lineEnding: "auto",
-  locales: languages,
+  locales: languages.filter((lang) => lang !== "en"),
   namespaceSeparator: false,
   keySeparator: false,
 
