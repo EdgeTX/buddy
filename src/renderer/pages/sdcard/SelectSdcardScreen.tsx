@@ -4,7 +4,7 @@ import {
   UsbOutlined,
   FolderOutlined,
 } from "@ant-design/icons";
-import { Button, Typography, Divider, Tooltip } from "antd";
+import { Button, Typography, Divider, Tooltip, Alert } from "antd";
 import React from "react";
 import {
   FullHeightCentered,
@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
 import config from "shared/config";
 import checks from "renderer/compatibility/checks";
+import { useTranslation, Trans } from "react-i18next";
 
 const Container = styled.div`
   display: flex;
@@ -44,6 +45,7 @@ const notAvailable = !config.isElectron && !checks.hasFilesystemApi;
 
 const SelectSdcardScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("sdcard");
 
   const [selectDirectory] = useMutation(
     gql(/* GraphQL */ `
@@ -58,6 +60,15 @@ const SelectSdcardScreen: React.FC = () => {
   return (
     <Container>
       <FullHeightCentered style={{ flex: 1, alignItems: "center" }}>
+        <Alert
+          type="warning"
+          showIcon
+          style={{ maxWidth: "500px", paddingBottom: 16 }}
+          message={t(`The SD card editor is still in development`)}
+          description={t(
+            `You may notice missing features or bugs, it's recommended continue use Flasher as your main SD Card tool`
+          )}
+        />
         <FullHeight
           style={{
             margin: "16px",
@@ -72,14 +83,18 @@ const SelectSdcardScreen: React.FC = () => {
               <PoweroffOutlined style={{ fontSize: "32px" }} />
             </Circle>
             <Typography.Text style={{ fontSize: "16px" }}>
-              <b>Step 1.</b> Power on your device, make sure it&apos;s not
-              plugged into USB
+              <Trans t={t}>
+                <b>Step 1.</b> Power on your device, make sure it's not plugged
+                into USB
+              </Trans>
             </Typography.Text>
           </Step>
           <Step style={{ justifyContent: "flex-end" }}>
             <Typography.Text style={{ fontSize: "16px" }}>
-              <b>Step 2.</b> Connect your device to the computer via USB, and if
-              prompted select &quot;<i>USB Storage</i>&quot;
+              <Trans t={t}>
+                <b>Step 2.</b> Connect your device to the computer via USB, and
+                if prompted select '<i>USB Storage</i>'
+              </Trans>
             </Typography.Text>
             <Circle>
               <UsbOutlined style={{ fontSize: "32px" }} />
@@ -90,8 +105,10 @@ const SelectSdcardScreen: React.FC = () => {
               <FolderOutlined style={{ fontSize: "32px" }} />
             </Circle>
             <Typography.Text style={{ fontSize: "16px" }}>
-              <b>Step 3.</b> Once connected, select the devices SD Card via the
-              file explorer to make changes
+              <Trans t={t}>
+                <b>Step 3.</b> Once connected, select the devices SD Card via
+                the file explorer to make changes
+              </Trans>
             </Typography.Text>
           </Step>
         </FullHeight>
@@ -109,7 +126,7 @@ const SelectSdcardScreen: React.FC = () => {
           <Tooltip
             trigger={notAvailable ? ["hover", "click"] : []}
             placement="bottom"
-            title="This feature is not supported by your browser"
+            title={t(`This feature is not supported by your browser`)}
           >
             <Button
               disabled={notAvailable}
@@ -122,7 +139,7 @@ const SelectSdcardScreen: React.FC = () => {
                 });
               }}
             >
-              Select SD Card
+              {t(`Select SD Card`)}
             </Button>
           </Tooltip>
         </Centered>
