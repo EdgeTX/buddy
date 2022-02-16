@@ -1,9 +1,9 @@
 {
-  "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB",
-  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'",
-  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes",
-  "Select SD Card": "Select SD Card",
-  "The SD card editor is still in development": "The SD card editor is still in development",
-  "This feature is not supported by your browser": "This feature is not supported by your browser",
-  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool"
+  "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Schritt 1.</0> Schalten Sie Ihr Sender ein und vergewissern Sie sich, dass es nicht an USB angeschlossen ist",
+  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Schritt 2.</0> Schließen Sie Ihr Sender über USB an den Computer an und wählen Sie, wenn Sie dazu aufgefordert werden '<2>USB Speicher</2>'",
+  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Schritt 3.</0> Sobald die Verbindung hergestellt ist, wählen Sie die SD-Karte des Geräts über den Datei-Explorer aus, um Änderungen vorzunehmen",
+  "Select SD Card": "Wählen Sie SD-Karte",
+  "The SD card editor is still in development": "Der SD-Karten-Editor befindet sich noch in der Entwicklung",
+  "This feature is not supported by your browser": "Diese Funktion wird von Ihrem Browser nicht unterstützt",
+  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "Möglicherweise bemerken Sie fehlende Funktionen oder Fehler. Es wird empfohlen, Flasher weiterhin als Ihr wichtigstes SD-Karten-Tool zu verwenden"
 }
