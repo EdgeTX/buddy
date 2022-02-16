@@ -17,7 +17,6 @@ const LazyImportPlugin: BackendModule = {
       }
     );
   },
-  create() {},
 };
 
 export default LazyImportPlugin;

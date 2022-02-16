@@ -32,6 +32,12 @@ void i18n
     },
     defaultNS: "common",
     ns: namespaces,
+    debug: process.env.NODE_ENV !== "production",
+    react: {
+      // locale extraction doesn't understand this property,
+      // so we have to not keep any of the basic html nodes
+      transKeepBasicHtmlNodesFor: [],
+    },
   });
 
 export default i18n;
