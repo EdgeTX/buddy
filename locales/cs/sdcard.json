@@ -1,9 +1,9 @@
 {
   "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Krok 1.</0> Zapněte zařízení a ujistěte se, že není připojeno USB",
-  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Krok 2.</0> Připojte zařízení k USB. Pokud máta na výběr, zvolte režim '<2>USB Storage</2>'",
-  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Krok 3.</0> Jakmile jste připojeni, vyberte SD kartu vysílače",
+  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Krok 2.</0> Připojte zařízení k počítači pomocí USB. Pokud máte na výběr, zvolte režim '<2>USB Storage</2>'",
+  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Krok 3.</0> Jakmile jste připojeni, vyberte SD kartu",
   "Select SD Card": "Vybrat SD kartu",
   "The SD card editor is still in development": "Editor obsahu SD karty je stále ve vývoji",
-  "This feature is not supported by your browser": "Tato funkce není ve vašem prohlížeči podporována",
-  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "Mohou se vyskytnou chyby a nebo nemusí být podporovány včechny funkce. Pro změnu obsahu SD karty dporučujeme používat EdgeTX Flasher."
+  "This feature is not supported by your browser": "Tato funkce není ve Vašem prohlížeči podporována",
+  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "Mohou se vyskytnou chyby a nebo nemusí být podporovány včechny funkce. Pro změnu obsahu SD karty doporučujeme používat EdgeTX Flasher."
 }
