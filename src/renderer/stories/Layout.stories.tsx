@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import Layout from "renderer/Layout";
+import Layout, { BaseLayout } from "renderer/Layout";
 
 export default {
   title: "Layout",
@@ -30,3 +30,5 @@ export const macOs: React.FC = () => (
     </Layout>
   </MemoryRouter>
 );
+
+export const baseLayout: React.FC = () => <BaseLayout />;

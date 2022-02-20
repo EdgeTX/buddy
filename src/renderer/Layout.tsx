@@ -82,16 +82,13 @@ type Props = {
   windowsFrameless?: boolean;
 };
 
-const AppLayout: React.FC<Props> = ({
-  children,
-  macFrameless,
-  windowsFrameless,
-}) => {
-  const isWide = useIsWide();
+export const BaseLayout: React.FC<{
+  headerContents?: React.ReactNode;
+  mainContents?: React.ReactNode;
+  footerContents?: React.ReactNode;
+}> = ({ headerContents, mainContents, footerContents }) => {
   const isMobile = useIsMobile();
-  const location = useLocation();
-  const [settings] = useSettings();
-  const { t } = useTranslation();
+  const isWide = useIsWide();
 
   return (
     <MainLayout
@@ -102,60 +99,7 @@ const AppLayout: React.FC<Props> = ({
       <DragableHeader
         style={isMobile ? { padding: "0", paddingLeft: "16px" } : undefined}
       >
-        <div
-          style={{
-            float: "left",
-            marginRight: macFrameless ? "8px" : "16px",
-            width: macFrameless ? "132px" : "150px",
-            height: "100%",
-            marginLeft: macFrameless ? "32px" : undefined,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <img
-              alt="edgetx-logo"
-              src={EdgeTxIcon as string}
-              style={{ height: "40px", marginRight: "8px" }}
-            />
-            <Typography.Title
-              level={3}
-              style={{ color: "white", marginBottom: 0 }}
-            >
-              Buddy
-            </Typography.Title>
-          </div>
-        </div>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          selectedKeys={[location.pathname.split("/")[1] as string]}
-          style={{ flex: 1, boxShadow: "none" }}
-        >
-          <Menu.Item key="flash">
-            <Link to="/flash">{t(`Radio firmware`)}</Link>
-          </Menu.Item>
-          <Menu.Item key="sdcard">
-            <Link to="/sdcard">{t(`SD Card content`)}</Link>
-          </Menu.Item>
-          {settings.expertMode && (
-            <Menu.Item key="dev">
-              <Link to="/dev">{t(`Dev tools`)}</Link>
-            </Menu.Item>
-          )}
-        </Menu>
-        <MenuIcons style={{ paddingRight: windowsFrameless ? 0 : undefined }}>
-          <a target="_blank" href="https://github.com/EdgeTX" rel="noreferrer">
-            <GithubOutlined style={{ color: "white", fontSize: "16px" }} />
-          </a>
-          <SettingsMenu />
-        </MenuIcons>
-        {windowsFrameless && <WindowsNav />}
+        {headerContents}
       </DragableHeader>
       <Content
         className="site-layout"
@@ -177,18 +121,101 @@ const AppLayout: React.FC<Props> = ({
             flexDirection: "column",
           }}
         >
-          {children}
+          {mainContents}
         </div>
       </Content>
       <Footer
         style={{
           padding: "8px",
+          height: "38px",
           backgroundColor: "#e6f7ff",
           position: "sticky",
           bottom: 0,
         }}
       >
-        <FooterElements>
+        <FooterElements>{footerContents}</FooterElements>
+      </Footer>
+    </MainLayout>
+  );
+};
+
+const AppLayout: React.FC<Props> = ({
+  children,
+  macFrameless,
+  windowsFrameless,
+}) => {
+  const isMobile = useIsMobile();
+  const location = useLocation();
+  const [settings] = useSettings();
+  const { t } = useTranslation();
+
+  return (
+    <BaseLayout
+      headerContents={
+        <>
+          <div
+            style={{
+              float: "left",
+              marginRight: macFrameless ? "8px" : "16px",
+              width: macFrameless ? "132px" : "150px",
+              height: "100%",
+              marginLeft: macFrameless ? "32px" : undefined,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <img
+                alt="edgetx-logo"
+                src={EdgeTxIcon as string}
+                style={{ height: "40px", marginRight: "8px" }}
+              />
+              <Typography.Title
+                level={3}
+                style={{ color: "white", marginBottom: 0 }}
+              >
+                Buddy
+              </Typography.Title>
+            </div>
+          </div>
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            selectedKeys={[location.pathname.split("/")[1] as string]}
+            style={{ flex: 1, boxShadow: "none" }}
+          >
+            <Menu.Item key="flash">
+              <Link to="/flash">{t(`Radio firmware`)}</Link>
+            </Menu.Item>
+            <Menu.Item key="sdcard">
+              <Link to="/sdcard">{t(`SD Card content`)}</Link>
+            </Menu.Item>
+            {settings.expertMode && (
+              <Menu.Item key="dev">
+                <Link to="/dev">{t(`Dev tools`)}</Link>
+              </Menu.Item>
+            )}
+          </Menu>
+          <MenuIcons style={{ paddingRight: windowsFrameless ? 0 : undefined }}>
+            <a
+              target="_blank"
+              href="https://github.com/EdgeTX"
+              rel="noreferrer"
+            >
+              <GithubOutlined style={{ color: "white", fontSize: "16px" }} />
+            </a>
+            <SettingsMenu />
+          </MenuIcons>
+          {windowsFrameless && <WindowsNav />}
+        </>
+      }
+      mainContents={children}
+      footerContents={
+        <>
           {!isMobile && (
             <div>
               <Trans t={t}>
@@ -215,9 +242,9 @@ const AppLayout: React.FC<Props> = ({
               </a>
             </Trans>
           </div>
-        </FooterElements>
-      </Footer>
-    </MainLayout>
+        </>
+      }
+    />
   );
 };
 

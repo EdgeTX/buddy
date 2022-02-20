@@ -11,6 +11,7 @@ import App from "./App";
 import { setupTracking } from "./tracking";
 import AntProvider from "./AntProvider";
 import i18n from "./i18n/config";
+import { BaseLayout } from "./Layout";
 
 message.config({
   top: 64,
@@ -22,7 +23,7 @@ if (config.isProduction && !config.isE2e) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Suspense fallback={null}>
+    <Suspense fallback={<BaseLayout />}>
       <I18nextProvider i18n={i18n}>
         <AntProvider>
           <ApolloProvider client={client}>
