@@ -7,15 +7,13 @@ test.beforeEach(async ({ queries }) => {
 });
 
 test.describe.parallel("Flashing", () => {
-  test("Flash v2.5.0 firmware", async ({ queries, browserName }) => {
+  test("Flash v2.5.0 firmware", async ({ queries, browserName, page }) => {
     test.skip(browserName !== "chromium");
     // First page
     await (await queries.findByLabelText("Firmware version")).press("Enter");
-    await (
-      await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
-        timeout: 60000,
-      })
-    ).click();
+    await page
+      .locator(".ant-select-item-option[title='EdgeTX \"Dauntless\" 2.5.0']")
+      .click();
 
     const radioSelector = await queries.findByLabelText("Radio model");
     await radioSelector.waitForElementState("enabled");
@@ -50,17 +48,17 @@ test.describe.parallel("Flashing", () => {
 
     expect(
       await (
-        await queries.findByText("Downloaded", undefined, { timeout: 60000 })
+        await queries.findByText("Downloaded", undefined, { timeout: 20000 })
       ).isVisible()
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Erased", undefined, { timeout: 60000 })
+        await queries.findByText("Erased", undefined, { timeout: 10000 })
       ).isVisible()
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Flashed", undefined, { timeout: 60000 })
+        await queries.findByText("Flashed", undefined, { timeout: 10000 })
       ).isVisible()
     ).toBeTruthy();
     expect(
@@ -73,14 +71,13 @@ test.describe.parallel("Flashing", () => {
   test("Flash firmware on disconnect bug device", async ({
     queries,
     browserName,
+    page,
   }) => {
     test.skip(browserName !== "chromium");
     await (await queries.findByLabelText("Firmware version")).press("Enter");
-    await (
-      await queries.findByText('EdgeTX "Santa" v2.6.0', undefined, {
-        timeout: 60000,
-      })
-    ).click();
+    await page
+      .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
+      .click();
 
     const radioSelector = await queries.findByLabelText("Radio model");
     await radioSelector.waitForElementState("enabled");
@@ -97,17 +94,17 @@ test.describe.parallel("Flashing", () => {
     // Flashing
     expect(
       await (
-        await queries.findByText("Downloaded", undefined, { timeout: 60000 })
+        await queries.findByText("Downloaded", undefined, { timeout: 20000 })
       ).isVisible()
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Erased", undefined, { timeout: 60000 })
+        await queries.findByText("Erased", undefined, { timeout: 10000 })
       ).isVisible()
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Flashed", undefined, { timeout: 60000 })
+        await queries.findByText("Flashed", undefined, { timeout: 10000 })
       ).isVisible()
     ).toBeTruthy();
     expect(
