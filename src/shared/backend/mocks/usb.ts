@@ -7,6 +7,13 @@ export const goodDevice = {
   close: () => Promise.resolve(),
 } as USBDevice;
 
+export const disconnectBugDevice = {
+  productName: "Disconnect bug device",
+  vendorId: 6,
+  productId: 6,
+  close: () => Promise.resolve(),
+} as USBDevice;
+
 export const badDevice = {
   productName: "Bad device",
   vendorId: 2,
@@ -30,6 +37,7 @@ export const errorErasingDevice = {
 
 export const mockDeviceList = [
   goodDevice,
+  disconnectBugDevice,
   badDevice,
   errorFlashingDevice,
   errorErasingDevice,

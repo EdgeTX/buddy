@@ -8,6 +8,7 @@ import {
   badDevice,
   errorErasingDevice,
   errorFlashingDevice,
+  disconnectBugDevice,
 } from "./usb";
 
 export type WriteProcess = ReturnType<WebDFU["write"]>;
@@ -18,7 +19,7 @@ export const createDfuEvents = (): Events => createNanoEvents();
 export const createDfuMock = (faster?: boolean): typeof dfu => {
   const startEmulation = (
     events: Events,
-    type: "good" | "bad-erase" | "bad-flash"
+    type: "good" | "bad-erase" | "bad-flash" | "disconnect-bug"
   ): void => {
     void (async () => {
       await delay(100);
@@ -70,6 +71,12 @@ export const createDfuMock = (faster?: boolean): typeof dfu => {
         return;
       }
 
+      events.emit("write/end", 100);
+
+      if (type === "disconnect-bug") {
+        return;
+      }
+
       events.emit("end");
     })();
   };
@@ -91,6 +98,9 @@ export const createDfuMock = (faster?: boolean): typeof dfu => {
           switch (device) {
             case goodDevice:
               startEmulation(events, "good");
+              break;
+            case disconnectBugDevice:
+              startEmulation(events, "disconnect-bug");
               break;
             case errorErasingDevice:
               startEmulation(events, "bad-erase");

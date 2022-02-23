@@ -175,8 +175,14 @@ export const flash = async (
   );
 
   await new Promise<void>((resolve, reject) => {
-    let stage: "erase" | "flash" = "erase";
+    let stage: "erase" | "flash" | "finished" = "erase";
     process.events.on("error", (err: Error) => {
+      // We've already assumed flashing is finished
+      // so don't notify any errors
+      if (stage === "finished") {
+        return;
+      }
+
       if (stage === "erase") {
         updateStageStatus(jobId, "erase", {
           error: err.message,
@@ -218,11 +224,31 @@ export const flash = async (
       });
     });
 
-    process.events.on("end", () => {
+    let writeEndTimeout: NodeJS.Timeout;
+
+    const finish = (): void => {
+      stage = "finished";
       updateStageStatus(jobId, "flash", {
         completed: true,
       });
       resolve();
+    };
+
+    process.events.on("write/end", () => {
+      // For some reason there is a cercumstance
+      // where the write process finishes, but we don't
+      // trigger the "end" event because the device doesn't
+      // ever go into a state which the library we are using
+      // expects it to go into
+      writeEndTimeout = setTimeout(() => {
+        void connection.close().catch(() => {});
+        finish();
+      }, 1000);
+    });
+
+    process.events.on("end", () => {
+      clearTimeout(writeEndTimeout);
+      finish();
     });
   });
 };
