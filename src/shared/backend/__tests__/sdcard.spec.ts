@@ -383,6 +383,32 @@ describe("Query", () => {
     `);
     nockDone();
   });
+
+  it("should return the next lowest sdcard sounds version available", async () => {
+    const { nockDone } = await nock.back(
+      "sdcard-sounds-releases-missing-v2.6.0.json"
+    );
+
+    const { data, errors } = await backend.query({
+      query: gql`
+        query {
+          edgeTxSoundsRelease(forPack: "v2.6.0", isPrerelease: false) {
+            id
+            name
+          }
+        }
+      `,
+    });
+
+    expect(errors).toBeFalsy();
+    expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
+      Object {
+        "id": "v2.5.3",
+        "name": "2.5.3",
+      }
+    `);
+    nockDone();
+  });
 });
 
 describe("Mutation", () => {
