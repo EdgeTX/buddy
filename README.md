@@ -24,6 +24,7 @@
 > Helping you on your journey to EdgeTX
 
 - [Use it online](https://buddy.edgetx.org/)
+- [Download the App](https://github.com/EdgeTX/buddy/releases/tag/latest)
 
 ## Development
 
