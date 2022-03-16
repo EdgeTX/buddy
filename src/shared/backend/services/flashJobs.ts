@@ -1,5 +1,5 @@
 import debounce from "debounce";
-import { WebDFU } from "dfu";
+import { WebDFU } from "shared/dfu";
 import { PubSub } from "graphql-subscriptions";
 import * as uuid from "uuid";
 import type { Context } from "shared/backend/context";
@@ -176,7 +176,7 @@ export const flash = async (
 
   await new Promise<void>((resolve, reject) => {
     let stage: "erase" | "flash" | "finished" = "erase";
-    process.events.on("error", (err: Error) => {
+    process.events.on("error", (err) => {
       // We've already assumed flashing is finished
       // so don't notify any errors
       if (stage === "finished") {

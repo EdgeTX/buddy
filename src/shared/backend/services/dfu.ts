@@ -1,4 +1,4 @@
-import { WebDFU } from "dfu";
+import { WebDFU } from "shared/dfu";
 
 export const connect = async (
   device: USBDevice

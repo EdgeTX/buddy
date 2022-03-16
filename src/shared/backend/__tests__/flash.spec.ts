@@ -4,7 +4,7 @@ import { MockedFunction } from "jest-mock";
 import { createDfuEvents } from "shared/backend/mocks/dfu";
 import nock from "nock";
 import { waitForStageCompleted } from "test-utils/tools";
-import { WebDFU } from "dfu";
+import { WebDFU } from "shared/dfu";
 import md5 from "md5";
 import { connect } from "shared/backend/services/dfu";
 import { FlashJobType } from "shared/backend/graph/flash";

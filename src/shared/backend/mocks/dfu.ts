@@ -1,4 +1,4 @@
-import { WebDFU } from "dfu";
+import { WebDFU } from "shared/dfu";
 import * as dfu from "shared/backend/services/dfu";
 import { delay, times } from "shared/tools";
 import { createNanoEvents } from "nanoevents";

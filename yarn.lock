@@ -11251,15 +11251,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dfu@npm:^0.1.5":
-  version: 0.1.5
-  resolution: "dfu@npm:0.1.5"
-  dependencies:
-    nanoevents: ^6.0.0
-  checksum: 7fa8aa1578518be4eb8981f67878ecb6f68e64ccf91ed278f35708a6d4e3f6e822e68ab8653c6b3d69e08ddf105c550698b88db363bdab8f8c2a7a582ac96001
-  languageName: node
-  linkType: hard
-
 "diff-sequences@npm:^27.0.6":
   version: 27.0.6
   resolution: "diff-sequences@npm:27.0.6"
@@ -11703,7 +11694,6 @@ __metadata:
     css-loader: ^6.5.1
     debounce: ^1.2.1
     detect-browser: ^5.3.0
-    dfu: ^0.1.5
     directory-tree: ^3.0.1
     dotenv: ^10.0.0
     electron: ^16.0.4
@@ -19277,7 +19267,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoevents@npm:^6.0.0, nanoevents@npm:^6.0.2":
+"nanoevents@npm:^6.0.2":
   version: 6.0.2
   resolution: "nanoevents@npm:6.0.2"
   checksum: 73d8c8f584b850bae6705820710a20c19be61145a4a6ad3b157caf1fea52d46f48e0d1f1c1452019c0e84869f226debad2245218f0b0c3f9dffb7afc9b42e663

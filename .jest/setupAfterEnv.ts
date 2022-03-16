@@ -17,7 +17,7 @@ globalThis.Blob = Blob as unknown as typeof globalThis.Blob;
 
 dotenv.config();
 
-jest.mock("dfu", () => ({
+jest.mock("shared/dfu", () => ({
   WebDFU: () => {},
 }));
 
