@@ -1,5 +1,5 @@
 import debounce from "debounce";
-import { WebDFU } from "shared/dfu";
+import { dfuCommands, WebDFU } from "shared/dfu";
 import { PubSub } from "graphql-subscriptions";
 import * as uuid from "uuid";
 import type { Context } from "shared/backend/context";
@@ -176,7 +176,7 @@ export const flash = async (
 
   await new Promise<void>((resolve, reject) => {
     let stage: "erase" | "flash" | "finished" = "erase";
-    process.events.on("error", (err) => {
+    process.events.on("error", async (err) => {
       // We've already assumed flashing is finished
       // so don't notify any errors
       if (stage === "finished") {
@@ -184,9 +184,21 @@ export const flash = async (
       }
 
       if (stage === "erase") {
-        updateStageStatus(jobId, "erase", {
-          error: err.message,
-        });
+        const { status } = await connection.getStatus();
+        // Potentially this error indicates that the device is
+        // write protected, so inform the user
+        if (
+          err.message.includes("command 65 failed") &&
+          status === dfuCommands.STATUS_errVENDOR
+        ) {
+          updateStageStatus(jobId, "erase", {
+            error: "WRITE_PROTECTED",
+          });
+        } else {
+          updateStageStatus(jobId, "erase", {
+            error: err.message,
+          });
+        }
       } else {
         updateStageStatus(jobId, "flash", {
           error: err.message,
