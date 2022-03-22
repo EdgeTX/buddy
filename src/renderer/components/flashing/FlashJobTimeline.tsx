@@ -5,6 +5,7 @@ import {
   DoubleRightOutlined,
   LoadingOutlined,
   RocketOutlined,
+  UnlockOutlined,
   UsbOutlined,
 } from "@ant-design/icons";
 import { Alert, Button, Progress, Steps, Typography } from "antd";
@@ -28,6 +29,7 @@ type FlashingState = {
 
 type Props = {
   state: FlashingState;
+  onSpecialErrorActionClicked?: () => void;
 };
 
 type StageConfig = {
@@ -50,7 +52,7 @@ type StageConfig = {
 /**
  * TODO: Align titles with the ant step types: wait, process, finish, error
  */
-const useStateConfigs = (): StageConfig[] => {
+const useStageConfigs = (): StageConfig[] => {
   const { t, i18n } = useTranslation("flashing");
 
   return useMemo(
@@ -123,6 +125,23 @@ const useStateConfigs = (): StageConfig[] => {
         showProgess: true,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t, i18n.language]
+  );
+};
+
+const useSpecialErrors = (): Record<
+  string,
+  { message: string; action: string }
+> => {
+  const { t, i18n } = useTranslation("flashing");
+  return useMemo(
+    () => ({
+      WRITE_PROTECTED: {
+        message: t(`Device firmware may be locked`),
+        action: t(`Remove protection`),
+      },
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [t, i18n.language]
   );
@@ -218,15 +237,18 @@ const stepBaseStyle = {
   transition: "max-height 0.25s ease-out",
 };
 
-const FlashJobTimeline: React.FC<Props> = ({ state }) => {
+const FlashJobTimeline: React.FC<Props> = ({
+  state,
+  onSpecialErrorActionClicked,
+}) => {
   const { t } = useTranslation("flashing");
-  const stageConfigs = useStateConfigs();
+  const stageConfigs = useStageConfigs();
+  const specialErrors = useSpecialErrors();
 
   const lastStepCompleted =
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     state[stageConfigs[stageConfigs.length - 1]!.stage]!.completed;
   const minStepHeight = !lastStepCompleted ? 80 : 60;
-
   return (
     <Steps
       direction="vertical"
@@ -245,6 +267,8 @@ const FlashJobTimeline: React.FC<Props> = ({ state }) => {
         stageConfigs.map((config) => {
           const stageStatus = state[config.stage];
           const active = stageStatus?.started && !stageStatus.completed;
+          const isSpecialError =
+            stageStatus?.error && specialErrors[stageStatus.error];
           return stageStatus ? (
             <Steps.Step
               style={{
@@ -258,15 +282,25 @@ const FlashJobTimeline: React.FC<Props> = ({ state }) => {
               status={status(stageStatus)}
               description={
                 !lastStepCompleted ? (
-                  <>
+                  <div
+                    style={
+                      // Ensure that the progress bar inside the content
+                      // doesn't show if step is not active
+                      {
+                        transition: "max-height 0.25s ease-out",
+                        maxHeight: !active ? "35px" : "600px",
+                        overflow: "hidden",
+                      }
+                    }
+                  >
                     <Typography.Text type={descriptionTextColor(stageStatus)}>
                       {stageDescription(config, stageStatus)}
                     </Typography.Text>
-                    {config.showProgess && (
+                    {config.showProgess && !isSpecialError && (
                       <div
                         style={{
                           marginRight: 32,
-                          marginTop: 32,
+                          marginTop: 8,
                         }}
                       >
                         <Progress
@@ -276,20 +310,37 @@ const FlashJobTimeline: React.FC<Props> = ({ state }) => {
                         />
                       </div>
                     )}
-                    {stageStatus.error && (
-                      <Alert
-                        style={{ marginTop: 16 }}
-                        message={t(`Error`)}
-                        description={stageStatus.error}
-                        type="error"
-                        action={
-                          <Button disabled size="small" danger>
-                            {t(`Details`)}
-                          </Button>
-                        }
-                      />
-                    )}
-                  </>
+                    {stageStatus.error &&
+                      (isSpecialError ? (
+                        <Alert
+                          style={{ marginTop: 16, marginRight: 16 }}
+                          message={specialErrors[stageStatus.error]?.message}
+                          type="error"
+                          description={
+                            <Button
+                              type="primary"
+                              icon={<UnlockOutlined />}
+                              style={{ marginTop: 8 }}
+                              onClick={onSpecialErrorActionClicked}
+                            >
+                              {specialErrors[stageStatus.error]?.action}
+                            </Button>
+                          }
+                        />
+                      ) : (
+                        <Alert
+                          style={{ marginTop: 16, marginRight: 16 }}
+                          message={t(`Error`)}
+                          description={stageStatus.error}
+                          type="error"
+                          action={
+                            <Button disabled size="small" danger>
+                              {t(`Details`)}
+                            </Button>
+                          }
+                        />
+                      ))}
+                  </div>
                 ) : null
               }
             />
