@@ -59,6 +59,7 @@ export const dfuCommands = {
   dfuERROR: 10,
 
   STATUS_OK: 0x0,
+  STATUS_errVENDOR: 0x0b,
 };
 
 function asyncSleep(duration_ms: number) {
@@ -202,6 +203,13 @@ export class WebDFU {
     }, 0);
 
     return process;
+  }
+
+  async forceUnprotect(): Promise<void> {
+    await this.dfuseCommand(DFUseCommands.READ_UNPROTECT);
+    await this.detach().catch(() => {});
+    await this.device.reset().catch(() => {});
+    await this.device.close().catch(() => {});
   }
 
   // Attempt to read the DFU functional descriptor
@@ -616,12 +624,15 @@ export class WebDFU {
     }
   }
 
-  private async pollUntil(state_predicate: (state: number) => boolean) {
+  private async pollUntil(
+    statePredicate: (state: number) => boolean,
+    ignoreErrors = false
+  ) {
     let dfuStatus = await this.getStatus();
 
     while (
-      !state_predicate(dfuStatus.state) &&
-      dfuStatus.state !== dfuCommands.dfuERROR
+      !statePredicate(dfuStatus.state) &&
+      (ignoreErrors || dfuStatus.state !== dfuCommands.dfuERROR)
     ) {
       // eslint-disable-next-line no-await-in-loop
       await asyncSleep(dfuStatus.pollTimeout);
@@ -1062,7 +1073,7 @@ export class WebDFU {
     return process;
   }
 
-  private async dfuseCommand(command: DFUseCommands, param = 0x00, len = 1) {
+  private async dfuseCommand(command: DFUseCommands, param = 0x00, len = 0) {
     const payload = new ArrayBuffer(len + 1);
     const view = new DataView(payload);
     view.setUint8(0, command);
@@ -1070,7 +1081,7 @@ export class WebDFU {
       view.setUint8(1, param);
     } else if (len === 4) {
       view.setUint32(1, param, true);
-    } else {
+    } else if (len !== 0) {
       throw new WebDFUError(`Don't know how to handle data of len ${len}`);
     }
 
@@ -1080,6 +1091,14 @@ export class WebDFU {
       throw new WebDFUError(
         `Error during special DfuSe command ${DFUseCommands[command]}:${error}`
       );
+    }
+
+    // We expect read unprotect to disconnect the device
+    // so no point in waiting for it to complete
+    if (command === DFUseCommands.READ_UNPROTECT) {
+      const { pollTimeout } = await this.getStatus();
+      await asyncSleep(pollTimeout);
+      return;
     }
 
     const status = await this.pollUntil(
