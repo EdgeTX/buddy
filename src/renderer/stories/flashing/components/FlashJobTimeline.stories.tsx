@@ -87,6 +87,34 @@ export const erasing: React.FC = () => (
   />
 );
 
+export const erasingFlashProtected: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      download: {
+        started: true,
+        progress: 100,
+        completed: true,
+      },
+      erase: {
+        started: true,
+        progress: 70.2,
+        completed: false,
+        error: "WRITE_PROTECTED",
+      },
+      flash: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+    }}
+  />
+);
+
 export const completed: React.FC = () => (
   <FlashJobTimeline
     state={{
