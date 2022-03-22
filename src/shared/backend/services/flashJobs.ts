@@ -83,7 +83,7 @@ export const startExecution = async (
       return undefined;
     });
 
-    if (!dfuProcess || isCancelled(jobId)) {
+    if (isCancelled(jobId)) {
       return;
     }
 
@@ -117,10 +117,14 @@ export const startExecution = async (
       });
     }
 
+    if (!dfuProcess || isCancelled(jobId)) {
+      return;
+    }
+
     await flash(jobId, dfuProcess, firmwareData);
   })()
     .catch(async (e) => {
-      console.error(e, await dfuProcess?.getStatus());
+      console.error(e, await dfuProcess?.getStatus().catch(() => ({})));
     })
     .finally(async () => {
       await cleanUp();
