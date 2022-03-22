@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import config from "shared/config";
-import { decodePrVersion, hexString, isPrVersion } from "shared/tools";
+import { decodePrVersion, delay, hexString, isPrVersion } from "shared/tools";
 import { TypeOf } from "shared/backend/types";
 import { createBuilder } from "shared/backend/utils/builder";
 
@@ -94,6 +94,17 @@ const usbDeviceToFlashDevice = (
 
 const findDevice = (devices: USBDevice[], id: string): USBDevice | undefined =>
   devices.find((d) => usbDeviceId(d) === id);
+
+const waitForNotConnected = async (
+  id: string,
+  getDevices: () => Promise<USBDevice[]>
+): Promise<void> => {
+  // eslint-disable-next-line no-await-in-loop
+  while (findDevice(await getDevices(), id)) {
+    // eslint-disable-next-line no-await-in-loop
+    await delay(500);
+  }
+};
 
 builder.mutationType({
   fields: (t) => ({
@@ -222,6 +233,40 @@ builder.mutationType({
       resolve: async (_, __, { usb }) => {
         const device = await usb.requestDevice().catch(() => undefined);
         return device ? usbDeviceToFlashDevice(device) : null;
+      },
+    }),
+    unprotectDevice: t.boolean({
+      nullable: true,
+      args: {
+        deviceId: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { deviceId }, context) => {
+        const device = findDevice(
+          await context.usb.deviceList(),
+          deviceId.toString()
+        );
+
+        if (!device) {
+          throw new GraphQLError("Device not found");
+        }
+        const connection = await context.dfu.connect(device);
+
+        await connection.forceUnprotect().catch(async (error) => {
+          throw new GraphQLError(
+            `Could not clear write protection, ${
+              (error as Error).message
+            }, device status: ${JSON.stringify(await connection.getStatus())}`
+          );
+        });
+
+        await Promise.all([
+          waitForNotConnected(deviceId.toString(), context.usb.deviceList),
+          delay(10000).then(() => {
+            throw new Error("Timed out waiting for device to disconnect");
+          }),
+        ]);
+
+        return null;
       },
     }),
   }),
