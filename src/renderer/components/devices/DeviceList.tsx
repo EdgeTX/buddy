@@ -11,6 +11,7 @@ type Props = {
   loading?: boolean;
   selectedDeviceId?: string;
   onSelected?: (deviceId: string) => void;
+  disabled?: boolean;
 };
 
 const DeviceList: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const DeviceList: React.FC<Props> = ({
   onSelected,
   selectedDeviceId,
   loading,
+  disabled,
 }) => {
   const isMobile = useIsMobile();
   return (
@@ -25,6 +27,8 @@ const DeviceList: React.FC<Props> = ({
       style={{
         height: "100%",
         minWidth: !isMobile ? "350px" : undefined,
+        opacity: disabled ? "0.5" : undefined,
+        pointerEvents: disabled ? "none" : undefined,
       }}
       itemLayout={isMobile ? "vertical" : "horizontal"}
       size="large"

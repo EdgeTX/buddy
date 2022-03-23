@@ -32,6 +32,7 @@ type Props = {
   variant?: "electron" | "web";
   selectedDeviceId?: string;
   onChange?: (selectedDeviceId?: string) => void;
+  disabled?: boolean;
 };
 
 const DevicesQuery = gql(/* GraphQL */ `
@@ -50,6 +51,7 @@ const DeviceSelector: React.FC<Props> = ({
   selectedDeviceId,
   variant = "web",
   onChange,
+  disabled,
 }) => {
   const isMobile = useIsMobile();
   const { data, loading, refetch } = useQuery(DevicesQuery);
@@ -85,6 +87,7 @@ const DeviceSelector: React.FC<Props> = ({
       <Button
         type={!devicesAvailable ? "primary" : undefined}
         icon={<SyncOutlined />}
+        disabled={disabled}
         onClick={() => {
           void refetch();
         }}
@@ -95,6 +98,7 @@ const DeviceSelector: React.FC<Props> = ({
       <Button
         icon={<PlusSquareOutlined />}
         type={!devicesAvailable ? "primary" : undefined}
+        disabled={disabled}
         onClick={() => {
           // Select the device after it's been picked, as it's likely
           // this is what the user wants
@@ -130,6 +134,7 @@ const DeviceSelector: React.FC<Props> = ({
               onChange?.(deviceId);
             }}
             selectedDeviceId={selectedDeviceId}
+            disabled={disabled}
           />
         ) : (
           <Centered style={{ height: "100%" }}>
