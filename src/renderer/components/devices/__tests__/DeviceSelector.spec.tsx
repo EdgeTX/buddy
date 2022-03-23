@@ -113,6 +113,47 @@ describe("<DeviceSelector />", () => {
       );
       expect(onChange).toHaveBeenCalledWith(exampleDevices[2]!.id);
     });
+
+    it("should disable add device button when disabled", async () => {
+      const requestDeviceQuery: MockedResponse = {
+        request: {
+          query: gql`
+            mutation RequestDevice {
+              requestFlashableDevice {
+                id
+              }
+            }
+          `,
+        },
+        result: {
+          data: {
+            requestFlashableDevice: {
+              id: exampleDevices[2]!.id,
+            },
+          },
+        },
+      };
+
+      const onChange = jest.fn();
+
+      render(
+        <MockedProvider
+          mocks={[
+            devicesQuery(0, []),
+            requestDeviceQuery,
+            devicesQuery(0, [exampleDevices[2]!]),
+          ]}
+        >
+          <DeviceSelector variant="web" onChange={onChange} disabled />
+        </MockedProvider>
+      );
+
+      const addDeviceButton = await screen.findByRole("button");
+      expect(addDeviceButton).toHaveTextContent("Add new device");
+      expect(addDeviceButton).toBeDisabled();
+      fireEvent.click(screen.getByText("Add new device"));
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe("in electron", () => {
@@ -132,6 +173,28 @@ describe("<DeviceSelector />", () => {
       fireEvent.click(screen.getByText("Refresh"));
 
       expect(await screen.findByText(`Available devices (2)`)).toBeVisible();
+    });
+
+    it("should disable refresh button when disabled", async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            devicesQuery(0, []),
+            devicesQuery(0, exampleDevices.slice(0, 2)),
+          ]}
+        >
+          <DeviceSelector variant="electron" disabled />
+        </MockedProvider>
+      );
+
+      expect(await screen.findByText("No devices found")).toBeVisible();
+
+      const refreshButton = screen.getByRole("button");
+      expect(refreshButton).toHaveTextContent("Refresh");
+      expect(refreshButton).toBeDisabled();
+      fireEvent.click(screen.getByText("Refresh"));
+
+      expect(await screen.findByText("No devices found")).toBeVisible();
     });
   });
 });

@@ -3,6 +3,7 @@ import { render } from "test-utils/testing-library";
 import DeviceList from "renderer/components/devices/DeviceList";
 import { exampleDevices } from "test-utils/data";
 import { screen } from "@testing-library/react";
+import snapshotDiff from "snapshot-diff";
 
 describe("<DeviceList />", () => {
   it("should render loading when device list is loading", () => {
@@ -34,5 +35,40 @@ describe("<DeviceList />", () => {
     const row = screen.getByRole("row", { selected: true });
 
     expect(row).toMatchSnapshot();
+  });
+
+  it("should allow device list to be disabled", () => {
+    const device = exampleDevices[0]!;
+    const { rerender, asFragment } = render(<DeviceList devices={[device]} />);
+
+    const before = asFragment();
+
+    rerender(<DeviceList devices={[device]} disabled />);
+
+    expect(snapshotDiff(before, asFragment())).toMatchInlineSnapshot(`
+      "Snapshot Diff:
+      - First value
+      + Second value
+
+      @@ -1,9 +1,9 @@
+        <DocumentFragment>
+          <div
+            class=\\"ant-list ant-list-lg ant-list-split\\"
+      -     style=\\"height: 100%; min-width: 350px;\\"
+      +     style=\\"height: 100%; min-width: 350px; opacity: 0.5; pointer-events: none;\\"
+          >
+            <div
+              class=\\"ant-spin-nested-loading\\"
+            >
+              <div
+      @@ -77,7 +77,6 @@
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+      -   )
+        </DocumentFragment>"
+    `);
   });
 });
