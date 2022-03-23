@@ -29,6 +29,7 @@ type FlashingState = {
 
 type Props = {
   state: FlashingState;
+  hideSpecialOptions?: boolean;
   onSpecialErrorActionClicked?: () => void;
 };
 
@@ -138,8 +139,8 @@ const useSpecialErrors = (): Record<
   return useMemo(
     () => ({
       WRITE_PROTECTED: {
-        message: t(`Device firmware may be locked`),
-        action: t(`Remove protection`),
+        message: t(`Device firmware may be read protected, preventing updates`),
+        action: t(`Enable firmware updating`),
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,6 +240,7 @@ const stepBaseStyle = {
 
 const FlashJobTimeline: React.FC<Props> = ({
   state,
+  hideSpecialOptions,
   onSpecialErrorActionClicked,
 }) => {
   const { t } = useTranslation("flashing");
@@ -317,14 +319,16 @@ const FlashJobTimeline: React.FC<Props> = ({
                           message={specialErrors[stageStatus.error]?.message}
                           type="error"
                           description={
-                            <Button
-                              type="primary"
-                              icon={<UnlockOutlined />}
-                              style={{ marginTop: 8 }}
-                              onClick={onSpecialErrorActionClicked}
-                            >
-                              {specialErrors[stageStatus.error]?.action}
-                            </Button>
+                            !hideSpecialOptions && (
+                              <Button
+                                type="primary"
+                                icon={<UnlockOutlined />}
+                                style={{ marginTop: 8 }}
+                                onClick={onSpecialErrorActionClicked}
+                              >
+                                {specialErrors[stageStatus.error]?.action}
+                              </Button>
+                            )
                           }
                         />
                       ) : (

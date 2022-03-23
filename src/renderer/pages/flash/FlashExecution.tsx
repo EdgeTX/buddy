@@ -15,6 +15,7 @@ import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
 import FlashJobTimeline from "renderer/components/flashing/FlashJobTimeline";
 import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 import { Trans, useTranslation } from "react-i18next";
+import { event } from "react-ga";
 
 const Container = styled.div`
   height: 100%;
@@ -189,7 +190,19 @@ const FlashExecution: React.FC = () => {
           }}
         >
           {data?.flashJobStatus && (!isMobile || !completed) && (
-            <FlashJobTimeline state={data.flashJobStatus.stages} />
+            <FlashJobTimeline
+              state={data.flashJobStatus.stages}
+              onSpecialErrorActionClicked={() => {
+                // TODO: check what error we have experienced and act accordingly
+                // for now, we know the only special error we have to deal with
+                // is for protected flash
+                event({
+                  category: "flashing",
+                  action: "unlock-flash-clicked",
+                });
+                navigate("/dev/flash/unlock");
+              }}
+            />
           )}
           {completed && isMobile && renderFlashResult()}
         </FullHeightCentered>
