@@ -95,7 +95,10 @@ const ExecutionOverlay: React.FC<{ jobId?: string; onClose: () => void }> = ({
             <FullHeight>
               {data?.flashJobStatus && (
                 <FullHeightCentered>
-                  <FlashJobTimeline state={data.flashJobStatus.stages} />
+                  <FlashJobTimeline
+                    state={data.flashJobStatus.stages}
+                    hideSpecialOptions
+                  />
                 </FullHeightCentered>
               )}
               {loading && !data?.flashJobStatus && (

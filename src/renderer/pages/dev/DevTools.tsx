@@ -1,11 +1,22 @@
-import { BranchesOutlined, UsbOutlined } from "@ant-design/icons";
+import {
+  BranchesOutlined,
+  UnlockOutlined,
+  UsbOutlined,
+} from "@ant-design/icons";
 import { Menu } from "antd";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import useIsWide from "renderer/hooks/useIsWide";
 import { FullHeight } from "renderer/shared/layouts";
 import styled from "styled-components";
+import FlashUnlocker from "./flash/FlashUnlocker";
 import PrBuildsFlasher from "./flash/PrBuildsFlasher";
 
 const Container = styled.div`
@@ -22,6 +33,7 @@ const DevTools: React.FC<{ route?: string }> = ({ route = "" }) => {
   const { t } = useTranslation("devtools");
   const [openedMenus, setOpenedMenus] = useState<string[]>([]);
   const location = useLocation();
+  const navigate = useNavigate();
   const isWide = useIsWide();
 
   const [sub, page] = location.pathname.replace(route, "").split("/");
@@ -42,6 +54,9 @@ const DevTools: React.FC<{ route?: string }> = ({ route = "" }) => {
           selectedKeys={[sub ?? "", page ?? ""]}
           openKeys={openedMenus}
           mode="inline"
+          onClick={(item) => {
+            navigate(`${item.keyPath.reverse().join("/")}`);
+          }}
         >
           <Menu.SubMenu
             onTitleClick={(e) => {
@@ -53,16 +68,20 @@ const DevTools: React.FC<{ route?: string }> = ({ route = "" }) => {
             }}
             key="flash"
             icon={<UsbOutlined />}
-            title={t(`Firmware`)}
+            title={t(`Flashing`)}
           >
             <Menu.Item icon={<BranchesOutlined />} key="pr">
               {t(`PR Builds`)}
+            </Menu.Item>
+            <Menu.Item icon={<UnlockOutlined />} key="unlock">
+              {t(`Unlocker`)}
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
         <FullHeight className="dev-tools-page">
           <Routes>
             <Route path="flash/pr" element={<PrBuildsFlasher />} />
+            <Route path="flash/unlock" element={<FlashUnlocker />} />
             <Route path="*" element={<Navigate replace to="flash/pr" />} />
           </Routes>
         </FullHeight>
