@@ -83,7 +83,7 @@ export const startExecution = async (
       return undefined;
     });
 
-    if (isCancelled(jobId)) {
+    if (!dfuProcess || isCancelled(jobId)) {
       return;
     }
 
@@ -117,7 +117,7 @@ export const startExecution = async (
       });
     }
 
-    if (!dfuProcess || isCancelled(jobId)) {
+    if (isCancelled(jobId)) {
       return;
     }
 
