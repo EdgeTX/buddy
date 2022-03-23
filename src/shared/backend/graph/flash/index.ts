@@ -259,7 +259,7 @@ builder.mutationType({
           );
         });
 
-        await Promise.all([
+        await Promise.race([
           waitForNotConnected(deviceId.toString(), context.usb.deviceList),
           delay(10000).then(() => {
             throw new Error("Timed out waiting for device to disconnect");
