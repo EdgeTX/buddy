@@ -65,50 +65,63 @@ const streamToString = (stream: Readable): Promise<string> => {
   });
 };
 
-test("Can download the selected firmware target", async ({
-  queries,
-  page,
-  isElectron,
-  tempDownloadDir,
-}) => {
-  await (await queries.findByLabelText("Firmware version")).press("Enter");
-  await (
-    await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
-      timeout: 20000,
-    })
-  ).click();
+[
+  {
+    testCase: "Can download the selected firmware target",
+    radioName: "Frsky X-Lite S",
+    expected: {
+      fileName: "xlites-v2.5.0.bin",
+      fileHash: "496807b5624fab15c4c2d11130d651c2",
+    },
+  },
+  {
+    testCase: "Downloads correct firmware for devices with similar code names",
+    radioName: "Frsky QX7",
+    expected: {
+      // In this case `x7` could match `x7-access` due to the way the code names
+      // were previously matched
+      fileName: "x7-v2.5.0.bin",
+      fileHash: "37c3ea0d8c455eef0a9c26ee5a08c8b4",
+    },
+  },
+].forEach(({ testCase, radioName, expected }) => {
+  test(testCase, async ({ queries, page, isElectron, tempDownloadDir }) => {
+    await (await queries.findByLabelText("Firmware version")).press("Enter");
+    await (
+      await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
+        timeout: 20000,
+      })
+    ).click();
 
-  const radioSelector = await queries.findByLabelText("Radio model");
-  await radioSelector.waitForElementState("enabled");
+    const radioSelector = await queries.findByLabelText("Radio model");
+    await radioSelector.waitForElementState("enabled");
 
-  await radioSelector.click();
-  await (await queries.findByText("Frsky X-Lite S")).click();
+    await radioSelector.click();
+    await (await queries.findByText(radioName)).click();
 
-  const [download] = await Promise.all([
-    // Start waiting for the download
-    !isElectron ? page.waitForEvent("download") : undefined,
-    // Perform the action that initiates download
-    (await queries.getByText("Download .bin")).click(),
-  ]);
+    const [download] = await Promise.all([
+      // Start waiting for the download
+      !isElectron ? page.waitForEvent("download") : undefined,
+      // Perform the action that initiates download
+      (await queries.getByText("Download .bin")).click(),
+    ]);
 
-  const expectedFileName = "xlites-v2.5.0.bin";
-  const expectedFileHash = "496807b5624fab15c4c2d11130d651c2";
-
-  // In browser we can use the download event
-  if (download) {
-    expect(download.suggestedFilename()).toBe(expectedFileName);
-    expect(
-      md5(await streamToString((await download.createReadStream())!))
-    ).toBe(expectedFileHash);
-  } else {
-    // In electron we have to read the download path
-    const expectedFilePath = path.join(tempDownloadDir, expectedFileName);
-    await waitFor(async () => {
-      expect(md5((await fs.readFile(expectedFilePath)).toString())).toBe(
-        expectedFileHash
-      );
-    });
-  }
+    // In browser we can use the download event
+    if (download) {
+      expect(download.suggestedFilename()).toBe(expected.fileName);
+      expect(
+        md5(await streamToString((await download.createReadStream())!))
+      ).toBe(expected.fileHash);
+    } else {
+      // In electron we have to read the download path
+      const expectedFilePath = path.join(tempDownloadDir, expected.fileName);
+      await waitFor(async () => {
+        expect(md5((await fs.readFile(expectedFilePath)).toString())).toBe(
+          expected.fileHash
+        );
+      });
+    }
+  });
 });
 
 test("Copy URL button copies a link to the selected firmware", async ({

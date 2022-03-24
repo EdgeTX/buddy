@@ -76,13 +76,21 @@ export const firmwareTargets = async (
   return firmwareTargetsCache[firmwareBundleUrl]!;
 };
 
+const firmwareFileNameToId = (fileName: string): string => {
+  const withoutExtension = fileName.replace(".bin", "");
+  const withoutCommitHash = withoutExtension.split("-").slice(0, -1).join("-");
+
+  return withoutCommitHash;
+};
+
 export const fetchFirmware = async (
   firmwareBundleUrl: string,
   target: string
 ): Promise<Buffer> => {
   const { entries } = await firmwareBundle(firmwareBundleUrl);
   const firmwareFile = entries.find(
-    (entry) => entry.name.includes(`${target}-`) && entry.name.endsWith(".bin")
+    (entry) =>
+      entry.name.endsWith(".bin") && firmwareFileNameToId(entry.name) === target
   );
   if (!firmwareFile) {
     throw new Error("Could not find firmware target binary");
