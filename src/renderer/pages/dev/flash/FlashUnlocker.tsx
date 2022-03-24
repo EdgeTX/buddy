@@ -43,7 +43,7 @@ const FlashUnlocker: React.FC = () => {
     }
   );
   return (
-    <FullHeight>
+    <FullHeight style={{ padding: 16 }}>
       <FullHeightCentered>
         <DeviceSelector
           disabled={loading}
@@ -74,7 +74,8 @@ const FlashUnlocker: React.FC = () => {
                   void message.success(
                     t(
                       `Device successfully unlocked! You will need to re-enter DFU mode to continue flashing`
-                    )
+                    ),
+                    5
                   );
                 })
                 .catch((e) => {
