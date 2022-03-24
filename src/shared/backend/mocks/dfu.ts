@@ -1,4 +1,4 @@
-import { WebDFU } from "shared/dfu";
+import { dfuCommands, WebDFU } from "shared/dfu";
 import * as dfu from "shared/backend/services/dfu";
 import { delay, times } from "shared/tools";
 import { createNanoEvents } from "nanoevents";
@@ -9,6 +9,7 @@ import {
   errorErasingDevice,
   errorFlashingDevice,
   disconnectBugDevice,
+  lockedDevice,
 } from "./usb";
 
 export type WriteProcess = ReturnType<WebDFU["write"]>;
@@ -19,11 +20,18 @@ export const createDfuEvents = (): Events => createNanoEvents();
 export const createDfuMock = (faster?: boolean): typeof dfu => {
   const startEmulation = (
     events: Events,
-    type: "good" | "bad-erase" | "bad-flash" | "disconnect-bug"
+    type: "good" | "bad-erase" | "bad-flash" | "disconnect-bug" | "locked"
   ): void => {
     void (async () => {
       await delay(100);
       events.emit("erase/start");
+
+      if (type === "locked") {
+        await delay(1000);
+        events.emit("error", new Error("Special command 65 failed"));
+        return;
+      }
+
       await pMap(
         times(100),
         async (progress) => {
@@ -92,12 +100,23 @@ export const createDfuMock = (faster?: boolean): typeof dfu => {
       }
 
       return {
+        getStatus: () => {
+          switch (device) {
+            case lockedDevice:
+              return { status: dfuCommands.STATUS_errVENDOR };
+            default:
+              throw new Error("Not implemented");
+          }
+        },
         write: () => {
           const events = createDfuEvents();
 
           switch (device) {
             case goodDevice:
               startEmulation(events, "good");
+              break;
+            case lockedDevice:
+              startEmulation(events, "locked");
               break;
             case disconnectBugDevice:
               startEmulation(events, "disconnect-bug");
@@ -116,6 +135,19 @@ export const createDfuMock = (faster?: boolean): typeof dfu => {
           } as WriteProcess;
         },
         close: () => Promise.resolve(),
+        forceUnprotect: async () => {
+          switch (device) {
+            case lockedDevice:
+              await delay(5000);
+              // use this to remove the device from
+              // the mock device list
+              await device.reset();
+              break;
+            default:
+              await delay(2000);
+              throw new Error("Some error flashing");
+          }
+        },
       } as unknown as WebDFU;
     },
   };
