@@ -8,6 +8,7 @@ import { WebDFU } from "shared/dfu";
 import md5 from "md5";
 import { connect } from "shared/backend/services/dfu";
 import { FlashJobType } from "shared/backend/graph/flash";
+import { delay } from "shared/tools";
 
 const requestDeviceMock = jest.fn() as MockedFunction<
   typeof navigator.usb.requestDevice
@@ -19,6 +20,9 @@ const listDevicesMock = jest.fn() as MockedFunction<
 const dfuConnectMock = jest.fn() as MockedFunction<typeof connect>;
 
 const dfuWriteFunc = jest.fn() as MockedFunction<WebDFU["write"]>;
+const dfuForceUnprotectFunc = jest.fn() as MockedFunction<
+  WebDFU["forceUnprotect"]
+>;
 
 const backend = createExecutor({
   usb: {
@@ -239,6 +243,52 @@ describe("Mutation", () => {
     });
   });
 
+  const dfuEvents = createDfuEvents();
+
+  const mockDevice = {
+    productName: "Some device",
+    serialNumber: "some-device-id",
+    close: jest.fn().mockRejectedValue(undefined),
+  };
+
+  const mockDfuConnection = {
+    write: dfuWriteFunc.mockReturnValue({
+      events: dfuEvents,
+    }),
+    forceUnprotect: dfuForceUnprotectFunc.mockResolvedValue(undefined),
+    close: jest.fn().mockRejectedValue(undefined),
+    properties: {
+      TransferSize: 4567,
+    },
+  };
+
+  describe("unprotectDevice", () => {
+    it("should remove protection from device and wait for it to disconnect", async () => {
+      dfuConnectMock.mockResolvedValue(mockDfuConnection as never);
+      listDevicesMock.mockResolvedValue([mockDevice as never]);
+
+      mockDfuConnection.forceUnprotect.mockImplementationOnce(() => {
+        void delay(100).then(() => {
+          // Simulate the device disconnecting
+          listDevicesMock.mockResolvedValue([]);
+        });
+
+        return Promise.resolve();
+      });
+
+      const { errors } = await backend.mutate({
+        mutation: gql`
+          mutation CreateFlashJob {
+            unprotectDevice(deviceId: "some-device-id")
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(mockDfuConnection.forceUnprotect).toHaveBeenCalled();
+    });
+  });
+
   const queryFlashStatus = async (jobId: string) => {
     const { data } = await backend.query({
       query: gql`
@@ -298,22 +348,6 @@ describe("Mutation", () => {
         jobId,
       },
     });
-
-  const dfuEvents = createDfuEvents();
-  const mockDevice = {
-    productName: "Some device",
-    serialNumber: "some-device-id",
-    close: jest.fn().mockRejectedValue(undefined),
-  };
-  const mockDfuConnection = {
-    write: dfuWriteFunc.mockReturnValue({
-      events: dfuEvents,
-    }),
-    close: jest.fn().mockRejectedValue(undefined),
-    properties: {
-      TransferSize: 4567,
-    },
-  };
 
   describe("Create flash job from release", () => {
     let jobId: string;
