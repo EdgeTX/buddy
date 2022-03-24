@@ -113,4 +113,44 @@ test.describe.parallel("Flashing", () => {
       ).isVisible()
     ).toBeTruthy();
   });
+
+  test.only("Flash firmware on locked device gives option to enable firmware upgrading", async ({
+    queries,
+    browserName,
+    page,
+  }) => {
+    test.skip(browserName !== "chromium");
+    await (await queries.findByLabelText("Firmware version")).press("Enter");
+    await page
+      .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
+      .click();
+
+    const radioSelector = await queries.findByLabelText("Radio model");
+    await radioSelector.waitForElementState("enabled");
+    await radioSelector.click();
+    await (await queries.findByText("Flysky NV14")).click();
+
+    const flashButton = await queries.findByText("Flash via USB");
+    await flashButton.click();
+
+    await (await queries.findByText("Locked device")).click();
+    await (await queries.findByText("Next")).click();
+    await (await queries.findByText("Start flashing")).click();
+
+    // Flashing
+    expect(
+      await (
+        await queries.findByText("Downloaded", undefined, { timeout: 20000 })
+      ).isVisible()
+    ).toBeTruthy();
+    expect(
+      await (
+        await queries.findByText(
+          "Device firmware may be read protected, preventing updates",
+          undefined,
+          { timeout: 10000 }
+        )
+      ).isVisible()
+    ).toBeTruthy();
+  });
 });
