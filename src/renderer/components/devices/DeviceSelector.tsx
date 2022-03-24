@@ -22,6 +22,7 @@ const Main = styled.div`
     max-width: 800px;
   }
   gap: 8px;
+  min-height: 0;
 `;
 
 const ButtonsContainer = styled.div`
