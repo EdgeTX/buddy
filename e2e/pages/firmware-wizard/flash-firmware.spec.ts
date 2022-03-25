@@ -114,7 +114,7 @@ test.describe.parallel("Flashing", () => {
     ).toBeTruthy();
   });
 
-  test.only("Flash firmware on locked device gives option to enable firmware upgrading", async ({
+  test("Flash firmware on locked device gives option to enable firmware upgrading", async ({
     queries,
     browserName,
     page,
