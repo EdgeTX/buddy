@@ -113,7 +113,7 @@ describe("<FirmwareSummary />", () => {
         <DocumentFragment>
       -   <div>
           <div
-      -       class=\\"sc-bdvvtL crZnOr\\"
+      -       class=\\"sc-bdvvtL hHjpgA\\"
       -       style=\\"margin-bottom: 32px;\\"
       +     class=\\"ant-space ant-space-vertical\\"
       +     style=\\"width: 100%;\\"
@@ -127,7 +127,7 @@ describe("<FirmwareSummary />", () => {
       -           class=\\"ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-square\\"
       -           style=\\"height: 64px; width: 64px;\\"
       +       <div
-      +         class=\\"sc-bdvvtL crZnOr\\"
+      +         class=\\"sc-bdvvtL hHjpgA\\"
       +       >
       +         <img
       +           alt=\\"EdgeTX logo\\"
@@ -142,7 +142,7 @@ describe("<FirmwareSummary />", () => {
             >
               <div
       -         class=\\"ant-skeleton-content\\"
-      +         class=\\"sc-bdvvtL crZnOr\\"
+      +         class=\\"sc-bdvvtL hHjpgA\\"
               >
       -         <ul
       -           class=\\"ant-skeleton-paragraph\\"

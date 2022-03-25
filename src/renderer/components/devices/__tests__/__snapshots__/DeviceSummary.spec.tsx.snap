@@ -18,6 +18,7 @@ exports[`<DeviceSummary /> should show details about the given device 1`] = `
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+  min-height: 0;
 }
 
 <div
@@ -100,7 +101,7 @@ exports[`<DeviceSummary /> should show loading skeleton before displaying device
       >
         <div
 -         class=\\"ant-skeleton ant-skeleton-active\\"
-+         class=\\"sc-bdvvtL crZnOr\\"
++         class=\\"sc-bdvvtL hHjpgA\\"
         >
 -         <div
 -           class=\\"ant-skeleton-content\\"
