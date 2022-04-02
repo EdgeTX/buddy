@@ -102,5 +102,5 @@
   "Writing new firmware to radio, this could take several minutes": "正在将新固件写入遥控器，这可能需要几分钟",
   "You may now want to <1>setup your SD Card</1>": "您现在可能需要<1>配置您的 SD 卡</1>",
   "You're all set!": "您已经全部就绪",
-  "Your radio has been flashed with EdgeTX": "您的遥控器刷写 EdgeTX 成功",
+  "Your radio has been flashed with EdgeTX": "您的遥控器刷写 EdgeTX 成功"
 }
