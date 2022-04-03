@@ -1,9 +1,9 @@
 {
-  "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB",
-  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'",
-  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes",
-  "Select SD Card": "Select SD Card",
-  "The SD card editor is still in development": "The SD card editor is still in development",
-  "This feature is not supported by your browser": "This feature is not supported by your browser",
-  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool"
+  "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>第 1 步.</0> 打开设备，确保没有插入 USB 接口",
+  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>第 2 步.</0> 将您的设备通过 USB 连接到电脑，如果出现弹框请选择 '<2>USB 存储</2>'",
+  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>第 3 步.</0> 当连接成功后，通过文件浏览器选择 SD 卡以进行更改",
+  "Select SD Card": "选择 SD 卡",
+  "The SD card editor is still in development": "SD 卡编辑器正在开发中",
+  "This feature is not supported by your browser": "您的浏览器不支持此功能",
+  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "您可能会注意到缺失的功能或错误，建议您继续使用 Flasher 作为您的主要 SD 卡工具"
 }
