@@ -28,6 +28,11 @@ const SOUND_NAMES_TO_ISO: Record<string, string> = {
   cz: "cs",
 };
 
+const ISO_TO_SOUND_NAMES: Record<string, string> = {
+  zh: "cn",
+  cs: "cz",
+};
+
 const GithubReleaseArtifact = builder.simpleObject("GithubReleaseArtifact", {
   fields: (t) => ({
     id: t.id(),
@@ -489,7 +494,9 @@ builder.mutationType({
                       (soundId) =>
                         data.assets.find((asset) =>
                           asset.name.startsWith(
-                            `edgetx-sdcard-sounds-${soundId}`
+                            `edgetx-sdcard-sounds-${
+                              ISO_TO_SOUND_NAMES[soundId] ?? soundId
+                            }`
                           )
                         )?.browser_download_url
                     )
