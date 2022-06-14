@@ -22,7 +22,7 @@ export default defineConfig({
       "**/test-utils/**",
     ],
     coverage: {
-      reporter: ["lcov", "html"],
+      reporter: ["lcov", "html", "text"],
       all: true,
       include: ["**/src/**/*.{ts,tsx}"],
       exclude: [
