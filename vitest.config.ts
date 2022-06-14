@@ -21,5 +21,23 @@ export default defineConfig({
       "**/e2e/**",
       "**/test-utils/**",
     ],
+    coverage: {
+      reporter: ["lcov", "html"],
+      all: true,
+      include: ["**/src/**/*.{ts,tsx}"],
+      exclude: [
+        "**/e2e/**",
+        "**/node_modules/**",
+        "**/stories/**",
+        "**/__tests__/**",
+        "**/*.spec.{ts,tsx}",
+        "**/__generated__/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/*.d.ts",
+        "**/.storybook/**",
+        "**/test-utils/**",
+      ],
+    },
   },
 });
