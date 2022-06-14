@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { MockedFunction } from "jest-mock";
+import { MockedFunction } from "vitest";
 import nock from "nock";
 import { createExecutor } from "test-utils/backend";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
@@ -10,7 +10,7 @@ import { directorySnapshot, waitForStageCompleted } from "test-utils/tools";
 import path from "path";
 import { SdcardWriteJobType } from "shared/backend/graph/sdcard";
 
-const requestWritableDirectory = jest.fn() as MockedFunction<
+const requestWritableDirectory = vitest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
 >;
 
@@ -38,16 +38,16 @@ describe("Query", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.edgeTxSdcardPackReleases).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "id": "latest",
             "name": "Latest",
           },
-          Object {
+          {
             "id": "v2.5.0",
             "name": "EdgeTX \\"Dauntless\\" v2.5.0 SD Card Pack",
           },
-          Object {
+          {
             "id": "v2.4.0-rc1",
             "name": "2.4.0-rc1",
           },
@@ -78,95 +78,95 @@ describe("Query", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.edgeTxSdcardPackRelease).toMatchInlineSnapshot(`
-        Object {
+        {
           "id": "latest",
           "name": "Latest",
-          "targets": Array [
-            Object {
+          "targets": [
+            {
               "id": "x10",
               "name": "FrSky Horus X10",
             },
-            Object {
+            {
               "id": "x10-access",
               "name": "FrSky Horus X10 Access",
             },
-            Object {
+            {
               "id": "x12s",
               "name": "FrSky Horus X12s",
             },
-            Object {
+            {
               "id": "t16",
               "name": "Jumper T16",
             },
-            Object {
+            {
               "id": "t18",
               "name": "Jumper T18",
             },
-            Object {
+            {
               "id": "tx16s",
               "name": "RadioMaster TX16S",
             },
-            Object {
+            {
               "id": "nv14",
               "name": "Flysky NV14",
             },
-            Object {
+            {
               "id": "x7",
               "name": "FrSky QX7",
             },
-            Object {
+            {
               "id": "x7-access",
               "name": "FrSky QX7 Access",
             },
-            Object {
+            {
               "id": "x9lite",
               "name": "FrSky X9 Lite",
             },
-            Object {
+            {
               "id": "x9lites",
               "name": "FrSky X9 Lite S",
             },
-            Object {
+            {
               "id": "xlite",
               "name": "FrSky X-Lite",
             },
-            Object {
+            {
               "id": "xlites",
               "name": "FrSky X-Lite S",
             },
-            Object {
+            {
               "id": "t12",
               "name": "Jumper T12",
             },
-            Object {
+            {
               "id": "tlite",
               "name": "Jumper T-Lite",
             },
-            Object {
+            {
               "id": "tpro",
               "name": "Jumper T-Pro",
             },
-            Object {
+            {
               "id": "t8",
               "name": "RadioMaster T8",
             },
-            Object {
+            {
               "id": "tx12",
               "name": "RadioMaster TX12",
             },
-            Object {
+            {
               "id": "zorro",
               "name": "RadioMaster Zorro",
             },
-            Object {
+            {
               "id": "x9d",
               "name": "FrSky X9D",
             },
-            Object {
+            {
               "id": "x9dp",
               "name": "FrSky X9D Plus",
             },
-            Object {
+            {
               "id": "x9dp2019",
               "name": "FrSky X9D Plus 2019",
             },
@@ -197,95 +197,95 @@ describe("Query", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.edgeTxSdcardPackRelease).toMatchInlineSnapshot(`
-        Object {
+        {
           "id": "v2.6.0",
           "name": "EdgeTX \\"Santa\\" v2.6.0 SD Card Pack ",
-          "targets": Array [
-            Object {
+          "targets": [
+            {
               "id": "t16",
               "name": "Jumper T16",
             },
-            Object {
+            {
               "id": "t18",
               "name": "Jumper T18",
             },
-            Object {
+            {
               "id": "x10",
               "name": "Frsky Horus X10",
             },
-            Object {
+            {
               "id": "x10-access",
               "name": "Frsky Horus X10 Access",
             },
-            Object {
+            {
               "id": "x12s",
               "name": "Frsky Horus X12s",
             },
-            Object {
+            {
               "id": "tx16s",
               "name": "Radiomaster TX16s",
             },
-            Object {
+            {
               "id": "nv14",
               "name": "Flysky NV14",
             },
-            Object {
+            {
               "id": "tlite",
               "name": "Jumper T-Lite",
             },
-            Object {
+            {
               "id": "tpro",
               "name": "Jumper T-Pro",
             },
-            Object {
+            {
               "id": "t12",
               "name": "Jumper T12",
             },
-            Object {
+            {
               "id": "x7",
               "name": "Frsky QX7",
             },
-            Object {
+            {
               "id": "x7-access",
               "name": "Frsky QX7 Access",
             },
-            Object {
+            {
               "id": "xlite",
               "name": "Frsky X-Lite",
             },
-            Object {
+            {
               "id": "xlites",
               "name": "Frsky X-Lite S",
             },
-            Object {
+            {
               "id": "x9lite",
               "name": "Frsky X9 Lite",
             },
-            Object {
+            {
               "id": "x9lites",
               "name": "Frsky X9 Lite S",
             },
-            Object {
+            {
               "id": "t8",
               "name": "RadioMaster T8",
             },
-            Object {
+            {
               "id": "tx12",
               "name": "Radiomaster TX12",
             },
-            Object {
+            {
               "id": "zorro",
               "name": "RadioMaster Zorro",
             },
-            Object {
+            {
               "id": "x9d",
               "name": "Frsky X9D",
             },
-            Object {
+            {
               "id": "x9dp",
               "name": "Frsky X9D Plus",
             },
-            Object {
+            {
               "id": "x9dp2019",
               "name": "Frsky X9D Plus 2019",
             },
@@ -339,10 +339,10 @@ describe("Query", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
-        Object {
+        {
           "id": "v2.5.3",
           "name": "2.5.3",
-          "sounds": Array [
+          "sounds": [
             "zh",
             "cs",
             "de",
@@ -376,7 +376,7 @@ describe("Query", () => {
 
     expect(errors).toBeFalsy();
     expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
-      Object {
+      {
         "id": "v2.4.0-rc3",
         "name": "2.4.0-rc3",
       }
@@ -402,7 +402,7 @@ describe("Query", () => {
 
     expect(errors).toBeFalsy();
     expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
-      Object {
+      {
         "id": "v2.5.3",
         "name": "2.5.3",
       }
@@ -413,7 +413,6 @@ describe("Query", () => {
 
 describe("Mutation", () => {
   let tempDir: tmp.DirectoryResult;
-  jest.setTimeout(20000);
 
   beforeEach(async () => {
     tempDir = await tmp.dir({ unsafeCleanup: true });
@@ -971,7 +970,6 @@ const waitForSdcardJobCompleted = async (jobId: string) => {
 
 describe("Sdcard Job", () => {
   let tempDir: tmp.DirectoryResult;
-  jest.setTimeout(60000);
 
   beforeEach(async () => {
     tempDir = await tmp.dir({ unsafeCleanup: true });
@@ -1077,21 +1075,21 @@ describe("Sdcard Job", () => {
 
     expect(errors).toBeFalsy();
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "sdcardWriteJobStatus": Object {
+      {
+        "sdcardWriteJobStatus": {
           "cancelled": false,
-          "stages": Object {
-            "download": Object {
+          "stages": {
+            "download": {
               "completed": true,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": true,
               "progress": 100,
               "started": true,
             },
-            "write": Object {
+            "write": {
               "completed": true,
               "progress": 100,
               "started": true,

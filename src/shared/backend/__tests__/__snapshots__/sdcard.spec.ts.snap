@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`Sdcard Job should extract the specified sdcard target and sounds to the desired sdcard 2`] = `
+exports[`Sdcard Job > should extract the specified sdcard target and sounds to the desired sdcard 2`] = `
 "{
   \\"path\\": \\".\\",
   \\"name\\": \\".\\",

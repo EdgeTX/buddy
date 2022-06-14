@@ -5,7 +5,7 @@ import { fireEvent, screen } from "@testing-library/react";
 
 import snapshotDiff from "snapshot-diff";
 
-const onChanged = jest.fn();
+const onChanged = vitest.fn();
 
 const getProps = ({
   selectedVersion = undefined as string | undefined,

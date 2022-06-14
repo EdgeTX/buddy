@@ -26,7 +26,7 @@ describe("<DeviceSelector />", () => {
   });
 
   it("should allow a device to be selected", async () => {
-    const onChange = jest.fn();
+    const onChange = vitest.fn();
     const { rerender } = render(
       <MockedProvider mocks={[devicesQuery(0)]}>
         <DeviceSelector onChange={onChange} />
@@ -54,7 +54,7 @@ describe("<DeviceSelector />", () => {
   });
 
   it("should set the selected device to undefined if the device doesnt exist in the device list", async () => {
-    const onChange = jest.fn();
+    const onChange = vitest.fn();
     render(
       <MockedProvider mocks={[devicesQuery(0)]}>
         <DeviceSelector
@@ -88,7 +88,7 @@ describe("<DeviceSelector />", () => {
         },
       };
 
-      const onChange = jest.fn();
+      const onChange = vitest.fn();
 
       render(
         <MockedProvider
@@ -134,7 +134,7 @@ describe("<DeviceSelector />", () => {
         },
       };
 
-      const onChange = jest.fn();
+      const onChange = vitest.fn();
 
       render(
         <MockedProvider

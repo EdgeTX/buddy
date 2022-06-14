@@ -64,7 +64,7 @@ module.exports = {
           "**/webpack/*.js",
           "**/.storybook/*.{js,ts}",
           "**/__mocks__/**/*.{ts,tsx}",
-          "**/jest.*.js",
+          "**/vitest.*.ts",
           "**/storyshots*.ts",
         ],
       },
@@ -122,6 +122,9 @@ module.exports = {
     {
       files: ["src/**/*.spec.tsx"],
       extends: ["plugin:jest/recommended"],
+      rules: {
+        "jest/no-deprecated-functions": "off",
+      },
     },
     {
       files: ["src/webworker/**/*"],

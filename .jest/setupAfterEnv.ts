@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import "jest-styled-components";
 import dotenv from "dotenv";
-import { jest } from "@jest/globals";
+import { vi } from "vitest";
 import nock from "nock";
 import isCI from "is-ci";
 import { dirname } from "path";
@@ -17,47 +17,46 @@ globalThis.Blob = Blob as unknown as typeof globalThis.Blob;
 
 dotenv.config();
 
-jest.mock("shared/dfu", () => ({
+vi.mock("shared/dfu", () => ({
   WebDFU: () => {},
 }));
 
-jest.mock("styled-components", () => {
-  const actual = jest.requireActual(
-    "styled-components"
-  ) as typeof import("styled-components");
-  const styled = actual.default;
+// vi.mock("styled-components", () => {
+//   const actual = vi.importActual(
+//     "styled-components"
+//   ) as unknown as typeof import("styled-components");
 
-  return Object.assign(styled, actual);
-});
+//   return actual;
+// });
 
-jest.mock("react-ga", () => ({ exception: jest.fn() }));
+vi.mock("react-ga", () => ({ exception: vi.fn() }));
 
-jest.mock("use-media", () => {
-  const actual = jest.requireActual("use-media") as typeof import("use-media");
-  const useMedia = actual.default;
+// vi.mock("use-media", () => {
+//   const actual = vi.importActual(
+//     "use-media"
+//   ) as unknown as typeof import("use-media");
+//   const useMedia = actual.default;
 
-  return Object.assign(useMedia, actual);
-});
+//   return Object.assign(useMedia, actual);
+// });
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // Deprecated
-    removeListener: jest.fn(), // Deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
+    addListener: vi.fn(), // Deprecated
+    removeListener: vi.fn(), // Deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   })),
 });
 
-jest.unstable_mockModule("copy-text-to-clipboard", () => ({
-  default: jest.fn(),
-}));
+vi.mock("copy-text-to-clipboard");
 
-jest.mock("js-file-download", () => jest.fn());
+vi.mock("js-file-download");
 
 // @ts-expect-error Oh well
 navigator.usb = {
@@ -72,10 +71,6 @@ nock.back.fixtures = `${dirname(
 beforeEach(() => {
   nock.back.setMode(isCI ? "lockdown" : "record");
 });
-
-// For ESM, jest isn't available globally, so let's set it
-// @ts-expect-error
-globalThis.jest = jest;
 
 const origConsoleError = console.error;
 

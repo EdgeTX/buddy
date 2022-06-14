@@ -1,11 +1,11 @@
 import { ApolloClient, gql, InMemoryCache } from "@apollo/client/core";
 import { createWebWorkerBusLink } from "apollo-bus-link";
-import { MockedFunction } from "jest-mock";
 import getOriginPrivateDirectory from "native-file-system-adapter/src/getOriginPrivateDirectory";
 import nodeAdapter from "native-file-system-adapter/src/adapters/node";
 import nock from "nock";
+import { MockedFunction } from "vitest";
 // eslint-disable-next-line import/extensions
-import BackendWebWorker from "webworker/backend.worker.ts";
+import BackendWebWorker from "webworker/backend.worker.ts?worker";
 import {
   showDirectoryPicker,
   requestDevice,
@@ -24,15 +24,15 @@ const client = new ApolloClient({
   link,
 });
 
-const showDirectoryPickerMock = jest.fn() as MockedFunction<
+const showDirectoryPickerMock = vitest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
 >;
 window.showDirectoryPicker = showDirectoryPickerMock;
 
-const requestDeviceMock = jest.fn() as MockedFunction<
+const requestDeviceMock = vitest.fn() as MockedFunction<
   typeof navigator.usb.requestDevice
 >;
-const getDevicesMock = jest.fn() as MockedFunction<
+const getDevicesMock = vitest.fn() as MockedFunction<
   typeof navigator.usb.getDevices
 >;
 navigator.usb.requestDevice = requestDeviceMock;
@@ -139,7 +139,7 @@ describe("Backend Workers", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.requestFlashableDevice).toMatchInlineSnapshot(`
-        Object {
+        {
           "__typename": "FlashableDevice",
           "id": "some-serial-number",
           "productName": "Some product",

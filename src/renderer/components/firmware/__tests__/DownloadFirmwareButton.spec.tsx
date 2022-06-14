@@ -6,10 +6,9 @@ import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwar
 import { examplePrs } from "test-utils/data";
 import { encodePrVersion } from "shared/tools";
 import download from "js-file-download";
-import { mocked } from "jest-mock";
 import { fireEvent, screen } from "@testing-library/react";
 
-const mockDownload = mocked(download);
+const mockDownload = vitest.mocked(download);
 const prFirmware = examplePrs[0]!;
 
 const toArrayBuffer = (b: Buffer) =>
