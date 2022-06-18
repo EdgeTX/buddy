@@ -26,7 +26,7 @@ describe("<FlashButton />", () => {
 
   it("should pass back click when clicked", () => {
     config.isElectron = true;
-    const onClick = jest.fn();
+    const onClick = vitest.fn();
 
     render(<FlashButton onClick={onClick} />);
 

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`<Markdown /> should return the given markdown string as html 1`] = `
+exports[`<Markdown /> > should return the given markdown string as html 1`] = `
 <DocumentFragment>
   <div>
     <h1

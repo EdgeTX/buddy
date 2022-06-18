@@ -21,7 +21,7 @@
       "wicg-file-system-access",
       "w3c-web-usb",
       "node",
-      "jest",
+      "vitest/globals",
       "testing-library__jest-dom"
     ],
     "baseUrl": "./src"

@@ -28,6 +28,8 @@ export const waitForStageCompleted = async <
       if (job.stages[stage]?.error) {
         throw new Error(job.stages[stage]?.error ?? "");
       }
+    } else {
+      return;
     }
   }
 };

@@ -171,7 +171,7 @@ const AppLayout: React.FC<Props> = ({
             >
               <img
                 alt="edgetx-logo"
-                src={EdgeTxIcon as string}
+                src={EdgeTxIcon}
                 style={{ height: "40px", marginRight: "8px" }}
               />
               <Typography.Title

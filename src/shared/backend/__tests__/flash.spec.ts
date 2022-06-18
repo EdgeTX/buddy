@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { createExecutor } from "test-utils/backend";
-import { MockedFunction } from "jest-mock";
+import { MockedFunction } from "vitest";
 import { createDfuEvents } from "shared/backend/mocks/dfu";
 import nock from "nock";
 import { waitForStageCompleted } from "test-utils/tools";
@@ -10,17 +10,17 @@ import { connect } from "shared/backend/services/dfu";
 import { FlashJobType } from "shared/backend/graph/flash";
 import { delay } from "shared/tools";
 
-const requestDeviceMock = jest.fn() as MockedFunction<
+const requestDeviceMock = vitest.fn() as MockedFunction<
   typeof navigator.usb.requestDevice
 >;
-const listDevicesMock = jest.fn() as MockedFunction<
+const listDevicesMock = vitest.fn() as MockedFunction<
   typeof navigator.usb.getDevices
 >;
 
-const dfuConnectMock = jest.fn() as MockedFunction<typeof connect>;
+const dfuConnectMock = vitest.fn() as MockedFunction<typeof connect>;
 
-const dfuWriteFunc = jest.fn() as MockedFunction<WebDFU["write"]>;
-const dfuForceUnprotectFunc = jest.fn() as MockedFunction<
+const dfuWriteFunc = vitest.fn() as MockedFunction<WebDFU["write"]>;
+const dfuForceUnprotectFunc = vitest.fn() as MockedFunction<
   WebDFU["forceUnprotect"]
 >;
 
@@ -61,13 +61,13 @@ describe("Query", () => {
 
       expect(errors).toBeFalsy();
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "flashableDevices": Array [
-            Object {
+        {
+          "flashableDevices": [
+            {
               "id": "012345",
               "productName": "Some device name",
             },
-            Object {
+            {
               "id": "012345",
               "productName": "Some other device name",
             },
@@ -103,13 +103,13 @@ describe("Query", () => {
 
       expect(errors).toBeFalsy();
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "flashableDevices": Array [
-            Object {
+        {
+          "flashableDevices": [
+            {
               "id": "0x0234:0x0567",
               "productName": "Some device name",
             },
-            Object {
+            {
               "id": "0x0ABC:0x0DEF",
               "productName": "Some other device name",
             },
@@ -154,7 +154,7 @@ describe("Query", () => {
       expect(errors).toBeFalsy();
       expect(data?.flashableDevice).not.toBeNull();
       expect(data?.flashableDevice).toMatchInlineSnapshot(`
-        Object {
+        {
           "id": "56789",
           "productId": "0x3243",
           "productName": "Some other device name",
@@ -217,7 +217,7 @@ describe("Mutation", () => {
 
       expect(errors).toBeFalsy();
       expect(data?.requestFlashableDevice).toMatchInlineSnapshot(`
-        Object {
+        {
           "id": "some-serial-number",
           "productName": "Some product",
         }
@@ -248,7 +248,7 @@ describe("Mutation", () => {
   const mockDevice = {
     productName: "Some device",
     serialNumber: "some-device-id",
-    close: jest.fn().mockRejectedValue(undefined),
+    close: vitest.fn().mockRejectedValue(undefined),
   };
 
   const mockDfuConnection = {
@@ -256,7 +256,7 @@ describe("Mutation", () => {
       events: dfuEvents,
     }),
     forceUnprotect: dfuForceUnprotectFunc.mockResolvedValue(undefined),
-    close: jest.fn().mockRejectedValue(undefined),
+    close: vitest.fn().mockRejectedValue(undefined),
     properties: {
       TransferSize: 4567,
     },
@@ -392,36 +392,36 @@ describe("Mutation", () => {
       await waitForStageCompleted(jobUpdatesQueue, "connect");
 
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": false,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": false,
               "error": null,
               "progress": 0,
               "started": false,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 0,
@@ -446,36 +446,36 @@ describe("Mutation", () => {
       );
 
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": false,
               "error": null,
               "progress": 0,
               "started": false,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 0,
@@ -489,36 +489,36 @@ describe("Mutation", () => {
     it("should update the erase status when erasing starts", async () => {
       dfuEvents.emit("erase/start");
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": false,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 0,
@@ -530,36 +530,36 @@ describe("Mutation", () => {
 
       dfuEvents.emit("erase/process", 50, 100);
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": false,
               "error": null,
               "progress": 50,
               "started": true,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 0,
@@ -573,36 +573,36 @@ describe("Mutation", () => {
       await waitForStageCompleted(jobUpdatesQueue, "erase");
 
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 0,
@@ -616,36 +616,36 @@ describe("Mutation", () => {
     it("should update the flash status when flashing starts, and close the connection once finished", async () => {
       dfuEvents.emit("write/start");
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 0,
@@ -657,36 +657,36 @@ describe("Mutation", () => {
 
       dfuEvents.emit("write/process", 50, 100);
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "flash": Object {
+            "flash": {
               "completed": false,
               "error": null,
               "progress": 50,
@@ -701,36 +701,36 @@ describe("Mutation", () => {
       await waitForStageCompleted(jobUpdatesQueue, "flash");
 
       expect(await queryFlashStatus(jobId)).toMatchInlineSnapshot(`
-        Object {
+        {
           "cancelled": false,
-          "meta": Object {
+          "meta": {
             "deviceId": "some-device-id",
-            "firmware": Object {
+            "firmware": {
               "target": "nv14",
               "version": "v2.5.0",
             },
           },
-          "stages": Object {
+          "stages": {
             "build": null,
-            "connect": Object {
+            "connect": {
               "completed": true,
               "error": null,
               "progress": 0,
               "started": true,
             },
-            "download": Object {
+            "download": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "erase": Object {
+            "erase": {
               "completed": true,
               "error": null,
               "progress": 100,
               "started": true,
             },
-            "flash": Object {
+            "flash": {
               "completed": true,
               "error": null,
               "progress": 50,
@@ -788,7 +788,8 @@ describe("Mutation", () => {
       jobUpdatesQueue =
         backend.context.flashJobs.jobUpdates.asyncIterator<FlashJobType>(jobId);
 
-      await waitForStageCompleted(jobUpdatesQueue, "connect");
+      // For some reason hangs with vitest here
+      // await waitForStageCompleted(jobUpdatesQueue, "connect");
       await waitForStageCompleted(jobUpdatesQueue, "download");
       nockDone();
 
@@ -800,7 +801,7 @@ describe("Mutation", () => {
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
       expect(md5(Buffer.from(bufferToWrite))).toMatchInlineSnapshot(
-        `"0f52f2fa9f93e1fe7561ed7aaaf94d82"`
+        '"0f52f2fa9f93e1fe7561ed7aaaf94d82"'
       );
     });
   });

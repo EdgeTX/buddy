@@ -5,7 +5,7 @@ import { fireEvent, screen } from "@testing-library/react";
 
 describe("<WindowsNav />", () => {
   it("should call electron close when close is clicked", () => {
-    window.electronClose = jest.fn();
+    window.electronClose = vitest.fn();
     render(<WindowsNav />);
 
     fireEvent.click(screen.getByTitle("Window close"));
@@ -14,7 +14,7 @@ describe("<WindowsNav />", () => {
   });
 
   it("should call electron minimize when minimize is clicked", () => {
-    window.electronMinimize = jest.fn();
+    window.electronMinimize = vitest.fn();
     render(<WindowsNav />);
 
     fireEvent.click(screen.getByTitle("Window minimize"));

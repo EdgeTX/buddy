@@ -12,9 +12,8 @@ import {
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { exampleReleasesList, exampleTargetsList } from "test-utils/data";
 import copy from "copy-text-to-clipboard";
-import { mocked } from "jest-mock";
 
-const copyMock = mocked(copy);
+const copyMock = vitest.mocked(copy);
 
 const renderPage = (initialUrl = "/") =>
   render(
@@ -67,7 +66,7 @@ describe("pages/FlashingWizard", () => {
         ).toBeVisible();
         fireEvent.click(screen.getByText("Copy URL"));
         expect(copyMock).toHaveBeenCalledWith(
-          `localhost/#/?version=${latestReleaseVersion.id}`
+          `localhost:3000/#/?version=${latestReleaseVersion.id}`
         );
       });
 
@@ -129,7 +128,7 @@ describe("pages/FlashingWizard", () => {
 
         fireEvent.click(screen.getByText("Copy URL"));
         expect(copyMock).toHaveBeenCalledWith(
-          `localhost/#/?version=${latestReleaseVersion.id}&target=${target.code}`
+          `localhost:3000/#/?version=${latestReleaseVersion.id}&target=${target.code}`
         );
       });
 
@@ -167,7 +166,7 @@ describe("pages/FlashingWizard", () => {
 
         fireEvent.click(screen.getByText("Copy URL"));
         expect(copyMock).toHaveBeenCalledWith(
-          `localhost/#/?version=${preRelease.id}`
+          `localhost:3000/#/?version=${preRelease.id}`
         );
       });
 

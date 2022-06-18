@@ -131,7 +131,7 @@ describe("<FirmwareSummary />", () => {
       +       >
       +         <img
       +           alt=\\"EdgeTX logo\\"
-      +           src=\\"\\"
+      +           src=\\"/src/renderer/assets/logo.webp\\"
       +           style=\\"height: 64px;\\"
                 />
               </div>

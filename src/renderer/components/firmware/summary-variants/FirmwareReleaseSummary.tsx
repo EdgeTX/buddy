@@ -11,11 +11,7 @@ const FirmwareReleaseSummary: React.FC<{
   <Space direction="vertical" size="large" style={{ width: "100%" }}>
     {!hideIcon && (
       <Centered>
-        <img
-          style={{ height: "64px" }}
-          src={EdgeTxLogo as string}
-          alt="EdgeTX logo"
-        />
+        <img style={{ height: "64px" }} src={EdgeTxLogo} alt="EdgeTX logo" />
       </Centered>
     )}
     <Centered>

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`<DeviceSummary /> should show details about the given device 1`] = `
+exports[`<DeviceSummary /> > should show details about the given device 1`] = `
 <DocumentFragment>
   .c0 {
   display: -webkit-box;
@@ -89,7 +89,7 @@ exports[`<DeviceSummary /> should show details about the given device 1`] = `
 </DocumentFragment>
 `;
 
-exports[`<DeviceSummary /> should show loading skeleton before displaying device text 1`] = `
+exports[`<DeviceSummary /> > should show loading skeleton before displaying device text 1`] = `
 "Snapshot Diff:
 - First value
 + Second value

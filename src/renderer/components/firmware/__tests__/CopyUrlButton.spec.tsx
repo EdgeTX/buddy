@@ -4,14 +4,12 @@ import { render } from "test-utils/testing-library";
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import { fireEvent, screen } from "@testing-library/react";
 import copy from "copy-text-to-clipboard";
-import { mocked } from "jest-mock";
 import { act } from "react-dom/test-utils";
 
-// Previously mocked in `.jest/setupAfterEnv`
-const copyMock = mocked(copy);
+const copyMock = vitest.mocked(copy);
 
 afterEach(() => {
-  jest.useRealTimers();
+  vitest.useRealTimers();
 });
 
 describe("CopyUrlButton", () => {
@@ -25,7 +23,7 @@ describe("CopyUrlButton", () => {
     fireEvent.click(screen.getByText("Copy URL"));
 
     expect(copyMock).toHaveBeenCalledWith(
-      "localhost/#/current-page?version=v2.7.0&target=nv14"
+      "localhost:3000/#/current-page?version=v2.7.0&target=nv14"
     );
   });
 
@@ -39,12 +37,12 @@ describe("CopyUrlButton", () => {
     fireEvent.click(screen.getByText("Copy URL"));
 
     expect(copyMock).toHaveBeenCalledWith(
-      "localhost/#/current-page?version=v2.7.0"
+      "localhost:3000/#/current-page?version=v2.7.0"
     );
   });
 
   it("should show a tooltip for 2 seconds when the url is copied", async () => {
-    jest.useFakeTimers("modern");
+    vitest.useFakeTimers();
 
     render(
       <MemoryRouter initialEntries={["/current-page"]} initialIndex={0}>
@@ -66,13 +64,13 @@ describe("CopyUrlButton", () => {
     expect(tooltipContainer).toHaveClass("ant-tooltip");
     expect(tooltipContainer).not.toHaveClass("ant-tooltip-hidden");
 
-    jest.advanceTimersByTime(1999);
+    vitest.advanceTimersByTime(1999);
 
     // still visible
     expect(tooltipContainer).not.toHaveClass("ant-tooltip-hidden");
 
     await act(() => {
-      jest.advanceTimersByTime(1);
+      vitest.advanceTimersByTime(1);
       return Promise.resolve();
     });
 
