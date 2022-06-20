@@ -374,6 +374,14 @@ builder.subscriptionType({
   }),
 });
 
+const SDCARD_ARTIFACTS_REGEX =
+  /edgetx-sdcard-sounds-(.+)-([0-9]+.[0-9]+.[0-9]+)\.zip/;
+
+const isSoundsArtifact = (artifactName: string): boolean =>
+  !!SDCARD_ARTIFACTS_REGEX.exec(artifactName);
+const extractSoundsId = (artifactName: string): string | undefined =>
+  SDCARD_ARTIFACTS_REGEX.exec(artifactName)?.[1];
+
 builder.mutationType({
   fields: (t) => ({
     cancelSdcardWriteJob: t.boolean({
@@ -492,12 +500,10 @@ builder.mutationType({
                   sounds.ids
                     .map(
                       (soundId) =>
-                        data.assets.find((asset) =>
-                          asset.name.startsWith(
-                            `edgetx-sdcard-sounds-${
-                              ISO_TO_SOUND_NAMES[soundId] ?? soundId
-                            }`
-                          )
+                        data.assets.find(
+                          (asset) =>
+                            extractSoundsId(asset.name) ===
+                            (ISO_TO_SOUND_NAMES[soundId] ?? soundId)
                         )?.browser_download_url
                     )
                     .filter(isString)
@@ -588,12 +594,12 @@ builder.objectFields(EdgeTxSoundsRelease, (t) => ({
   sounds: t.idList({
     resolve: ({ artifacts }) =>
       artifacts
-        .filter((artifact) => artifact.name.includes("edgetx-sdcard-sounds-"))
+        .filter((artifact) => isSoundsArtifact(artifact.name))
         .map(
           (artifact) =>
             // We have just filtered for this, so should be ok
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            artifact.name.split("edgetx-sdcard-sounds-")[1]!.split("-")[0]!
+            extractSoundsId(artifact.name)!
         )
         .map((isoName) => SOUND_NAMES_TO_ISO[isoName] ?? isoName),
   }),

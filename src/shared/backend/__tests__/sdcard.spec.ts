@@ -358,6 +358,47 @@ describe("Query", () => {
 
       nockDone();
     });
+
+    it("should return available sounds for multiple voices on language", async () => {
+      const { nockDone } = await nock.back("sdcard-sounds-releases-2.7.0.json");
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxSoundsRelease(forPack: "v2.7.0", isPrerelease: true) {
+              id
+              name
+              sounds
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxSoundsRelease).toMatchInlineSnapshot(`
+        {
+          "id": "v2.7.0-pre",
+          "name": "Preliminary 2.7.0",
+          "sounds": [
+            "es",
+            "fr",
+            "it",
+            "pt",
+            "ru",
+            "zh",
+            "cs",
+            "de",
+            "en_gb-libby",
+            "en_gb-ryan",
+            "en_us-guy",
+            "en_us-sara",
+            "en",
+          ],
+        }
+      `);
+
+      nockDone();
+    });
   });
 
   it("should return prerelease sounds for a prerelease version", async () => {
