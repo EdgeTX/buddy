@@ -1,0 +1,18 @@
+diff --git a/index.d.ts b/index.d.ts
+index bf5cafc4f65cc01844dac7b933b253505c47446b..efc8427034dee3805208eefcdfa05a34f83c494f 100755
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -7,12 +7,10 @@
+ // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+ // TypeScript Version: 3.8
+ 
+-/// <reference types="jest" />
+-
+ import { TestingLibraryMatchers } from './matchers';
+ 
+ declare global {
+     namespace jest {
+-        interface Matchers<R = void, T = {}> extends TestingLibraryMatchers<typeof expect.stringContaining, R> {}
++        interface Matchers<R = void, T = {}> extends TestingLibraryMatchers<(str: string) => any, R> {}
+     }
+ }

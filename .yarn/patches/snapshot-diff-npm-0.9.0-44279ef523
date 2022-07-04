@@ -1,0 +1,26 @@
+diff --git a/index.d.ts b/index.d.ts
+index 98f68c582d06315f2fe9c3c16644a4064ebe663e..421da5044e873e69a025a66e5455927403f9e1a2 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -1,4 +1,4 @@
+-/// <reference types="jest"/>
++import type { RawMatcherFn } from 'expect/build/types';
+ 
+ type DiffOptions = {
+   expand?: boolean;
+@@ -39,13 +39,13 @@ declare module 'snapshot-diff' {
+      * Allows you to pull out toMatchDiffSnapshot and
+      * make it available via `expect.extend({ toMatchDiffSnapshot })`.
+      */
+-    toMatchDiffSnapshot: jest.CustomMatcher;
++    toMatchDiffSnapshot: RawMatcherFn;
+     /**
+      * By default Jest adds extra quotes around strings so it makes diff
+      * snapshots of objects too noisy. To fix this – snapshot-diff comes
+      * with custom serializer.
+      */
+-    getSnapshotDiffSerializer: () => jest.SnapshotSerializerPlugin;
++    getSnapshotDiffSerializer: () => import('pretty-format').Plugin;
+     /**
+      * Add new serializers for unsupported data types, or to set a different
+      * serializer for React components. If you want to keep the default React

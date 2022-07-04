@@ -6292,12 +6292,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/testing-library__jest-dom@npm:^5.9.1":
-  version: 5.14.1
-  resolution: "@types/testing-library__jest-dom@npm:5.14.1"
+"@types/testing-library__jest-dom@npm:5.14.3, @types/testing-library__jest-dom@npm:^5.9.1":
+  version: 5.14.3
+  resolution: "@types/testing-library__jest-dom@npm:5.14.3"
   dependencies:
     "@types/jest": "*"
-  checksum: 77fe7ad3a9d49250972a0e3289b6d536942f95f0d539f32a917cf78c9422113d55c00de53b53dd4de1de49b68c8b500faea62e3017c4a64736cfbfbade749e04
+  checksum: 203443d0e7e5929fbc9e441146f92d85efa033b4697e427ed0164df1c40b720b6bb9bbd96a3171ea5fd8d9301b538fd0f49d4f35594d142afd0f6d2ecac25785
+  languageName: node
+  linkType: hard
+
+"@types/testing-library__jest-dom@patch:@types/testing-library__jest-dom@npm:5.14.3#.yarn/patches/@types-testing-library__jest-dom-npm-5.14.3-0aa35d2c00.patch::locator=edgetx-buddy%40workspace%3A.":
+  version: 5.14.3
+  resolution: "@types/testing-library__jest-dom@patch:@types/testing-library__jest-dom@npm%3A5.14.3#.yarn/patches/@types-testing-library__jest-dom-npm-5.14.3-0aa35d2c00.patch::version=5.14.3&hash=b032fa&locator=edgetx-buddy%40workspace%3A."
+  dependencies:
+    "@types/jest": "*"
+  checksum: 10396d4ed6bb8b8107073ac23c33659aa57a9b226417ec60a6d1a2b0c0514dd557ffdd873c0f584cf7a2ad89448f062c9dd47ac2c3dcc95a22a2392eae794bfe
   languageName: node
   linkType: hard
 
@@ -11603,6 +11612,7 @@ __metadata:
     "@types/react-dom": ^17.0.0
     "@types/semver": ^7.3.9
     "@types/styled-components": ^5.1.17
+    "@types/testing-library__jest-dom": 5.14.3
     "@types/uuid": ^8.3.3
     "@types/w3c-web-usb": ^1.0.5
     "@types/wicg-file-system-access": ^2020.9.5
@@ -11687,7 +11697,7 @@ __metadata:
     react-svg-loader: ^3.0.3
     semver: ^7.3.5
     serve: ^13.0.2
-    snapshot-diff: ^0.9.0
+    snapshot-diff: 0.9.0
     source-map-support: ^0.5.21
     styled-components: ^5.3.3
     tmp-promise: ^3.0.3
@@ -23809,7 +23819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"snapshot-diff@npm:^0.9.0":
+"snapshot-diff@npm:0.9.0":
   version: 0.9.0
   resolution: "snapshot-diff@npm:0.9.0"
   dependencies:
@@ -23819,6 +23829,19 @@ __metadata:
   peerDependencies:
     jest: ">=16"
   checksum: 2680664a18a7650e2756c9b675b0803416c5685b1cdf3d69e02e3aa59189fed63047d50c74a7887873277a85606071c9c16df5fe4ab233d40dbeaa80006e443b
+  languageName: node
+  linkType: hard
+
+"snapshot-diff@patch:snapshot-diff@npm:0.9.0#.yarn/patches/snapshot-diff-npm-0.9.0-44279ef523::locator=edgetx-buddy%40workspace%3A.":
+  version: 0.9.0
+  resolution: "snapshot-diff@patch:snapshot-diff@npm%3A0.9.0#.yarn/patches/snapshot-diff-npm-0.9.0-44279ef523::version=0.9.0&hash=0242ea&locator=edgetx-buddy%40workspace%3A."
+  dependencies:
+    jest-diff: ^27.0.2
+    jest-snapshot: ^27.0.4
+    pretty-format: ^27.0.2
+  peerDependencies:
+    jest: ">=16"
+  checksum: 0f5504eb3353be8502ce905fb3b2b7860b31d55e2f3b32c41fba07a8304c2ff10b3418b5fb82dadc07fd18427b4a17ce87a8ec5b14ecc714eefa65306f1e73ef
   languageName: node
   linkType: hard
 

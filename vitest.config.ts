@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: ["@vitest/web-worker", "./.jest/setupAfterEnv.ts"],
+    setupFiles: ["@vitest/web-worker", "./.vitest/setupAfterEnv.ts"],
     clearMocks: true,
     exclude: [
       "**/node_modules/**",

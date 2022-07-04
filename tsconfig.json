@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.base",
-  "include": ["./src", "./.jest", "./locales"],
+  "include": ["./src", "./.vitest", "./locales"],
   "exclude": ["**/node_modules", "build"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
