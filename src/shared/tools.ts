@@ -64,3 +64,18 @@ export const encodePrVersion = (values: PrVersion): string | undefined =>
   values.prId
     ? `pr-${values.prId}${values.commitId ? `@${values.commitId}` : ""}`
     : undefined;
+
+export const uniqueBy = <T extends Record<string, unknown>>(
+  objList: T[],
+  key: keyof T
+): T[] => {
+  const existing = new Set<unknown>();
+
+  return objList.filter((obj) => {
+    if (existing.has(obj[key])) {
+      return false;
+    }
+    existing.add(obj[key]);
+    return true;
+  });
+};

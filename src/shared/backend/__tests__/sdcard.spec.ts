@@ -296,6 +296,141 @@ describe("Query", () => {
       nockDone();
     });
 
+    it("should always return a list of unique ids, even if manifest contains duplicates", async () => {
+      const { nockDone } = await nock.back(
+        "sdcard-pack-duplicate-manifest.json"
+      );
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            edgeTxSdcardPackRelease(
+              id: "ac15b88c46ac74c4444997d962830d2ffd601869"
+            ) {
+              id
+              name
+              targets {
+                id
+                name
+              }
+            }
+          }
+        `,
+      });
+
+      expect(errors).toBeFalsy();
+      expect(data?.edgeTxSdcardPackRelease).toMatchInlineSnapshot(`
+        {
+          "id": "ac15b88c46ac74c4444997d962830d2ffd601869",
+          "name": "ac15b88c46ac74c4444997d962830d2ffd601869",
+          "targets": [
+            {
+              "id": "nv14",
+              "name": "Flysky NV14",
+            },
+            {
+              "id": "pl18",
+              "name": "Flysky PL18",
+            },
+            {
+              "id": "x10",
+              "name": "FrSky Horus X10",
+            },
+            {
+              "id": "x10-access",
+              "name": "FrSky Horus X10 Access",
+            },
+            {
+              "id": "x12s",
+              "name": "FrSky Horus X12s",
+            },
+            {
+              "id": "x7",
+              "name": "FrSky QX7",
+            },
+            {
+              "id": "x7-access",
+              "name": "FrSky QX7 Access",
+            },
+            {
+              "id": "x9d",
+              "name": "FrSky X9D",
+            },
+            {
+              "id": "x9dp",
+              "name": "FrSky X9D Plus",
+            },
+            {
+              "id": "x9dp2019",
+              "name": "FrSky X9D Plus 2019",
+            },
+            {
+              "id": "x9e",
+              "name": "FrSky X9E",
+            },
+            {
+              "id": "x9e-hall",
+              "name": "FrSky X9E Hall",
+            },
+            {
+              "id": "x9lite",
+              "name": "FrSky X9 Lite",
+            },
+            {
+              "id": "x9lites",
+              "name": "FrSky X9 Lite S",
+            },
+            {
+              "id": "xlite",
+              "name": "FrSky X-Lite",
+            },
+            {
+              "id": "xlites",
+              "name": "FrSky X-Lite S",
+            },
+            {
+              "id": "t12",
+              "name": "Jumper T12",
+            },
+            {
+              "id": "t16",
+              "name": "Jumper T16",
+            },
+            {
+              "id": "t18",
+              "name": "Jumper T18",
+            },
+            {
+              "id": "tlite",
+              "name": "Jumper T-Lite",
+            },
+            {
+              "id": "tpro",
+              "name": "Jumper T-Pro",
+            },
+            {
+              "id": "t8",
+              "name": "RadioMaster T8",
+            },
+            {
+              "id": "tx12",
+              "name": "RadioMaster TX12",
+            },
+            {
+              "id": "tx16s",
+              "name": "RadioMaster TX16S",
+            },
+            {
+              "id": "zorro",
+              "name": "RadioMaster Zorro",
+            },
+          ],
+        }
+      `);
+
+      nockDone();
+    });
+
     it("should return null if the release doesn't exist", async () => {
       const { nockDone } = await nock.back("sdcard-pack-not-exist.json");
 

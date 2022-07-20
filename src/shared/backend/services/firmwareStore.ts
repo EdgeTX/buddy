@@ -3,6 +3,7 @@ import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky-universal";
 import config from "shared/config";
+import { uniqueBy } from "shared/tools";
 import { github } from "./github";
 
 export type Target = {
@@ -60,10 +61,13 @@ export const firmwareTargets = async (
 
         const data = (await firmwareFile.json()) as FirmwareFile;
 
-        return data.targets.map(([name, code]) => ({
-          name,
-          code: code.slice(0, code.length - 1),
-        }));
+        return uniqueBy(
+          data.targets.map(([name, code]) => ({
+            name,
+            code: code.slice(0, code.length - 1),
+          })),
+          "code"
+        );
       } catch (e) {
         delete firmwareTargetsCache[firmwareBundleUrl];
         throw e;
