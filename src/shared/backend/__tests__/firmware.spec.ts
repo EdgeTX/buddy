@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import { createExecutor } from "test-utils/backend";
 import nock from "nock";
+import md5 from "md5";
 
 const backend = createExecutor();
 
@@ -302,6 +303,80 @@ describe("Query", () => {
             }
           `);
           nockDone();
+        });
+
+        describe("base64Data", () => {
+          describe("For firmwares within sub folder", () => {
+            it("should return the firmware data in base64 Format", async () => {
+              const { nockDone } = await nock.back(
+                "firmware-bundle-with-sub-folder.json"
+              );
+
+              const { data, errors } = await backend.query({
+                query: gql`
+                  query {
+                    edgeTxRelease(id: "nightly") {
+                      id
+                      firmwareBundle {
+                        target(code: "nv14") {
+                          id
+                          base64Data
+                        }
+                      }
+                    }
+                  }
+                `,
+              });
+
+              expect(errors).toBeFalsy();
+              const base64Data = (data?.edgeTxRelease as any)?.firmwareBundle
+                .target?.base64Data as string;
+
+              expect(base64Data).toBeTruthy();
+              expect(base64Data.length).toBeGreaterThan(1);
+              expect(md5(base64Data)).toMatchInlineSnapshot(
+                '"ff0d4be158f16d10a3ca5bccd889a04b"'
+              );
+
+              nockDone();
+            });
+          });
+
+          describe("For firmwares without sub folder in bundle", () => {
+            it("should return the firmware data in base64 Format", async () => {
+              const { nockDone } = await nock.back(
+                "firmware-bundle-without-sub-folder.json"
+              );
+
+              const { data, errors } = await backend.query({
+                query: gql`
+                  query {
+                    edgeTxRelease(id: "v2.7.0") {
+                      id
+                      firmwareBundle {
+                        target(code: "nv14") {
+                          id
+                          base64Data
+                        }
+                      }
+                    }
+                  }
+                `,
+              });
+
+              expect(errors).toBeFalsy();
+              const base64Data = (data?.edgeTxRelease as any)?.firmwareBundle
+                .target?.base64Data as string;
+
+              expect(base64Data).toBeTruthy();
+              expect(base64Data.length).toBeGreaterThan(1);
+              expect(md5(base64Data)).toMatchInlineSnapshot(
+                '"a748b9132f1d3e84d4f679e68a1ea83f"'
+              );
+
+              nockDone();
+            });
+          });
         });
       });
     });
