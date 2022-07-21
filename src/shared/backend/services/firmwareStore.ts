@@ -81,7 +81,8 @@ export const firmwareTargets = async (
 };
 
 const firmwareFileNameToId = (fileName: string): string => {
-  const withoutExtension = fileName.replace(".bin", "");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const withoutExtension = fileName.split("/").pop()!.replace(".bin", "");
   const withoutCommitHash = withoutExtension.split("-").slice(0, -1).join("-");
 
   return withoutCommitHash;
@@ -96,6 +97,7 @@ export const fetchFirmware = async (
     (entry) =>
       entry.name.endsWith(".bin") && firmwareFileNameToId(entry.name) === target
   );
+
   if (!firmwareFile) {
     throw new Error("Could not find firmware target binary");
   }
