@@ -89,7 +89,7 @@ const VersionTargetForm: React.FC<Props> = ({
               : versions.placeholder ?? t(`Select firmware version`)
           }
           loading={versions.loading}
-          virtual={process.env.NODE_ENV !== "test"}
+          virtual={false}
           disabled={!!versions.error || disabled}
         >
           {versions.available?.map((r) => (
@@ -118,7 +118,7 @@ const VersionTargetForm: React.FC<Props> = ({
           value={targets.selectedId}
           allowClear={false}
           loading={targets.loading}
-          virtual={process.env.NODE_ENV !== "test"}
+          virtual={false}
           disabled={
             !versions.selectedId ||
             !!targets.error ||
