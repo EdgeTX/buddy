@@ -116,6 +116,8 @@ const VersionTargetForm: React.FC<Props> = ({
       >
         <Select
           value={targets.selectedId}
+          showSearch
+          optionFilterProp="children"
           allowClear={false}
           loading={targets.loading}
           virtual={process.env.NODE_ENV !== "test"}
@@ -130,6 +132,7 @@ const VersionTargetForm: React.FC<Props> = ({
               ? t(`Select firmware to see available models`)
               : versions.placeholder ?? t(`Select radio model`)
           }
+          notFoundContent={null}
         >
           {targets.available?.map((tar) => (
             <Select.Option key={tar.id} value={tar.id}>

@@ -217,7 +217,7 @@ describe("<VersionTargetForm />", () => {
                       <span
                         aria-hidden=\\"true\\"
                         class=\\"ant-select-arrow\\"
-      @@ -212,7 +212,6 @@
+      @@ -209,7 +209,6 @@
                   </div>
                 </div>
               </div>
@@ -254,7 +254,7 @@ describe("<VersionTargetForm />", () => {
       - First value
       + Second value
 
-      @@ -176,11 +176,11 @@
+      @@ -173,11 +173,11 @@
                           />
                         </span>
                         <span
@@ -267,7 +267,7 @@ describe("<VersionTargetForm />", () => {
                       <span
                         aria-hidden=\\"true\\"
                         class=\\"ant-select-arrow\\"
-      @@ -211,7 +211,6 @@
+      @@ -208,7 +208,6 @@
                   </div>
                 </div>
               </div>
