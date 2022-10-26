@@ -23,6 +23,32 @@ test("Latest firmware is pre selected by default", async ({
   expect(await (await queries.findByText("Copy URL")).isEnabled()).toBeTruthy();
 });
 
+test("Radio model can be searched", async ({ queries, page }) => {
+  await (await queries.findByLabelText("Firmware version")).press("Enter");
+  await (
+    await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
+      timeout: 20000,
+    })
+  ).click();
+
+  const radioSelector = await queries.findByLabelText("Radio model");
+  await radioSelector.waitForElementState("enabled");
+  await radioSelector.click();
+  await radioSelector.fill("Jumper");
+  await page
+    .locator('#target_list[role=listbox] > [role="option"]')
+    .first()
+    .waitFor({ state: "attached" });
+
+  const options = await page.$$('#target_list[role=listbox] > [role="option"]');
+
+  await Promise.all(
+    options.map(async (option) => {
+      expect(await option.getAttribute("aria-label")).toContain("Jumper");
+    })
+  );
+});
+
 test("Flash via USB is disabled if model is not selected", async ({
   queries,
   browserName,
