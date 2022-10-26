@@ -177,6 +177,8 @@ const PrTargetForm: React.FC<Props> = ({
         validateStatus={targets.error ? "error" : undefined}
       >
         <Select
+          showSearch
+          optionFilterProp="children"
           value={targets.selectedId}
           allowClear={false}
           loading={targets.loading}
