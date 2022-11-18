@@ -263,7 +263,7 @@ jobs:
           name: storybook-static
 
       - name: Test
-        run: yarn loki:test:ci
+        run: yarn loki:test
 
   build-and-test-app:
     runs-on: ${{ matrix.os }}
