@@ -1,3 +1,4 @@
+import { Story } from "@storybook/react";
 import React from "react";
 import JobStatusModal from "renderer/pages/sdcard/editor/JobStatusModal";
 
@@ -6,15 +7,27 @@ export default {
   component: JobStatusModal,
 };
 
-export const downloading: React.FC = () => (
+export const downloading: Story = () => (
   <JobStatusModal activeStep="download" stepProgress={50} />
 );
 
-export const erasing: React.FC = () => (
+downloading.story = {
+  parameters: {
+    loki: { skip: true },
+  },
+};
+
+export const erasing: Story = () => (
   <JobStatusModal activeStep="erase" stepProgress={30.234} />
 );
 
-export const writing: React.FC = () => (
+erasing.story = {
+  parameters: {
+    loki: { skip: true },
+  },
+};
+
+export const writing: Story = () => (
   <JobStatusModal
     activeStep="write"
     stepProgress={80}
@@ -26,3 +39,9 @@ export const writing: React.FC = () => (
     }
   />
 );
+
+writing.story = {
+  parameters: {
+    loki: { skip: true },
+  },
+};

@@ -100,6 +100,9 @@
     "e2e:web": "playwright test --config=e2e/config/default.config.ts",
     "e2e:app": "playwright test --config=e2e/config/electron.config.ts",
     "e2e:app:dev": "DEV=1 playwright test --config=e2e/config/electron.config.ts",
+    "loki:test": "yarn loki test --chromeTolerance 2",
+    "loki:test:ci": "yarn loki:test --reactUri ./storybook-static",
+    "loki:update": "yarn loki update",
     "test": "vitest",
     "test:types": "tsc -p tsconfig.spec.json",
     "build": "yarn compile:production && yarn run pack",
@@ -201,6 +204,7 @@
     "jest-styled-components": "^7.0.8",
     "jsdom": "^19.0.0",
     "lint-staged": "^12.1.2",
+    "loki": "^0.30.3",
     "mini-css-extract-plugin": "^2.4.5",
     "native-ext-loader": "^2.3.0",
     "nock": "^13.2.1",
@@ -233,5 +237,16 @@
     "@vitest/web-worker@0.14.2": "patch:@vitest/web-worker@npm:0.14.2#.yarn/patches/@vitest-web-worker-npm-0.14.2-c76281c645",
     "@types/testing-library__jest-dom@5.14.3": "patch:@types/testing-library__jest-dom@npm:5.14.3#.yarn/patches/@types-testing-library__jest-dom-npm-5.14.3-0aa35d2c00.patch",
     "snapshot-diff@0.9.0": "patch:snapshot-diff@npm:0.9.0#.yarn/patches/snapshot-diff-npm-0.9.0-44279ef523"
+  },
+  "loki": {
+    "configurations": {
+      "chrome.laptop": {
+        "target": "chrome.docker",
+        "width": 1440,
+        "height": 900,
+        "deviceScaleFactor": 1,
+        "mobile": false
+      }
+    }
   }
 }
