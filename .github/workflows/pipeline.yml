@@ -229,6 +229,42 @@ jobs:
           if-no-files-found: error
           path: build
 
+  loki-storybook:
+    runs-on: "ubuntu-latest"
+    needs: [storybook]
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Fetch storybook build
+        uses: actions/download-artifact@v2
+        with:
+          name: storybook-static
+
+      - name: Test
+        run: yarn loki:test
+
   build-and-test-app:
     runs-on: ${{ matrix.os }}
     env:

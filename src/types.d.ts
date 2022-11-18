@@ -31,4 +31,5 @@ declare interface Window {
   ipcRenderer?: typeof import("electron")["ipcRenderer"];
   electronMinimize?: () => void;
   electronClose?: () => void;
+  loki?: { isRunning: boolean };
 }

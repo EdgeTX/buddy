@@ -3,6 +3,7 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import Layout from "renderer/Layout";
 import FirmwareReleaseDescription from "renderer/pages/flash/steps/firmware/FirmwareReleaseDescription";
+import { Story } from "@storybook/react";
 
 import { firmwareReleaseDescriptionQuery } from "test-utils/mocks";
 
@@ -19,11 +20,17 @@ export const releaseSelected: React.FC = () => (
   </MockedProvider>
 );
 
-export const releaseDescriptionNotAvailable: React.FC = () => (
+export const releaseDescriptionNotAvailable: Story = () => (
   <MockedProvider mocks={[firmwareReleaseDescriptionQuery()]}>
     <FirmwareReleaseDescription releaseId="v2.5.1" />
   </MockedProvider>
 );
+
+releaseDescriptionNotAvailable.story = {
+  parameters: {
+    loki: { skip: true },
+  },
+};
 
 export const contained: React.FC = () => (
   <MockedProvider mocks={[firmwareReleaseDescriptionQuery()]}>

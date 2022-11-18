@@ -9,7 +9,11 @@ import {
   exampleTargetsList,
 } from "test-utils/data";
 
-export const firmwaresQuery = (delay = 100): MockedResponse => ({
+const isLokiRunning = (win = window): boolean => Boolean(win.loki?.isRunning);
+
+const defaultDelay = (value: number): number => (!isLokiRunning() ? value : 0);
+
+export const firmwaresQuery = (delay = defaultDelay(100)): MockedResponse => ({
   request: {
     query: gql`
       query Releases {
@@ -29,7 +33,7 @@ export const firmwaresQuery = (delay = 100): MockedResponse => ({
   delay,
 });
 
-export const targetsQuery = (delay = 1000): MockedResponse => ({
+export const targetsQuery = (delay = defaultDelay(1000)): MockedResponse => ({
   request: {
     query: gql`
       query ReleaseTargets($releaseId: ID!) {
@@ -80,7 +84,7 @@ My release, it is great, it has lots of things.
   .join("");
 
 export const firmwareReleaseDescriptionQuery = (
-  delay = 2000
+  delay = defaultDelay(2000)
 ): MockedResponse => ({
   request: {
     query: gql`
@@ -262,7 +266,7 @@ export const prDescriptionQuery: MockedResponse = {
 };
 
 export const devicesQuery = (
-  delay = 2000,
+  delay = defaultDelay(2000),
   devices = exampleDevices
 ): MockedResponse => ({
   request: {
@@ -286,7 +290,7 @@ export const devicesQuery = (
   },
 });
 
-export const deviceQuery = (delay = 2000): MockedResponse => ({
+export const deviceQuery = (delay = defaultDelay(2000)): MockedResponse => ({
   request: {
     query: gql`
       query DeviceInfo($deviceId: ID!) {
@@ -311,7 +315,9 @@ export const deviceQuery = (delay = 2000): MockedResponse => ({
   },
 });
 
-export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
+export const firmwareReleaseInfoQuery = (
+  delay = defaultDelay(1000)
+): MockedResponse => ({
   request: {
     query: gql`
       query ReleaseInfo($version: ID!, $target: ID!) {
@@ -347,7 +353,9 @@ export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
   delay,
 });
 
-export const localFirmwareInfoQuery = (delay = 1000): MockedResponse => ({
+export const localFirmwareInfoQuery = (
+  delay = defaultDelay(1000)
+): MockedResponse => ({
   request: {
     query: gql`
       query LocalFirmwareInfo($fileId: ID!) {
@@ -372,7 +380,9 @@ export const localFirmwareInfoQuery = (delay = 1000): MockedResponse => ({
   delay,
 });
 
-export const firmwarePrBuildInfoQuery = (delay = 1000): MockedResponse => ({
+export const firmwarePrBuildInfoQuery = (
+  delay = defaultDelay(1000)
+): MockedResponse => ({
   request: {
     query: gql`
       query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
