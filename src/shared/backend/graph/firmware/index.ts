@@ -249,6 +249,7 @@ builder.objectFields(EdgeTxPr, (t) => ({
         {
           repo: config.github.repos.firmware,
           owner: config.github.organization,
+          per_page: 100,
           pull_number: Number(id),
         }
       );
