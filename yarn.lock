@@ -11669,7 +11669,7 @@ __metadata:
     node-bindings-loader: ^1.5.0
     p-limit: ^3.1.0
     p-map: ^5.3.0
-    playwright: ^1.18.1
+    playwright: ^1.29.1
     prettier: ^2.5.1
     range-parser: ^1.2.1
     react: ^17.0.2
@@ -20483,6 +20483,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.29.1":
+  version: 1.29.1
+  resolution: "playwright-core@npm:1.29.1"
+  bin:
+    playwright: cli.js
+  checksum: b4c0c93f9b12d540296b262da574f83708f68c2434d9f6622045b9a9eeb61b694c5a1616cce78e70887ab7559d0604fae8ef17f9fa38272d8400669ea7f4794e
+  languageName: node
+  linkType: hard
+
 "playwright-core@npm:=1.18.1":
   version: 1.18.1
   resolution: "playwright-core@npm:1.18.1"
@@ -20509,14 +20518,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.18.1":
-  version: 1.18.1
-  resolution: "playwright@npm:1.18.1"
+"playwright@npm:^1.29.1":
+  version: 1.29.1
+  resolution: "playwright@npm:1.29.1"
   dependencies:
-    playwright-core: =1.18.1
+    playwright-core: 1.29.1
   bin:
     playwright: cli.js
-  checksum: 5a24f4b10abe6f1f1262d6e5fa269cc18a8254e192787995b9d6ea8e19e8d92c9d5cdea92839022fcf2c41c5727f89a88ea84c168a9fea8ef074e2d14e18e1d5
+  checksum: db049c6f72fe329d1c5b5daf2b4f212fbe1f57dba075bdffc4b71a473149bf20af36528cc3819c250bbef1f0366c105b3c63e66fb82524310061a1cca99437ae
   languageName: node
   linkType: hard
 
