@@ -290,6 +290,7 @@ jobs:
             dist/latest-mac.yml
             dist/latest-linux.yml
 
+      - run: yarn playwright install-deps
       - run: yarn playwright install --with-deps chromium chromium
 
       - name: Setup xvfb (Linux)
@@ -366,6 +367,9 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         run: yarn --immutable --mode=skip-build
+
+      - name: Install browser deps
+        run: yarn playwright install-deps
 
       - name: Install browsers
         run: yarn playwright install --with-deps
