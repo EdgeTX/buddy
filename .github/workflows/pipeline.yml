@@ -290,7 +290,6 @@ jobs:
             dist/latest-mac.yml
             dist/latest-linux.yml
 
-      - run: yarn playwright install-deps
       - run: yarn playwright install --with-deps chromium chromium
 
       - name: Setup xvfb (Linux)
@@ -368,9 +367,6 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         run: yarn --immutable --mode=skip-build
 
-      - name: Install browser deps
-        run: yarn playwright install-deps
-
       - name: Install browsers
         run: yarn playwright install --with-deps
 
@@ -392,8 +388,9 @@ jobs:
           name: video-web-linux-test-results
           path: playwright-report
 
-  release-web:
-    needs: [e2e-web, test, storybook]
+  preview-web:
+    needs: [compile, storybook]
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
@@ -403,7 +400,6 @@ jobs:
           path: build
 
       - name: Fetch storybook build
-        if: github.event_name == 'pull_request'
         uses: actions/download-artifact@v2
         with:
           name: storybook-static
@@ -411,7 +407,7 @@ jobs:
 
       - name: Preview
         id: netlify-preview
-        if: github.event_name == 'pull_request'
+
         uses: netlify/actions/cli@master
         with:
           args: deploy --dir=build/renderer
@@ -429,8 +425,18 @@ jobs:
             ✅ Preview: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}
             ✅ Storybook: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}/storybook
 
+  release-web-prod:
+    needs: [e2e-web, test, storybook]
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Fetch compiled source
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-ubuntu-latest
+          path: build
+
       - name: Publish
-        if: github.event_name!= 'pull_request'
         uses: netlify/actions/cli@master
         with:
           args: deploy --dir=build/renderer --prod
