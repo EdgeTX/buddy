@@ -93,7 +93,8 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
       !prsQuery.loading &&
       validPr &&
       !commitId &&
-      !commitsQuery.error
+      !commitsQuery.error &&
+      prCommits?.find((c) => c.id === selectedPr.headCommitId)
     ) {
       onChanged({
         version: `pr-${prId}@${selectedPr.headCommitId}`,
@@ -106,6 +107,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
     prsQuery.loading,
     commitId,
     selectedPr,
+    prCommits,
     commitsQuery,
     onChanged,
   ]);
