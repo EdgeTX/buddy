@@ -1,12 +1,16 @@
 import { Octokit } from "@octokit/core";
 import ky from "ky-universal";
-import config from "shared/config";
 
-const octokit = new Octokit({
-  auth: config.github.apiKey,
-  request: {
-    fetch: ky,
-  },
-});
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const createGithubClient = (auth?: string) => {
+  const octokit = new Octokit({
+    auth,
+    request: {
+      fetch: ky,
+    },
+  });
 
-export const github = octokit.request;
+  return octokit.request;
+};
+
+export type GithubClient = ReturnType<typeof createGithubClient>;

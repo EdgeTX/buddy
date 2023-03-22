@@ -2,7 +2,8 @@
 /* eslint-disable functional/no-class */
 import ky from "ky-universal";
 import { Reader } from "unzipit";
-import config from "shared/config";
+import config from "shared/backend/config";
+import environment from "shared/environment";
 
 const fakeUserAgent =
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36";
@@ -20,7 +21,7 @@ export default class ZipHTTPRangeReader implements Reader {
     if (this.length === undefined) {
       const req = await ky(this.url, {
         method: "HEAD",
-        prefixUrl: !config.isMain ? config.proxyUrl : undefined,
+        prefixUrl: !environment.isMain ? config.proxyUrl : undefined,
         fetch: (input, init) =>
           fetch(input, {
             ...init,
@@ -50,7 +51,7 @@ export default class ZipHTTPRangeReader implements Reader {
       return new Uint8Array(0);
     }
     const req = await ky(this.url, {
-      prefixUrl: !config.isMain ? config.proxyUrl : undefined,
+      prefixUrl: !environment.isMain ? config.proxyUrl : undefined,
       fetch: (input, init) =>
         fetch(input, {
           ...init,

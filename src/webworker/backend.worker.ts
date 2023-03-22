@@ -50,9 +50,12 @@ const backend = createBusLinkBackend<WorkerArgs>({
         : createContext({
             fileSystem,
             usb,
+            githubToken: args.githubToken,
           }),
     }),
 });
 
+// First initialise with these params, they can be updated again by
+// the worker directly. See `renderer/gql/client
 void backend.initialise({ mocked: false, e2e: false });
 backend.listen();

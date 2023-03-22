@@ -85,7 +85,6 @@ module.exports = (_, { mode }) => ({
         /cdn.jsdelivr.net\/npm\/web-streams-polyfill@3\/dist\/ponyfill.es2018.mjs/,
     }),
     new webpack.EnvironmentPlugin({
-      GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
       GITHUB_PR_BUILDS_KEY: process.env.GITHUB_PR_BUILDS_KEY ?? null,
     }),
     ...(process.env.REPORT

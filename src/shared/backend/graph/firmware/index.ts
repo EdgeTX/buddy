@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import config from "shared/config";
+import config from "shared/backend/config";
 import { createBuilder } from "shared/backend/utils/builder";
 
 const builder = createBuilder();
@@ -277,8 +277,11 @@ builder.objectFields(EdgeTxPrCommit, (t) => ({
   firmwareBundle: t.field({
     type: EdgeTxFirmwareBundle,
     nullable: true,
-    resolve: async ({ id }, _, { firmwareStore }) => {
-      const firmwareAsset = await firmwareStore.fetchPrBuild(id.toString());
+    resolve: async ({ id }, _, { firmwareStore, github }) => {
+      const firmwareAsset = await firmwareStore.fetchPrBuild(
+        github,
+        id.toString()
+      );
 
       if (!firmwareAsset) {
         return null;

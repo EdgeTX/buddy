@@ -2,9 +2,9 @@ import md5 from "md5";
 import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky-universal";
-import config from "shared/config";
+import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
-import { github } from "./github";
+import { GithubClient } from "./github";
 
 export type Target = {
   name: string;
@@ -126,6 +126,7 @@ export const getLocalFirmwareById = (id: string): LocalFirmware | undefined =>
   uploadedFirmware.find((firmware) => firmware.id === id);
 
 export const fetchPrBuild = async (
+  github: GithubClient,
   commitSha: string
 ): Promise<{ id: string; url: string } | undefined> => {
   const checks = (

@@ -23,6 +23,7 @@ import { WebUSB } from "usb";
 import * as backend from "shared/backend";
 import type { FileSystemApi, UsbApi } from "shared/backend";
 import config from "shared/config";
+import backendConfig from "shared/backend/config";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -86,15 +87,12 @@ const createWindow = (): void => {
       });
   }
 
-  const searchQuery = ``;
   if (!config.isProduction) {
     console.log("loading renderer in development");
     void mainWindow.loadURL(`http://localhost:8081/index.html`);
   } else {
     console.log("loading renderer");
-    void mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"), {
-      search: searchQuery,
-    });
+    void mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 
   // Emitted when the window is closed.
@@ -110,7 +108,7 @@ const createWindow = (): void => {
     return { action: "deny" };
   });
 
-  const { downloadDirectory } = config;
+  const { downloadDirectory } = backendConfig;
   if (downloadDirectory) {
     mainWindow.webContents.session.on("will-download", (_, item) => {
       item.setSavePath(path.join(downloadDirectory, item.getFilename()));
