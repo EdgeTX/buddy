@@ -138,7 +138,6 @@ module.exports = (_, { mode }) => ({
       // default to our local cors proxy
       PROXY_URL:
         process.env.PROXY_URL ?? "https://github-content-proxy.obell.dev",
-      GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
       GITHUB_PR_BUILDS_KEY: process.env.GITHUB_PR_BUILDS_KEY ?? null,
     }),
     new MiniCssExtractPlugin(),

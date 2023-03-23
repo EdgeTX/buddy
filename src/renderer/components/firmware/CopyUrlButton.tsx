@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import config from "shared/config";
-
 import copy from "copy-text-to-clipboard";
 import { Button, Tooltip } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import environment from "shared/environment";
 
 type Props = {
   target?: string;
@@ -41,7 +40,9 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
           if (version) {
             copy(
               `${
-                config.isElectron ? "buddy.edgetx.org" : window.location.host
+                environment.isElectron
+                  ? "buddy.edgetx.org"
+                  : window.location.host
               }/#${location.pathname}?version=${version}${
                 target ? `&target=${target}` : ""
               }`

@@ -8,11 +8,11 @@ import FlashButton from "renderer/components/flashing/FlashButton";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
 import { FullHeight } from "renderer/shared/layouts";
-import config from "shared/config";
 import styled from "styled-components";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
 import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
+import environment from "shared/environment";
 import ExecutionOverlay from "./ExecuationOverlay";
 
 const Container = styled.div`
@@ -71,7 +71,7 @@ const PrBuildsFlasher: React.FC = () => {
             onChange={(deviceId) => {
               updateParams({ deviceId });
             }}
-            variant={config.isElectron ? "electron" : "web"}
+            variant={environment.isElectron ? "electron" : "web"}
           />
           <FullHeight style={{ alignItems: "center" }}>
             <PrOptionsContainer>

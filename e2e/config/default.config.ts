@@ -68,13 +68,19 @@ for (const browserName of browserNames) {
   const testIgnore: RegExp[] = browserNames
     .filter((b) => b !== browserName)
     .map((b) => new RegExp(b));
+
+  let url = `http://localhost:8081/?mocked=true&e2e=true`;
+  if (process.env.GITHUB_TOKEN) {
+    url = `${url}&github-token=${process.env.GITHUB_TOKEN}`;
+  }
+
   testIgnore.push(/android/, /electron/, /playwright-test/);
   config.projects?.push({
     name: browserName,
     testDir,
     testIgnore,
     use: {
-      baseURL: "http://localhost:8081/?mocked=true&e2e=true",
+      baseURL: url,
       browserName,
       headless: !headed,
       channel,

@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import config from "shared/config";
+import config from "shared/backend/config";
 import { decodePrVersion, delay, hexString, isPrVersion } from "shared/tools";
 import { TypeOf } from "shared/backend/types";
 import { createBuilder } from "shared/backend/utils/builder";
@@ -140,7 +140,10 @@ builder.mutationType({
           if (!commitId) {
             throw new GraphQLError("Commit not specified for PR");
           }
-          const prBuild = await context.firmwareStore.fetchPrBuild(commitId);
+          const prBuild = await context.firmwareStore.fetchPrBuild(
+            context.github,
+            commitId
+          );
 
           if (!prBuild) {
             throw new GraphQLError(

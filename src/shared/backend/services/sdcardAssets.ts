@@ -1,7 +1,8 @@
 import ky, { DownloadProgress } from "ky-universal";
 import { ZipEntry, unzipRaw } from "unzipit";
-import config from "shared/config";
+import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
+import environment from "shared/environment";
 
 type ManifestResponse = {
   targets: [string, string, string][];
@@ -104,7 +105,7 @@ export const downloadContents = async (
   const assets = await Promise.all(
     assetUrls.map(async (assetUrl, i) => {
       // In browser, we can use ky, as it uses fetch under the hood
-      if (!config.isMain) {
+      if (!environment.isMain) {
         return ky(assetUrl, {
           prefixUrl: config.proxyUrl,
           onDownloadProgress: (progress) => {

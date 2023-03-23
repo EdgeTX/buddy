@@ -1,7 +1,7 @@
 import React from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
-import config from "shared/config";
 import isMobile from "is-mobile";
+import environment from "shared/environment";
 import Layout from "./Layout";
 import FlashingWizard from "./pages/flash/FlashingWizard";
 import FlashExecution from "./pages/flash/FlashExecution";
@@ -15,11 +15,13 @@ const isMobileOs = isMobile({ tablet: true });
 
 const App: React.FC = () => (
   <HashRouter>
-    {!config.isElectron && !isMobileOs && <CompatNoticeHandler />}
+    {!environment.isElectron && !isMobileOs && <CompatNoticeHandler />}
     <RouteTracker />
     <Layout
-      macFrameless={config.isElectron && config.os === "Mac OS"}
-      windowsFrameless={config.isElectron && !!config.os?.startsWith("Windows")}
+      macFrameless={environment.isElectron && environment.os === "Mac OS"}
+      windowsFrameless={
+        environment.isElectron && !!environment.os?.startsWith("Windows")
+      }
     >
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />

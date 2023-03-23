@@ -9,6 +9,7 @@ import checks from "renderer/compatibility/checks";
 import legacyDownload from "js-file-download";
 import config from "shared/config";
 import { useTranslation } from "react-i18next";
+import environment from "shared/environment";
 
 type Props = {
   target?: string;
@@ -38,7 +39,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
     name: string,
     data: ArrayBufferLike
   ): Promise<void> => {
-    if (!checks.hasFilesystemApi || config.isElectron || config.isE2e) {
+    if (
+      !checks.hasFilesystemApi ||
+      environment.isElectron ||
+      config.startParams.isE2e
+    ) {
       legacyDownload(data, name, "application/octet-stream");
       return;
     }
