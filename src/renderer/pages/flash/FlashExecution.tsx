@@ -1,7 +1,6 @@
 import { Button, Divider, Result, Typography } from "antd";
 import React, { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import config from "shared/config";
 import styled from "styled-components";
 import {
   Centered,
@@ -16,6 +15,7 @@ import FlashJobTimeline from "renderer/components/flashing/FlashJobTimeline";
 import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 import { Trans, useTranslation } from "react-i18next";
 import { event } from "react-ga";
+import environment from "shared/environment";
 
 const Container = styled.div`
   height: 100%;
@@ -78,7 +78,7 @@ const FlashExecution: React.FC = () => {
         e.returnValue = "";
       };
 
-      if (!config.isElectron) {
+      if (!environment.isElectron) {
         window.addEventListener("beforeunload", beforeUnload);
       }
 

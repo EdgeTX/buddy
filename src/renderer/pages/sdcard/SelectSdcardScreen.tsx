@@ -14,7 +14,7 @@ import {
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
-import config from "shared/config";
+import environment from "shared/environment";
 import checks from "renderer/compatibility/checks";
 import { useTranslation, Trans } from "react-i18next";
 
@@ -41,7 +41,7 @@ const Step = styled.div`
   align-items: center;
 `;
 
-const notAvailable = !config.isElectron && !checks.hasFilesystemApi;
+const notAvailable = !environment.isElectron && !checks.hasFilesystemApi;
 
 const SelectSdcardScreen: React.FC = () => {
   const navigate = useNavigate();
