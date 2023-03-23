@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
-import config from "shared/config";
+import config from "shared/backend/config";
 import { arrayFromAsync, findAsync } from "shared/tools";
 import { isArrayOf, isNotUndefined, isString } from "type-guards";
 import semver from "semver";

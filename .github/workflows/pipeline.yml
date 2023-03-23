@@ -304,6 +304,7 @@ jobs:
           CI: "true"
           PWTEST_VIDEO: "true"
           HEADFUL: "true"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v2
@@ -381,6 +382,7 @@ jobs:
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v1
         if: ${{ failure() }}

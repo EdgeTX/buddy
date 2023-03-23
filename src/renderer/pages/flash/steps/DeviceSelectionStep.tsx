@@ -8,8 +8,8 @@ import {
 import { FullHeight } from "renderer/shared/layouts";
 import { StepComponent } from "renderer/pages/flash/types";
 import DeviceSelector from "renderer/components/devices/DeviceSelector";
-import config from "shared/config";
 import { useTranslation } from "react-i18next";
+import environment from "shared/environment";
 
 const DeviceSelectionStep: StepComponent = ({ onNext, onPrevious }) => {
   const { parseParam, updateParams } = useQueryParams<"deviceId">();
@@ -24,7 +24,7 @@ const DeviceSelectionStep: StepComponent = ({ onNext, onPrevious }) => {
           onChange={(newDeviceId) => {
             updateParams({ deviceId: newDeviceId });
           }}
-          variant={config.isElectron ? "electron" : "web"}
+          variant={environment.isElectron ? "electron" : "web"}
         />
       </StepContentContainer>
       <StepControlsContainer>

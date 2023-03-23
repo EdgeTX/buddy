@@ -1,5 +1,6 @@
 import { FileSystemApi } from "shared/backend/types";
 import { createContext } from "shared/backend/context";
+import { GithubClient } from "shared/api/github";
 import { createDfuMock } from "./dfu";
 import { createMockUsb } from "./usb";
 
@@ -7,6 +8,7 @@ import { createMockUsb } from "./usb";
 export const createMockContext = (
   extras: {
     fileSystem: FileSystemApi;
+    github: GithubClient;
   },
   options?: {
     faster?: boolean;

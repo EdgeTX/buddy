@@ -150,7 +150,7 @@ const JobExecutionModal: React.FC<Props> = ({
   //         e.returnValue = "";
   //       };
 
-  //       if (!config.isElectron) {
+  //       if (!environment.isElectron) {
   //         window.addEventListener("beforeunload", beforeUnload);
   //       }
 

@@ -18,7 +18,9 @@ export const binaryPath = () => {
     case "darwin":
       return path.join(
         __dirname,
-        "../../dist/mac/EdgeTX Buddy.app/Contents/MacOS/EdgeTX Buddy"
+        `../../dist/${
+          os.arch() === "arm64" ? "mac-arm64" : "mac"
+        }/EdgeTX Buddy.app/Contents/MacOS/EdgeTX Buddy`
       );
     case "win32":
       return path.join(__dirname, "../../dist/win-unpacked/EdgeTX Buddy.exe");
