@@ -17,7 +17,7 @@ message.config({
   top: 64,
 });
 
-if (config.isProduction && !config.isE2e) {
+if (config.isProduction && !config.startParams.isE2e) {
   setupTracking();
 }
 

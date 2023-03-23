@@ -6,6 +6,7 @@ import {
 } from "apollo-bus-link/core";
 import { webWorkerBus } from "apollo-bus-link/webworker";
 import { createContext, FileSystemApi, schema, UsbApi } from "shared/backend";
+import { createGithubClient } from "shared/api/github";
 import { showDirectoryPicker, requestDevice } from "./crossboundary/functions";
 import { WorkerArgs } from "./types";
 
@@ -44,13 +45,14 @@ const backend = createBusLinkBackend<WorkerArgs>({
         ? (await import("shared/backend/mocks/context")).createMockContext(
             {
               fileSystem,
+              github: createGithubClient(args.githubToken),
             },
             { faster: args.e2e }
           )
         : createContext({
             fileSystem,
             usb,
-            githubToken: args.githubToken,
+            github: createGithubClient(args.githubToken),
           }),
     }),
 });

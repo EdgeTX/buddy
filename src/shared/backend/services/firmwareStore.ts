@@ -4,7 +4,7 @@ import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky-universal";
 import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
-import { GithubClient } from "./github";
+import { GithubClient } from "shared/api/github";
 
 export type Target = {
   name: string;

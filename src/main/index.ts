@@ -24,6 +24,7 @@ import * as backend from "shared/backend";
 import type { FileSystemApi, UsbApi } from "shared/backend";
 import config from "shared/config";
 import backendConfig from "shared/backend/config";
+import { createGithubClient } from "shared/api/github";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -69,7 +70,7 @@ const createWindow = (): void => {
     } as electron.WebPreferences,
   });
 
-  if (config.isE2e) {
+  if (config.startParams.isE2e) {
     session
       .fromPartition("default")
       .setPermissionRequestHandler((_, permission, callback) => {
@@ -121,7 +122,7 @@ const createWindow = (): void => {
     }
 
     // Open the DevTools automatically if developing
-    if (!config.isProduction && !config.isE2e) {
+    if (!config.isProduction && !config.startParams.isE2e) {
       const {
         default: installExtension,
         REACT_DEVELOPER_TOOLS,
@@ -144,7 +145,7 @@ const createWindow = (): void => {
 };
 
 const startBackend = async (): Promise<void> => {
-  const mocked = config.isMocked || config.isE2e;
+  const mocked = config.startParams.isMocked || config.startParams.isE2e;
   if (mocked) {
     console.log("Creating backend in mocked mode");
   }
@@ -157,14 +158,16 @@ const startBackend = async (): Promise<void> => {
         ? (await import("shared/backend/mocks/context")).createMockContext(
             {
               fileSystem: fileSystemApi(),
+              github: createGithubClient(config.startParams.githubToken),
             },
             {
-              faster: config.isE2e,
+              faster: config.startParams.isE2e,
             }
           )
         : backend.createContext({
             fileSystem: fileSystemApi(),
             usb: usbApi(),
+            github: createGithubClient(config.startParams.githubToken),
           }),
     }),
   });

@@ -23,10 +23,14 @@ const getGithubToken = (): string | undefined => {
 
 export default {
   isProduction: PRODUCTION,
-  isE2e: environment.isMain ? E2E : extractParam("e2e") === "true",
-  isMocked: environment.isMain
-    ? process.env.MOCKED === "true"
-    : extractParam("mocked") === "true",
-  isNewUI: extractParam("next") === "true",
-  githubToken: getGithubToken(),
+
+  // These are not accessable inside of web worker. Everywhere else they are ok to use
+  startParams: {
+    isE2e: environment.isMain ? E2E : extractParam("e2e") === "true",
+    isMocked: environment.isMain
+      ? process.env.MOCKED === "true"
+      : extractParam("mocked") === "true",
+    isNewUI: extractParam("next") === "true",
+    githubToken: getGithubToken(),
+  },
 };

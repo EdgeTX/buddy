@@ -14,9 +14,9 @@ const createBusLink = async (): Promise<ApolloLink> => {
 
   const link = createWebWorkerBusLink<WorkerArgs>(Worker);
   void link.initialiseBackend({
-    mocked: config.isMocked,
-    e2e: config.isE2e,
-    githubToken: config.githubToken,
+    mocked: config.startParams.isMocked,
+    e2e: config.startParams.isE2e,
+    githubToken: config.startParams.githubToken,
   });
   return link;
 };

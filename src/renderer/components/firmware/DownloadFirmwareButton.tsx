@@ -39,7 +39,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
     name: string,
     data: ArrayBufferLike
   ): Promise<void> => {
-    if (!checks.hasFilesystemApi || environment.isElectron || config.isE2e) {
+    if (
+      !checks.hasFilesystemApi ||
+      environment.isElectron ||
+      config.startParams.isE2e
+    ) {
       legacyDownload(data, name, "application/octet-stream");
       return;
     }
