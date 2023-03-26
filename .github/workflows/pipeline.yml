@@ -418,10 +418,9 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment preview URL
-        if: github.event_name == 'pull_request'
-        uses: peter-evans/commit-comment@v1
+        uses: thollander/actions-comment-pull-request@v2
         with:
-          body: |
+          message: |
             EdgeTX Buddy has been automatically deployed to Cloudflare.
             ✅ Preview: ${{ steps.cloudflare-preview.outputs.url }}
             ✅ Storybook: ${{ steps.cloudflare-preview.outputs.url }}/storybook
