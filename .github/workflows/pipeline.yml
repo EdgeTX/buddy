@@ -408,24 +408,23 @@ jobs:
           path: build/renderer/storybook
 
       - name: Preview
-        id: netlify-preview
-
-        uses: netlify/actions/cli@master
+        id: cloudflare-preview
+        uses: cloudflare/pages-action@1
         with:
-          args: deploy --dir=build/renderer
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: buddy
+          directory: build/renderer
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment preview URL
         if: github.event_name == 'pull_request'
         uses: peter-evans/commit-comment@v1
         with:
           body: |
-            EdgeTX Buddy has been automatically deployed to Netlify.
-            🔍 Inspect: ${{ steps.netlify-preview.outputs.NETLIFY_LOGS_URL }}
-            ✅ Preview: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}
-            ✅ Storybook: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}/storybook
+            EdgeTX Buddy has been automatically deployed to Cloudflare.
+            ✅ Preview: ${{ steps.cloudflare-preview.outputs.url }}
+            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.url }}/storybook
 
   release-web-prod:
     needs: [e2e-web, test, storybook]
@@ -439,12 +438,13 @@ jobs:
           path: build
 
       - name: Publish
-        uses: netlify/actions/cli@master
+        uses: cloudflare/pages-action@1
         with:
-          args: deploy --dir=build/renderer --prod
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: buddy
+          directory: build/renderer
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
     needs: [build-and-test-app, test]
