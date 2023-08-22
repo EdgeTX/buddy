@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
+import CloudFirmwareReleasesPicker from "./firmware/CloudFirmwareReleasesPicker";
 
 const Container = styled.div`
   display: flex;
@@ -65,7 +66,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const { parseParam, updateParams } = useQueryParams<
     "version" | "target" | "filters"
   >();
-  const [activeTab, setActiveTab] = useState<string>("releases");
+  const [activeTab, setActiveTab] = useState<string>("cloudbuild");
 
   const version = parseParam("version");
   const target = parseParam("target");
@@ -168,10 +169,33 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 )}
               </div>
             </Tabs.TabPane>
+            ,
+            <Tabs.TabPane
+              tab={
+                <span>
+                  <RocketOutlined />
+                  {`CloudBuild`}
+                </span>
+              }
+              key="cloudbuild"
+            >
+              <CloudFirmwareReleasesPicker
+                filters={filters}
+                version={version}
+                onChanged={(params) => {
+                  if (activeTab === "cloudbuild") {
+                    updateParams({
+                      ...params,
+                      filters: encodeFilters(params.filters),
+                    });
+                  }
+                }}
+              />
+            </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />
 
-          {activeTab === "releases" && (
+          {(activeTab === "releases" || activeTab === "cloudbuild") && (
             <DescriptionContainer>
               <FirmwareReleaseDescription releaseId={version} />
             </DescriptionContainer>
