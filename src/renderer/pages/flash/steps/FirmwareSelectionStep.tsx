@@ -174,7 +174,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <RocketOutlined />
-                  {`CloudBuild`}
+                  `CloudBuild`
                 </span>
               }
               key="cloudbuild"
