@@ -16,7 +16,7 @@ type TargetFlag = {
 
 type Target = {
   description: string;
-  tags: string[];
+  tags?: string[];
 };
 
 type CloudTargets = {
