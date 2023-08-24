@@ -8,6 +8,7 @@ const Release = builder.simpleObject("Release", {
     id: t.string(),
     name: t.string(),
     description: t.string(),
+    timestamp: t.string(),
     excludeTargets: t.stringList(),
     sha: t.string(),
     isPrerelease: t.boolean(),
@@ -101,6 +102,7 @@ builder.queryType({
               name: release.name ?? release.tag_name,
               description: release.body_text,
               isPrerelease: release.prerelease,
+              timestamp: release.published_at ?? release.created_at,
               sha: cloudRelease.sha,
               excludeTargets: cloudRelease.exclude_targets ?? [],
             };
