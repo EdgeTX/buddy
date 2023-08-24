@@ -18,12 +18,13 @@ type FormItem = {
 
 type Props = {
   onChanged?: (values: {
-    target?: string;
     version?: string;
+    target?: string;
     filters: VersionFilters;
   }) => void;
   filters: VersionFilters;
   versions: FormItem;
+  targets: FormItem;
   disabled?: boolean;
 };
 
@@ -31,6 +32,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
   onChanged,
   filters,
   versions,
+  targets,
   disabled,
 }) => {
   const { t } = useTranslation("flashing");
@@ -42,6 +44,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
       }}
       fields={Object.entries({
         version: versions.selectedId,
+        target: targets.selectedId,
       }).map(([key, value]) => ({ name: [key], value }))}
       size="large"
     >
@@ -66,7 +69,6 @@ const CloudVersionTargetForm: React.FC<Props> = ({
                 onChange={(newFilters) => {
                   onChanged?.({
                     version: versions.selectedId,
-                    target: versions.selectedId,
                     filters: newFilters,
                   });
                 }}
@@ -92,6 +94,48 @@ const CloudVersionTargetForm: React.FC<Props> = ({
           {versions.available?.map((r) => (
             <Select.Option key={r.id} value={r.id}>
               {r.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label={t(`Radio model`)}
+        name="target"
+        tooltip={
+          targets.tooltip
+            ? {
+                title: t(`The type of radio you want to flash`),
+                icon: <InfoCircleOutlined />,
+              }
+            : undefined
+        }
+        help={targets.error ? t(`Could not load targets`) : undefined}
+        required
+        validateStatus={targets.error ? "error" : undefined}
+      >
+        <Select
+          value={targets.selectedId}
+          showSearch
+          optionFilterProp="children"
+          allowClear={false}
+          loading={targets.loading}
+          virtual={process.env.NODE_ENV !== "test"}
+          disabled={
+            !versions.selectedId ||
+            !!targets.error ||
+            !!targets.loading ||
+            disabled
+          }
+          placeholder={
+            !versions.selectedId
+              ? t(`Select firmware to see available models`)
+              : versions.placeholder ?? t(`Select radio model`)
+          }
+          notFoundContent={null}
+        >
+          {targets.available?.map((tar) => (
+            <Select.Option key={tar.id} value={tar.id}>
+              {tar.name}
             </Select.Option>
           ))}
         </Select>

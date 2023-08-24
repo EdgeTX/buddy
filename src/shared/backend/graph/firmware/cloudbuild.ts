@@ -37,7 +37,8 @@ const TargetFlag = builder.simpleObject("TargetFlag", {
 
 const Target = builder.simpleObject("Target", {
   fields: (t) => ({
-    description: t.string(),
+    id: t.string(),
+    name: t.string(),
     tags: t.stringList(),
   }),
 });
@@ -56,13 +57,6 @@ const Tags = builder.simpleObject("Tags", {
   }),
 });
 
-const Targets = builder.simpleObject("Targets", {
-  fields: (t) => ({
-    key: t.string(),
-    value: t.field({ type: Target }),
-  }),
-});
-
 // releases: Record<string, Release>;
 // flags: Record<string, TargetFlag>;
 // tags: Record<string, Tag>;
@@ -72,7 +66,7 @@ const CloudTargets = builder.simpleObject("CloudTargets", {
     releases: t.field({ type: [Release] }),
     flags: t.field({ type: [TargetFlags] }),
     tags: t.field({ type: [Tags] }),
-    targets: t.field({ type: [Targets] }),
+    targets: t.field({ type: [Target] }),
   }),
 });
 
@@ -81,8 +75,8 @@ builder.queryType({
     cloudFirmwares: t.field({
       type: CloudTargets,
       resolve: async (_, __, { cloudbuild, github }) => {
-        const targets = await cloudbuild.fetchTargets();
-        const firmwaresReleases = new Set(Object.keys(targets.releases));
+        const cloudTargets = await cloudbuild.fetchTargets();
+        const firmwaresReleases = new Set(Object.keys(cloudTargets.releases));
         const githubReleases = await github(
           "GET /repos/{owner}/{repo}/releases",
           {
@@ -96,7 +90,7 @@ builder.queryType({
           .filter((release) => firmwaresReleases.has(release.tag_name))
           .map((release) => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const cloudRelease = targets.releases[release.tag_name]!;
+            const cloudRelease = cloudTargets.releases[release.tag_name]!;
             return {
               id: release.tag_name,
               name: release.name ?? release.tag_name,
@@ -108,8 +102,17 @@ builder.queryType({
             };
           });
 
+        const targets = Object.entries(cloudTargets.targets).map(
+          ([id, target]) => ({
+            id,
+            name: target.description,
+            tags: target.tags ?? [],
+          })
+        );
+
         return {
           releases,
+          targets,
         } as any;
       },
     }),

@@ -182,6 +182,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               <CloudFirmwareReleasesPicker
                 filters={filters}
                 version={version}
+                target={target}
                 onChanged={(params) => {
                   if (activeTab === "cloudbuild") {
                     updateParams({
