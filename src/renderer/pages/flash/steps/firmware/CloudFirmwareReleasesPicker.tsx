@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CloudVersionTargetForm from "renderer/components/CloudVersionTargetForm";
 import { VersionFilters } from "renderer/components/VersionTargetForm";
@@ -17,6 +17,7 @@ const GET_FIRMWARES = gql(/* GraphQL */ `
         id
         name
         isPrerelease
+        timestamp
         excludeTargets
       }
     }
@@ -31,22 +32,35 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
   const { t } = useTranslation("flashing");
   const targetsQuery = useQuery(GET_FIRMWARES);
 
-  console.log("FIRMWARE RELEASES SIMPLE", targetsQuery.data?.cloudFirmwares);
-  console.log("FIRMWARE RELEASES PICKER", version, filters);
+  const releases = targetsQuery.data?.cloudFirmwares.releases
+    .filter((release) => !release.isPrerelease || filters.includePrereleases)
+    .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
+  const selectedRelease = releases?.find((release) => release.id === version);
 
-  const releases = targetsQuery.data?.cloudFirmwares.releases.map(
-    (release) => ({
-      id: release.id,
-      name: release.name,
-    })
-  );
+  // Select first release if none is selected.
+  useEffect(() => {
+    if (!releases || releases.length === 0 || selectedRelease) return undefined;
+    const timeout = setTimeout(() =>
+      onChanged({
+        version: releases[0]?.id,
+        filters,
+      })
+    );
+    return () => clearTimeout(timeout);
+  }, [targetsQuery, onChanged, filters, releases, selectedRelease]);
 
-  console.log(releases);
+  console.log("VERSION", version, releases);
 
   return (
     <CloudVersionTargetForm
-      releases={{
-        available: releases,
+      onChanged={onChanged}
+      filters={filters}
+      versions={{
+        available: releases?.map((release) => ({
+          id: release.id,
+          name: release.name,
+        })),
+        selectedId: selectedRelease?.id,
         error: !!targetsQuery.error,
         loading: targetsQuery.loading,
         tooltip: t(`The version of EdgeTX to flash`),
