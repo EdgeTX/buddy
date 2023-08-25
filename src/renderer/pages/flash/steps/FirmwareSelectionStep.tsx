@@ -20,6 +20,7 @@ import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
 import CloudFirmwareReleasesPicker from "./firmware/CloudFirmwareReleasesPicker";
+import useFlags from "renderer/hooks/useFlags";
 
 const Container = styled.div`
   display: flex;
@@ -64,12 +65,13 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams<
-    "version" | "target" | "filters"
+    "version" | "target" | "filters" | "selectedFlags"
   >();
   const [activeTab, setActiveTab] = useState<string>("cloudbuild");
 
   const version = parseParam("version");
   const target = parseParam("target");
+  const { selectedFlags, encodeFlags } = useFlags(parseParam("selectedFlags"));
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
 
   useEffect(() => {
@@ -183,10 +185,14 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 filters={filters}
                 version={version}
                 target={target}
+                selectedFlags={selectedFlags}
                 onChanged={(params) => {
                   if (activeTab === "cloudbuild") {
+                    console.log("PARAMS", params);
                     updateParams({
-                      ...params,
+                      version: params.version,
+                      target: params.target,
+                      selectedFlags: encodeFlags(params.selectedFlags),
                       filters: encodeFilters(params.filters),
                     });
                   }

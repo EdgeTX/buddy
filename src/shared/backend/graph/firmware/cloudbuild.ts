@@ -7,7 +7,7 @@ const Release = builder.simpleObject("Release", {
   fields: (t) => ({
     id: t.string(),
     name: t.string(),
-    description: t.string(),
+    description: t.string({ nullable: true }),
     timestamp: t.string(),
     excludeTargets: t.stringList(),
     sha: t.string(),
@@ -15,22 +15,9 @@ const Release = builder.simpleObject("Release", {
   }),
 });
 
-const Flags = builder.simpleObject("Flags", {
+const Flag = builder.simpleObject("Flag", {
   fields: (t) => ({
-    key: t.string(),
-    value: t.stringList(),
-  }),
-});
-
-// flags: Record<string, string[]>
-const Tag = builder.simpleObject("Tag", {
-  fields: (t) => ({
-    flags: t.field({ type: Flags }),
-  }),
-});
-
-const TargetFlag = builder.simpleObject("TargetFlag", {
-  fields: (t) => ({
+    id: t.string(),
     values: t.stringList(),
   }),
 });
@@ -43,36 +30,32 @@ const Target = builder.simpleObject("Target", {
   }),
 });
 
-const TargetFlags = builder.simpleObject("TargetFlags", {
+const TagFlag = builder.simpleObject("TagFlag", {
   fields: (t) => ({
-    key: t.string(),
-    value: t.field({ type: TargetFlag }),
+    id: t.string(),
+    values: t.stringList(),
   }),
 });
 
-const Tags = builder.simpleObject("Tags", {
+const Tag = builder.simpleObject("Tag", {
   fields: (t) => ({
-    key: t.string(),
-    value: t.field({ type: Tag }),
+    id: t.string(),
+    tagFlags: t.field({ type: [TagFlag] }),
   }),
 });
 
-// releases: Record<string, Release>;
-// flags: Record<string, TargetFlag>;
-// tags: Record<string, Tag>;
-// targets: Record<string, Target>;
 const CloudTargets = builder.simpleObject("CloudTargets", {
   fields: (t) => ({
     releases: t.field({ type: [Release] }),
-    flags: t.field({ type: [TargetFlags] }),
-    tags: t.field({ type: [Tags] }),
     targets: t.field({ type: [Target] }),
+    flags: t.field({ type: [Flag] }),
+    tags: t.field({ type: [Tag] }),
   }),
 });
 
 builder.queryType({
   fields: (t) => ({
-    cloudFirmwares: t.field({
+    cloudTargets: t.field({
       type: CloudTargets,
       resolve: async (_, __, { cloudbuild, github }) => {
         const cloudTargets = await cloudbuild.fetchTargets();
@@ -110,10 +93,24 @@ builder.queryType({
           })
         );
 
+        const flags = Object.entries(cloudTargets.flags).map(([id, flag]) => ({
+          id,
+          values: flag.values,
+        }));
+
+        const tags = Object.entries(cloudTargets.tags).map(([id, tag]) => {
+          const tagFlags = Object.entries(tag.flags).map(([id, tagFlags]) => {
+            return { id, values: tagFlags.values };
+          });
+          return { id, tagFlags };
+        });
+
         return {
           releases,
           targets,
-        } as any;
+          flags,
+          tags,
+        };
       },
     }),
   }),

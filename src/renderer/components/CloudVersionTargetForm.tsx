@@ -1,7 +1,14 @@
-import { DownOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { Checkbox, Dropdown, Form, Menu, Select } from "antd";
-import React, { useState } from "react";
+import {
+  DownOutlined,
+  InfoCircleOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import { Button, Checkbox, Divider, Dropdown, Form, Menu, Select } from "antd";
+import { FormListFieldData } from "antd/lib/form/FormList";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Flags, SelectedFlags } from "renderer/hooks/useFlags";
 
 type VersionFilters = {
   includePrereleases: boolean;
@@ -21,21 +28,27 @@ type Props = {
     version?: string;
     target?: string;
     filters: VersionFilters;
+    selectedFlags?: SelectedFlags;
   }) => void;
+  disabled?: boolean;
   filters: VersionFilters;
   versions: FormItem;
   targets: FormItem;
-  disabled?: boolean;
+  flags?: Flags;
+  selectedFlags?: SelectedFlags;
 };
 
 const CloudVersionTargetForm: React.FC<Props> = ({
   onChanged,
+  disabled,
   filters,
   versions,
   targets,
-  disabled,
+  flags,
+  selectedFlags,
 }) => {
   const { t } = useTranslation("flashing");
+
   return (
     <Form
       layout="vertical"
@@ -140,6 +153,39 @@ const CloudVersionTargetForm: React.FC<Props> = ({
           ))}
         </Select>
       </Form.Item>
+
+      <Divider />
+
+      <Form.List name="selectedFlags" initialValue={selectedFlags}>
+        {(fields, { add, remove }) => (
+          <Form.Item label="Flags">
+            {fields.map((value, index) => (
+              <div key={value.key}>
+                <FormTag
+                  {...{
+                    value,
+                    index,
+                    remove,
+                    flags,
+                    selectedFlags,
+                  }}
+                />
+              </div>
+            ))}
+
+            <Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                icon={<PlusOutlined />}
+              >
+                Add Flag
+              </Button>
+            </Form.Item>
+          </Form.Item>
+        )}
+      </Form.List>
     </Form>
   );
 };
@@ -186,5 +232,76 @@ const VersionFiltersDropdown: React.FC<{
     </Dropdown>
   );
 };
+
+interface FormTagProps {
+  value: FormListFieldData;
+  remove: (index: number | number[]) => void;
+  flags?: Flags;
+  selectedFlags?: SelectedFlags;
+}
+
+function FormTag({ value, remove, flags, selectedFlags }: FormTagProps) {
+  const currentFlag = selectedFlags?.at(value.key)?.name;
+  const currentValue = selectedFlags?.at(value.key)?.value;
+
+  const selectedFlagsName = new Set(selectedFlags?.map((flag) => flag.name));
+
+  const flagNames =
+    flags
+      ?.filter((flag) => !selectedFlagsName.has(flag.id))
+      .map((flag) => ({ name: flag.id, value: flag.id })) ?? [];
+
+  const unfilteredFlagValues =
+    flags?.find((flag) => flag.id === currentFlag)?.values ?? [];
+
+  // remove duplicates
+  const flagValuesSet = new Set(unfilteredFlagValues);
+  const flagValues = [...flagValuesSet].map((value) => ({
+    name: value,
+    value,
+  }));
+
+  // reset the flag value if the target or flag name doesn't support it
+  useEffect(() => {
+    if (!currentValue || !flagValuesSet || flagValuesSet.size === 0) return;
+    if (!flagValuesSet.has(currentValue)) {
+      // setCurrentValue(undefined);
+    }
+  }, [flagValuesSet, currentValue]);
+
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+      <div style={{ display: "flex", gap: 8, width: "100%" }}>
+        <Form.Item
+          style={{ width: "50%" }}
+          name={[value.name, "name"]}
+          rules={[{ required: true, message: "Missing flag" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Flag"
+            options={flagNames}
+          />
+        </Form.Item>
+
+        <Form.Item
+          style={{ width: "50%" }}
+          name={[value.name, "value"]}
+          rules={[{ required: true, message: "Missing value" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Value"
+            options={flagValues}
+          />
+        </Form.Item>
+      </div>
+      <MinusCircleOutlined
+        onClick={() => remove(value.name)}
+        style={{ fontSize: "1.15rem", transform: "translate(0, 4px)" }}
+      />
+    </div>
+  );
+}
 
 export default CloudVersionTargetForm;
