@@ -7,7 +7,7 @@ type Release = {
 };
 
 type Tag = {
-  flags: Record<string, string[]>;
+  flags: Record<string, TargetFlag>;
 };
 
 type TargetFlag = {
