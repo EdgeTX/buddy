@@ -30,6 +30,8 @@ type Props = {
     filters: VersionFilters;
     selectedFlags?: SelectedFlags;
   }) => void;
+  updateSelectedFlags: (newSelectedFlags: SelectedFlags) => void;
+  updateFilters: (newFilters: VersionFilters) => void;
   disabled?: boolean;
   filters: VersionFilters;
   versions: FormItem;
@@ -40,6 +42,8 @@ type Props = {
 
 const CloudVersionTargetForm: React.FC<Props> = ({
   onChanged,
+  updateSelectedFlags,
+  updateFilters,
   disabled,
   filters,
   versions,
@@ -58,6 +62,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
       fields={Object.entries({
         version: versions.selectedId,
         target: targets.selectedId,
+        selectedFlags,
       }).map(([key, value]) => ({ name: [key], value }))}
       size="large"
     >
@@ -79,12 +84,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <VersionFiltersDropdown
                 filters={filters}
-                onChange={(newFilters) => {
-                  onChanged?.({
-                    version: versions.selectedId,
-                    filters: newFilters,
-                  });
-                }}
+                updateFilters={updateFilters}
               />
             </div>
           )
@@ -157,7 +157,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
       <Divider />
 
       <Form.List name="selectedFlags" initialValue={selectedFlags}>
-        {(fields, { add, remove }) => (
+        {(fields, { add }) => (
           <Form.Item label="Flags">
             {fields.map((value, index) => (
               <div key={value.key}>
@@ -165,9 +165,9 @@ const CloudVersionTargetForm: React.FC<Props> = ({
                   {...{
                     value,
                     index,
-                    remove,
                     flags,
                     selectedFlags,
+                    updateSelectedFlags,
                   }}
                 />
               </div>
@@ -192,8 +192,8 @@ const CloudVersionTargetForm: React.FC<Props> = ({
 
 const VersionFiltersDropdown: React.FC<{
   filters: VersionFilters;
-  onChange: (filters: VersionFilters) => void;
-}> = ({ filters, onChange }) => {
+  updateFilters: (newFilters: VersionFilters) => void;
+}> = ({ filters, updateFilters }) => {
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation("flashing");
 
@@ -214,7 +214,7 @@ const VersionFiltersDropdown: React.FC<{
                 <Checkbox
                   checked={value}
                   onChange={(e) =>
-                    onChange({ ...filters, [key]: e.target.checked })
+                    updateFilters({ ...filters, [key]: e.target.checked })
                   }
                 >
                   {filterNames[key]}
@@ -235,17 +235,21 @@ const VersionFiltersDropdown: React.FC<{
 
 interface FormTagProps {
   value: FormListFieldData;
-  remove: (index: number | number[]) => void;
   flags?: Flags;
   selectedFlags?: SelectedFlags;
+  updateSelectedFlags: (newSelectedFlags: SelectedFlags) => void;
 }
 
-function FormTag({ value, remove, flags, selectedFlags }: FormTagProps) {
+function FormTag({
+  value,
+  flags,
+  selectedFlags,
+  updateSelectedFlags,
+}: FormTagProps) {
   const currentFlag = selectedFlags?.at(value.key)?.name;
   const currentValue = selectedFlags?.at(value.key)?.value;
 
   const selectedFlagsName = new Set(selectedFlags?.map((flag) => flag.name));
-
   const flagNames =
     flags
       ?.filter((flag) => !selectedFlagsName.has(flag.id))
@@ -265,7 +269,11 @@ function FormTag({ value, remove, flags, selectedFlags }: FormTagProps) {
   useEffect(() => {
     if (!currentValue || !flagValuesSet || flagValuesSet.size === 0) return;
     if (!flagValuesSet.has(currentValue)) {
-      // setCurrentValue(undefined);
+      const newSelectedFlags = selectedFlags.map((flag) => ({
+        name: flag.name,
+        value: flag.value === currentValue ? undefined : flag.value,
+      }));
+      updateSelectedFlags(newSelectedFlags);
     }
   }, [flagValuesSet, currentValue]);
 
@@ -277,11 +285,7 @@ function FormTag({ value, remove, flags, selectedFlags }: FormTagProps) {
           name={[value.name, "name"]}
           rules={[{ required: true, message: "Missing flag" }]}
         >
-          <Select
-            showSearch
-            placeholder="Flag"
-            options={flagNames}
-          />
+          <Select showSearch placeholder="Flag" options={flagNames} />
         </Form.Item>
 
         <Form.Item
@@ -289,15 +293,16 @@ function FormTag({ value, remove, flags, selectedFlags }: FormTagProps) {
           name={[value.name, "value"]}
           rules={[{ required: true, message: "Missing value" }]}
         >
-          <Select
-            showSearch
-            placeholder="Value"
-            options={flagValues}
-          />
+          <Select showSearch placeholder="Value" options={flagValues} />
         </Form.Item>
       </div>
       <MinusCircleOutlined
-        onClick={() => remove(value.name)}
+        onClick={() => {
+          const newSelectedFlags = selectedFlags?.filter(
+            (_, i) => value.key !== i
+          );
+          updateSelectedFlags(newSelectedFlags ?? []);
+        }}
         style={{ fontSize: "1.15rem", transform: "translate(0, 4px)" }}
       />
     </div>

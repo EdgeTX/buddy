@@ -188,7 +188,6 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 selectedFlags={selectedFlags}
                 onChanged={(params) => {
                   if (activeTab === "cloudbuild") {
-                    console.log("PARAMS", params);
                     updateParams({
                       version: params.version,
                       target: params.target,
