@@ -180,6 +180,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 </span>
               }
               key="cloudbuild"
+              style={{ overflowY: "auto" }}
             >
               <CloudFirmwareReleasesPicker
                 filters={filters}
@@ -223,7 +224,12 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        <DownloadFirmwareButton target={target} version={version}>
+        <DownloadFirmwareButton
+          target={target}
+          version={version}
+          selectedFlags={selectedFlags}
+          isCloudBuild={activeTab === "cloudbuild"}
+        >
           {t(`Download .bin`)}
         </DownloadFirmwareButton>
         <FlashButton
