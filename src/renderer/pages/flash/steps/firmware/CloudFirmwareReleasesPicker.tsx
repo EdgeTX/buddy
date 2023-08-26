@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CloudVersionTargetForm from "renderer/components/CloudVersionTargetForm";
 import { VersionFilters } from "renderer/components/VersionTargetForm";
-import { SelectedFlags } from "renderer/hooks/useFlags";
+import { SelectedFlags } from "shared/backend/services/cloudbuild";
 
 type Props = {
   onChanged: (values: {

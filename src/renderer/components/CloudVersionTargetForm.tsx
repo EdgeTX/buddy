@@ -8,7 +8,7 @@ import { Button, Checkbox, Divider, Dropdown, Form, Menu, Select } from "antd";
 import { FormListFieldData } from "antd/lib/form/FormList";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Flags, SelectedFlags } from "renderer/hooks/useFlags";
+import { Flags, SelectedFlags } from "shared/backend/services/cloudbuild";
 
 type VersionFilters = {
   includePrereleases: boolean;
