@@ -73,6 +73,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
         version: releases[0]?.id,
         target,
         filters,
+        selectedFlags,
       })
     );
     return () => clearTimeout(timeout);
@@ -104,8 +105,27 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
     id: flag.id,
     values: [...flag.values, ...(targetFlags?.get(flag.id) ?? [])],
   }));
-
   flags?.push({ id: "bloup", values: ["blap", "blip", "blup"] });
+
+  // only update flags
+  const updateSelectedFlags = (newSelectedFlags: SelectedFlags) => {
+    onChanged({
+      version,
+      target,
+      filters,
+      selectedFlags: newSelectedFlags,
+    });
+  };
+
+  // only update filters
+  const updateFilters = (newFilters: VersionFilters) => {
+    onChanged({
+      version,
+      target,
+      filters: newFilters,
+      selectedFlags,
+    });
+  };
 
   // Unselect target if selected target does not exist.
   useEffect(() => {
@@ -115,19 +135,17 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
         version,
         target: undefined,
         filters,
+        selectedFlags,
       })
     );
     return () => clearTimeout(timeout);
   }, [filters, onChanged, version, target, selectedTarget]);
 
-  // console.log("EXCLUDED", excludedTargets);
-  // console.log("VERSION", version, releases, selectedRelease);
-  console.log("TARGET", target, targets, selectedTarget);
-  console.log("FLAGS", selectedFlags);
-
   return (
     <CloudVersionTargetForm
       onChanged={onChanged}
+      updateSelectedFlags={updateSelectedFlags}
+      updateFilters={updateFilters}
       filters={filters}
       versions={{
         available: releases?.map(({ id, name }) => ({ id, name })),
