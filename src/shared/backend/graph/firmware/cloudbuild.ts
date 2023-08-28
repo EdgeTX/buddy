@@ -63,6 +63,31 @@ const CloudFirmware = builder.simpleObject("CloudFirmware", {
   }),
 });
 
+const CloudFirmwareStatus = builder.simpleObject("CloudFirmwareStatus", {
+  fields: (t) => ({
+    status: t.string(),
+    download_url: t.string({ nullable: true }),
+  }),
+});
+
+const CloudFirmwareParams = builder.inputType("CloudFirmwareParams", {
+  fields: (t) => ({
+    release: t.string({ required: true }),
+    target: t.string({ required: true }),
+    flags: t.field({
+      type: [
+        builder.inputType("SelectedFlag", {
+          fields: (t__) => ({
+            name: t__.string({ required: true }),
+            value: t__.string({ required: true }),
+          }),
+        }),
+      ],
+      required: true,
+    }),
+  }),
+});
+
 builder.queryType({
   fields: (t) => ({
     cloudTargets: t.field({
@@ -123,30 +148,46 @@ builder.queryType({
         };
       },
     }),
+    cloudFirmwareStatus: t.field({
+      type: CloudFirmwareStatus,
+      args: {
+        params: t.arg({ type: CloudFirmwareParams, required: true }),
+      },
+      resolve: async (_, { params }, { cloudbuild }) => {
+        const jobStatus = await cloudbuild.queryJobStatus(params);
+        return {
+          status: jobStatus.status,
+          download_url: jobStatus.artifacts[0].download_url,
+        };
+      },
+    }),
     cloudFirmware: t.field({
       type: CloudFirmware,
       args: {
-        release: t.arg.string({ required: true }),
-        target: t.arg.string({ required: true }),
-        flags: t.arg({
-          type: [
-            builder.inputType("SelectedFlag", {
-              fields: (t__) => ({
-                name: t__.string({ required: true }),
-                value: t__.string({ required: true }),
-              }),
-            }),
-          ],
-          required: true,
-        }),
+        download_url: t.arg.string({ required: true }),
       },
-      resolve: async (_, params, { cloudbuild }) => {
-        const jobStatus = await cloudbuild.queryJobStatus(params);
-        const data = await cloudbuild.downloadBinary(
-          jobStatus.artifacts[0].download_url
-        );
+      resolve: async (_, { download_url }, { cloudbuild }) => {
+        const data = await cloudbuild.downloadBinary(download_url);
         return {
           base64Data: data.toString("base64"),
+        };
+      },
+    }),
+  }),
+});
+
+builder.mutationType({
+  fields: (t) => ({
+    createCloudFirmware: t.field({
+      type: CloudFirmwareStatus,
+      args: {
+        params: t.arg({ type: CloudFirmwareParams, required: true }),
+      },
+      resolve: async (_, { params }, { cloudbuild }) => {
+        const jobStatus = await cloudbuild.createJob(params);
+        return {
+          status: jobStatus.status,
+          download_url: jobStatus.artifacts[0].download_url,
         };
       },
     }),
