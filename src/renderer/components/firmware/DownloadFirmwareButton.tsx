@@ -10,7 +10,8 @@ import legacyDownload from "js-file-download";
 import config from "shared/config";
 import { useTranslation } from "react-i18next";
 import environment from "shared/environment";
-import { SelectedFlags } from "shared/backend/services/cloudbuild";
+import { JobStatus, SelectedFlags } from "shared/backend/services/cloudbuild";
+import { AbstractSdcardWriteJobStage } from "renderer/__generated__/tag/graphql";
 
 type Props = {
   target?: string;
@@ -79,30 +80,46 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       const flags = selectedFlags as { name: string; value: string }[];
       const response = await client.query({
         query: gql(/* GraphQL */ `
-          query CloudFirmware(
-            $release: String!
-            $target: String!
-            $flags: [SelectedFlag!]!
-          ) {
-            cloudFirmware(release: $release, target: $target, flags: $flags) {
-              base64Data
+          query CloudFirmwareStatus($params: CloudFirmwareParams!) {
+            cloudFirmwareStatus(params: $params) {
+              status
+              download_url
             }
           }
         `),
         variables: {
-          release: version,
-          target,
-          flags,
+          params: {
+            release: version,
+            target,
+            flags,
+          },
         },
       });
 
-      const data = response.data.cloudFirmware.base64Data;
-      const flagValues = flags.map((flag) => flag.value).join("-");
+      const status = response.data.cloudFirmwareStatus.status as JobStatus;
+      console.log("STATUS", status);
 
-      await promptAndDownload(
-        `${version}-${target}-${flagValues}.bin`,
-        base64ArrayBuffer.decode(data)
-      );
+      const download_url = response.data.cloudFirmwareStatus.download_url;
+      if (download_url) {
+        const response = await client.query({
+          query: gql(/* GraphQL */ `
+            query CloudFirmware($download_url: String!) {
+              cloudFirmware(download_url: $download_url) {
+                base64Data
+              }
+            }
+          `),
+          variables: { download_url },
+        });
+
+        const data = response.data.cloudFirmware.base64Data;
+        const flagValues = flags.map((flag) => flag.value).join("-");
+
+        await promptAndDownload(
+          `${version}-${target}-${flagValues}.bin`,
+          base64ArrayBuffer.decode(data)
+        );
+      }
     } else if (validPrVersion) {
       const response = await client.query({
         query: gql(/* GraphQL */ `

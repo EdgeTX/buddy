@@ -44,7 +44,7 @@ type JobStatusParams = {
   flags: { name: string; value: string }[];
 };
 
-type JobStatus =
+export type JobStatus =
   | "VOID"
   | "WAITING_FOR_BUILD"
   | "BUILD_IN_PROGRESS"
@@ -77,6 +77,21 @@ export const fetchTargets = async (): Promise<CloudTargets> => {
 
 export const queryJobStatus = async (params: JobStatusParams): Promise<Job> => {
   const response = await ky.post("https://cloudbuild.edgetx.org/api/status", {
+    body: JSON.stringify(params),
+    prefixUrl: PRODUCTION ? undefined : config.proxyUrl,
+    throwHttpErrors: false,
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data as Job;
+};
+
+export const createJob = async (params: JobStatusParams): Promise<Job> => {
+  const response = await ky.post("https://cloudbuild.edgetx.org/api/jobs", {
     body: JSON.stringify(params),
     prefixUrl: PRODUCTION ? undefined : config.proxyUrl,
     throwHttpErrors: false,
