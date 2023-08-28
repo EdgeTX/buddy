@@ -82,8 +82,10 @@ export const queryJobStatus = async (params: JobStatusParams): Promise<Job> => {
     throwHttpErrors: false,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const data = await response.json();
   if (!response.ok) {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
     throw new Error(data.error);
   }
 
@@ -97,16 +99,18 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
     throwHttpErrors: false,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const data = await response.json();
   if (!response.ok) {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
     throw new Error(data.error);
   }
 
   return data as Job;
 };
 
-export const downloadBinary = async (download_url: string): Promise<Buffer> => {
-  const response = await ky(download_url, {
+export const downloadBinary = async (downloadUrl: string): Promise<Buffer> => {
+  const response = await ky(downloadUrl, {
     prefixUrl: PRODUCTION ? undefined : config.proxyUrl,
   });
   const arrayBuffer = await response.arrayBuffer();

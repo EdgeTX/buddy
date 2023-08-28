@@ -77,7 +77,15 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
       })
     );
     return () => clearTimeout(timeout);
-  }, [targetsQuery, onChanged, filters, releases, selectedRelease, target]);
+  }, [
+    targetsQuery,
+    onChanged,
+    filters,
+    releases,
+    selectedRelease,
+    target,
+    selectedFlags,
+  ]);
 
   // targets
 
@@ -94,9 +102,9 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
   const targetFlags = tags
     ?.filter((tag) => targetTags.has(tag.id))
     .reduce((map, { tagFlags }) => {
-      for (const flag of tagFlags) {
+      tagFlags.forEach((flag) => {
         map.set(flag.id, flag.values);
-      }
+      });
       return map;
     }, new Map<string, string[]>());
 
@@ -108,7 +116,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
   flags?.push({ id: "bloup", values: ["blap", "blip", "blup"] });
 
   // only update flags
-  const updateSelectedFlags = (newSelectedFlags: SelectedFlags) => {
+  const updateSelectedFlags = (newSelectedFlags: SelectedFlags): void => {
     onChanged({
       version,
       target,
@@ -118,7 +126,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
   };
 
   // only update filters
-  const updateFilters = (newFilters: VersionFilters) => {
+  const updateFilters = (newFilters: VersionFilters): void => {
     onChanged({
       version,
       target,
@@ -129,7 +137,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
 
   // Unselect target if selected target does not exist.
   useEffect(() => {
-    if (!target || selectedTarget) return undefined;
+    if (!target || selectedTarget || !targets) return undefined;
     const timeout = setTimeout(() =>
       onChanged({
         version,
@@ -139,7 +147,15 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
       })
     );
     return () => clearTimeout(timeout);
-  }, [filters, onChanged, version, target, selectedTarget]);
+  }, [
+    filters,
+    onChanged,
+    version,
+    target,
+    selectedTarget,
+    selectedFlags,
+    targets,
+  ]);
 
   return (
     <CloudVersionTargetForm

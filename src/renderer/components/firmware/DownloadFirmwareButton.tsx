@@ -11,7 +11,6 @@ import config from "shared/config";
 import { useTranslation } from "react-i18next";
 import environment from "shared/environment";
 import { JobStatus, SelectedFlags } from "shared/backend/services/cloudbuild";
-import { AbstractSdcardWriteJobStage } from "renderer/__generated__/tag/graphql";
 
 type Props = {
   target?: string;
@@ -83,7 +82,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
           query CloudFirmwareStatus($params: CloudFirmwareParams!) {
             cloudFirmwareStatus(params: $params) {
               status
-              download_url
+              downloadUrl
             }
           }
         `),
@@ -99,20 +98,20 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       const status = response.data.cloudFirmwareStatus.status as JobStatus;
       console.log("STATUS", status);
 
-      const download_url = response.data.cloudFirmwareStatus.download_url;
-      if (download_url) {
-        const response = await client.query({
+      const { downloadUrl } = response.data.cloudFirmwareStatus;
+      if (downloadUrl) {
+        const downloadResponse = await client.query({
           query: gql(/* GraphQL */ `
-            query CloudFirmware($download_url: String!) {
-              cloudFirmware(download_url: $download_url) {
+            query CloudFirmware($downloadUrl: String!) {
+              cloudFirmware(downloadUrl: $downloadUrl) {
                 base64Data
               }
             }
           `),
-          variables: { download_url },
+          variables: { downloadUrl },
         });
 
-        const data = response.data.cloudFirmware.base64Data;
+        const data = downloadResponse.data.cloudFirmware.base64Data;
         const flagValues = flags.map((flag) => flag.value).join("-");
 
         await promptAndDownload(

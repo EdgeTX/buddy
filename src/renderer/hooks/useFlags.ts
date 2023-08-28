@@ -26,11 +26,11 @@ export default (
     encodeFlags: useCallback((newFlags) => {
       if (!newFlags || newFlags.length === 0) return undefined;
       return newFlags
-        ?.map(
+        .map(
           (flag) =>
-            encodeURIComponent(flag?.name ?? "") +
-            "=" +
-            encodeURIComponent(flag?.value ?? "")
+            `${encodeURIComponent(flag.name ?? "")}=${encodeURIComponent(
+              flag.value ?? ""
+            )}`
         )
         .join("&");
     }, []),
