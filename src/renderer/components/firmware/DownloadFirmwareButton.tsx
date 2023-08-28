@@ -74,8 +74,35 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   };
 
   const download = async (): Promise<void> => {
-    if (isCloudBuild) {
-      console.log("CLOUDBUILD ASK FOR BINARY", version, target, selectedFlags);
+    // Try to get the cloudbuild build, if not found, throw an error
+    if (isCloudBuild && isCloudBuildValid) {
+      const flags = selectedFlags as { name: string; value: string }[];
+      const response = await client.query({
+        query: gql(/* GraphQL */ `
+          query CloudFirmware(
+            $release: String!
+            $target: String!
+            $flags: [SelectedFlag!]!
+          ) {
+            cloudFirmware(release: $release, target: $target, flags: $flags) {
+              base64Data
+            }
+          }
+        `),
+        variables: {
+          release: version,
+          target,
+          flags,
+        },
+      });
+
+      const data = response.data.cloudFirmware.base64Data;
+      const flagValues = flags.map((flag) => flag.value).join("-");
+
+      await promptAndDownload(
+        `${version}-${target}-${flagValues}.bin`,
+        base64ArrayBuffer.decode(data)
+      );
     } else if (validPrVersion) {
       const response = await client.query({
         query: gql(/* GraphQL */ `

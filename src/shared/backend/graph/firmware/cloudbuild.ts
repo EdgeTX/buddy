@@ -3,6 +3,8 @@ import { createBuilder } from "shared/backend/utils/builder";
 
 const builder = createBuilder();
 
+// Targets data
+
 const Release = builder.simpleObject("Release", {
   fields: (t) => ({
     id: t.string(),
@@ -50,6 +52,14 @@ const CloudTargets = builder.simpleObject("CloudTargets", {
     targets: t.field({ type: [Target] }),
     flags: t.field({ type: [Flag] }),
     tags: t.field({ type: [Tag] }),
+  }),
+});
+
+// Job status
+
+const CloudFirmware = builder.simpleObject("CloudFirmware", {
+  fields: (t) => ({
+    base64Data: t.string(),
   }),
 });
 
@@ -110,6 +120,33 @@ builder.queryType({
           targets,
           flags,
           tags,
+        };
+      },
+    }),
+    cloudFirmware: t.field({
+      type: CloudFirmware,
+      args: {
+        release: t.arg.string({ required: true }),
+        target: t.arg.string({ required: true }),
+        flags: t.arg({
+          type: [
+            builder.inputType("SelectedFlag", {
+              fields: (t__) => ({
+                name: t__.string({ required: true }),
+                value: t__.string({ required: true }),
+              }),
+            }),
+          ],
+          required: true,
+        }),
+      },
+      resolve: async (_, params, { cloudbuild }) => {
+        const jobStatus = await cloudbuild.queryJobStatus(params);
+        const data = await cloudbuild.downloadBinary(
+          jobStatus.artifacts[0].download_url
+        );
+        return {
+          base64Data: data.toString("base64"),
         };
       },
     }),
