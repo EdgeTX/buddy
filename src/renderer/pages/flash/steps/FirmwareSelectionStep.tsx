@@ -16,11 +16,11 @@ import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwar
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import FlashButton from "renderer/components/flashing/FlashButton";
 import { useTranslation } from "react-i18next";
+import useFlags from "renderer/hooks/useFlags";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
 import CloudFirmwareReleasesPicker from "./firmware/CloudFirmwareReleasesPicker";
-import useFlags from "renderer/hooks/useFlags";
 
 const Container = styled.div`
   display: flex;
@@ -67,12 +67,15 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const { parseParam, updateParams } = useQueryParams<
     "version" | "target" | "filters" | "selectedFlags"
   >();
-  const [activeTab, setActiveTab] = useState<string>("cloudbuild");
 
   const version = parseParam("version");
   const target = parseParam("target");
   const { selectedFlags, encodeFlags } = useFlags(parseParam("selectedFlags"));
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
+
+  const [activeTab, setActiveTab] = useState<string>(
+    selectedFlags ? "cloudbuild" : "releases"
+  );
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -176,7 +179,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <RocketOutlined />
-                  `CloudBuild`
+                  CloudBuild
                 </span>
               }
               key="cloudbuild"

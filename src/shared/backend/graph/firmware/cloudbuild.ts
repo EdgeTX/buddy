@@ -66,7 +66,7 @@ const CloudFirmware = builder.simpleObject("CloudFirmware", {
 const CloudFirmwareStatus = builder.simpleObject("CloudFirmwareStatus", {
   fields: (t) => ({
     status: t.string(),
-    download_url: t.string({ nullable: true }),
+    downloadUrl: t.string({ nullable: true }),
   }),
 });
 
@@ -134,9 +134,9 @@ builder.queryType({
         }));
 
         const tags = Object.entries(cloudTargets.tags).map(([id, tag]) => {
-          const tagFlags = Object.entries(tag.flags).map(([id, tagFlags]) => {
-            return { id, values: tagFlags.values };
-          });
+          const tagFlags = Object.entries(tag.flags).map(
+            ([flagId, tagFlag]) => ({ id: flagId, values: tagFlag.values })
+          );
           return { id, tagFlags };
         });
 
@@ -157,17 +157,17 @@ builder.queryType({
         const jobStatus = await cloudbuild.queryJobStatus(params);
         return {
           status: jobStatus.status,
-          download_url: jobStatus.artifacts[0].download_url,
+          downloadUrl: jobStatus.artifacts[0].download_url,
         };
       },
     }),
     cloudFirmware: t.field({
       type: CloudFirmware,
       args: {
-        download_url: t.arg.string({ required: true }),
+        downloadUrl: t.arg.string({ required: true }),
       },
-      resolve: async (_, { download_url }, { cloudbuild }) => {
-        const data = await cloudbuild.downloadBinary(download_url);
+      resolve: async (_, { downloadUrl }, { cloudbuild }) => {
+        const data = await cloudbuild.downloadBinary(downloadUrl);
         return {
           base64Data: data.toString("base64"),
         };
@@ -187,7 +187,7 @@ builder.mutationType({
         const jobStatus = await cloudbuild.createJob(params);
         return {
           status: jobStatus.status,
-          download_url: jobStatus.artifacts[0].download_url,
+          downloadUrl: jobStatus.artifacts[0].download_url,
         };
       },
     }),

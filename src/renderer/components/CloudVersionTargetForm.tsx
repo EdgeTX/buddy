@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Checkbox, Divider, Dropdown, Form, Menu, Select } from "antd";
 import { FormListFieldData } from "antd/lib/form/FormList";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Flags, SelectedFlags } from "shared/backend/services/cloudbuild";
 
@@ -176,7 +176,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
             <Form.Item>
               <Button
                 type="dashed"
-                onClick={() => add()}
+                onClick={() => add({ flag: undefined, value: undefined })}
                 block
                 icon={<PlusOutlined />}
               >
@@ -233,19 +233,19 @@ const VersionFiltersDropdown: React.FC<{
   );
 };
 
-interface FormTagProps {
+type FormTagProps = {
   value: FormListFieldData;
   flags?: Flags;
   selectedFlags?: SelectedFlags;
   updateSelectedFlags: (newSelectedFlags: SelectedFlags) => void;
-}
+};
 
-function FormTag({
+const FormTag: React.FC<FormTagProps> = ({
   value,
   flags,
   selectedFlags,
   updateSelectedFlags,
-}: FormTagProps) {
+}) => {
   const currentFlag = selectedFlags?.at(value.key)?.name;
   const currentValue = selectedFlags?.at(value.key)?.value;
 
@@ -255,19 +255,24 @@ function FormTag({
       ?.filter((flag) => !selectedFlagsName.has(flag.id))
       .map((flag) => ({ name: flag.id, value: flag.id })) ?? [];
 
-  const unfilteredFlagValues =
-    flags?.find((flag) => flag.id === currentFlag)?.values ?? [];
+  const unfilteredFlagValues = useMemo(
+    () => flags?.find((flag) => flag.id === currentFlag)?.values ?? [],
+    [flags, currentFlag]
+  );
 
   // remove duplicates
-  const flagValuesSet = new Set(unfilteredFlagValues);
-  const flagValues = [...flagValuesSet].map((value) => ({
-    name: value,
-    value,
+  const flagValuesSet = useMemo(
+    () => new Set(unfilteredFlagValues),
+    [unfilteredFlagValues]
+  );
+  const flagValues = [...flagValuesSet].map((flagValue) => ({
+    name: flagValue,
+    value: flagValue,
   }));
 
   // reset the flag value if the target or flag name doesn't support it
   useEffect(() => {
-    if (!currentValue || !flagValuesSet || flagValuesSet.size === 0) return;
+    if (!currentValue || flagValuesSet.size === 0) return;
     if (!flagValuesSet.has(currentValue)) {
       const newSelectedFlags = selectedFlags.map((flag) => ({
         name: flag.name,
@@ -275,7 +280,7 @@ function FormTag({
       }));
       updateSelectedFlags(newSelectedFlags);
     }
-  }, [flagValuesSet, currentValue]);
+  }, [flagValuesSet, currentValue, selectedFlags, updateSelectedFlags]);
 
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
@@ -307,6 +312,6 @@ function FormTag({
       />
     </div>
   );
-}
+};
 
 export default CloudVersionTargetForm;
