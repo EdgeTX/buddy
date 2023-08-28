@@ -39,8 +39,8 @@ export type SelectedFlags = {
 }[];
 
 type JobStatusParams = {
-  target: string;
   release: string;
+  target: string;
   flags: { name: string; value: string }[];
 };
 
@@ -76,9 +76,24 @@ export const fetchTargets = async (): Promise<CloudTargets> => {
 };
 
 export const queryJobStatus = async (params: JobStatusParams): Promise<Job> => {
-  const response = await ky("https://cloudbuild.edgetx.org/api/status", {
+  const response = await ky.post("https://cloudbuild.edgetx.org/api/status", {
     body: JSON.stringify(params),
     prefixUrl: PRODUCTION ? undefined : config.proxyUrl,
+    throwHttpErrors: false,
   });
-  return {} as any;
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data as Job;
+};
+
+export const downloadBinary = async (download_url: string): Promise<Buffer> => {
+  const response = await ky(download_url, {
+    prefixUrl: PRODUCTION ? undefined : config.proxyUrl,
+  });
+  const arrayBuffer = await response.arrayBuffer();
+  return Buffer.from(arrayBuffer);
 };
