@@ -57,12 +57,6 @@ const CloudTargets = builder.simpleObject("CloudTargets", {
 
 // Job status
 
-const CloudFirmware = builder.simpleObject("CloudFirmware", {
-  fields: (t) => ({
-    base64Data: t.string(),
-  }),
-});
-
 const CloudFirmwareStatus = builder.simpleObject("CloudFirmwareStatus", {
   fields: (t) => ({
     status: t.string(),
@@ -93,15 +87,14 @@ builder.queryType({
     cloudTargets: t.field({
       type: CloudTargets,
       resolve: async (_, __, { cloudbuild, github }) => {
-        const cloudTargets = await cloudbuild.fetchTargets();
-        const firmwaresReleases = new Set(Object.keys(cloudTargets.releases));
-        const githubReleases = await github(
-          "GET /repos/{owner}/{repo}/releases",
-          {
+        const [cloudTargets, githubReleases] = await Promise.all([
+          cloudbuild.fetchTargets(),
+          github("GET /repos/{owner}/{repo}/releases", {
             owner: config.github.organization,
             repo: config.github.repos.firmware,
-          }
-        );
+          }),
+        ]);
+        const firmwaresReleases = new Set(Object.keys(cloudTargets.releases));
 
         // product of github releases and firmwares releases
         const releases = githubReleases.data
@@ -158,18 +151,6 @@ builder.queryType({
         return {
           status: jobStatus.status,
           downloadUrl: jobStatus.artifacts[0].download_url,
-        };
-      },
-    }),
-    cloudFirmware: t.field({
-      type: CloudFirmware,
-      args: {
-        downloadUrl: t.arg.string({ required: true }),
-      },
-      resolve: async (_, { downloadUrl }, { cloudbuild }) => {
-        const data = await cloudbuild.downloadBinary(downloadUrl);
-        return {
-          base64Data: data.toString("base64"),
         };
       },
     }),

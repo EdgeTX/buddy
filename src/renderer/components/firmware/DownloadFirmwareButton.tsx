@@ -10,7 +10,11 @@ import legacyDownload from "js-file-download";
 import config from "shared/config";
 import { useTranslation } from "react-i18next";
 import environment from "shared/environment";
-import { JobStatus, SelectedFlags } from "shared/backend/services/cloudbuild";
+import {
+  downloadBinary,
+  JobStatus,
+  SelectedFlags,
+} from "shared/backend/services/cloudbuild";
 
 type Props = {
   target?: string;
@@ -100,24 +104,10 @@ const DownloadFirmwareButton: React.FC<Props> = ({
 
       const { downloadUrl } = response.data.cloudFirmwareStatus;
       if (downloadUrl) {
-        const downloadResponse = await client.query({
-          query: gql(/* GraphQL */ `
-            query CloudFirmware($downloadUrl: String!) {
-              cloudFirmware(downloadUrl: $downloadUrl) {
-                base64Data
-              }
-            }
-          `),
-          variables: { downloadUrl },
-        });
-
-        const data = downloadResponse.data.cloudFirmware.base64Data;
+        const data = await downloadBinary(downloadUrl);
         const flagValues = flags.map((flag) => flag.value).join("-");
 
-        await promptAndDownload(
-          `${version}-${target}-${flagValues}.bin`,
-          base64ArrayBuffer.decode(data)
-        );
+        await promptAndDownload(`${version}-${target}-${flagValues}.bin`, data);
       }
     } else if (validPrVersion) {
       const response = await client.query({
