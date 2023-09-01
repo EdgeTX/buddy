@@ -72,10 +72,8 @@ export const queryJobStatus = async (params: JobStatusParams): Promise<Job> => {
     throwHttpErrors: false,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const data = await response.json();
+  const data = await response.json() as { error?: string } & Job;
   if (!response.ok) {
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
     throw new Error(data.error);
   }
 
@@ -89,10 +87,8 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
     throwHttpErrors: false,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const data = await response.json();
+  const data = (await response.json()) as { error?: string } & Job;
   if (!response.ok) {
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
     throw new Error(data.error);
   }
 

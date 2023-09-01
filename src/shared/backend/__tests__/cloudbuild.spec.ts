@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import { createExecutor } from "test-utils/backend";
 import nock from "nock";
+import md5 from "md5";
 
 const backend = createExecutor();
 
@@ -292,7 +293,9 @@ describe("Cloudbuild Query", () => {
       expect(cloudFirmware.downloadUrl).toEqual(
         "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
       );
-      expect(cloudFirmware.base64Data).not.toBeNull();
+      expect(md5(cloudFirmware.base64Data as string)).toMatchInlineSnapshot(
+        '"ad9d2d0efef4247c9065a8a175c540a9"'
+      );
 
       nockDone();
     });
