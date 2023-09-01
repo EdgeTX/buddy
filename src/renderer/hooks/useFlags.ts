@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { SelectedFlags } from "shared/backend/services/cloudbuild";
+import { SelectedFlags } from "shared/backend/types";
 
 export default (
   flagsString?: string

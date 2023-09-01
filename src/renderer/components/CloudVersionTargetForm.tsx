@@ -8,7 +8,7 @@ import { Button, Checkbox, Divider, Dropdown, Form, Menu, Select } from "antd";
 import { FormListFieldData } from "antd/lib/form/FormList";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Flags, SelectedFlags } from "shared/backend/services/cloudbuild";
+import { Flags, SelectedFlags } from "shared/backend/types";
 
 type VersionFilters = {
   includePrereleases: boolean;
@@ -225,10 +225,9 @@ const VersionFiltersDropdown: React.FC<{
         </Menu>
       }
     >
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+      <Button type="link" size="small" onClick={(e) => e.preventDefault()}>
         {t(`Filters`)} <DownOutlined />
-      </a>
+      </Button>
     </Dropdown>
   );
 };

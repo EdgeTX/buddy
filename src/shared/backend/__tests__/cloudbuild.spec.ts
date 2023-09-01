@@ -41,7 +41,6 @@ describe("Cloudbuild Query", () => {
           }
         `,
       });
-      console.log(errors);
       expect(errors).toBeFalsy();
       expect(data?.cloudTargets).toMatchInlineSnapshot(`
         {
@@ -73,7 +72,7 @@ describe("Cloudbuild Query", () => {
               "id": "nightly",
               "isPrerelease": true,
               "name": "nightly",
-              "timestamp": "2023-08-31T02:22:58Z",
+              "timestamp": "2023-09-01T02:28:49Z",
             },
             {
               "excludeTargets": [
@@ -270,10 +269,11 @@ describe("Cloudbuild Query", () => {
 
       const { data, errors } = await backend.query({
         query: gql`
-          query CloudFirmwareStatus($params: CloudFirmwareParams!) {
-            cloudFirmwareStatus(params: $params) {
+          query CloudFirmware($params: CloudFirmwareParams!) {
+            cloudFirmware(params: $params) {
               status
               downloadUrl
+              base64Data
             }
           }
         `,
@@ -287,12 +287,12 @@ describe("Cloudbuild Query", () => {
       });
 
       expect(errors).toBeFalsy();
-      expect(data?.cloudFirmwareStatus).toMatchInlineSnapshot(`
-        {
-          "downloadUrl": "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin",
-          "status": "BUILD_SUCCESS",
-        }
-      `);
+      const cloudFirmware = data?.cloudFirmware as any;
+      expect(cloudFirmware.status).toEqual("BUILD_SUCCESS");
+      expect(cloudFirmware.downloadUrl).toEqual(
+        "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
+      );
+      expect(cloudFirmware.base64Data).not.toBeNull();
 
       nockDone();
     });
