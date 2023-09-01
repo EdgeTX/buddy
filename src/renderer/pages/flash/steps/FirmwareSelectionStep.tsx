@@ -227,16 +227,18 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        <DownloadFirmwareButton
-          target={target}
-          version={version}
-          selectedFlags={selectedFlags}
-          isCloudBuild={activeTab === "cloudbuild"}
-        >
-          {t(`Download .bin`)}
-        </DownloadFirmwareButton>
+        {activeTab !== "cloudbuild" && (
+          <DownloadFirmwareButton
+            target={target}
+            version={version}
+            selectedFlags={selectedFlags}
+            isCloudBuild={activeTab === "cloudbuild"}
+          >
+            {t(`Download .bin`)}
+          </DownloadFirmwareButton>
+        )}
         <FlashButton
-          disabled={!target || !version}
+          disabled={!target || !version || activeTab === "cloudbuild"}
           onClick={() => {
             onNext?.();
           }}
