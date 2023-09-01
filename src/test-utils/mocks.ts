@@ -591,7 +591,7 @@ export const cloudbuildTargets = (delay = 500): MockedResponse => ({
   delay,
 });
 
-const cloudbuildJobStatus = (
+export const cloudbuildJobStatus = (
   release: string,
   target: string,
   flags: { name: string; value: string }[],
@@ -601,10 +601,11 @@ const cloudbuildJobStatus = (
 ): MockedResponse => ({
   request: {
     query: gql`
-      query CloudFirmwareStatus($params: CloudFirmwareParams!) {
+      query CloudFirmware($params: CloudFirmwareParams!) {
         cloudFirmwareStatus(params: $params) {
           status
-          downloadUrl
+          download_url
+          base64Data
         }
       }
     `,
@@ -622,23 +623,10 @@ const cloudbuildJobStatus = (
         ? { error: "build not found" }
         : {
             status: build_finished ? "BUILD_SUCCESS" : "BUILD_IN_PROGRESS",
-            build_attempts: 1,
-            artifacts: [
-              {
-                id: "4842244f-a1e4-4f43-93c8-8265e5951cfc",
-                slug: "firmware",
-                download_url: build_finished
-                  ? "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
-                  : undefined,
-                size: 492052,
-                created_at: "2023-05-21T11:18:00.885181Z",
-                updated_at: "2023-05-21T11:18:00.885181Z",
-              },
-            ],
-            build_started_at: "2023-05-21T11:16:58.15048Z",
-            build_ended_at: "2023-05-21T11:18:00.88349Z",
-            created_at: "2023-05-21T11:16:57.877346Z",
-            updated_at: "2023-05-21T11:18:00.884116Z",
+            download_url: build_finished
+              ? "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
+              : undefined,
+            base64Data: "VnMNysjG34htutTrWZJVmA==",
           },
     },
   },

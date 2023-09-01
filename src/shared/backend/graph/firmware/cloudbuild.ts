@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import config from "shared/backend/config";
 import { createBuilder } from "shared/backend/utils/builder";
 
@@ -57,7 +58,7 @@ const CloudTargets = builder.simpleObject("CloudTargets", {
 
 // Job status
 
-const CloudFirmwareStatus = builder.simpleObject("CloudFirmwareStatus", {
+const CloudFirmware = builder.simpleObject("CloudFirmwareStatus", {
   fields: (t) => ({
     status: t.string(),
     downloadUrl: t.string({ nullable: true }),
@@ -141,8 +142,8 @@ builder.queryType({
         };
       },
     }),
-    cloudFirmwareStatus: t.field({
-      type: CloudFirmwareStatus,
+    cloudFirmware: t.field({
+      type: CloudFirmware,
       args: {
         params: t.arg({ type: CloudFirmwareParams, required: true }),
       },
@@ -160,7 +161,7 @@ builder.queryType({
 builder.mutationType({
   fields: (t) => ({
     createCloudFirmware: t.field({
-      type: CloudFirmwareStatus,
+      type: CloudFirmware,
       args: {
         params: t.arg({ type: CloudFirmwareParams, required: true }),
       },
@@ -174,6 +175,17 @@ builder.mutationType({
     }),
   }),
 });
+
+builder.objectFields(CloudFirmware, (t) => ({
+  base64Data: t.string({
+    resolve: async (jobStatus, _, { cloudbuild }) => {
+      if (!jobStatus.downloadUrl)
+        throw new GraphQLError("No download url found");
+      const data = await cloudbuild.downloadBinary(jobStatus.downloadUrl);
+      return data.toString("base64");
+    },
+  }),
+}));
 
 export default {
   schema: builder.toSchema({}),

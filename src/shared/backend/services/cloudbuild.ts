@@ -28,16 +28,6 @@ type CloudTargets = {
   targets: Record<string, Target>;
 };
 
-export type Flags = {
-  id: string;
-  values: string[];
-}[];
-
-export type SelectedFlags = {
-  name?: string;
-  value?: string;
-}[];
-
 type JobStatusParams = {
   release: string;
   target: string;
