@@ -52,6 +52,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
   selectedFlags,
 }) => {
   const { t } = useTranslation("flashing");
+  const enableAddFlag = (selectedFlags?.length ?? 0) < (flags?.length ?? 0);
 
   return (
     <Form
@@ -173,16 +174,18 @@ const CloudVersionTargetForm: React.FC<Props> = ({
               </div>
             ))}
 
-            <Form.Item>
-              <Button
-                type="dashed"
-                onClick={() => add({ flag: undefined, value: undefined })}
-                block
-                icon={<PlusOutlined />}
-              >
-                Add Flag
-              </Button>
-            </Form.Item>
+            {enableAddFlag ? (
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() => add({ flag: undefined, value: undefined })}
+                  block
+                  icon={<PlusOutlined />}
+                >
+                  Add Flag
+                </Button>
+              </Form.Item>
+            ) : null}
           </Form.Item>
         )}
       </Form.List>

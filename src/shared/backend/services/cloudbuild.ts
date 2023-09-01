@@ -1,7 +1,4 @@
 import ky from "ky";
-import config from "shared/backend/config";
-
-const PRODUCTION = process.env.NODE_ENV === "production";
 
 type Release = {
   sha: string;
@@ -93,7 +90,9 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
 
 export const downloadBinary = async (downloadUrl: string): Promise<Buffer> => {
   const response = await ky(downloadUrl, {
-    prefixUrl: PRODUCTION ? undefined : config.proxyUrl,
+    headers: {
+      origin: "null",
+    },
   });
   const arrayBuffer = await response.arrayBuffer();
   return Buffer.from(arrayBuffer);

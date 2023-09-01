@@ -113,7 +113,6 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
     id: flag.id,
     values: [...flag.values, ...(targetFlags?.get(flag.id) ?? [])],
   }));
-  flags?.push({ id: "bloup", values: ["blap", "blip", "blup"] });
 
   // only update flags
   const updateSelectedFlags = (newSelectedFlags: SelectedFlags): void => {
