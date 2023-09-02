@@ -109,10 +109,19 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
     }, new Map<string, string[]>());
 
   // add the additional flags values from the target in the flags
-  const flags = targetsQuery.data?.cloudTargets.flags.map((flag) => ({
-    id: flag.id,
-    values: [...flag.values, ...(targetFlags?.get(flag.id) ?? [])],
-  }));
+  const flags = targetsQuery.data?.cloudTargets.flags.map((flag) => {
+    const targetValues = targetFlags?.get(flag.id);
+    targetFlags?.delete(flag.id);
+    return {
+      id: flag.id,
+      values: [...flag.values, ...(targetValues ?? [])],
+    };
+  });
+
+  // add the additional flags from target tags
+  targetFlags?.forEach((values, flagId) => {
+    flags?.push({ id: flagId, values });
+  });
 
   // only update flags
   const updateSelectedFlags = (newSelectedFlags: SelectedFlags): void => {

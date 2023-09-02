@@ -54,6 +54,19 @@ const CloudVersionTargetForm: React.FC<Props> = ({
   const { t } = useTranslation("flashing");
   const enableAddFlag = (selectedFlags?.length ?? 0) < (flags?.length ?? 0);
 
+  // remove selected flag if it's not in the flags anymore
+  useEffect(() => {
+    if (!flags || !selectedFlags) return;
+
+    const flagIds = new Set(flags.map((flag) => flag.id));
+    const newSelectedFlags = selectedFlags.filter(
+      (flag) => !flag.name || flagIds.has(flag.name)
+    );
+    if (newSelectedFlags.length !== selectedFlags.length) {
+      updateSelectedFlags(newSelectedFlags);
+    }
+  }, [flags, selectedFlags, updateSelectedFlags]);
+
   return (
     <Form
       layout="vertical"
