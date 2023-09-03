@@ -416,6 +416,7 @@ jobs:
           projectName: buddy
           directory: build/renderer
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref || github.ref_name }}
 
       - name: Comment preview URL
         uses: thollander/actions-comment-pull-request@v2
