@@ -13,3 +13,15 @@ export type TypeOf<
   O extends ObjectRef<T>,
   T = unknown
 > = O[typeof outputShapeKey];
+
+// cloudbuild
+
+export type Flags = {
+  id: string;
+  values: string[];
+}[];
+
+export type SelectedFlags = {
+  name?: string;
+  value?: string;
+}[];

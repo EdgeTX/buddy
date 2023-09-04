@@ -10,21 +10,26 @@ import legacyDownload from "js-file-download";
 import config from "shared/config";
 import { useTranslation } from "react-i18next";
 import environment from "shared/environment";
+import { SelectedFlags } from "shared/backend/types";
 
 type Props = {
   target?: string;
   version?: string;
+  selectedFlags?: SelectedFlags;
   children: string;
   type?: ButtonType;
   size?: ButtonSize;
+  isCloudBuild?: boolean;
 };
 
 const DownloadFirmwareButton: React.FC<Props> = ({
   target,
   version,
+  selectedFlags,
   children,
   type,
   size,
+  isCloudBuild,
 }) => {
   const { t } = useTranslation("flashing");
   const [downloading, setDownloading] = useState(false);
@@ -32,6 +37,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   const isLocal = version === "local";
   const { prId, commitId } = decodePrVersion(version ?? "");
   const validPrVersion = isPr && prId && commitId && target;
+
+  const isCloudBuildValid =
+    version &&
+    target &&
+    selectedFlags?.every((flag) => flag.name && flag.value);
 
   const client = useApolloClient();
 
@@ -64,7 +74,33 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   };
 
   const download = async (): Promise<void> => {
-    if (validPrVersion) {
+    // Try to get the cloudbuild build, if not found, throw an error
+    if (isCloudBuild && isCloudBuildValid) {
+      const flags = selectedFlags as { name: string; value: string }[];
+      const response = await client.query({
+        query: gql(/* GraphQL */ `
+          query CloudFirmware($params: CloudFirmwareParams!) {
+            cloudFirmware(params: $params) {
+              base64Data
+            }
+          }
+        `),
+        variables: {
+          params: {
+            release: version,
+            target,
+            flags,
+          },
+        },
+      });
+
+      const fileData = response.data.cloudFirmware.base64Data;
+      const flagValues = flags.map((flag) => flag.value).join("-");
+      await promptAndDownload(
+        `${version}-${target}-${flagValues}.bin`,
+        base64ArrayBuffer.decode(fileData)
+      );
+    } else if (validPrVersion) {
       const response = await client.query({
         query: gql(/* GraphQL */ `
           query PrBuildFirmwareData($prId: ID!, $commitId: ID!, $target: ID!) {
@@ -138,7 +174,9 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       type={type}
       icon={<DownloadOutlined />}
       loading={downloading}
-      disabled={!target || !version || isLocal}
+      disabled={
+        !target || !version || isLocal || (isCloudBuild && !isCloudBuildValid)
+      }
       size={size}
       onClick={async () => {
         setDownloading(true);
