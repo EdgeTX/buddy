@@ -2,6 +2,7 @@ import { MockedResponse } from "@apollo/client/testing";
 import gql from "graphql-tag";
 import { times } from "shared/tools";
 import {
+  exampleCloudbuildTargets,
   exampleDevices,
   examplePrCommits,
   examplePrs,
@@ -548,4 +549,86 @@ export const flashJobQuery = (
       },
     },
   },
+});
+
+export const cloudbuildTargets = (delay = 500): MockedResponse => ({
+  request: {
+    query: gql`
+      query CloudTargets {
+        cloudTargets {
+          releases {
+            id
+            name
+            isPrerelease
+            timestamp
+            excludeTargets
+          }
+          targets {
+            id
+            name
+            tags
+          }
+          flags {
+            id
+            values
+          }
+          tags {
+            id
+            tagFlags {
+              id
+              values
+            }
+          }
+        }
+      }
+    `,
+  },
+  result: {
+    data: {
+      cloudTargets: exampleCloudbuildTargets,
+    },
+  },
+  delay,
+});
+
+export const cloudbuildJobStatus = (
+  release: string,
+  target: string,
+  flags: { name: string; value: string }[],
+  build_finished?: boolean,
+  error?: boolean,
+  delay = 200
+): MockedResponse => ({
+  request: {
+    query: gql`
+      query CloudFirmware($params: CloudFirmwareParams!) {
+        cloudFirmwareStatus(params: $params) {
+          status
+          download_url
+          base64Data
+        }
+      }
+    `,
+    variables: {
+      params: {
+        release,
+        target,
+        flags,
+      },
+    },
+  },
+  result: {
+    data: {
+      cloudFirmwareStatus: error
+        ? { error: "build not found" }
+        : {
+            status: build_finished ? "BUILD_SUCCESS" : "BUILD_IN_PROGRESS",
+            download_url: build_finished
+              ? "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
+              : undefined,
+            base64Data: "VnMNysjG34htutTrWZJVmA==",
+          },
+    },
+  },
+  delay,
 });
