@@ -65,7 +65,7 @@
   "Loading commits...": "Загрузка коминтов...",
   "Loading pull requests...": "Загрузка запросов на извлечение...",
   "Loading releases...": "Загрузка релизов...",
-  "Local file": "Local file",
+  "Local file": "Локальный файл",
   "Local firmware file should be a binary (.bin)": "Локальный файл прошивки должен быть двоичным (.bin)",
   "New firmware flashed": "Прошито новое ПО",
   "Next": "Далее",
