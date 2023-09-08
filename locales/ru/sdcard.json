@@ -1,0 +1,9 @@
+{
+  "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Шаг 1.</0> Включите устройство, убедитесь, что оно не подключено к USB",
+  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Шаг 2.</0> Подключите устройство к компьютеру через USB и при появлении запроса выберите '<2>USB Storage</2>'",
+  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Шаг 3.</0> После подключения выберите SD-карту устройства с помощью проводника, чтобы внести изменения",
+  "Select SD Card": "Выбор SD Card",
+  "The SD card editor is still in development": "Редактор SD-карт все еще находится в разработке",
+  "This feature is not supported by your browser": "Эта функция не поддерживается вашим браузером",
+  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "Вы можете заметить отсутствующие функции или ошибки, рекомендуется продолжать использовать Flasher в качестве основного инструмента для работы с SD-картой."
+}
