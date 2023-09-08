@@ -113,6 +113,7 @@ const PrTargetForm: React.FC<Props> = ({
           }
           loading={pullRequests.loading}
           disabled={!!pullRequests.error || disabled}
+          notFoundContent={null}
         >
           {pullRequests.available?.map((pr) => (
             <Select.Option key={pr.id} value={pr.id}>
@@ -148,6 +149,7 @@ const PrTargetForm: React.FC<Props> = ({
           }
           loading={commits.loading}
           disabled={!!commits.error || disabled}
+          notFoundContent={null}
         >
           {commits.available?.map((c) => (
             <Select.Option key={c.id} value={c.id}>
@@ -175,6 +177,8 @@ const PrTargetForm: React.FC<Props> = ({
         validateStatus={targets.error ? "error" : undefined}
       >
         <Select
+          showSearch
+          optionFilterProp="children"
           value={targets.selectedId}
           allowClear={false}
           loading={targets.loading}

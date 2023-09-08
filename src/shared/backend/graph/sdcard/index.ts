@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import { GraphQLError } from "graphql";
-import config from "shared/config";
+import config from "shared/backend/config";
 import { arrayFromAsync, findAsync } from "shared/tools";
 import { isArrayOf, isNotUndefined, isString } from "type-guards";
 import semver from "semver";
@@ -220,6 +220,30 @@ builder.queryType({
             tag: id.toString(),
           }).catch(() => ({ data: undefined }))
         ).data;
+
+        // TODO: enable this for non testing
+        if (!release && process.env.NODE_ENV === "test") {
+          // undocumented behaviour, allow id of a commit to be given
+          const commit = (
+            await github("GET /repos/{owner}/{repo}/commits/{ref}", {
+              owner: config.github.organization,
+              repo: config.github.repos.sdcard,
+              ref: id.toString(),
+            }).catch(() => ({ data: undefined }))
+          ).data;
+
+          if (!commit) {
+            return null;
+          }
+          return {
+            id: id.toString(),
+            targets: [],
+            name: id.toString(),
+            isPrerelease: false,
+            // TODO: can we extract assets from source
+            artifacts: [],
+          };
+        }
 
         if (!release) {
           return null;
@@ -582,6 +606,10 @@ builder.objectFields(EdgeTxSdcardPackRelease, (t) => ({
     ],
     resolve: async ({ artifacts, id }, _, { sdcardAssets }) => {
       const targets = await sdcardAssets.fetchTargetsManifest(id.toString());
+
+      if (artifacts.length === 0 && process.env.NODE_ENV === "test") {
+        return targets;
+      }
 
       return artifacts.flatMap((asset) =>
         targets.filter((radio) => radio.asset === asset.name)

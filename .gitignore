@@ -38,3 +38,4 @@ storybook-static/
 playwright-report/
 e2e-recordings/
 locales/**/*_old.json
+token

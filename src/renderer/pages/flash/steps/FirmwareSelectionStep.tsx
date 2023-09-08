@@ -16,9 +16,11 @@ import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwar
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import FlashButton from "renderer/components/flashing/FlashButton";
 import { useTranslation } from "react-i18next";
+import useFlags from "renderer/hooks/useFlags";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
 import FirmwareReleaseDescription from "./firmware/FirmwareReleaseDescription";
 import FirmwareUploader from "./firmware/FirmwareUploader";
+import CloudFirmwareReleasesPicker from "./firmware/CloudFirmwareReleasesPicker";
 
 const Container = styled.div`
   display: flex;
@@ -63,13 +65,17 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams<
-    "version" | "target" | "filters"
+    "version" | "target" | "filters" | "selectedFlags"
   >();
-  const [activeTab, setActiveTab] = useState<string>("releases");
 
   const version = parseParam("version");
   const target = parseParam("target");
+  const { selectedFlags, encodeFlags } = useFlags(parseParam("selectedFlags"));
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
+
+  const [activeTab, setActiveTab] = useState<string>(
+    selectedFlags ? "cloudbuild" : "releases"
+  );
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -168,10 +174,38 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 )}
               </div>
             </Tabs.TabPane>
+            ,
+            <Tabs.TabPane
+              tab={
+                <span>
+                  <RocketOutlined />
+                  CloudBuild
+                </span>
+              }
+              key="cloudbuild"
+              style={{ overflowY: "auto" }}
+            >
+              <CloudFirmwareReleasesPicker
+                filters={filters}
+                version={version}
+                target={target}
+                selectedFlags={selectedFlags}
+                onChanged={(params) => {
+                  if (activeTab === "cloudbuild") {
+                    updateParams({
+                      version: params.version,
+                      target: params.target,
+                      selectedFlags: encodeFlags(params.selectedFlags),
+                      filters: encodeFilters(params.filters),
+                    });
+                  }
+                }}
+              />
+            </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />
 
-          {activeTab === "releases" && (
+          {(activeTab === "releases" || activeTab === "cloudbuild") && (
             <DescriptionContainer>
               <FirmwareReleaseDescription releaseId={version} />
             </DescriptionContainer>
@@ -193,11 +227,18 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        <DownloadFirmwareButton target={target} version={version}>
-          {t(`Download .bin`)}
-        </DownloadFirmwareButton>
+        {activeTab !== "cloudbuild" && (
+          <DownloadFirmwareButton
+            target={target}
+            version={version}
+            selectedFlags={selectedFlags}
+            isCloudBuild={activeTab === "cloudbuild"}
+          >
+            {t(`Download .bin`)}
+          </DownloadFirmwareButton>
+        )}
         <FlashButton
-          disabled={!target || !version}
+          disabled={!target || !version || activeTab === "cloudbuild"}
           onClick={() => {
             onNext?.();
           }}

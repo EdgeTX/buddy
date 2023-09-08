@@ -184,7 +184,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-20.04, windows-latest]
 
     steps:
       - uses: actions/checkout@v1
@@ -238,7 +238,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-20.04, windows-latest]
 
     needs: compile
 
@@ -304,6 +304,7 @@ jobs:
           CI: "true"
           PWTEST_VIDEO: "true"
           HEADFUL: "true"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v2
@@ -373,7 +374,7 @@ jobs:
       - name: Fetch compiled source
         uses: actions/download-artifact@v2
         with:
-          name: compiled-ubuntu-latest
+          name: compiled-ubuntu-20.04
           path: build
 
       - name: Run tests
@@ -381,6 +382,7 @@ jobs:
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v1
         if: ${{ failure() }}
@@ -388,51 +390,61 @@ jobs:
           name: video-web-linux-test-results
           path: playwright-report
 
-  release-web:
-    needs: [e2e-web, test, storybook]
+  preview-web:
+    needs: [compile, storybook]
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
         uses: actions/download-artifact@v2
         with:
-          name: compiled-ubuntu-latest
+          name: compiled-ubuntu-20.04
           path: build
 
       - name: Fetch storybook build
-        if: github.event_name == 'pull_request'
         uses: actions/download-artifact@v2
         with:
           name: storybook-static
           path: build/renderer/storybook
 
       - name: Preview
-        id: netlify-preview
-        if: github.event_name == 'pull_request'
-        uses: netlify/actions/cli@master
+        id: cloudflare-preview
+        uses: cloudflare/pages-action@1
         with:
-          args: deploy --dir=build/renderer
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: buddy
+          directory: build/renderer
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref || github.ref_name }}
 
       - name: Comment preview URL
-        if: github.event_name == 'pull_request'
-        uses: peter-evans/commit-comment@v1
+        uses: thollander/actions-comment-pull-request@v2
         with:
-          body: |
-            EdgeTX Buddy has been automatically deployed to Netlify.
-            🔍 Inspect: ${{ steps.netlify-preview.outputs.NETLIFY_LOGS_URL }}
-            ✅ Preview: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}
-            ✅ Storybook: ${{ steps.netlify-preview.outputs.NETLIFY_URL }}/storybook
+          message: |
+            EdgeTX Buddy has been automatically deployed to Cloudflare.
+            ✅ Preview: ${{ steps.cloudflare-preview.outputs.url }}
+            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.url }}/storybook
+
+  release-web-prod:
+    needs: [e2e-web, test, storybook]
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Fetch compiled source
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-ubuntu-20.04
+          path: build
 
       - name: Publish
-        if: github.event_name!= 'pull_request'
-        uses: netlify/actions/cli@master
+        uses: cloudflare/pages-action@1
         with:
-          args: deploy --dir=build/renderer --prod
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: buddy
+          directory: build/renderer
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
     needs: [build-and-test-app, test]

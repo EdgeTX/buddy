@@ -3,7 +3,7 @@ import { Button, Tooltip } from "antd";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import checks from "renderer/compatibility/checks";
-import config from "shared/config";
+import environment from "shared/environment";
 
 type Props = {
   disabled?: boolean;
@@ -17,7 +17,7 @@ const FlashButton: React.FC<Props> = ({
   loading = false,
 }) => {
   const { t } = useTranslation("flashing");
-  const flashingAvailable = config.isElectron || checks.hasUsbApi;
+  const flashingAvailable = environment.isElectron || checks.hasUsbApi;
 
   return (
     <Tooltip

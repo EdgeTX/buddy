@@ -2,8 +2,9 @@ import md5 from "md5";
 import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky-universal";
-import config from "shared/config";
-import { github } from "./github";
+import config from "shared/backend/config";
+import { uniqueBy } from "shared/tools";
+import { GithubClient } from "shared/api/github";
 
 export type Target = {
   name: string;
@@ -60,10 +61,13 @@ export const firmwareTargets = async (
 
         const data = (await firmwareFile.json()) as FirmwareFile;
 
-        return data.targets.map(([name, code]) => ({
-          name,
-          code: code.slice(0, code.length - 1),
-        }));
+        return uniqueBy(
+          data.targets.map(([name, code]) => ({
+            name,
+            code: code.slice(0, code.length - 1),
+          })),
+          "code"
+        );
       } catch (e) {
         delete firmwareTargetsCache[firmwareBundleUrl];
         throw e;
@@ -77,7 +81,8 @@ export const firmwareTargets = async (
 };
 
 const firmwareFileNameToId = (fileName: string): string => {
-  const withoutExtension = fileName.replace(".bin", "");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const withoutExtension = fileName.split("/").pop()!.replace(".bin", "");
   const withoutCommitHash = withoutExtension.split("-").slice(0, -1).join("-");
 
   return withoutCommitHash;
@@ -92,6 +97,7 @@ export const fetchFirmware = async (
     (entry) =>
       entry.name.endsWith(".bin") && firmwareFileNameToId(entry.name) === target
   );
+
   if (!firmwareFile) {
     throw new Error("Could not find firmware target binary");
   }
@@ -120,6 +126,7 @@ export const getLocalFirmwareById = (id: string): LocalFirmware | undefined =>
   uploadedFirmware.find((firmware) => firmware.id === id);
 
 export const fetchPrBuild = async (
+  github: GithubClient,
   commitSha: string
 ): Promise<{ id: string; url: string } | undefined> => {
   const checks = (

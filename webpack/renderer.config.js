@@ -135,10 +135,9 @@ module.exports = (_, { mode }) => ({
     }),
     new webpack.EnvironmentPlugin({
       // If the build env knows the proxy url, use that, otherwise
-      // default to our local cors proxy
+      // default to the cors proxy
       PROXY_URL:
-        process.env.PROXY_URL ?? "https://github-content-proxy.obell.dev",
-      GITHUB_API_KEY: process.env.GITHUB_API_KEY ?? null,
+        process.env.PROXY_URL ?? "https://buddy-cors-proxy.edgetx.workers.dev",
       GITHUB_PR_BUILDS_KEY: process.env.GITHUB_PR_BUILDS_KEY ?? null,
     }),
     new MiniCssExtractPlugin(),
