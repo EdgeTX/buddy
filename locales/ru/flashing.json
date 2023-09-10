@@ -20,9 +20,9 @@
   "Copy URL": "Скопировать URL-адрес",
   "Could not build firmware": "Не удалось создать прошивку",
   "Could not connect to DFU interface": "Не удалось подключиться к интерфейсу DFU",
-  "Could not create job: {{message}}": "Не удалось создать задание: {сообщение}}",
+  "Could not create job: {{message}}": "Не удалось создать задание: {{{message}}",
   "Could not download firmware": "Не удалось загрузить прошивку",
-  "Could not download firmware: {{message}}": "Не удалось загрузить прошивку: {{сообщение}}",
+  "Could not download firmware: {{message}}": "Не удалось загрузить прошивку: {{{message}}",
   "Could not erase existing firmware": "Не удалось стереть существующее ПО",
   "Could not load commits": "Не удалось загрузить коммиты",
   "Could not load releases": "Не удалось загрузить релизы",
@@ -51,7 +51,7 @@
   "Firmware": "ПО",
   "Firmware build completed": "Сборка по завершена",
   "Firmware data": "Данные ПО",
-  "Firmware downloaded, ready to flash": "ПО загруженО, готово к прошивке",
+  "Firmware downloaded, ready to flash": "ПО загружено, готово к прошивке",
   "Firmware file saved": "Сохраненный файл ПО",
   "Firmware version": "Версия прошивки",
   "Flash": "Прошивка",
@@ -102,5 +102,5 @@
   "Writing new firmware to radio, this could take several minutes": "Запись нового ПО в Радио может занять несколько минут",
   "You may now want to <1>setup your SD Card</1>": "Возможно, теперь вы захотите <1>настроить SD Card</1>",
   "You're all set!": "У вас все готово!",
-  "Your radio has been flashed with EdgeTX": "Ваше радио был прошит с помощью Edge TX"
+  "Your radio has been flashed with EdgeTX": "Ваше радио был прошито с помощью Edge TX"
 }
