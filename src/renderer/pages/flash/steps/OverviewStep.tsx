@@ -13,6 +13,7 @@ import useIsMobile from "renderer/hooks/useIsMobile";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
 import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
+import useFlags from "renderer/hooks/useFlags";
 
 const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -33,12 +34,15 @@ const Container = styled.div<{ isMobile: boolean }>`
 const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("flashing");
-  const { parseParam } = useQueryParams<"deviceId" | "target" | "version">();
+  const { parseParam } = useQueryParams<
+    "deviceId" | "target" | "version" | "selectedFlags"
+  >();
   const navigate = useNavigate();
 
   const deviceId = parseParam("deviceId");
   const target = parseParam("target");
   const version = parseParam("version");
+  const { selectedFlags } = useFlags(parseParam("selectedFlags"));
 
   const invalidState = !deviceId || !target || !version;
   useEffect(() => {
@@ -129,7 +133,10 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                   disabled={creatingJob}
                   icon={<PlayCircleOutlined />}
                   onClick={() => {
-                    createFlashJob({ firmware: { target, version }, deviceId })
+                    createFlashJob({
+                      firmware: { target, version, selectedFlags },
+                      deviceId,
+                    })
                       .then((jobId) => {
                         navigate(`./${jobId}`);
                       })

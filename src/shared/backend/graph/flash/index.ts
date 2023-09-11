@@ -106,6 +106,13 @@ const waitForNotConnected = async (
   }
 };
 
+const CloudSelectedFlags = builder.inputType("CloudSelectedFlag", {
+  fields: (t__) => ({
+    name: t__.string(),
+    value: t__.string(),
+  }),
+});
+
 builder.mutationType({
   fields: (t) => ({
     createFlashJob: t.field({
@@ -116,6 +123,7 @@ builder.mutationType({
             fields: (t__) => ({
               version: t__.string({ required: true }),
               target: t__.string({ required: true }),
+              selectedFlags: t__.field({ type: [CloudSelectedFlags] }),
             }),
           }),
           required: true,
@@ -125,7 +133,20 @@ builder.mutationType({
       resolve: async (_, { firmware, deviceId }, context) => {
         let firmwareData: Buffer | undefined;
         let firmwareBundleUrl: string | undefined;
-        if (firmware.version === "local") {
+        let fetchCloudbuild = false;
+
+        if (firmware.selectedFlags) {
+          // check that all flags are set correctly
+          if (
+            firmware.selectedFlags.length > 0 &&
+            !firmware.selectedFlags.every((flag) => flag.name && flag.value)
+          ) {
+            throw new GraphQLError("Specified flags are not valid");
+          }
+          // get firmware on cloudbuild
+          fetchCloudbuild = true;
+        } else if (firmware.version === "local") {
+          // local firmware
           const localFirmware = context.firmwareStore.getLocalFirmwareById(
             firmware.target
           );
@@ -153,6 +174,7 @@ builder.mutationType({
 
           firmwareBundleUrl = prBuild.url;
         } else {
+          // github firmware
           firmwareBundleUrl = (
             await context.github(
               "GET /repos/{owner}/{repo}/releases/tags/{tag}",
@@ -182,18 +204,29 @@ builder.mutationType({
 
         // If we already have the firmware we don't need to download
         // So start the state off assuming no download step
-        const job = firmwareData
-          ? context.flashJobs.createJob(["connect", "erase", "flash"], {
+        let job;
+        if (fetchCloudbuild) {
+          job = context.flashJobs.createJob(
+            ["connect", "build", "erase", "flash"],
+            {
               firmware,
               deviceId,
-            })
-          : context.flashJobs.createJob(
-              ["connect", "download", "erase", "flash"],
-              {
-                firmware,
-                deviceId,
-              }
-            );
+            }
+          );
+        } else if (firmwareData) {
+          job = context.flashJobs.createJob(["connect", "erase", "flash"], {
+            firmware,
+            deviceId,
+          });
+        } else {
+          job = context.flashJobs.createJob(
+            ["connect", "download", "erase", "flash"],
+            {
+              firmware,
+              deviceId,
+            }
+          );
+        }
 
         await context.flashJobs.startExecution(
           job.id.toString(),
@@ -203,6 +236,10 @@ builder.mutationType({
               data: firmwareData,
               url: firmwareBundleUrl,
               target: firmware.target,
+              version: firmware.version,
+              selectedFlags: firmware.selectedFlags as
+                | { name: string; value: string }[]
+                | undefined,
             },
           },
           context

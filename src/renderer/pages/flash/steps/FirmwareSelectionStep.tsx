@@ -73,6 +73,11 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const { selectedFlags, encodeFlags } = useFlags(parseParam("selectedFlags"));
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
 
+  const isCloudBuildValid =
+    !!version &&
+    !!target &&
+    (selectedFlags?.every((flag) => flag.name && flag.value) ?? true);
+
   const [activeTab, setActiveTab] = useState<string>(
     selectedFlags ? "cloudbuild" : "releases"
   );
@@ -238,7 +243,11 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
           </DownloadFirmwareButton>
         )}
         <FlashButton
-          disabled={!target || !version || activeTab === "cloudbuild"}
+          disabled={
+            !target ||
+            !version ||
+            (activeTab === "cloudbuild" && !isCloudBuildValid)
+          }
           onClick={() => {
             onNext?.();
           }}

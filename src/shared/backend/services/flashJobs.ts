@@ -4,10 +4,10 @@ import { PubSub } from "graphql-subscriptions";
 import * as uuid from "uuid";
 import type { Context } from "shared/backend/context";
 import type {
-  FlashJobType,
-  FlashStageType,
-  FlashStagesType,
   FlashJobMetaType,
+  FlashJobType,
+  FlashStagesType,
+  FlashStageType,
 } from "shared/backend/graph/flash";
 
 export const jobUpdates = new PubSub();
@@ -42,11 +42,18 @@ export const startExecution = async (
   jobId: string,
   args: {
     device: USBDevice;
-    firmware: { data?: Buffer; url?: string; target: string };
+    firmware: {
+      data?: Buffer;
+      url?: string;
+      target: string;
+      version: string;
+      selectedFlags?: { name: string; value: string }[];
+    };
   },
-  { dfu, firmwareStore }: Context
+  { dfu, firmwareStore, cloudbuild }: Context
 ): Promise<void> => {
   let firmwareData = args.firmware.data;
+  const fetchCloudbuild = !!args.firmware.selectedFlags;
   let dfuProcess: WebDFU | undefined;
 
   const cleanUp = async (): Promise<void> => {
@@ -91,7 +98,52 @@ export const startExecution = async (
       completed: true,
     });
 
-    if (!firmwareData) {
+    if (fetchCloudbuild) {
+      updateStageStatus(jobId, "build", {
+        started: true,
+      });
+
+      const params = {
+        release: args.firmware.version,
+        target: args.firmware.target,
+        flags: args.firmware.selectedFlags ?? [],
+      };
+
+      let status = await cloudbuild.queryCreateJob(params).catch((e: Error) => {
+        updateStageStatus(jobId, "build", {
+          error: e.message,
+        });
+        return undefined;
+      });
+
+      if (!status || isCancelled(jobId)) {
+        return;
+      }
+
+      // if the build is creating, wait
+      if (status.status !== "BUILD_SUCCESS") {
+        updateStageStatus(jobId, "build", {});
+        status = await cloudbuild
+          .queryJobStatusTillSucess(params)
+          .catch((e: Error) => {
+            updateStageStatus(jobId, "build", {
+              error: e.message,
+            });
+            return undefined;
+          });
+        if (!status || isCancelled(jobId)) {
+          return;
+        }
+      }
+
+      // success
+      firmwareData = await cloudbuild.downloadBinary(
+        status.artifacts[0].download_url
+      );
+      updateStageStatus(jobId, "build", {
+        completed: true,
+      });
+    } else if (!firmwareData) {
       updateStageStatus(jobId, "download", {
         started: true,
       });
