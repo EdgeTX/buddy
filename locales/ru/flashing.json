@@ -27,7 +27,7 @@
   "Could not load commits": "Не удалось загрузить коммиты",
   "Could not load releases": "Не удалось загрузить релизы",
   "Could not load targets": "Не удалось загрузить цели",
-  "Could not unlock device: {{message}}": "Не удалось разблокировать устройство: {{сообщение}}",
+  "Could not unlock device: {{message}}": "Не удалось разблокировать устройство: {{message}}",
   "Could not use firmware": "Не удалось использовать встроенное ПО",
   "Could not write new firmware to radio": "Не удалось записать новое ПО на радио",
   "Details": "Детали",
