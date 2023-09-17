@@ -109,7 +109,7 @@ export const startExecution = async (
         flags: args.firmware.selectedFlags ?? [],
       };
 
-      let status = await cloudbuild.queryCreateJob(params).catch((e: Error) => {
+      let status = await cloudbuild.createJob(params).catch((e: Error) => {
         updateStageStatus(jobId, "build", {
           error: e.message,
         });
@@ -124,7 +124,7 @@ export const startExecution = async (
       if (status.status !== "BUILD_SUCCESS") {
         updateStageStatus(jobId, "build", {});
         status = await cloudbuild
-          .queryJobStatusTillSucess(params)
+          .waitForJobSuccess(params)
           .catch((e: Error) => {
             updateStageStatus(jobId, "build", {
               error: e.message,

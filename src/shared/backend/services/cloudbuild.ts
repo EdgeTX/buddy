@@ -88,35 +88,28 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
   return data as Job;
 };
 
-// Query a job, if it's not found, create it
-export const queryCreateJob = async (params: JobStatusParams): Promise<Job> => {
-  try {
-    return await queryJobStatus(params);
-  } catch (error) {
-    return await createJob(params);
-  }
-};
-
 function timeout(ms: number): Promise<void> {
   /* eslint-disable-next-line no-promise-executor-return */
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export const queryJobStatusTillSucess = async (
-  params: JobStatusParams
+export const waitForJobSuccess = async (
+  params: JobStatusParams,
+  timeoutMs = 15000
 ): Promise<Job | undefined> => {
-  // number of try, 200 * 5s ~= 16.67 min
+  const iterTime = 5000;
+  const iterNb = Math.ceil(timeoutMs / iterTime);
   /* eslint-disable no-await-in-loop */
-  for (let i = 0; i < 200; i += 1) {
+  for (let i = 0; i < iterNb; i += 1) {
     const status = await queryJobStatus(params);
     console.log("Cloudbuild job status: ", status);
     if (status.status === "BUILD_SUCCESS") {
       return status;
     }
-    await timeout(5000);
+    await timeout(iterTime);
   }
   /* eslint-enable no-await-in-loop */
-  return undefined;
+  throw new Error("Build process timeout");
 };
 
 export const downloadBinary = async (downloadUrl: string): Promise<Buffer> => {
