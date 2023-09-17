@@ -42,6 +42,10 @@ export default (jobId?: string) => {
         completed
         progress
         error
+        status {
+          jobStatus
+          startedAt
+        }
       }
     `),
     {
@@ -86,6 +90,10 @@ export default (jobId?: string) => {
             completed
             progress
             error
+            status {
+              jobStatus
+              startedAt
+            }
           }
         `),
         variables: {

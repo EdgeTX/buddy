@@ -99,9 +99,7 @@ export const startExecution = async (
     });
 
     if (fetchCloudbuild) {
-      updateStageStatus(jobId, "build", {
-        started: true,
-      });
+      updateStageStatus(jobId, "build", { started: true });
 
       const params = {
         release: args.firmware.version,
@@ -124,7 +122,13 @@ export const startExecution = async (
       if (status.status !== "BUILD_SUCCESS") {
         updateStageStatus(jobId, "build", {});
         status = await cloudbuild
-          .waitForJobSuccess(params)
+          .waitForJobSuccess(params, (statusData) => {
+            console.log("Job status updated", statusData);
+            updateStageStatus(jobId, "build", {
+              status: statusData,
+              progress: 0,
+            });
+          })
           .catch((e: Error) => {
             updateStageStatus(jobId, "build", {
               error: e.message,

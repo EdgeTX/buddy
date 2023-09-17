@@ -1,4 +1,5 @@
 import ky from "ky";
+import { JobStatus } from "shared/backend/types";
 
 type Release = {
   sha: string;
@@ -30,13 +31,6 @@ type JobStatusParams = {
   target: string;
   flags: { name: string; value: string }[];
 };
-
-export type JobStatus =
-  | "VOID"
-  | "WAITING_FOR_BUILD"
-  | "BUILD_IN_PROGRESS"
-  | "BUILD_SUCCESS"
-  | "BUILD_ERROR";
 
 type Artifact = {
   created_at: string;
@@ -95,16 +89,32 @@ function timeout(ms: number): Promise<void> {
 
 export const waitForJobSuccess = async (
   params: JobStatusParams,
-  timeoutMs = 15000
+  updateStatus: (statusData: {
+    jobStatus: JobStatus;
+    startedAt: string;
+  }) => void,
+  timeoutMs = 960000 // 16mn
 ): Promise<Job | undefined> => {
   const iterTime = 5000;
   const iterNb = Math.ceil(timeoutMs / iterTime);
+
+  // job status data
+  let startedAt = new Date().getTime().toString();
+  let lastStatus: JobStatus | undefined;
+
   /* eslint-disable no-await-in-loop */
   for (let i = 0; i < iterNb; i += 1) {
-    const status = await queryJobStatus(params);
-    console.log("Cloudbuild job status: ", status);
-    if (status.status === "BUILD_SUCCESS") {
-      return status;
+    const jobStatus = await queryJobStatus(params);
+
+    // notify client of current status
+    if (lastStatus !== jobStatus.status) {
+      startedAt = new Date().getTime().toString();
+      lastStatus = jobStatus.status;
+    }
+    updateStatus({ jobStatus: jobStatus.status, startedAt });
+
+    if (jobStatus.status === "BUILD_SUCCESS") {
+      return jobStatus;
     }
     await timeout(iterTime);
   }

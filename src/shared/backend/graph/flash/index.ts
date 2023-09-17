@@ -22,6 +22,15 @@ const FlashStage = builder.simpleObject("FlashStage", {
     started: t.boolean(),
     completed: t.boolean(),
     error: t.string({ nullable: true }),
+    status: t.field({
+      type: builder.simpleObject("FlashStageBuildStatus", {
+        fields: (t__) => ({
+          jobStatus: t__.string(),
+          startedAt: t__.string(),
+        }),
+      }),
+      nullable: true,
+    }),
   }),
 });
 export type FlashStageType = TypeOf<typeof FlashStage>;
