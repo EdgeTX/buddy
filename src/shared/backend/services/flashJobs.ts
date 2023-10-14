@@ -123,7 +123,6 @@ export const startExecution = async (
         updateStageStatus(jobId, "build", {});
         status = await cloudbuild
           .waitForJobSuccess(params, (statusData) => {
-            console.log("Job status updated", statusData);
             updateStageStatus(jobId, "build", {
               status: statusData,
               progress: 0,
@@ -140,12 +139,29 @@ export const startExecution = async (
         }
       }
 
-      // success
-      firmwareData = await cloudbuild.downloadBinary(
-        status.artifacts[0].download_url
-      );
       updateStageStatus(jobId, "build", {
         completed: true,
+      });
+
+      // success, download
+      updateStageStatus(jobId, "download", {
+        started: true,
+      });
+      firmwareData = await cloudbuild
+        .downloadBinary(status.artifacts[0].download_url)
+        .catch((e: Error) => {
+          updateStageStatus(jobId, "download", {
+            error: e.message,
+          });
+          return undefined;
+        });
+      if (!firmwareData || isCancelled(jobId)) {
+        return;
+      }
+
+      updateStageStatus(jobId, "download", {
+        completed: true,
+        progress: 100,
       });
     } else if (!firmwareData) {
       updateStageStatus(jobId, "download", {

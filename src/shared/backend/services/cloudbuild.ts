@@ -54,9 +54,13 @@ export const fetchTargets = async (): Promise<CloudTargets> => {
   return firmwares;
 };
 
-export const queryJobStatus = async (params: JobStatusParams): Promise<Job> => {
+export const queryJobStatus = async (
+  params: JobStatusParams,
+  abortSignal: AbortSignal | undefined = undefined
+): Promise<Job> => {
   const response = await ky.post("https://cloudbuild.edgetx.org/api/status", {
     body: JSON.stringify(params),
+    signal: abortSignal,
     throwHttpErrors: false,
   });
 
@@ -96,29 +100,47 @@ export const waitForJobSuccess = async (
   timeoutMs = 960000 // 16mn
 ): Promise<Job | undefined> => {
   const iterTime = 5000;
-  const iterNb = Math.ceil(timeoutMs / iterTime);
+  let timedOut = false;
 
   // job status data
   let startedAt = new Date().getTime().toString();
   let lastStatus: JobStatus | undefined;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+    timedOut = true;
+  }, timeoutMs);
+
   /* eslint-disable no-await-in-loop */
-  for (let i = 0; i < iterNb; i += 1) {
-    const jobStatus = await queryJobStatus(params);
+  while (!timedOut) {
+    try {
+      const jobStatus = await queryJobStatus(params, controller.signal);
 
-    // notify client of current status
-    if (lastStatus !== jobStatus.status) {
-      startedAt = new Date().getTime().toString();
-      lastStatus = jobStatus.status;
-    }
-    updateStatus({ jobStatus: jobStatus.status, startedAt });
+      // notify client of current status
+      if (lastStatus !== jobStatus.status) {
+        startedAt = new Date().getTime().toString();
+        lastStatus = jobStatus.status;
+      }
+      updateStatus({ jobStatus: jobStatus.status, startedAt });
 
-    if (jobStatus.status === "BUILD_SUCCESS") {
-      return jobStatus;
+      if (jobStatus.status === "BUILD_SUCCESS") {
+        clearTimeout(timeoutId);
+        return jobStatus;
+      }
+
+      await timeout(iterTime);
+    } catch (err) {
+      // ignore controller abort error, it's timeout
+      if (err instanceof Error && err.name === "AbortError") {
+        console.error(err);
+      } else {
+        throw err;
+      }
     }
-    await timeout(iterTime);
   }
   /* eslint-enable no-await-in-loop */
+  clearTimeout(timeoutId);
   throw new Error("Build process timeout");
 };
 

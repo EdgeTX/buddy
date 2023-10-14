@@ -216,7 +216,7 @@ builder.mutationType({
         let job;
         if (fetchCloudbuild) {
           job = context.flashJobs.createJob(
-            ["connect", "build", "erase", "flash"],
+            ["connect", "build", "download", "erase", "flash"],
             {
               firmware,
               deviceId,

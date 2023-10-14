@@ -1,16 +1,8 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
-import { JobStatus } from "shared/backend";
+import { JobStatus } from "shared/backend/types";
+import { format } from "date-fns";
 import type { FlashingBuildStageStatus } from "./FlashJobTimeline";
-
-function formatDuration(time: number): string {
-  const sec = time % 60;
-  const mn = Math.floor(time / 60);
-  const formattedSec = String(sec).padStart(2, "0");
-  const formattedMn = String(mn).padStart(2, "0");
-  if (mn < 1) return `00:${formattedSec}`;
-  return `${formattedMn}:${formattedSec}`;
-}
 
 function jobStatusText(status: JobStatus): string {
   return {
@@ -52,8 +44,8 @@ const FlashBuildStatus: React.FC<Props> = ({ status }) => {
         style={{ transform: "translate(0, 2px)", color: "gray" }}
       />{" "}
       <p style={{ color: "gray", border: "black" }}>
-        {jobStatusText(status.jobStatus as JobStatus)} since{"  "}
-        {formatDuration(sinceTime)}
+        {jobStatusText(status.jobStatus as JobStatus)} -{"  "}
+        {format(sinceTime * 1000, "mm:ss")}
       </p>
     </div>
   );
