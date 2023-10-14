@@ -2,8 +2,8 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import { JobStatus } from "shared/backend/types";
 import { format } from "date-fns";
-import type { FlashingBuildStageStatus } from "./FlashJobTimeline";
 import { TFunction, useTranslation } from "react-i18next";
+import type { FlashingBuildStageStatus } from "./FlashJobTimeline";
 
 function jobStatusText(
   status: JobStatus,
