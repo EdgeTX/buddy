@@ -102,5 +102,10 @@
   "Writing new firmware to radio, this could take several minutes": "Writing new firmware to radio, this could take several minutes",
   "You may now want to <1>setup your SD Card</1>": "You may now want to <1>setup your SD Card</1>",
   "You're all set!": "You're all set!",
-  "Your radio has been flashed with EdgeTX": "Your radio has been flashed with EdgeTX"
+  "Your radio has been flashed with EdgeTX": "Your radio has been flashed with EdgeTX",
+  "Created": "Created",
+  "In queue": "In queue",
+  "Building on server": "Building on server",
+  "Build finished": "Build finished",
+  "Failed": "Failed"
 }

@@ -3,14 +3,18 @@ import React, { useEffect, useState } from "react";
 import { JobStatus } from "shared/backend/types";
 import { format } from "date-fns";
 import type { FlashingBuildStageStatus } from "./FlashJobTimeline";
+import { TFunction, useTranslation } from "react-i18next";
 
-function jobStatusText(status: JobStatus): string {
+function jobStatusText(
+  status: JobStatus,
+  t: TFunction<"flashing", undefined>
+): string {
   return {
-    VOID: "Created",
-    WAITING_FOR_BUILD: "In queue",
-    BUILD_IN_PROGRESS: "Building on server",
-    BUILD_SUCCESS: "Build finished",
-    BUILD_ERROR: "Failed",
+    VOID: t("Created"),
+    WAITING_FOR_BUILD: t("In queue"),
+    BUILD_IN_PROGRESS: t("Building on server"),
+    BUILD_SUCCESS: t("Build finished"),
+    BUILD_ERROR: t("Failed"),
   }[status];
 }
 
@@ -20,6 +24,7 @@ type Props = {
 
 const FlashBuildStatus: React.FC<Props> = ({ status }) => {
   const [sinceTime, setSinceTime] = useState(0);
+  const { t } = useTranslation("flashing");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -44,7 +49,7 @@ const FlashBuildStatus: React.FC<Props> = ({ status }) => {
         style={{ transform: "translate(0, 2px)", color: "gray" }}
       />{" "}
       <p style={{ color: "gray", border: "black" }}>
-        {jobStatusText(status.jobStatus as JobStatus)} -{"  "}
+        {jobStatusText(status.jobStatus as JobStatus, t)} -{"  "}
         {format(sinceTime * 1000, "mm:ss")}
       </p>
     </div>
