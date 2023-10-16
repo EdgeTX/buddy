@@ -53,7 +53,7 @@ export const startExecution = async (
   { dfu, firmwareStore, cloudbuild }: Context
 ): Promise<void> => {
   let firmwareData = args.firmware.data;
-  const fetchCloudbuild = !!args.firmware.selectedFlags;
+  const isCloudBuild = !!args.firmware.selectedFlags;
   let dfuProcess: WebDFU | undefined;
 
   const cleanUp = async (): Promise<void> => {
@@ -98,7 +98,7 @@ export const startExecution = async (
       completed: true,
     });
 
-    if (fetchCloudbuild) {
+    if (isCloudBuild) {
       updateStageStatus(jobId, "build", { started: true });
 
       const params = {

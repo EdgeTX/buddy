@@ -142,7 +142,7 @@ builder.mutationType({
       resolve: async (_, { firmware, deviceId }, context) => {
         let firmwareData: Buffer | undefined;
         let firmwareBundleUrl: string | undefined;
-        let fetchCloudbuild = false;
+        let isCloudBuild = false;
 
         if (firmware.selectedFlags) {
           // check that all flags are set correctly
@@ -153,7 +153,7 @@ builder.mutationType({
             throw new GraphQLError("Specified flags are not valid");
           }
           // get firmware on cloudbuild
-          fetchCloudbuild = true;
+          isCloudBuild = true;
         } else if (firmware.version === "local") {
           // local firmware
           const localFirmware = context.firmwareStore.getLocalFirmwareById(
@@ -214,7 +214,7 @@ builder.mutationType({
         // If we already have the firmware we don't need to download
         // So start the state off assuming no download step
         let job;
-        if (fetchCloudbuild) {
+        if (isCloudBuild) {
           job = context.flashJobs.createJob(
             ["connect", "build", "download", "erase", "flash"],
             {
