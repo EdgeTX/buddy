@@ -1,5 +1,6 @@
 import ky from "ky";
 import { JobStatus } from "shared/backend/types";
+import { delay } from "shared/tools";
 
 type Release = {
   sha: string;
@@ -86,11 +87,6 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
   return data as Job;
 };
 
-function timeout(ms: number): Promise<void> {
-  /* eslint-disable-next-line no-promise-executor-return */
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export const waitForJobSuccess = async (
   params: JobStatusParams,
   updateStatus: (statusData: {
@@ -129,7 +125,7 @@ export const waitForJobSuccess = async (
         return jobStatus;
       }
 
-      await timeout(iterTime);
+      await delay(iterTime);
     } catch (err) {
       // ignore controller abort error, it's timeout
       if (err instanceof Error && err.name === "AbortError") {
