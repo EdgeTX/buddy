@@ -11,12 +11,19 @@ import {
 import { Alert, Button, Progress, Steps, Typography } from "antd";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import FlashBuildStatus from "./FlashBuildStatus";
+
+export type FlashingBuildStageStatus = {
+  jobStatus: string;
+  startedAt: string;
+};
 
 type FlashingStageStatus = {
   progress: number;
   started: boolean;
   completed: boolean;
   error?: string | null;
+  status?: FlashingBuildStageStatus | null;
 };
 
 type FlashingState = {
@@ -298,6 +305,9 @@ const FlashJobTimeline: React.FC<Props> = ({
                     <Typography.Text type={descriptionTextColor(stageStatus)}>
                       {stageDescription(config, stageStatus)}
                     </Typography.Text>
+                    {!stageStatus.error && stageStatus.status && (
+                      <FlashBuildStatus status={stageStatus.status} />
+                    )}
                     {config.showProgess && !isSpecialError && (
                       <div
                         style={{

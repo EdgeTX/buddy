@@ -170,6 +170,96 @@ export const downloadError: React.FC = () => (
   />
 );
 
+export const cloudbuild: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      build: {
+        started: true,
+        progress: 0,
+        completed: false,
+      },
+      erase: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      flash: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+    }}
+  />
+);
+
+export const cloudbuildStatus: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      build: {
+        started: true,
+        progress: 0,
+        completed: false,
+        status: {
+          jobStatus: "WAITING_FOR_BUILD",
+          startedAt: new Date().getTime().toString(),
+        },
+      },
+      erase: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      flash: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+    }}
+  />
+);
+
+export const cloudbuildError: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      build: {
+        started: true,
+        progress: 0,
+        status: {
+          jobStatus: "WAITING_FOR_BUILD",
+          startedAt: new Date().getTime().toString(),
+        },
+        error: "Some error :(",
+        completed: false,
+      },
+      erase: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      flash: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+    }}
+  />
+);
+
 const useFlashingState = () => {
   const [state, setState] = useState({
     connect: {

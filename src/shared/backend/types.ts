@@ -16,6 +16,13 @@ export type TypeOf<
 
 // cloudbuild
 
+export type JobStatus =
+  | "VOID"
+  | "WAITING_FOR_BUILD"
+  | "BUILD_IN_PROGRESS"
+  | "BUILD_SUCCESS"
+  | "BUILD_ERROR";
+
 export type Flags = {
   id: string;
   values: string[];

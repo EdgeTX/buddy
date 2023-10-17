@@ -1,4 +1,6 @@
 import ky from "ky";
+import { JobStatus } from "shared/backend/types";
+import { delay } from "shared/tools";
 
 type Release = {
   sha: string;
@@ -31,13 +33,6 @@ type JobStatusParams = {
   flags: { name: string; value: string }[];
 };
 
-export type JobStatus =
-  | "VOID"
-  | "WAITING_FOR_BUILD"
-  | "BUILD_IN_PROGRESS"
-  | "BUILD_SUCCESS"
-  | "BUILD_ERROR";
-
 type Artifact = {
   created_at: string;
   updated_at: string;
@@ -60,9 +55,13 @@ export const fetchTargets = async (): Promise<CloudTargets> => {
   return firmwares;
 };
 
-export const queryJobStatus = async (params: JobStatusParams): Promise<Job> => {
+export const queryJobStatus = async (
+  params: JobStatusParams,
+  abortSignal: AbortSignal | undefined = undefined
+): Promise<Job> => {
   const response = await ky.post("https://cloudbuild.edgetx.org/api/status", {
     body: JSON.stringify(params),
+    signal: abortSignal,
     throwHttpErrors: false,
   });
 
@@ -86,6 +85,59 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
   }
 
   return data as Job;
+};
+
+export const waitForJobSuccess = async (
+  params: JobStatusParams,
+  updateStatus: (statusData: {
+    jobStatus: JobStatus;
+    startedAt: string;
+  }) => void,
+  timeoutMs = 960000 // 16mn
+): Promise<Job | undefined> => {
+  const iterTime = 5000;
+  let timedOut = false;
+
+  // job status data
+  let startedAt = new Date().getTime().toString();
+  let lastStatus: JobStatus | undefined;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+    timedOut = true;
+  }, timeoutMs);
+
+  /* eslint-disable no-await-in-loop */
+  while (!timedOut) {
+    try {
+      const jobStatus = await queryJobStatus(params, controller.signal);
+
+      // notify client of current status
+      if (lastStatus !== jobStatus.status) {
+        startedAt = new Date().getTime().toString();
+        lastStatus = jobStatus.status;
+      }
+      updateStatus({ jobStatus: jobStatus.status, startedAt });
+
+      if (jobStatus.status === "BUILD_SUCCESS") {
+        clearTimeout(timeoutId);
+        return jobStatus;
+      }
+
+      await delay(iterTime);
+    } catch (err) {
+      // ignore controller abort error, it's timeout
+      if (err instanceof Error && err.name === "AbortError") {
+        console.error(err);
+      } else {
+        throw err;
+      }
+    }
+  }
+  /* eslint-enable no-await-in-loop */
+  clearTimeout(timeoutId);
+  throw new Error("Build process timeout");
 };
 
 export const downloadBinary = async (downloadUrl: string): Promise<Buffer> => {

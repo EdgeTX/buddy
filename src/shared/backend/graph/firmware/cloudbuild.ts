@@ -65,19 +65,19 @@ const CloudFirmware = builder.simpleObject("CloudFirmwareStatus", {
   }),
 });
 
+const SelectedFlags = builder.inputType("SelectedFlag", {
+  fields: (t__) => ({
+    name: t__.string({ required: true }),
+    value: t__.string({ required: true }),
+  }),
+});
+
 const CloudFirmwareParams = builder.inputType("CloudFirmwareParams", {
   fields: (t) => ({
     release: t.string({ required: true }),
     target: t.string({ required: true }),
     flags: t.field({
-      type: [
-        builder.inputType("SelectedFlag", {
-          fields: (t__) => ({
-            name: t__.string({ required: true }),
-            value: t__.string({ required: true }),
-          }),
-        }),
-      ],
+      type: [SelectedFlags],
       required: true,
     }),
   }),
