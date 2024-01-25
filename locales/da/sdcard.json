@@ -1,0 +1,9 @@
+{
+  "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Trin 1.</0> Tænd for enhed, kontroller at den ikke er forbundet til USB",
+  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Trin 2.</0> Forbind enhed til pc, og hvis der kommer en prompt vælg '<2>USB masselager</2>'",
+  "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Trin 3.</0> Når forbundet, vælg SD kort via file browser, så du kan ændre indhold",
+  "Select SD Card": "Vælg SD kort",
+  "The SD card editor is still in development": "SD kort editor er fortsat i udvikling",
+  "This feature is not supported by your browser": "Disse funktioner understøttes ikke af din browser",
+  "You may notice missing features or bugs, it's recommended to continue using Flasher as your main SD Card tool": "Der kan være mangler eller fejl, så vi anbefaler at du fortsat anvender Brænding som dit primære værktøj til SD kort"
+}
