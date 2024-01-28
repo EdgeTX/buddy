@@ -206,7 +206,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install required python deps
-        run: python3 -m pip install packaging
+        run: python3 -m pip install setuptools
 
       - name: Install
         env:
