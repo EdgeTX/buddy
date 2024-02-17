@@ -11255,7 +11255,7 @@ __metadata:
     i18next-parser: ^5.4.0
     is-ci: ^3.0.1
     is-mobile: ^3.0.0
-    iso-639-1: ^2.1.11
+    iso-639-1: ^3.1.1
     jest-styled-components: ^7.0.8
     js-file-download: ^0.4.12
     jsdom: ^19.0.0
@@ -16129,10 +16129,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iso-639-1@npm:^2.1.11":
-  version: 2.1.11
-  resolution: "iso-639-1@npm:2.1.11"
-  checksum: f69efb6cbb2c2006317ed6e1a090c88d1d8c288e4c27a142a02b0edf7e38a32c77aec7801abda5337f115861ab92fe57a4327bdc3ab8b57fff513d272bc1ee45
+"iso-639-1@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "iso-639-1@npm:3.1.1"
+  checksum: 989773a3a6f103baeb9c66e6cc501de42a1c1cfb3a1244bf5f4c0d771578e3a9c6a23403deed38ea887dca0f4c93507b3320de2b966f162564eda6382b658479
   languageName: node
   linkType: hard
 
