@@ -1,6 +1,6 @@
 {
   "<0>Step 1.</0> Power on your device, make sure it's not plugged into USB": "<0>Steg 1.</0> Starta din enhet, kontrollera att den inte är ansluten till USB",
-  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Steg 2.</0> Anslut enheten till datorn via USB och om det visas en prompt, välj '<2>USB masslagring</2>'",
+  "<0>Step 2.</0> Connect your device to the computer via USB, and if prompted select '<2>USB Storage</2>'": "<0>Steg 2.</0> Anslut enheten till datorn via USB och om det visas en prompt, välj '<2>USB-lagring (SD)</2>'",
   "<0>Step 3.</0> Once connected, select the devices SD Card via the file explorer to make changes": "<0>Steg 3.</0> När anslutningen är klar, välj enhetens SD-kort via filhanteraren för att göra ändringar",
   "Select SD Card": "Välj SD-kort",
   "The SD card editor is still in development": "SD-kortredigeraren är fortfarande under utveckling",
