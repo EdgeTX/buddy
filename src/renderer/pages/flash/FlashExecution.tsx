@@ -52,7 +52,7 @@ const FlashExecution: React.FC = () => {
   } = useFlashJobStatus(jobId);
 
   useEffect(() => {
-    if (!jobId || (!loading && !jobExists) || error || jobCancelled) {
+    if (!jobId || (!loading && !jobExists) || !!error || jobCancelled) {
       // this job doesn't exist
       navigate("/flash", { replace: true });
     }

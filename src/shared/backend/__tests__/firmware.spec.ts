@@ -11,14 +11,14 @@ describe("Query", () => {
       const { nockDone } = await nock.back("firmware-releases.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxReleases {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -76,7 +76,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("firmware-by-tag-id.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxRelease(id: "v2.5.0") {
               id
@@ -84,7 +84,7 @@ describe("Query", () => {
               description
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -101,7 +101,7 @@ describe("Query", () => {
         const { nockDone } = await nock.back("firmware-with-targets.json");
 
         const { data, errors } = await backend.query({
-          query: gql`
+          query: gql(`
             query {
               edgeTxRelease(id: "v2.5.0") {
                 id
@@ -115,7 +115,7 @@ describe("Query", () => {
                 }
               }
             }
-          `,
+          `),
         });
 
         expect(errors).toBeFalsy();
@@ -237,7 +237,7 @@ describe("Query", () => {
           const { nockDone } = await nock.back("firmware-with-targets.json");
 
           const { data, errors } = await backend.query({
-            query: gql`
+            query: gql(`
               query {
                 edgeTxRelease(id: "v2.5.0") {
                   id
@@ -251,7 +251,7 @@ describe("Query", () => {
                   }
                 }
               }
-            `,
+            `),
           });
 
           expect(errors).toBeFalsy();
@@ -275,7 +275,7 @@ describe("Query", () => {
           const { nockDone } = await nock.back("firmware-with-targets.json");
 
           const { data, errors } = await backend.query({
-            query: gql`
+            query: gql(`
               query {
                 edgeTxRelease(id: "v2.5.0") {
                   id
@@ -289,7 +289,7 @@ describe("Query", () => {
                   }
                 }
               }
-            `,
+            `),
           });
 
           expect(errors).toBeFalsy();
@@ -313,7 +313,7 @@ describe("Query", () => {
               );
 
               const { data, errors } = await backend.query({
-                query: gql`
+                query: gql(`
                   query {
                     edgeTxRelease(id: "nightly") {
                       id
@@ -325,7 +325,7 @@ describe("Query", () => {
                       }
                     }
                   }
-                `,
+                `),
               });
 
               expect(errors).toBeFalsy();
@@ -349,7 +349,7 @@ describe("Query", () => {
               );
 
               const { data, errors } = await backend.query({
-                query: gql`
+                query: gql(`
                   query {
                     edgeTxRelease(id: "v2.7.0") {
                       id
@@ -361,7 +361,7 @@ describe("Query", () => {
                       }
                     }
                   }
-                `,
+                `),
               });
 
               expect(errors).toBeFalsy();
@@ -387,7 +387,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("edgetx-prs.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxPrs {
               id
@@ -395,7 +395,7 @@ describe("Query", () => {
               headCommitId
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -437,7 +437,7 @@ describe("Query", () => {
         const { nockDone } = await nock.back("edgetx-single-pr.json");
 
         const { data, errors } = await backend.query({
-          query: gql`
+          query: gql(`
             query {
               edgeTxPr(id: "1337") {
                 id
@@ -450,7 +450,7 @@ describe("Query", () => {
                 headCommitId
               }
             }
-          `,
+          `),
         });
 
         expect(errors).toBeFalsy();
@@ -483,7 +483,7 @@ describe("Query", () => {
           );
 
           const { data, errors } = await backend.query({
-            query: gql`
+            query: gql(`
               query {
                 edgeTxPr(id: "1337") {
                   id
@@ -498,7 +498,7 @@ describe("Query", () => {
                   headCommitId
                 }
               }
-            `,
+            `),
           });
 
           expect(errors).toBeFalsy();
@@ -527,7 +527,7 @@ describe("Query", () => {
             );
 
             const { data, errors } = await backend.query({
-              query: gql`
+              query: gql(`
                 query {
                   edgeTxPr(id: "1337") {
                     id
@@ -545,7 +545,7 @@ describe("Query", () => {
                     headCommitId
                   }
                 }
-              `,
+              `),
             });
 
             expect(errors).toBeFalsy();
@@ -582,13 +582,13 @@ describe("Mutation", () => {
     it("should store the given firmware data and give it an ID", async () => {
       const base64Data = Buffer.from("some-firmware-data").toString("base64");
       const mutation = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation UploadFirmware($data: String!) {
             registerLocalFirmware(firmwareBase64Data: $data) {
               id
             }
           }
-        `,
+        `),
         variables: {
           data: base64Data,
         },
@@ -598,14 +598,14 @@ describe("Mutation", () => {
       const { id } = mutation.data?.registerLocalFirmware as { id: string };
 
       const response = await backend.query({
-        query: gql`
+        query: gql(`
           query QueryLocalFirmware($id: ID!) {
             localFirmware(byId: $id) {
               id
               base64Data
             }
           }
-        `,
+        `),
         variables: {
           id,
         },

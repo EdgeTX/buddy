@@ -1,5 +1,6 @@
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import { Modal, Tabs } from "antd";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,7 +14,7 @@ const SdcardEditor: React.FC = () => {
   const isWide = useMedia({ minWidth: "1200px" });
 
   const { data, loading, error } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query SdcardInfo($directoryId: ID!) {
         sdcardDirectory(id: $directoryId) {
           id

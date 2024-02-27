@@ -4,6 +4,7 @@ import {
   execute,
   ExecutionArgs,
   ExecutionResult,
+  Kind,
   OperationDefinitionNode,
 } from "graphql";
 import { createContext, schema, UsbApi, FileSystemApi } from "shared/backend";
@@ -28,7 +29,8 @@ type Executor = {
 
 const getOperationName = (document: DocumentNode): string | undefined =>
   document.definitions.find(
-    (def): def is OperationDefinitionNode => def.kind === "OperationDefinition"
+    (def): def is OperationDefinitionNode =>
+      def.kind === Kind.OPERATION_DEFINITION
   )?.name?.value;
 
 export const createExecutor = ({

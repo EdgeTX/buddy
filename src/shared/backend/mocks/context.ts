@@ -4,7 +4,6 @@ import { GithubClient } from "shared/api/github";
 import { createDfuMock } from "./dfu";
 import { createMockUsb } from "./usb";
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createMockContext = (
   extras: {
     fileSystem: FileSystemApi;
@@ -13,6 +12,7 @@ export const createMockContext = (
   options?: {
     faster?: boolean;
   }
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 ) =>
   createContext({
     usb: createMockUsb(),

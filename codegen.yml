@@ -1,6 +1,7 @@
 overwrite: true
 schema:
   - "./codegen.schema.js"
+
 generates:
   ./schema.graphql:
     plugins:
@@ -11,14 +12,3 @@ generates:
   ./src/renderer/gql/__generated__/apollo-helpers.ts:
     plugins:
       - typescript-apollo-client-helpers
-
-  ./src/renderer/__generated__/tag/:
-    documents:
-      - "src/renderer/**/*.{ts,tsx}":
-          noRequire: true
-      - "!**/__generated__/*.ts"
-
-    preset: gql-tag-operations
-    presetConfig:
-      # define which module you want to import your gql function from
-      augmentedModuleName: "@apollo/client"

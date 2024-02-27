@@ -69,7 +69,7 @@ nock.back.fixtures = `${dirname(
 )}/../__fixtures__`;
 
 beforeEach(() => {
-  nock.back.setMode(isCI ? "lockdown" : "record");
+  nock.back.setMode("lockdown");
 });
 
 const origConsoleError = console.error;

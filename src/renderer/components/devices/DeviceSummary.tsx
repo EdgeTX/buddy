@@ -2,7 +2,8 @@ import { UsbOutlined } from "@ant-design/icons";
 import { Skeleton, Space, Typography } from "antd";
 import React from "react";
 import { Centered } from "renderer/shared/layouts";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import { Device } from "./types";
 
 const DeviceDetails: React.FC<{ device?: Device; loading?: boolean }> = ({
@@ -43,7 +44,7 @@ const DeviceDetails: React.FC<{ device?: Device; loading?: boolean }> = ({
 
 const DeviceSummary: React.FC<{ deviceId: string }> = ({ deviceId }) => {
   const { loading, data } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query DeviceInfo($deviceId: ID!) {
         flashableDevice(id: $deviceId) {
           id

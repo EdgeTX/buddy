@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import { Skeleton } from "antd";
 import React from "react";
 import { Centered } from "renderer/shared/layouts";
@@ -18,7 +19,7 @@ const FirmwareSummary: React.FC<{
   const isPr = isPrVersion(version);
 
   const releaseInfoQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query ReleaseInfo($version: ID!, $target: ID!) {
         edgeTxRelease(id: $version) {
           id
@@ -44,7 +45,7 @@ const FirmwareSummary: React.FC<{
   );
 
   const firmwareFileQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query LocalFirmwareInfo($fileId: ID!) {
         localFirmware(byId: $fileId) {
           id
@@ -63,7 +64,7 @@ const FirmwareSummary: React.FC<{
   const prVersion = decodePrVersion(version);
 
   const prFirmwareQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
         edgeTxPr(id: $prId) {
           id

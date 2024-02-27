@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import gql from "gql";
 import {
   Alert,
   Button,
@@ -65,7 +66,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
 
   const sdcardAssetInfoQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query SdcardAssetInfo($directoryId: ID!) {
         sdcardDirectory(id: $directoryId) {
           id
@@ -89,7 +90,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
   );
 
   const sdcardPacksQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query SdcardPacks {
         edgeTxSdcardPackReleases {
           id
@@ -145,7 +146,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
   );
 
   const sdcardSoundsQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query SdcardSoundsForPack(
         $packId: ID
         $soundsVersion: ID
@@ -381,23 +382,23 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
               type="primary"
               onClick={() => {
                 if (
-                  newSoundsVersion ||
-                  newPackVersion ||
-                  newPackTarget ||
-                  newSoundsId
+                  !!newSoundsVersion ||
+                  !!newPackVersion ||
+                  !!newPackTarget ||
+                  !!newSoundsId
                 ) {
                   void createWriteJob({
                     variables: {
                       directoryId,
                       pack:
-                        newPackVersion || newPackTarget
+                        !!newPackVersion || !!newPackTarget
                           ? {
                               version: packVersion!,
                               target: packTarget!,
                             }
                           : null,
                       sounds:
-                        newSoundsVersion || newSoundsId
+                        !!newSoundsVersion || !!newSoundsId
                           ? {
                               ids: [soundsId!],
                               version: soundsVersion!,

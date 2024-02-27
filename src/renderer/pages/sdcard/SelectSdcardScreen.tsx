@@ -13,7 +13,8 @@ import {
 } from "renderer/shared/layouts";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
+import gql from "gql";
 import environment from "shared/environment";
 import checks from "renderer/compatibility/checks";
 import { useTranslation, Trans } from "react-i18next";
@@ -48,7 +49,7 @@ const SelectSdcardScreen: React.FC = () => {
   const { t } = useTranslation("sdcard");
 
   const [selectDirectory] = useMutation(
-    gql(/* GraphQL */ `
+    gql(`
       mutation PickSdcardDirectory {
         pickSdcardDirectory {
           id

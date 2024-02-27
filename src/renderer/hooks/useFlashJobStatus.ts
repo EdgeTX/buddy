@@ -1,11 +1,12 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import { exception } from "react-ga";
 import { useEffect } from "react";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default (jobId?: string) => {
   const { data, subscribeToMore, error, loading } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query FlashJobStatus($jobId: ID!) {
         flashJobStatus(jobId: $jobId) {
           id
@@ -60,7 +61,7 @@ export default (jobId?: string) => {
   useEffect(() => {
     if (jobId) {
       const unsub = subscribeToMore({
-        document: gql(/* GraphQL */ `
+        document: gql(`
           subscription FlashJobUpdates($jobId: ID!) {
             flashJobStatusUpdates(jobId: $jobId) {
               id

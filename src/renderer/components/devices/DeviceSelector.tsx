@@ -3,7 +3,8 @@ import {
   SyncOutlined,
   UsbOutlined,
 } from "@ant-design/icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import gql from "gql";
 import { Button, Card, Empty, Typography } from "antd";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -36,7 +37,7 @@ type Props = {
   disabled?: boolean;
 };
 
-const DevicesQuery = gql(/* GraphQL */ `
+const DevicesQuery = gql(`
   query Devices {
     flashableDevices {
       id
@@ -59,7 +60,7 @@ const DeviceSelector: React.FC<Props> = ({
   const { t } = useTranslation("flashing");
 
   const [requestDevice] = useMutation(
-    gql(/* GraphQL */ `
+    gql(`
       mutation RequestDevice {
         requestFlashableDevice {
           id

@@ -1,17 +1,17 @@
 import { MockedResponse } from "@apollo/client/testing";
-import gql from "graphql-tag";
+import gql from "gql";
 import { exampleTargetsList } from "test-utils/data";
 
 // eslint-disable-next-line import/prefer-default-export
 export const pickSdcardDirectoryMutation = (id?: string): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       mutation PickSdcardDirectory {
         pickSdcardDirectory {
           id
         }
       }
-    `,
+    `),
   },
   result: {
     data: {
@@ -30,7 +30,7 @@ export const sdcardInfoQuery = (
   details?: { isValid: boolean; version?: string; target?: string }
 ): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query SdcardInfo($directoryId: ID!) {
         sdcardDirectory(id: $directoryId) {
           id
@@ -41,7 +41,7 @@ export const sdcardInfoQuery = (
           }
         }
       }
-    `,
+    `),
     variables: {
       directoryId,
     },
@@ -69,7 +69,7 @@ export const sdcardAssetInfoQuery = (
   }
 ): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query SdcardAssetInfo($directoryId: ID!) {
         sdcardDirectory(id: $directoryId) {
           id
@@ -84,7 +84,7 @@ export const sdcardAssetInfoQuery = (
           }
         }
       }
-    `,
+    `),
     variables: {
       directoryId,
     },
@@ -104,7 +104,7 @@ export const sdcardAssetInfoQuery = (
 
 export const sdcardPacksQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query SdcardPacks {
         edgeTxSdcardPackReleases {
           id
@@ -116,7 +116,7 @@ export const sdcardPacksQuery: MockedResponse = {
           }
         }
       }
-    `,
+    `),
   },
   result: {
     data: {

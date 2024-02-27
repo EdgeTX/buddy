@@ -12,7 +12,7 @@ describe("Cloudbuild Query", () => {
         "cloudbuild-targets-github-releases.json"
       );
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             cloudTargets {
               releases {
@@ -40,7 +40,7 @@ describe("Cloudbuild Query", () => {
               }
             }
           }
-        `,
+        `),
       });
       expect(errors).toBeFalsy();
       expect(data?.cloudTargets).toMatchInlineSnapshot(`
@@ -269,7 +269,7 @@ describe("Cloudbuild Query", () => {
       const { nockDone } = await nock.back("cloudbuild-job-status.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query CloudFirmware($params: CloudFirmwareParams!) {
             cloudFirmware(params: $params) {
               status
@@ -277,7 +277,7 @@ describe("Cloudbuild Query", () => {
               base64Data
             }
           }
-        `,
+        `),
         variables: {
           params: {
             release: "v2.8.4",

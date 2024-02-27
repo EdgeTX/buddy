@@ -55,7 +55,7 @@ export const fetchTargetsManifest = async (
       }
 
       return uniqueBy(
-        ((await res.json()) as ManifestResponse).targets.map(
+        (await res.json<ManifestResponse>()).targets.map(
           ([name, id, asset]) => ({
             name,
             id: id.slice(0, id.length - 1),

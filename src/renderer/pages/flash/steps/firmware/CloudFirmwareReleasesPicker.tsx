@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CloudVersionTargetForm from "renderer/components/CloudVersionTargetForm";
@@ -18,7 +19,7 @@ type Props = {
   selectedFlags?: SelectedFlags;
 };
 
-const GET_FIRMWARES = gql(/* GraphQL */ `
+const GET_FIRMWARES = gql(`
   query CloudTargets {
     cloudTargets {
       releases {
@@ -145,7 +146,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
 
   // Unselect target if selected target does not exist.
   useEffect(() => {
-    if (!target || selectedTarget || !targets) return undefined;
+    if (!target || !!selectedTarget || !targets) return undefined;
     const timeout = setTimeout(() =>
       onChanged({
         version,

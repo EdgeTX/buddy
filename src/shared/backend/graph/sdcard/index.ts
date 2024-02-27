@@ -175,12 +175,13 @@ const findBestReleaseForPack = <
 ): T | undefined =>
   sortedReleases.find(
     (r) =>
-      (semver.valid(r.tag_name) &&
+      !!(
+        semver.valid(r.tag_name) &&
         semver.valid(packVersion) &&
         semver.major(r.tag_name) === semver.major(packVersion) &&
         semver.minor(r.tag_name) <= semver.minor(packVersion) &&
-        r.prerelease === isPrerelease) ||
-      r.tag_name === packVersion
+        r.prerelease === isPrerelease
+      ) || r.tag_name === packVersion
   );
 
 builder.queryType({

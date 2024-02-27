@@ -6,7 +6,7 @@ import { devicesQuery } from "test-utils/mocks";
 import { exampleDevices } from "test-utils/data";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 
-import gql from "graphql-tag";
+import gql from "gql";
 
 describe("<DeviceSelector />", () => {
   it("should show devices connected via USB", async () => {
@@ -71,13 +71,13 @@ describe("<DeviceSelector />", () => {
     it("should request a device from the browser when add device is clicked", async () => {
       const requestDeviceQuery: MockedResponse = {
         request: {
-          query: gql`
+          query: gql(`
             mutation RequestDevice {
               requestFlashableDevice {
                 id
               }
             }
-          `,
+          `),
         },
         result: {
           data: {
@@ -117,13 +117,13 @@ describe("<DeviceSelector />", () => {
     it("should disable add device button when disabled", async () => {
       const requestDeviceQuery: MockedResponse = {
         request: {
-          query: gql`
+          query: gql(`
             mutation RequestDevice {
               requestFlashableDevice {
                 id
               }
             }
-          `,
+          `),
         },
         result: {
           data: {
