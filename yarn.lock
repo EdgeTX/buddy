@@ -2434,13 +2434,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gql.tada/cli-utils@npm:0.1.0-canary-f958b917cf8869a3691ab1fc79ff3aec44ffa11e":
-  version: 0.1.0-canary-f958b917cf8869a3691ab1fc79ff3aec44ffa11e
-  resolution: "@gql.tada/cli-utils@npm:0.1.0-canary-f958b917cf8869a3691ab1fc79ff3aec44ffa11e"
+"@gql.tada/cli-utils@npm:0.1.0-canary-c1756d167db5f5a1b649c60f74e70651fa5ed0c4":
+  version: 0.1.0-canary-c1756d167db5f5a1b649c60f74e70651fa5ed0c4
+  resolution: "@gql.tada/cli-utils@npm:0.1.0-canary-c1756d167db5f5a1b649c60f74e70651fa5ed0c4"
   dependencies:
     "@urql/introspection": ^1.0.3
     graphql: ^16.8.1
-  checksum: 12d055c245f7cde0cb564b76a06516e8934b44474374d2959d06634d36b4c27b2804cacf27abe73026afa3c7e106b9990b4906b2af0aa123f984131eeca487c7
+  checksum: 6e9f0af5835e4fa84ca8ca3b8a4c7cfeed7bc980da8fc8ae889b3869f6279b59d2a1916383891fef2d83e4b13c2d7a7fd86a326bd9378a78a3e8adf53e4ae502
   languageName: node
   linkType: hard
 
@@ -14522,15 +14522,15 @@ __metadata:
   linkType: hard
 
 "gql.tada@npm:canary":
-  version: 1.3.0-canary-f958b917cf8869a3691ab1fc79ff3aec44ffa11e
-  resolution: "gql.tada@npm:1.3.0-canary-f958b917cf8869a3691ab1fc79ff3aec44ffa11e"
+  version: 1.3.0-canary-c1756d167db5f5a1b649c60f74e70651fa5ed0c4
+  resolution: "gql.tada@npm:1.3.0-canary-c1756d167db5f5a1b649c60f74e70651fa5ed0c4"
   dependencies:
     "@0no-co/graphql.web": ^1.0.4
-    "@gql.tada/cli-utils": 0.1.0-canary-f958b917cf8869a3691ab1fc79ff3aec44ffa11e
+    "@gql.tada/cli-utils": 0.1.0-canary-c1756d167db5f5a1b649c60f74e70651fa5ed0c4
   bin:
     gql-tada: bin/cli.js
     gql.tada: bin/cli.js
-  checksum: 5c3cec9c1b8d7aae07f62e4db6669142b3b6e0c2de123baadb74a9a0b8ea4aaf00874fc4cf18e3067420908c32ebd68412fe57f0c28f377c27cff7ef75dac503
+  checksum: 71ed3b77fc4d6daf092916c78694038992b308ac2c8459720e86743a1454e4669a3e5529dcddd6daeeb62f94c10a085049e026eb2a7cd4ecec21c9ac27443dad
   languageName: node
   linkType: hard
 
