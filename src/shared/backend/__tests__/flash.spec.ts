@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from "gql";
 import { createExecutor } from "test-utils/backend";
 import { MockedFunction } from "vitest";
 import { createDfuEvents } from "shared/backend/mocks/dfu";
@@ -49,14 +49,14 @@ describe("Query", () => {
       ] as USBDevice[]);
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             flashableDevices {
               id
               productName
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -91,14 +91,14 @@ describe("Query", () => {
       ] as USBDevice[]);
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             flashableDevices {
               id
               productName
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -135,7 +135,7 @@ describe("Query", () => {
       ] as USBDevice[]);
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query FlashableDeviceQuery($id: ID!) {
             flashableDevice(id: $id) {
               id
@@ -145,7 +145,7 @@ describe("Query", () => {
               serialNumber
             }
           }
-        `,
+        `),
         variables: {
           id: "56789",
         },
@@ -177,14 +177,14 @@ describe("Query", () => {
       ] as USBDevice[]);
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query FlashableDeviceQuery($id: ID!) {
             flashableDevice(id: $id) {
               id
               productName
             }
           }
-        `,
+        `),
         variables: {
           id: "98765",
         },
@@ -205,14 +205,14 @@ describe("Mutation", () => {
       } as USBDevice);
 
       const { data, errors } = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDevce {
             requestFlashableDevice {
               id
               productName
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -228,14 +228,14 @@ describe("Mutation", () => {
       requestDeviceMock.mockRejectedValueOnce(new Error("Some error"));
 
       const { data, errors } = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDevce {
             requestFlashableDevice {
               id
               productName
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -277,11 +277,11 @@ describe("Mutation", () => {
       });
 
       const { errors } = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation CreateFlashJob {
             unprotectDevice(deviceId: "some-device-id")
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -291,7 +291,7 @@ describe("Mutation", () => {
 
   const queryFlashStatus = async (jobId: string) => {
     const { data } = await backend.query({
-      query: gql`
+      query: gql(`
         query FlashJobStatus($jobId: ID!) {
           flashJobStatus(jobId: $jobId) {
             cancelled
@@ -328,7 +328,7 @@ describe("Mutation", () => {
           progress
           error
         }
-      `,
+      `),
       variables: {
         jobId,
       },
@@ -339,11 +339,11 @@ describe("Mutation", () => {
 
   const cancelFlashJob = (jobId: string) =>
     backend.mutate({
-      mutation: gql`
+      mutation: gql(`
         mutation CancelFlashJob($jobId: ID!) {
           cancelFlashJob(jobId: $jobId)
         }
-      `,
+      `),
       variables: {
         jobId,
       },
@@ -368,7 +368,7 @@ describe("Mutation", () => {
       });
 
       const createFlashMutation = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation CreateFlashJob {
             createFlashJob(
               firmware: { target: "nv14", version: "v2.5.0" }
@@ -377,7 +377,7 @@ describe("Mutation", () => {
               id
             }
           }
-        `,
+        `),
       });
 
       expect(createFlashMutation.errors).toBeFalsy();
@@ -764,7 +764,7 @@ describe("Mutation", () => {
       );
 
       const createFlashMutation = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation CreateFlashJob {
             createFlashJob(
               firmware: {
@@ -776,7 +776,7 @@ describe("Mutation", () => {
               id
             }
           }
-        `,
+        `),
       });
 
       expect(createFlashMutation.errors).toBeFalsy();
@@ -826,7 +826,7 @@ describe("Mutation", () => {
         backend.context.firmwareStore.registerFirmware(fileData);
 
       const createFlashMutation = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation CreateFlashJob($target: String!) {
             createFlashJob(
               firmware: { target: $target, version: "local" }
@@ -841,7 +841,7 @@ describe("Mutation", () => {
               }
             }
           }
-        `,
+        `),
         variables: {
           target: firmwareId,
         },

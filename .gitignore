@@ -39,3 +39,4 @@ playwright-report/
 e2e-recordings/
 locales/**/*_old.json
 token
+graphql-env.d.ts

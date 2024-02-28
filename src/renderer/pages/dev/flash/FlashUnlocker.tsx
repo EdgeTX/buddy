@@ -1,5 +1,6 @@
 import { UnlockOutlined } from "@ant-design/icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import gql from "gql";
 import { Button, message } from "antd";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,7 @@ const FlashUnlocker: React.FC = () => {
   const selectedDeviceId = parseParam("deviceId");
 
   const [unprotectDevice, { loading }] = useMutation(
-    gql(/* GraphQL */ `
+    gql(`
       mutation UnprotectDevice($deviceId: ID!) {
         unprotectDevice(deviceId: $deviceId)
       }
@@ -26,7 +27,7 @@ const FlashUnlocker: React.FC = () => {
   );
 
   const { refetch } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query Devices {
         flashableDevices {
           id

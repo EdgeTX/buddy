@@ -24,7 +24,10 @@ declare module "*?worker" {
   export default workerConstructor;
 }
 
-declare module "*.webp";
+declare module "*.webp" {
+  const thing: string;
+  export default thing;
+}
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 declare interface Window {

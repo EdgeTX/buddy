@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import gql from "gql";
 import { Typography } from "antd";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +20,7 @@ const JobExecutionModal: React.FC<Props> = ({
   const logBoxRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const { data, subscribeToMore, error, loading } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query SdcardJobStatus($jobId: ID!) {
         sdcardWriteJobStatus(jobId: $jobId) {
           id
@@ -64,7 +65,7 @@ const JobExecutionModal: React.FC<Props> = ({
   useEffect(() => {
     if (jobId) {
       const unsub = subscribeToMore({
-        document: gql(/* GraphQL */ `
+        document: gql(`
           subscription SdcardJobUpdates($jobId: ID!) {
             sdcardWriteJobUpdates(jobId: $jobId) {
               id
@@ -117,14 +118,14 @@ const JobExecutionModal: React.FC<Props> = ({
   const jobCompleted = data?.sdcardWriteJobStatus?.stages.write.completed;
 
   useEffect(() => {
-    if (!jobId || (!loading && !jobExists) || error || jobCancelled) {
+    if (!jobId || (!loading && !jobExists) || !!error || jobCancelled) {
       // this job doesn't exist or has now been cancelled
       navigate("/sdcardv1", { replace: true });
     }
   }, [jobId, loading, jobCancelled, error, jobExists, navigate]);
 
   const [cancelJob] = useMutation(
-    gql(/* GraphQL */ `
+    gql(`
       mutation CancelSdcardJob($jobId: ID!) {
         cancelSdcardWriteJob(jobId: $jobId)
       }

@@ -44,11 +44,11 @@ describe("pages/FlashingWizard", () => {
     describe("Cloud firmware", () => {
       const releases = exampleReleasesList.filter(
         (release) => !release.isPrerelease
-      )!;
+      );
       const latestReleaseVersion = releases[0]!;
       const preReleases = exampleReleasesList.filter(
         (release) => release.isPrerelease
-      )!;
+      );
 
       it("should be the default selected tab", () => {
         renderPage();

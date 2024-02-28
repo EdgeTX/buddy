@@ -139,7 +139,7 @@ export function parseMemoryDescriptor(desc: string): {
     let segmentMatch: RegExpExecArray | null;
     while (
       // eslint-disable-next-line no-cond-assign
-      (segmentMatch = segmentRegex.exec(contiguousSegmentMatch[0] ?? ""))
+      (segmentMatch = segmentRegex.exec(contiguousSegmentMatch[0] || ""))
     ) {
       const sectorCount = parseInt(segmentMatch[1] ?? "", 10);
       const sectorSize =

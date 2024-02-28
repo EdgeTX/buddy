@@ -1,4 +1,5 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import { Divider, Skeleton, Typography } from "antd";
 import React from "react";
 import Markdown from "renderer/components/Markdown";
@@ -9,7 +10,7 @@ type Props = {
 
 const FirmwarePrDescription: React.FC<Props> = ({ prId }) => {
   const { data, loading } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query PrDescription($prId: ID!) {
         edgeTxPr(id: $prId) {
           id

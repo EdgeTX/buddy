@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import useSorted from "renderer/hooks/useSorted";
 import VersionTargetForm, {
   VersionFilters,
@@ -25,7 +26,7 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation("flashing");
   const releasesQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query Releases {
         edgeTxReleases {
           id
@@ -37,7 +38,7 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
   );
 
   const releaseTargetsQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query ReleaseTargets($releaseId: ID!) {
         edgeTxRelease(id: $releaseId) {
           id

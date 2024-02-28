@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from "gql";
 import { MockedFunction } from "vitest";
 import nock from "nock";
 import { createExecutor } from "test-utils/backend";
@@ -26,14 +26,14 @@ describe("Query", () => {
       const { nockDone } = await nock.back("sdcard-pack-releases.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSdcardPackReleases {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -62,7 +62,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("sdcard-pack-latest.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSdcardPackRelease(id: "latest") {
               id
@@ -73,7 +73,7 @@ describe("Query", () => {
               }
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -181,7 +181,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("sdcard-pack-v2.6.0.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSdcardPackRelease(id: "v2.6.0") {
               id
@@ -192,7 +192,7 @@ describe("Query", () => {
               }
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -302,7 +302,7 @@ describe("Query", () => {
       );
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSdcardPackRelease(
               id: "ac15b88c46ac74c4444997d962830d2ffd601869"
@@ -315,7 +315,7 @@ describe("Query", () => {
               }
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -435,7 +435,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("sdcard-pack-not-exist.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSdcardPackRelease(id: "some-unknown-release") {
               id
@@ -446,7 +446,7 @@ describe("Query", () => {
               }
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -461,7 +461,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("sdcard-sounds-releases.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSoundsRelease(forPack: "v2.5.0", isPrerelease: false) {
               id
@@ -469,7 +469,7 @@ describe("Query", () => {
               sounds
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -498,7 +498,7 @@ describe("Query", () => {
       const { nockDone } = await nock.back("sdcard-sounds-releases-2.7.0.json");
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query {
             edgeTxSoundsRelease(forPack: "v2.7.0", isPrerelease: true) {
               id
@@ -506,7 +506,7 @@ describe("Query", () => {
               sounds
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -540,14 +540,14 @@ describe("Query", () => {
     const { nockDone } = await nock.back("sdcard-sounds-releases.json");
 
     const { data, errors } = await backend.query({
-      query: gql`
+      query: gql(`
         query {
           edgeTxSoundsRelease(forPack: "v2.4.0-rc1", isPrerelease: true) {
             id
             name
           }
         }
-      `,
+      `),
     });
 
     expect(errors).toBeFalsy();
@@ -566,14 +566,14 @@ describe("Query", () => {
     );
 
     const { data, errors } = await backend.query({
-      query: gql`
+      query: gql(`
         query {
           edgeTxSoundsRelease(forPack: "v2.6.0", isPrerelease: false) {
             id
             name
           }
         }
-      `,
+      `),
     });
 
     expect(errors).toBeFalsy();
@@ -605,14 +605,14 @@ describe("Mutation", () => {
       } as FileSystemDirectoryHandle);
 
       const { data, errors } = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDirectory {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -629,14 +629,14 @@ describe("Mutation", () => {
       requestWritableDirectory.mockResolvedValueOnce(handle);
 
       const requestDirectoryResponse = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDirectory {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       const { id } = requestDirectoryResponse.data?.pickSdcardDirectory as {
@@ -644,14 +644,14 @@ describe("Mutation", () => {
       };
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query SdcardDirectoryQuery($id: ID!) {
             sdcardDirectory(id: $id) {
               id
               name
             }
           }
-        `,
+        `),
         variables: {
           id,
         },
@@ -670,14 +670,14 @@ describe("Mutation", () => {
       );
 
       const requestDirectoryResponse = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDirectory {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       const { id } = requestDirectoryResponse.data?.pickSdcardDirectory as {
@@ -687,14 +687,14 @@ describe("Mutation", () => {
       await fs.rmdir(tempDir.path);
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query SdcardDirectoryQuery($id: ID!) {
             sdcardDirectory(id: $id) {
               id
               name
             }
           }
-        `,
+        `),
         variables: {
           id,
         },
@@ -712,14 +712,14 @@ describe("Mutation", () => {
           } as FileSystemDirectoryHandle);
 
           const requestDirectoryResponse = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestDirectory {
                 pickSdcardDirectory {
                   id
                   name
                 }
               }
-            `,
+            `),
           });
 
           const { id } = requestDirectoryResponse.data?.pickSdcardDirectory as {
@@ -736,25 +736,25 @@ describe("Mutation", () => {
 
       // Request one more so the first should be gone
       await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestFolder {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       const { data, errors } = await backend.query({
-        query: gql`
+        query: gql(`
           query SdcardDirectoryQuery($id: ID!) {
             sdcardDirectory(id: $id) {
               id
               name
             }
           }
-        `,
+        `),
         variables: {
           id: currentHandles[0]!,
         },
@@ -768,14 +768,14 @@ describe("Mutation", () => {
       requestWritableDirectory.mockRejectedValue(new Error("some error"));
 
       const { data, errors } = await backend.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDirectory {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -799,7 +799,7 @@ describe("Mutation", () => {
 
           await fs.writeFile(path.join(tempDir.path, name), "");
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
@@ -807,7 +807,7 @@ describe("Mutation", () => {
                   isValid
                 }
               }
-            `,
+            `),
           });
 
           expect(errors).toBeFalsy();
@@ -824,7 +824,7 @@ describe("Mutation", () => {
 
         await fs.writeFile(path.join(tempDir.path, "some-other-file"), "");
         const { data, errors } = await backend.mutate({
-          mutation: gql`
+          mutation: gql(`
             mutation RequestFolder {
               pickSdcardDirectory {
                 id
@@ -832,7 +832,7 @@ describe("Mutation", () => {
                 isValid
               }
             }
-          `,
+          `),
         });
 
         expect(errors).toBeFalsy();
@@ -857,7 +857,7 @@ describe("Mutation", () => {
         );
 
         const { data, errors } = await backend.mutate({
-          mutation: gql`
+          mutation: gql(`
             mutation RequestFolder {
               pickSdcardDirectory {
                 id
@@ -867,7 +867,7 @@ describe("Mutation", () => {
                 }
               }
             }
-          `,
+          `),
         });
 
         expect(errors).toBeFalsy();
@@ -885,7 +885,7 @@ describe("Mutation", () => {
         );
 
         const { data, errors } = await backend.mutate({
-          mutation: gql`
+          mutation: gql(`
             mutation RequestFolder {
               pickSdcardDirectory {
                 id
@@ -894,7 +894,7 @@ describe("Mutation", () => {
                 }
               }
             }
-          `,
+          `),
         });
 
         expect(errors).toBeFalsy();
@@ -913,14 +913,14 @@ describe("Mutation", () => {
         );
 
         const { data, errors } = await backend.mutate({
-          mutation: gql`
+          mutation: gql(`
             mutation RequestFolder {
               pickSdcardDirectory {
                 id
                 themes
               }
             }
-          `,
+          `),
         });
         expect(errors).toBeFalsy();
         expect(data?.pickSdcardDirectory).toMatchObject({
@@ -955,14 +955,14 @@ describe("Mutation", () => {
           );
 
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
                   themes
                 }
               }
-            `,
+            `),
           });
           expect(errors).toBeFalsy();
           expect(data?.pickSdcardDirectory).toMatchObject({
@@ -1004,14 +1004,14 @@ describe("Mutation", () => {
           );
 
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
                   themes
                 }
               }
-            `,
+            `),
           });
           expect(errors).toBeFalsy();
           expect(data?.pickSdcardDirectory).toMatchObject({
@@ -1034,7 +1034,7 @@ describe("Mutation", () => {
           );
 
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
@@ -1043,7 +1043,7 @@ describe("Mutation", () => {
                   }
                 }
               }
-            `,
+            `),
           });
           expect(errors).toBeFalsy();
           expect(data?.pickSdcardDirectory).toMatchObject({
@@ -1059,7 +1059,7 @@ describe("Mutation", () => {
           );
 
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
@@ -1068,7 +1068,7 @@ describe("Mutation", () => {
                   }
                 }
               }
-            `,
+            `),
           });
           expect(errors).toBeFalsy();
           expect(data?.pickSdcardDirectory).toMatchObject({
@@ -1091,7 +1091,7 @@ describe("Mutation", () => {
           );
 
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
@@ -1100,7 +1100,7 @@ describe("Mutation", () => {
                   }
                 }
               }
-            `,
+            `),
           });
           expect(errors).toBeFalsy();
           expect(data?.pickSdcardDirectory).toMatchObject({
@@ -1114,7 +1114,7 @@ describe("Mutation", () => {
           );
 
           const { data, errors } = await backend.mutate({
-            mutation: gql`
+            mutation: gql(`
               mutation RequestFolder {
                 pickSdcardDirectory {
                   id
@@ -1123,7 +1123,7 @@ describe("Mutation", () => {
                   }
                 }
               }
-            `,
+            `),
           });
           expect(errors).toBeFalsy();
           expect(data?.pickSdcardDirectory).toMatchObject({
@@ -1170,14 +1170,14 @@ describe("Sdcard Job", () => {
     ]);
 
     const directoryRequest = await backend.mutate({
-      mutation: gql`
+      mutation: gql(`
         mutation RequestDirectory {
           pickSdcardDirectory {
             id
             name
           }
         }
-      `,
+      `),
     });
 
     const { id: directoryId } = directoryRequest.data?.pickSdcardDirectory as {
@@ -1192,7 +1192,7 @@ describe("Sdcard Job", () => {
     );
 
     const createJobRequest = await backend.mutate({
-      mutation: gql`
+      mutation: gql(`
         mutation CreateSdcardJob($directoryId: ID!) {
           createSdcardWriteJob(
             directoryId: $directoryId
@@ -1202,7 +1202,7 @@ describe("Sdcard Job", () => {
             id
           }
         }
-      `,
+      `),
       variables: {
         directoryId,
       },
@@ -1220,7 +1220,7 @@ describe("Sdcard Job", () => {
     nockDone();
 
     const { data, errors } = await backend.query({
-      query: gql`
+      query: gql(`
         query SdcardJobStatus($id: ID!) {
           sdcardWriteJobStatus(jobId: $id) {
             cancelled
@@ -1243,7 +1243,7 @@ describe("Sdcard Job", () => {
             }
           }
         }
-      `,
+      `),
       variables: {
         id: jobId,
       },

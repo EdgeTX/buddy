@@ -1,5 +1,6 @@
 import { DownloadOutlined } from "@ant-design/icons";
-import { gql, useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
+import gql from "gql";
 import { Button, message } from "antd";
 import React, { useState } from "react";
 import { decodePrVersion, isPrVersion } from "shared/tools";
@@ -78,7 +79,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
     if (isCloudBuild && isCloudBuildValid) {
       const flags = selectedFlags as { name: string; value: string }[];
       const response = await client.query({
-        query: gql(/* GraphQL */ `
+        query: gql(`
           query CloudFirmware($params: CloudFirmwareParams!) {
             cloudFirmware(params: $params) {
               base64Data
@@ -102,7 +103,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       );
     } else if (validPrVersion) {
       const response = await client.query({
-        query: gql(/* GraphQL */ `
+        query: gql(`
           query PrBuildFirmwareData($prId: ID!, $commitId: ID!, $target: ID!) {
             edgeTxPr(id: $prId) {
               id
@@ -137,7 +138,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       }
     } else if (!isLocal && target && version) {
       const response = await client.query({
-        query: gql(/* GraphQL */ `
+        query: gql(`
           query ReleaseFirmwareData($version: ID!, $target: ID!) {
             edgeTxRelease(id: $version) {
               id

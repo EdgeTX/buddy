@@ -1,5 +1,5 @@
 import { MockedResponse } from "@apollo/client/testing";
-import gql from "graphql-tag";
+import gql from "gql";
 import { times } from "shared/tools";
 import {
   exampleCloudbuildTargets,
@@ -12,7 +12,7 @@ import {
 
 export const firmwaresQuery = (delay = 100): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query Releases {
         edgeTxReleases {
           id
@@ -20,7 +20,7 @@ export const firmwaresQuery = (delay = 100): MockedResponse => ({
           isPrerelease
         }
       }
-    `,
+    `),
   },
   result: {
     data: {
@@ -32,7 +32,7 @@ export const firmwaresQuery = (delay = 100): MockedResponse => ({
 
 export const targetsQuery = (delay = 1000): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query ReleaseTargets($releaseId: ID!) {
         edgeTxRelease(id: $releaseId) {
           id
@@ -46,7 +46,7 @@ export const targetsQuery = (delay = 1000): MockedResponse => ({
           }
         }
       }
-    `,
+    `),
     variables: {
       releaseId: "v2.5.0",
     },
@@ -84,14 +84,14 @@ export const firmwareReleaseDescriptionQuery = (
   delay = 2000
 ): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query FirmwareReleaseDescription($releaseId: ID!) {
         edgeTxRelease(id: $releaseId) {
           id
           description
         }
       }
-    `,
+    `),
     variables: {
       releaseId: "v2.5.0",
     },
@@ -110,7 +110,7 @@ export const firmwareReleaseDescriptionQuery = (
 
 export const prsQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query EdgeTxPrs {
         edgeTxPrs {
           id
@@ -118,7 +118,7 @@ export const prsQuery: MockedResponse = {
           headCommitId
         }
       }
-    `,
+    `),
   },
   result: {
     data: {
@@ -129,7 +129,7 @@ export const prsQuery: MockedResponse = {
 
 export const prCommitsQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query EdgeTxPrCommits($prId: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -138,7 +138,7 @@ export const prCommitsQuery: MockedResponse = {
           }
         }
       }
-    `,
+    `),
     variables: {
       prId: examplePrs[0]?.id,
     },
@@ -156,7 +156,7 @@ export const prCommitsQuery: MockedResponse = {
 
 export const prCommitBuildQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query EdgeTxPrCommitBuild($prId: ID!, $commitId: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -173,7 +173,7 @@ export const prCommitBuildQuery: MockedResponse = {
           }
         }
       }
-    `,
+    `),
     variables: {
       prId: examplePrs[0]?.id,
       commitId: examplePrs[0]?.headCommitId,
@@ -198,7 +198,7 @@ export const prCommitBuildQuery: MockedResponse = {
 
 export const prCommitBuildNotAvailableQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query EdgeTxPrCommitBuild($prId: ID!, $commitId: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -215,7 +215,7 @@ export const prCommitBuildNotAvailableQuery: MockedResponse = {
           }
         }
       }
-    `,
+    `),
     variables: {
       prId: examplePrs[0]?.id,
       commitId: examplePrCommits[1]?.id,
@@ -237,7 +237,7 @@ export const prCommitBuildNotAvailableQuery: MockedResponse = {
 
 export const prDescriptionQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query PrDescription($prId: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -245,7 +245,7 @@ export const prDescriptionQuery: MockedResponse = {
           description
         }
       }
-    `,
+    `),
     variables: {
       prId: examplePrs[0]?.id,
     },
@@ -267,7 +267,7 @@ export const devicesQuery = (
   devices = exampleDevices
 ): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query Devices {
         flashableDevices {
           id
@@ -277,7 +277,7 @@ export const devicesQuery = (
           productId
         }
       }
-    `,
+    `),
   },
   delay,
   result: {
@@ -289,7 +289,7 @@ export const devicesQuery = (
 
 export const deviceQuery = (delay = 2000): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query DeviceInfo($deviceId: ID!) {
         flashableDevice(id: $deviceId) {
           id
@@ -299,7 +299,7 @@ export const deviceQuery = (delay = 2000): MockedResponse => ({
           productId
         }
       }
-    `,
+    `),
     variables: {
       deviceId: "1",
     },
@@ -314,7 +314,7 @@ export const deviceQuery = (delay = 2000): MockedResponse => ({
 
 export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query ReleaseInfo($version: ID!, $target: ID!) {
         edgeTxRelease(id: $version) {
           id
@@ -328,7 +328,7 @@ export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
           }
         }
       }
-    `,
+    `),
     variables: {
       version: "v2.5.0",
       target: "nv-14",
@@ -350,14 +350,14 @@ export const firmwareReleaseInfoQuery = (delay = 1000): MockedResponse => ({
 
 export const localFirmwareInfoQuery = (delay = 1000): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query LocalFirmwareInfo($fileId: ID!) {
         localFirmware(byId: $fileId) {
           id
           name
         }
       }
-    `,
+    `),
     variables: {
       fileId: "file-id-abcd",
     },
@@ -375,7 +375,7 @@ export const localFirmwareInfoQuery = (delay = 1000): MockedResponse => ({
 
 export const firmwarePrBuildInfoQuery = (delay = 1000): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query PrFirmwareInfo($prId: ID!, $commitId: ID!, $target: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -392,7 +392,7 @@ export const firmwarePrBuildInfoQuery = (delay = 1000): MockedResponse => ({
           }
         }
       }
-    `,
+    `),
     variables: {
       prId: examplePrs[0]?.id,
       commitId: examplePrs[0]?.headCommitId,
@@ -419,7 +419,7 @@ export const firmwarePrBuildInfoQuery = (delay = 1000): MockedResponse => ({
 
 export const prBuildFirmwareDataQuery: MockedResponse = {
   request: {
-    query: gql`
+    query: gql(`
       query PrBuildFirmwareData($prId: ID!, $commitId: ID!, $target: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -435,7 +435,7 @@ export const prBuildFirmwareDataQuery: MockedResponse = {
           }
         }
       }
-    `,
+    `),
     variables: {
       prId: examplePrs[0]?.id,
       commitId: examplePrs[0]?.headCommitId,
@@ -468,7 +468,7 @@ export const flashJobQuery = (
   completed?: boolean
 ): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query FlashJobStatus($jobId: ID!) {
         flashJobStatus(jobId: $jobId) {
           id
@@ -506,7 +506,7 @@ export const flashJobQuery = (
         progress
         error
       }
-    `,
+    `),
     variables: {
       jobId,
     },
@@ -553,7 +553,7 @@ export const flashJobQuery = (
 
 export const cloudbuildTargets = (delay = 500): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query CloudTargets {
         cloudTargets {
           releases {
@@ -581,7 +581,7 @@ export const cloudbuildTargets = (delay = 500): MockedResponse => ({
           }
         }
       }
-    `,
+    `),
   },
   result: {
     data: {
@@ -600,7 +600,7 @@ export const cloudbuildJobStatus = (
   delay = 200
 ): MockedResponse => ({
   request: {
-    query: gql`
+    query: gql(`
       query CloudFirmware($params: CloudFirmwareParams!) {
         cloudFirmwareStatus(params: $params) {
           status
@@ -608,7 +608,7 @@ export const cloudbuildJobStatus = (
           base64Data
         }
       }
-    `,
+    `),
     variables: {
       params: {
         release,

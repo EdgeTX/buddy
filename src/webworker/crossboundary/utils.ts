@@ -15,11 +15,11 @@ type FunctionRequestType<A extends unknown[]> = {
   args: { id: number; args: A };
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const waitForResponse = <T>(
   workerSelf: typeof globalThis,
   requestType: string,
   requestId: number
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 ) =>
   new Promise<T>((resolve, reject) => {
     const listener = (message: MessageEvent<unknown>): void => {
@@ -57,12 +57,12 @@ const getCallId = (): number => {
  * so that it can be called cross boundary. The returned result
  * is sent back to the caller in the web worker
  */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createCrossBoundryFunction = <
-  F extends (...args: never[]) => unknown | Promise<unknown>
+  F extends (...args: never[]) => unknown
 >(
   name: string,
   handler: F
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 ) => {
   type Return = ReturnType<F>;
   type Params = Parameters<F>;

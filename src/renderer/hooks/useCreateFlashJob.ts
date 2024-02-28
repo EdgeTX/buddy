@@ -1,7 +1,8 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
+import gql from "gql";
 import { useCallback, useMemo, useState } from "react";
 
-const createQuery = gql(/* GraphQL */ `
+const createQuery = gql(`
   mutation CreateFlashJob($firmware: FlashFirmwareInput!, $deviceId: ID!) {
     createFlashJob(firmware: $firmware, deviceId: $deviceId) {
       id
@@ -31,7 +32,7 @@ export default () => {
                 ""
             );
           });
-        result.finally(() => {
+        void result.finally(() => {
           setLoading(false);
         });
 

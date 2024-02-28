@@ -1,4 +1,5 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import { Skeleton } from "antd";
 import React from "react";
 import Markdown from "renderer/components/Markdown";
@@ -9,7 +10,7 @@ type Props = {
 
 const FirmwareReleaseDescription: React.FC<Props> = ({ releaseId }) => {
   const { data, loading } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query FirmwareReleaseDescription($releaseId: ID!) {
         edgeTxRelease(id: $releaseId) {
           id

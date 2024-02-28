@@ -45,14 +45,14 @@ describe("Backend Workers", () => {
     const { nockDone } = await nock.back("sdcard-pack-releases.json");
 
     const { data, errors } = await client.query({
-      query: gql`
+      query: gql(`
         query {
           edgeTxSdcardPackReleases {
             id
             name
           }
         }
-      `,
+      `),
     });
 
     expect(errors).toBeFalsy();
@@ -77,14 +77,14 @@ describe("Backend Workers", () => {
       showDirectoryPickerMock.mockResolvedValue(handle);
 
       const { data, errors } = await client.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestFolder {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -98,14 +98,14 @@ describe("Backend Workers", () => {
       showDirectoryPickerMock.mockRejectedValue(new Error("Some bad error"));
 
       const { data, errors } = await client.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestFolder {
             pickSdcardDirectory {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -127,14 +127,14 @@ describe("Backend Workers", () => {
       getDevicesMock.mockResolvedValue(devices);
 
       const { data, errors } = await client.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDevice {
             requestFlashableDevice {
               id
               productName
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();
@@ -151,14 +151,14 @@ describe("Backend Workers", () => {
       requestDeviceMock.mockRejectedValueOnce(new Error("Some error"));
 
       const { data, errors } = await client.mutate({
-        mutation: gql`
+        mutation: gql(`
           mutation RequestDevce {
             requestFlashableDevice {
               id
               name
             }
           }
-        `,
+        `),
       });
 
       expect(errors).toBeFalsy();

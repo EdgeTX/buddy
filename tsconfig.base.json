@@ -24,6 +24,13 @@
       "vitest/globals",
       "testing-library__jest-dom"
     ],
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./schema.graphql",
+        "tadaOutputLocation": "./src/graphql-env.d.ts"
+      }
+    ]
   }
 }

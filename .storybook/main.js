@@ -8,6 +8,9 @@ module.exports = {
     builder: "webpack5",
   },
   framework: "@storybook/react",
+  typescript: {
+    reactDocgen: "react-docgen-typescript-plugin",
+  },
   webpackFinal: (config) => {
     config.resolve.modules = [...(config.resolve.modules || []), "./src"];
 

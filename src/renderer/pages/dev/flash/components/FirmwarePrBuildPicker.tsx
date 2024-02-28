@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import gql from "gql";
 import React, { useEffect } from "react";
 import { decodePrVersion, encodePrVersion } from "shared/tools";
 import PrTargetForm from "./PrTargetForm";
@@ -17,7 +18,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   const { prId, commitId } = decodePrVersion(version ?? "");
 
   const prsQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query EdgeTxPrs {
         edgeTxPrs {
           id
@@ -42,7 +43,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   }, [prId, validPr, prsQuery.loading, onChanged]);
 
   const commitsQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query EdgeTxPrCommits($prId: ID!) {
         edgeTxPr(id: $prId) {
           id
@@ -113,7 +114,7 @@ const FirmwarePrBuildPicker: React.FC<Props> = ({
   ]);
 
   const commitBuildQuery = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query EdgeTxPrCommitBuild($prId: ID!, $commitId: ID!) {
         edgeTxPr(id: $prId) {
           id

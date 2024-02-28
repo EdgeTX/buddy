@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { message } from "antd";
-import { useMutation, gql, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import gql from "gql";
 import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
 import FirmwareUploadArea from "./FirmwareUploadArea";
@@ -16,7 +17,7 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
 }) => {
   const { t } = useTranslation("flashing");
   const { data, loading } = useQuery(
-    gql(/* GraphQL */ `
+    gql(`
       query LocalFirmwareInfo($fileId: ID!) {
         localFirmware(byId: $fileId) {
           id
@@ -34,7 +35,7 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
   );
 
   const [registerFirmware, { loading: uploading }] = useMutation(
-    gql(/* GraphQL */ `
+    gql(`
       mutation RegisterLocalFirmwareWithName($name: String!, $data: String!) {
         registerLocalFirmware(firmwareBase64Data: $data, fileName: $name) {
           id
