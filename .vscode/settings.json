@@ -8,7 +8,7 @@
     "**/.DS_Store": true
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.format.enable": false,
   "editor.formatOnSave": true,
