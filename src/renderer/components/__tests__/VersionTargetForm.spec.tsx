@@ -208,15 +208,15 @@ describe("<VersionTargetForm />", () => {
                           />
                         </span>
                         <span
-                          class=\\"ant-select-selection-placeholder\\"
+                          class="ant-select-selection-placeholder"
                         >
       -                   Select firmware version
       +                   Some placeholder for version
                         </span>
                       </div>
                       <span
-                        aria-hidden=\\"true\\"
-                        class=\\"ant-select-arrow\\"
+                        aria-hidden="true"
+                        class="ant-select-arrow"
       @@ -209,7 +209,6 @@
                   </div>
                 </div>
@@ -258,15 +258,15 @@ describe("<VersionTargetForm />", () => {
                           />
                         </span>
                         <span
-                          class=\\"ant-select-selection-placeholder\\"
+                          class="ant-select-selection-placeholder"
                         >
       -                   Select radio model
       +                   Some placeholder for version
                         </span>
                       </div>
                       <span
-                        aria-hidden=\\"true\\"
-                        class=\\"ant-select-arrow\\"
+                        aria-hidden="true"
+                        class="ant-select-arrow"
       @@ -208,7 +208,6 @@
                   </div>
                 </div>

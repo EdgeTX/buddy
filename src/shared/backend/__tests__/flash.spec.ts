@@ -363,9 +363,7 @@ describe("Mutation", () => {
       dfuConnectMock.mockResolvedValue(mockDfuConnection as never);
       listDevicesMock.mockResolvedValue([mockDevice as never]);
 
-      const { nockDone } = await nock.back("flash-job-nv-14-2.5.0.json", {
-        recorder: { enable_reqheaders_recording: true },
-      });
+      const { nockDone } = await nock.back("flash-job-nv-14-2.5.0.json");
 
       const createFlashMutation = await backend.mutate({
         mutation: gql`

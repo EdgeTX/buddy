@@ -1,7 +1,7 @@
 import { Locale } from "antd/lib/locale-provider";
 import languages from "./languages";
 
-type Language = typeof languages[number];
+type Language = (typeof languages)[number];
 
 export const languageToAntLocale: Record<
   Language,

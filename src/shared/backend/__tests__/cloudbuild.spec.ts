@@ -81,7 +81,7 @@ describe("Cloudbuild Query", () => {
               ],
               "id": "v2.8.4",
               "isPrerelease": false,
-              "name": "EdgeTX \\"Flying Dutchman\\" v2.8.4",
+              "name": "EdgeTX "Flying Dutchman" v2.8.4",
               "timestamp": "2023-05-16T10:02:42Z",
             },
           ],

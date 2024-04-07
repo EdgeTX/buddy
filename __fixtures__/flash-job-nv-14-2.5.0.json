@@ -66,12 +66,6 @@
             "connection",
             "close"
         ],
-        "reqheaders": {
-            "accept": "application/vnd.github.v3+json",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "host": "api.github.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -117,13 +111,6 @@
             "connection",
             "close"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "referer": "https://github.com/",
-            "host": "github.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -171,13 +158,6 @@
             "X-Timer",
             "S1639065850.999503,VS0,VE474"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "referer": "https://github.com/",
-            "host": "objects.githubusercontent.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -223,14 +203,6 @@
             "connection",
             "close"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=8888097-8953653",
-            "referer": "https://github.com/",
-            "host": "github.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -280,14 +252,6 @@
             "X-Timer",
             "S1639065851.586674,VS0,VE123"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=8888097-8953653",
-            "referer": "https://github.com/",
-            "host": "objects.githubusercontent.com"
-        },
         "responseIsBinary": true
     },
     {
@@ -333,14 +297,6 @@
             "connection",
             "close"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=8952234-8953631",
-            "referer": "https://github.com/",
-            "host": "github.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -390,14 +346,6 @@
             "X-Timer",
             "S1639065851.257304,VS0,VE98"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=8952234-8953631",
-            "referer": "https://github.com/",
-            "host": "objects.githubusercontent.com"
-        },
         "responseIsBinary": true
     },
     {
@@ -443,14 +391,6 @@
             "connection",
             "close"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=7233-7262",
-            "referer": "https://github.com/",
-            "host": "github.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -500,14 +440,6 @@
             "X-Timer",
             "S1639065851.454576,VS0,VE99"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=7233-7262",
-            "referer": "https://github.com/",
-            "host": "objects.githubusercontent.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -553,14 +485,6 @@
             "connection",
             "close"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=7279-724572",
-            "referer": "https://github.com/",
-            "host": "github.com"
-        },
         "responseIsBinary": false
     },
     {
@@ -610,14 +534,6 @@
             "X-Timer",
             "S1639065852.656259,VS0,VE99"
         ],
-        "reqheaders": {
-            "accept": "*/*",
-            "accept-encoding": "gzip,deflate,br",
-            "connection": "close",
-            "range": "bytes=7279-724572",
-            "referer": "https://github.com/",
-            "host": "objects.githubusercontent.com"
-        },
         "responseIsBinary": true
     }
 ]

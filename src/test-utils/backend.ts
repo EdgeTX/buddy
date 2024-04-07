@@ -6,9 +6,11 @@ import {
   ExecutionResult,
   OperationDefinitionNode,
 } from "graphql";
+import { createGithubClient } from "shared/api/github";
 import { createContext, schema, UsbApi, FileSystemApi } from "shared/backend";
 import { Context } from "shared/backend/context";
 import * as dfuApi from "shared/backend/services/dfu";
+import config from "shared/config";
 
 export type PromiseOrValue<T> = Promise<T> | T;
 
@@ -40,6 +42,7 @@ export const createExecutor = ({
     usb,
     fileSystem,
     dfu,
+    github: createGithubClient(config.startParams.githubToken),
   });
 
   const executeQuery: QueryFunction = ({ query, variables }) => {

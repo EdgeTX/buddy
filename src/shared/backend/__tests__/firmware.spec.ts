@@ -30,23 +30,23 @@ describe("Query", () => {
           },
           {
             "id": "v2.5.0",
-            "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+            "name": "EdgeTX "Dauntless" 2.5.0",
           },
           {
             "id": "v2.5.0-rc3",
-            "name": "EdgeTX \\"Dauntless\\" 2.5.0-RC3",
+            "name": "EdgeTX "Dauntless" 2.5.0-RC3",
           },
           {
             "id": "v2.5.0-rc2",
-            "name": "EdgeTX \\"Dauntless\\" 2.5.0-RC2",
+            "name": "EdgeTX "Dauntless" 2.5.0-RC2",
           },
           {
             "id": "v2.5.0-rc1",
-            "name": "EdgeTX \\"Dauntless\\" 2.5.0-RC1",
+            "name": "EdgeTX "Dauntless" 2.5.0-RC1",
           },
           {
             "id": "v2.4.0",
-            "name": "EdgeTX \\"Endeavour\\" 2.4.0",
+            "name": "EdgeTX "Endeavour" 2.4.0",
           },
           {
             "id": "v2.4.0-rc4",
@@ -226,7 +226,7 @@ describe("Query", () => {
               ],
             },
             "id": "v2.5.0",
-            "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+            "name": "EdgeTX "Dauntless" 2.5.0",
           }
         `);
         nockDone();
@@ -265,7 +265,7 @@ describe("Query", () => {
                 },
               },
               "id": "v2.5.0",
-              "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+              "name": "EdgeTX "Dauntless" 2.5.0",
             }
           `);
           nockDone();
@@ -299,7 +299,7 @@ describe("Query", () => {
                 "target": null,
               },
               "id": "v2.5.0",
-              "name": "EdgeTX \\"Dauntless\\" 2.5.0",
+              "name": "EdgeTX "Dauntless" 2.5.0",
             }
           `);
           nockDone();
@@ -335,7 +335,7 @@ describe("Query", () => {
               expect(base64Data).toBeTruthy();
               expect(base64Data.length).toBeGreaterThan(1);
               expect(md5(base64Data)).toMatchInlineSnapshot(
-                '"ff0d4be158f16d10a3ca5bccd889a04b"'
+                `"8143ce85f92f099179cc1bd3ab44c656"`
               );
 
               nockDone();

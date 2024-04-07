@@ -1,4 +1,4 @@
-import ky, { DownloadProgress } from "ky-universal";
+import ky, { DownloadProgress } from "ky";
 import { ZipEntry, unzipRaw } from "unzipit";
 import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
@@ -54,14 +54,13 @@ export const fetchTargetsManifest = async (
         throw new Error("Could not fetch sdcard targets manifest");
       }
 
+      const manifest = await res.json();
       return uniqueBy(
-        ((await res.json()) as ManifestResponse).targets.map(
-          ([name, id, asset]) => ({
-            name,
-            id: id.slice(0, id.length - 1),
-            asset: `${asset}.zip`,
-          })
-        ),
+        (manifest as ManifestResponse).targets.map(([name, id, asset]) => ({
+          name,
+          id: id.slice(0, id.length - 1),
+          asset: `${asset}.zip`,
+        })),
         "id"
       );
     })();

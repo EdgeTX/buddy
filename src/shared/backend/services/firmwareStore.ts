@@ -1,7 +1,7 @@
 import md5 from "md5";
 import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
-import ky from "ky-universal";
+import ky from "ky";
 import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
 import { GithubClient } from "shared/api/github";
@@ -69,6 +69,7 @@ export const firmwareTargets = async (
           "code"
         );
       } catch (e) {
+        console.log(e);
         delete firmwareTargetsCache[firmwareBundleUrl];
         throw e;
       }
