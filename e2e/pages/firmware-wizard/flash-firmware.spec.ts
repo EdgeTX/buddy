@@ -7,7 +7,7 @@ test.beforeEach(async ({ queries }) => {
 });
 
 test.describe.parallel("Flashing", () => {
-  test("Flash v2.5.0 firmware", async ({ queries, browserName, page }) => {
+  test("Flash v2.8.5 firmware", async ({ queries, browserName, page }) => {
     test.skip(browserName !== "chromium");
     // First page
     await (await queries.findByLabelText("Firmware version")).press("Enter");
