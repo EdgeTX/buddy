@@ -335,7 +335,7 @@ describe("Query", () => {
               expect(base64Data).toBeTruthy();
               expect(base64Data.length).toBeGreaterThan(1);
               expect(md5(base64Data)).toMatchInlineSnapshot(
-                `"8143ce85f92f099179cc1bd3ab44c656"`
+                `"ff0d4be158f16d10a3ca5bccd889a04b"`
               );
 
               nockDone();
