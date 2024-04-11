@@ -26,7 +26,7 @@ test("Latest firmware is pre selected by default", async ({
 test("Radio model can be searched", async ({ queries, page }) => {
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (
-    await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
+    await queries.findByText('EdgeTX "Flying Dutchman" v2.8.5', undefined, {
       timeout: 20000,
     })
   ).click();
@@ -63,7 +63,7 @@ test("Flash via USB is disabled if model is not selected", async ({
   await expectFlashButtonIsDisabled();
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (
-    await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
+    await queries.findByText('EdgeTX "Flying Dutchman" v2.8.5', undefined, {
       timeout: 20000,
     })
   ).click();
@@ -94,27 +94,27 @@ const streamToString = (stream: Readable): Promise<string> => {
 [
   {
     testCase: "Can download the selected firmware target",
-    radioName: "Frsky X-Lite S",
+    radioName: "FrSky X-Lite S",
     expected: {
-      fileName: "xlites-v2.5.0.bin",
-      fileHash: "496807b5624fab15c4c2d11130d651c2",
+      fileName: "xlites-v2.8.5.bin",
+      fileHash: "ac0467c5a9ec9e8cee22b7a2a97e523e",
     },
   },
   {
     testCase: "Downloads correct firmware for devices with similar code names",
-    radioName: "Frsky QX7",
+    radioName: "FrSky QX7",
     expected: {
       // In this case `x7` could match `x7-access` due to the way the code names
       // were previously matched
-      fileName: "x7-v2.5.0.bin",
-      fileHash: "37c3ea0d8c455eef0a9c26ee5a08c8b4",
+      fileName: "x7-v2.8.5.bin",
+      fileHash: "1e4f20364c0a2b9caeb3b8bdae61858e",
     },
   },
 ].forEach(({ testCase, radioName, expected }) => {
   test(testCase, async ({ queries, page, isElectron, tempDownloadDir }) => {
     await (await queries.findByLabelText("Firmware version")).press("Enter");
     await (
-      await queries.findByText('EdgeTX "Dauntless" 2.5.0', undefined, {
+      await queries.findByText('EdgeTX "Flying Dutchman" v2.8.5', undefined, {
         timeout: 20000,
       })
     ).click();

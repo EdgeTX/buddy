@@ -12,7 +12,9 @@ test.describe.parallel("Flashing", () => {
     // First page
     await (await queries.findByLabelText("Firmware version")).press("Enter");
     await page
-      .locator(".ant-select-item-option[title='EdgeTX \"Dauntless\" 2.5.0']")
+      .locator(
+        ".ant-select-item-option[title='EdgeTX \"Flying Dutchman\" v2.8.5']"
+      )
       .click();
 
     const radioSelector = await queries.findByLabelText("Radio model");
@@ -76,7 +78,9 @@ test.describe.parallel("Flashing", () => {
     test.skip(browserName !== "chromium");
     await (await queries.findByLabelText("Firmware version")).press("Enter");
     await page
-      .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
+      .locator(
+        ".ant-select-item-option[title='EdgeTX \"Flying Dutchman\" v2.8.5']"
+      )
       .click();
 
     const radioSelector = await queries.findByLabelText("Radio model");
@@ -122,7 +126,9 @@ test.describe.parallel("Flashing", () => {
     test.skip(browserName !== "chromium");
     await (await queries.findByLabelText("Firmware version")).press("Enter");
     await page
-      .locator(".ant-select-item-option[title='EdgeTX \"Santa\" v2.6.0']")
+      .locator(
+        ".ant-select-item-option[title='EdgeTX \"Flying Dutchman\" v2.8.5']"
+      )
       .click();
 
     const radioSelector = await queries.findByLabelText("Radio model");
