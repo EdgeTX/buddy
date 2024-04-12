@@ -69,7 +69,6 @@ export const firmwareTargets = async (
           "code"
         );
       } catch (e) {
-        console.log(e);
         delete firmwareTargetsCache[firmwareBundleUrl];
         throw e;
       }
