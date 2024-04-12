@@ -52,6 +52,7 @@ const FooterElements = styled.div`
 `;
 
 const MenuIcons = styled.div`
+  -webkit-app-region: no-drag;
   display: flex;
   flex-direction: row;
   justify-content: center;
