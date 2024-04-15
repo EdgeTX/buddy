@@ -51,8 +51,8 @@ type Job = {
 
 export const fetchTargets = async (): Promise<CloudTargets> => {
   const response = await ky("https://cloudbuild.edgetx.org/api/targets");
-  const firmwares = (await response.json()) as CloudTargets;
-  return firmwares;
+  const firmwares = await response.json();
+  return firmwares as CloudTargets;
 };
 
 export const queryJobStatus = async (
@@ -65,9 +65,10 @@ export const queryJobStatus = async (
     throwHttpErrors: false,
   });
 
-  const data = (await response.json()) as { error?: string } & Job;
+  const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.error);
+    const { error } = data as { error?: string };
+    throw new Error(error);
   }
 
   return data as Job;
@@ -79,9 +80,10 @@ export const createJob = async (params: JobStatusParams): Promise<Job> => {
     throwHttpErrors: false,
   });
 
-  const data = (await response.json()) as { error?: string } & Job;
+  const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.error);
+    const { error } = data as { error?: string };
+    throw new Error(error);
   }
 
   return data as Job;

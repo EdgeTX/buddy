@@ -4,16 +4,18 @@ import dotenv from "dotenv";
 import { vi } from "vitest";
 import nock from "nock";
 import isCI from "is-ci";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { Blob } from "buffer";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // Text Encoder doesn't existing on jsdom
-import { TextEncoder, TextDecoder } from "util";
-global.TextEncoder = TextEncoder as unknown as typeof global.TextEncoder;
-global.TextDecoder = TextDecoder as unknown as typeof global.TextDecoder;
+import { TextEncoder, TextDecoder } from "node:util";
+if (typeof global.TextDecoder === undefined) {
+  global.TextEncoder = TextEncoder as unknown as typeof global.TextEncoder;
+  global.TextDecoder = TextDecoder as unknown as typeof global.TextDecoder;
+}
 
-globalThis.Blob = Blob as unknown as typeof globalThis.Blob;
+import { Blob } from "node:buffer";
+global.Blob = Blob as unknown as typeof globalThis.Blob;
 
 dotenv.config();
 

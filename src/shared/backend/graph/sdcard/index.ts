@@ -399,7 +399,7 @@ builder.subscriptionType({
 });
 
 const SDCARD_ARTIFACTS_REGEX =
-  /edgetx-sdcard-sounds-(.+)-([0-9]+.[0-9]+.[0-9]+)\.zip/;
+  /edgetx-sdcard-sounds-(.+)-(?:([0-9]+.[0-9]+.[0-9]+(-.*)?)|(latest)).zip/;
 
 const isSoundsArtifact = (artifactName: string): boolean =>
   !!SDCARD_ARTIFACTS_REGEX.exec(artifactName);

@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/core";
-import ky from "ky-universal";
+import ky from "ky";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createGithubClient = (auth?: string) => {

@@ -74,7 +74,7 @@ const createWindow = (): void => {
     session
       .fromPartition("default")
       .setPermissionRequestHandler((_, permission, callback) => {
-        const allowedPermissions: typeof permission[] = ["clipboard-read"];
+        const allowedPermissions: (typeof permission)[] = ["clipboard-read"];
 
         if (allowedPermissions.includes(permission)) {
           callback(true);

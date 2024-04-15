@@ -37,7 +37,7 @@ Linux
 $ sudo apt-get install build-essential libudev-dev
 ```
 
-This software is designed to run on `node@16` which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
+This software is designed to run on `node@20` which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
 
 ### Commands
 

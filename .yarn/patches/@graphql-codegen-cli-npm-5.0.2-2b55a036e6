@@ -1,0 +1,28 @@
+diff --git a/cjs/presets.js b/cjs/presets.js
+index ebb92da5b491cec307b43ef98db1e55ce7dbbec6..63abaab0f76fe970c855013637e9b2932f6e7e81 100644
+--- a/cjs/presets.js
++++ b/cjs/presets.js
+@@ -4,8 +4,8 @@ exports.getPresetByName = void 0;
+ const path_1 = require("path");
+ async function getPresetByName(name, loader) {
+     const possibleNames = [
+-        `@graphql-codegen/${name}`,
+         `@graphql-codegen/${name}-preset`,
++        `@graphql-codegen/${name}`,
+         name,
+         (0, path_1.resolve)(process.cwd(), name),
+     ];
+diff --git a/esm/presets.js b/esm/presets.js
+index 3699c39aaf2348a65e090ec34b790d3e7d5cf3b6..4a396f71083fe9ad18d697b4c3a0f352303030e6 100644
+--- a/esm/presets.js
++++ b/esm/presets.js
+@@ -1,8 +1,8 @@
+ import { resolve } from 'path';
+ export async function getPresetByName(name, loader) {
+     const possibleNames = [
+-        `@graphql-codegen/${name}`,
+         `@graphql-codegen/${name}-preset`,
++        `@graphql-codegen/${name}`,
+         name,
+         resolve(process.cwd(), name),
+     ];

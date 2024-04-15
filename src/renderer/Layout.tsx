@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from "react";
 import { Layout, Menu, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
@@ -51,6 +52,7 @@ const FooterElements = styled.div`
 `;
 
 const MenuIcons = styled.div`
+  -webkit-app-region: no-drag;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -171,7 +173,7 @@ const AppLayout: React.FC<Props> = ({
             >
               <img
                 alt="edgetx-logo"
-                src={EdgeTxIcon}
+                src={EdgeTxIcon} // eslint-disable-line @typescript-eslint/no-unsafe-assignment
                 style={{ height: "40px", marginRight: "8px" }}
               />
               <Typography.Title

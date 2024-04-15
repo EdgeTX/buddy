@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/no-class */
-import ky from "ky-universal";
+import ky from "ky";
 import { Reader } from "unzipit";
 import config from "shared/backend/config";
 import environment from "shared/environment";
@@ -22,15 +22,10 @@ export default class ZipHTTPRangeReader implements Reader {
       const req = await ky(this.url, {
         method: "HEAD",
         prefixUrl: !environment.isMain ? config.proxyUrl : undefined,
-        fetch: (input, init) =>
-          fetch(input, {
-            ...init,
-            headers: {
-              ...init?.headers,
-              "user-agent": fakeUserAgent,
-              Referer: "https://github.com/",
-            },
-          }),
+        headers: {
+          "user-agent": fakeUserAgent,
+          Referer: "https://github.com/",
+        },
       });
       if (!req.ok) {
         throw new Error(
@@ -52,16 +47,11 @@ export default class ZipHTTPRangeReader implements Reader {
     }
     const req = await ky(this.url, {
       prefixUrl: !environment.isMain ? config.proxyUrl : undefined,
-      fetch: (input, init) =>
-        fetch(input, {
-          ...init,
-          headers: {
-            ...init?.headers,
-            Range: `bytes=${offset}-${offset + size - 1}`,
-            "user-agent": fakeUserAgent,
-            Referer: "https://github.com/",
-          },
-        }),
+      headers: {
+        "user-agent": fakeUserAgent,
+        Range: `bytes=${offset}-${offset + size - 1}`,
+        Referer: "https://github.com/",
+      },
     });
     if (!req.ok) {
       throw new Error(

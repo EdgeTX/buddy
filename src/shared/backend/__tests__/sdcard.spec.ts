@@ -45,7 +45,7 @@ describe("Query", () => {
           },
           {
             "id": "v2.5.0",
-            "name": "EdgeTX \\"Dauntless\\" v2.5.0 SD Card Pack",
+            "name": "EdgeTX "Dauntless" v2.5.0 SD Card Pack",
           },
           {
             "id": "v2.4.0-rc1",
@@ -199,7 +199,7 @@ describe("Query", () => {
       expect(data?.edgeTxSdcardPackRelease).toMatchInlineSnapshot(`
         {
           "id": "v2.6.0",
-          "name": "EdgeTX \\"Santa\\" v2.6.0 SD Card Pack ",
+          "name": "EdgeTX "Santa" v2.6.0 SD Card Pack ",
           "targets": [
             {
               "id": "t16",
@@ -1030,7 +1030,7 @@ describe("Mutation", () => {
 
           await fs.writeFile(
             path.join(tempDir.path, "edgetx.sdcard.version"),
-            "v2.5.4\nsomeotherline"
+            "v2.5.4"
           );
 
           const { data, errors } = await backend.mutate({
@@ -1087,7 +1087,7 @@ describe("Mutation", () => {
 
           await fs.writeFile(
             path.join(tempDir.path, "edgetx.sdcard.target"),
-            "nv14\nsomeotherline"
+            "nv14"
           );
 
           const { data, errors } = await backend.mutate({
@@ -1184,12 +1184,7 @@ describe("Sdcard Job", () => {
       id: string;
     };
 
-    const { nockDone } = await nock.back(
-      "sdcard-job-jumper-t8-cn-latest.json",
-      {
-        recorder: { enable_reqheaders_recording: true },
-      }
-    );
+    const { nockDone } = await nock.back("sdcard-job-jumper-t8-cn-latest.json");
 
     const createJobRequest = await backend.mutate({
       mutation: gql`

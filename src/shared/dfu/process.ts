@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-class */
 /* eslint-disable max-classes-per-file */
 import { createNanoEvents } from "nanoevents";
-import type { Emitter } from "nanoevents";
+import type { Emitter, EventsMap } from "nanoevents";
 
 export type WebDFUProcessReadEvents = {
   process: (done: number, total?: number) => void;
@@ -34,7 +34,7 @@ export type WebDFUProcessEraseEvents = {
   end: () => void;
 };
 
-export type WebDFUProcess<T> = {
+export type WebDFUProcess<T extends EventsMap> = {
   events: Emitter<T>;
 };
 

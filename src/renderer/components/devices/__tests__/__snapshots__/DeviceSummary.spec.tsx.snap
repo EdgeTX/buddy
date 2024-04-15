@@ -1,4 +1,4 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`<DeviceSummary /> > should show details about the given device 1`] = `
 <DocumentFragment>
@@ -97,34 +97,34 @@ exports[`<DeviceSummary /> > should show loading skeleton before displaying devi
 @@ -34,27 +34,33 @@
       </div>
       <div
-        class=\\"ant-space-item\\"
+        class="ant-space-item"
       >
         <div
--         class=\\"ant-skeleton ant-skeleton-active\\"
-+         class=\\"sc-bdvvtL hHjpgA\\"
+-         class="ant-skeleton ant-skeleton-active"
++         class="sc-aXZVg cZVjIL"
         >
 -         <div
--           class=\\"ant-skeleton-content\\"
+-           class="ant-skeleton-content"
 +         <h5
-+           class=\\"ant-typography\\"
-+           style=\\"text-align: center;\\"
++           class="ant-typography"
++           style="text-align: center;"
           >
 -           <h3
--             class=\\"ant-skeleton-title\\"
--             style=\\"width: 38%;\\"
+-             class="ant-skeleton-title"
+-             style="width: 38%;"
 -           />
 -           <ul
--             class=\\"ant-skeleton-paragraph\\"
+-             class="ant-skeleton-paragraph"
 +           STEM32 Bootloader 2
 +         </h5>
 +         <div>
 +           <span
-+             class=\\"ant-typography ant-typography-secondary\\"
-+             style=\\"text-align: center;\\"
++             class="ant-typography ant-typography-secondary"
++             style="text-align: center;"
             >
 -             <li />
 -             <li
--               style=\\"width: 61%;\\"
+-               style="width: 61%;"
 -             />
 -           </ul>
 +             375897983475
@@ -132,8 +132,8 @@ exports[`<DeviceSummary /> > should show loading skeleton before displaying devi
 +         </div>
 +         <div>
 +           <span
-+             class=\\"ant-typography ant-typography-secondary\\"
-+             style=\\"text-align: center;\\"
++             class="ant-typography ant-typography-secondary"
++             style="text-align: center;"
 +           >
 +             0x3453:0x4358
 +           </span>

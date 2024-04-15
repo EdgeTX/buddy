@@ -113,52 +113,52 @@ describe("<FirmwareSummary />", () => {
         <DocumentFragment>
       -   <div>
           <div
-      -       class=\\"sc-bdvvtL hHjpgA\\"
-      -       style=\\"margin-bottom: 32px;\\"
-      +     class=\\"ant-space ant-space-vertical\\"
-      +     style=\\"width: 100%;\\"
+      -       class="sc-aXZVg cZVjIL"
+      -       style="margin-bottom: 32px;"
+      +     class="ant-space ant-space-vertical"
+      +     style="width: 100%;"
           >
             <div
-      -         class=\\"ant-skeleton ant-skeleton-element ant-skeleton-active\\"
-      +       class=\\"ant-space-item\\"
-      +       style=\\"margin-bottom: 24px;\\"
+      -         class="ant-skeleton ant-skeleton-element ant-skeleton-active"
+      +       class="ant-space-item"
+      +       style="margin-bottom: 24px;"
             >
       -         <span
-      -           class=\\"ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-square\\"
-      -           style=\\"height: 64px; width: 64px;\\"
+      -           class="ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-square"
+      -           style="height: 64px; width: 64px;"
       +       <div
-      +         class=\\"sc-bdvvtL hHjpgA\\"
+      +         class="sc-aXZVg cZVjIL"
       +       >
       +         <img
-      +           alt=\\"EdgeTX logo\\"
-      +           src=\\"/src/renderer/assets/logo.webp\\"
-      +           style=\\"height: 64px;\\"
+      +           alt="EdgeTX logo"
+      +           src="/src/renderer/assets/logo.webp"
+      +           style="height: 64px;"
                 />
               </div>
             </div>
             <div
-      -       class=\\"ant-skeleton ant-skeleton-active\\"
-      +       class=\\"ant-space-item\\"
+      -       class="ant-skeleton ant-skeleton-active"
+      +       class="ant-space-item"
             >
               <div
-      -         class=\\"ant-skeleton-content\\"
-      +         class=\\"sc-bdvvtL hHjpgA\\"
+      -         class="ant-skeleton-content"
+      +         class="sc-aXZVg cZVjIL"
               >
       -         <ul
-      -           class=\\"ant-skeleton-paragraph\\"
+      -           class="ant-skeleton-paragraph"
       +         <h5
-      +           class=\\"ant-typography\\"
-      +           style=\\"text-align: center;\\"
+      +           class="ant-typography"
+      +           style="text-align: center;"
       +         >
-      +           EdgeTX \\"Dauntless\\" 2.5.0
+      +           EdgeTX "Dauntless" 2.5.0
       +         </h5>
       +         <span
-      +           class=\\"ant-typography ant-typography-secondary\\"
-      +           style=\\"text-align: center;\\"
+      +           class="ant-typography ant-typography-secondary"
+      +           style="text-align: center;"
                 >
       -           <li />
       -           <li
-      -             style=\\"width: 150px;\\"
+      -             style="width: 150px;"
       -           />
       -         </ul>
       +           Frsky Horus X12s

@@ -17,7 +17,7 @@ export default () => {
   return [
     useCallback(
       (
-        variables: Parameters<NonNullable<typeof createQuery["__apiType"]>>[0]
+        variables: Parameters<NonNullable<(typeof createQuery)["__apiType"]>>[0]
       ) => {
         setLoading(true);
         const result = client

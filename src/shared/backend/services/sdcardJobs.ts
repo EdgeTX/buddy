@@ -374,7 +374,7 @@ const writeAssets = async (
                   // There is a race condition where node attempts to read the directory
                   // whilst we are creating it. Doesn't happen in browser
                   if (e && (e as Error & { code?: string }).code !== "EEXIST") {
-                    throw e;
+                    throw e as Error;
                   }
                 }
               }

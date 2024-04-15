@@ -13,7 +13,7 @@ const getGithubToken = (): string | undefined => {
   // line. The github API limits are 50/hour you should be ok
   // when writing tests
   if (process.env.NODE_ENV === "test") {
-    return undefined;
+    return process.env.GITHUB_TOKEN;
   }
 
   return environment.isMain
