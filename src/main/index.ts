@@ -62,6 +62,7 @@ const createWindow = (): void => {
     titleBarStyle: "hidden",
     resizable: !config.isProduction,
     show: false,
+    autoHideMenuBar: true,
     webPreferences: {
       allowRunningInsecureContent: false,
       // Need these enabled when e2e is running
@@ -69,6 +70,8 @@ const createWindow = (): void => {
       preload: `${__dirname}/preload.js`,
     } as electron.WebPreferences,
   });
+
+  if (config.isProduction) mainWindow.setMenu(null);
 
   if (config.startParams.isE2e) {
     session
