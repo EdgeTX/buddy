@@ -74,7 +74,7 @@ jobs:
           CI: true
 
       - name: Publish Coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
 
   test-types:
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
         run: yarn build:storybook
 
       - name: Store storybook
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: storybook-static
           retention-days: 1
@@ -165,7 +165,7 @@ jobs:
           GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
       - name: Store compiled source
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: compiled-${{ matrix.os }}
           retention-days: 1
@@ -210,7 +210,7 @@ jobs:
         run: yarn run pack
 
       - name: Upload build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-builds
           retention-days: 15
@@ -240,14 +240,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-test-results
           path: playwright-report
 
       - name: Upload video recordings
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-recordings
