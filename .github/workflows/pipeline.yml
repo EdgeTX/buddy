@@ -349,9 +349,9 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(preview_urls EdgeTX Buddy has been automatically deployed to Cloudflare.
+            preview_urls EdgeTX Buddy has been automatically deployed to Cloudflare.
             ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
-            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook)_
+            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
             comment_tag: preview_urls
 
   release-web-prod:
