@@ -352,7 +352,7 @@ jobs:
             preview_urls EdgeTX Buddy has been automatically deployed to Cloudflare.
             ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
             ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
-            comment_tag: preview_urls
+          comment_tag: preview_urls
 
   release-web-prod:
     needs: [e2e-web, test, storybook]
