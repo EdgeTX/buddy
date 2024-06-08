@@ -343,8 +343,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: build/renderer
-          command: pages deploy --project-name=buddy
+          command: pages deploy build/renderer --project-name=buddy
 
       - name: Comment preview URL
         uses: thollander/actions-comment-pull-request@v2
