@@ -337,7 +337,7 @@ jobs:
           name: storybook-static
           path: build/renderer/storybook
 
-      - name: Preview
+      - name: Deploy preview
         id: cloudflare-preview
         uses: cloudflare/wrangler-action@v3
         with:
@@ -345,14 +345,24 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build/renderer --project-name=buddy
 
-      - name: Comment preview URL
-        uses: thollander/actions-comment-pull-request@v2
+      - name: Find preview comment if present
+        uses: peter-evans/find-comment@v3
+        id: find-preview-comment
         with:
-          message: |
-            preview_urls EdgeTX Buddy has been automatically deployed to Cloudflare.
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Buddy has been automatically deployed to Cloudflare
+
+      - name: Create or update preview URL comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-preview-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            EdgeTX Buddy has been automatically deployed to Cloudflare.
             ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
             ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
-          comment_tag: preview_urls
+          edit-mode: replace
 
   release-web-prod:
     needs: [e2e-web, test, storybook]
