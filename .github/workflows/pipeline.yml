@@ -351,7 +351,7 @@ jobs:
           message: |
             EdgeTX Buddy has been automatically deployed to Cloudflare.
             ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
-            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.url }}/storybook
+            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
 
   release-web-prod:
     needs: [e2e-web, test, storybook]
