@@ -339,21 +339,19 @@ jobs:
 
       - name: Preview
         id: cloudflare-preview
-        uses: cloudflare/pages-action@1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: buddy
-          directory: build/renderer
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref || github.ref_name }}
+          workingDirectory: build/renderer
+          command: pages deploy --project-name=buddy
 
       - name: Comment preview URL
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
             EdgeTX Buddy has been automatically deployed to Cloudflare.
-            ✅ Preview: ${{ steps.cloudflare-preview.outputs.url }}
+            ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
             ✅ Storybook: ${{ steps.cloudflare-preview.outputs.url }}/storybook
 
   release-web-prod:
