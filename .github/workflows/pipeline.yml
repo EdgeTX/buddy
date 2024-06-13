@@ -74,7 +74,9 @@ jobs:
           CI: true
 
       - name: Publish Coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   test-types:
     runs-on: ubuntu-latest
@@ -121,7 +123,7 @@ jobs:
         run: yarn build:storybook
 
       - name: Store storybook
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: storybook-static
           retention-days: 1
@@ -145,6 +147,11 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
       - name: Install required python deps
         run: python3 -m pip install setuptools
 
@@ -165,7 +172,7 @@ jobs:
           GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
       - name: Store compiled source
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: compiled-${{ matrix.os }}
           retention-days: 1
@@ -201,7 +208,7 @@ jobs:
         run: yarn --immutable
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: compiled-${{ matrix.os }}
           path: build
@@ -210,9 +217,9 @@ jobs:
         run: yarn run pack
 
       - name: Upload build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: app-builds
+          name: app-builds-${{ matrix.os }}
           retention-days: 15
           if-no-files-found: error
           path: |
@@ -240,14 +247,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-test-results
           path: playwright-report
 
       - name: Upload video recordings
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-recordings
@@ -295,7 +302,7 @@ jobs:
         run: yarn playwright install --with-deps
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: compiled-ubuntu-20.04
           path: build
@@ -307,7 +314,7 @@ jobs:
           PWTEST_VIDEO: "true"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: video-web-linux-test-results
@@ -319,35 +326,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: compiled-ubuntu-20.04
           path: build
 
       - name: Fetch storybook build
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: storybook-static
           path: build/renderer/storybook
 
-      - name: Preview
+      - name: Deploy preview
         id: cloudflare-preview
-        uses: cloudflare/pages-action@1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: buddy
-          directory: build/renderer
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref || github.ref_name }}
+          command: pages deploy build/renderer --project-name=buddy
 
-      - name: Comment preview URL
-        uses: thollander/actions-comment-pull-request@v2
+      - name: Find preview comment if present
+        uses: peter-evans/find-comment@v3
+        id: find-preview-comment
         with:
-          message: |
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Buddy has been automatically deployed to Cloudflare
+
+      - name: Create or update preview URL comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-preview-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
             EdgeTX Buddy has been automatically deployed to Cloudflare.
-            ✅ Preview: ${{ steps.cloudflare-preview.outputs.url }}
-            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.url }}/storybook
+            ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
+            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
+          edit-mode: replace
 
   release-web-prod:
     needs: [e2e-web, test, storybook]
@@ -355,7 +370,7 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - name: Fetch compiled source
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: compiled-ubuntu-20.04
           path: build
@@ -375,10 +390,11 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - name: Fetch binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: app-builds
+          pattern: app-builds-*
           path: app-builds
+          merge-multiple: true
 
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
