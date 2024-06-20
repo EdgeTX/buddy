@@ -162,15 +162,6 @@ jobs:
           name: storybook-static
           path: build/renderer/storybook
 
-      - name: Check if secrets are available
-        run: |
-          if [[ "x${{ secrets.MY_SECRET }}" == "xval" ]]; then
-            echo "Access to secrets"
-          else
-            echo "No access to secrets"
-            exit 1
-          fi
-
       - name: Deploy preview
         id: cloudflare-preview
         uses: cloudflare/wrangler-action@v3
