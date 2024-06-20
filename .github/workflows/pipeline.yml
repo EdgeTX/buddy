@@ -382,7 +382,7 @@ jobs:
 
       - name: Check if secrets are available
         run: |
-          if [[ "${{ secrets.MY_TEST_SECRET }}" == "xval" ]]; then
+          if [[ "x${{ secrets.MY_SECRET }}" == "xval" ]]; then
             echo "Access to secrets"
           else
             echo "No access to secrets"
