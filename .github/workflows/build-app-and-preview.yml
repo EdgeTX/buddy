@@ -2,11 +2,13 @@ name: build-app-and-preview
 
 on:
   workflow_run:
-    workflows: ["tests-and-compile"]
+    workflows: 
+     - tests-and-compile
     types:
       - completed
 
 jobs:
+  if: ${{ github.event.workflow_run.conclusion == 'success' }}
   build-and-test-app:
     runs-on: ${{ matrix.os }}
     env:
@@ -35,8 +37,9 @@ jobs:
         run: yarn --immutable
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v5
         with:
+          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-${{ matrix.os }}
           path: build
 
@@ -108,6 +111,7 @@ jobs:
       # - name: Preview demo
 
   e2e-web:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -129,8 +133,9 @@ jobs:
         run: yarn playwright install --with-deps
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v5
         with:
+          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-20.04
           path: build
 
@@ -148,17 +153,20 @@ jobs:
           path: playwright-report
 
   preview-web:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v5
         with:
+          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-20.04
           path: build
 
       - name: Fetch storybook build
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v5
         with:
+          run_id: ${{ github.event.workflow_run.id }}
           name: storybook-static
           path: build/renderer/storybook
 
