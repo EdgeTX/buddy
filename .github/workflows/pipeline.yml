@@ -32,6 +32,13 @@ jobs:
           run: |
             echo "VALID-PRIV=true" >> $GITHUB_OUTPUT
 
+  action-debug:
+    needs: [check-permissions]
+    runs-on: ubuntu-latest
+    steps:
+      - run: | 
+          echo ${{ needs.check-permissions.outputs.checkout-priv }}
+
   lint:
     runs-on: ubuntu-22.04
 
@@ -129,13 +136,13 @@ jobs:
 
     steps:
       - name: Checkout using PR head
-        if: needs.check-permissions.outputs.checkout-priv == 'true'
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'true' }}
         uses: actions/checkout@v4
         with: 
           ref: ${{  github.event.pull_request.head.sha }}
 
       - name: Checkout
-        if: needs.check-permissions.outputs.checkout-priv == 'false'
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
         uses: actions/checkout@v4
 
       - name: Use Node.js 20
@@ -172,13 +179,13 @@ jobs:
 
     steps:
       - name: Checkout using PR head
-        if: needs.check-permissions.outputs.checkout-priv == 'true'
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'true' }}
         uses: actions/checkout@v4
         with: 
           ref: ${{  github.event.pull_request.head.sha }}
 
       - name: Checkout
-        if: needs.check-permissions.outputs.checkout-priv == 'false'
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
         uses: actions/checkout@v4
 
       - name: Use Node.js 20
