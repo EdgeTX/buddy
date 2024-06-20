@@ -1,0 +1,216 @@
+name: tests-and-compile
+
+on:
+  push:
+    branches:
+      - main
+
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Lint
+        run: yarn lint:all
+
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable --mode=skip-build
+
+      - name: Format
+        run: yarn fmt:check
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Test
+        run: yarn test --coverage
+        env:
+          CI: true
+
+      - name: Publish Coverage
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-types:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Test types
+        run: yarn test:types
+        env:
+          CI: true
+
+  storybook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout using PR head
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Build
+        run: yarn build:storybook
+
+      - name: Store storybook
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          retention-days: 1
+          if-no-files-found: error
+          path: storybook-static
+
+  compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, ubuntu-20.04, windows-latest]
+
+    steps:
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install required python deps
+        run: python3 -m pip install setuptools
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Install build deps (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      - name: Build
+        run: yarn compile:production
+        env:
+          GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
+
+      - name: Store compiled source
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-${{ matrix.os }}
+          retention-days: 1
+          if-no-files-found: error
+          path: build
