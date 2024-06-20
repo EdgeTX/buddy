@@ -10,6 +10,8 @@ on:
   pull_request:
 
 jobs:
+  # This job is necessary as repo secrets are not availble in jobs run
+  # in pull requests from forks, thus preview-web will fail. 
   check-permissions:
       runs-on: ubuntu-latest
       outputs:
@@ -23,13 +25,6 @@ jobs:
             username: ${{ github.triggering_actor }}
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  action-debug:
-    needs: [check-permissions]
-    runs-on: ubuntu-latest
-    steps:
-      - run: | 
-          echo ${{ needs.check-permissions.outputs.checkout-priv }}
 
   lint:
     runs-on: ubuntu-22.04
@@ -170,8 +165,8 @@ jobs:
         os: [macos-latest, ubuntu-22.04, windows-latest]
 
     steps:
-      - name: Checkout using PR head
-        if: ${{ needs.check-permissions.outputs.checkout-priv == 'true' }}
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
         uses: actions/checkout@v4
         with: 
           ref: ${{  github.event.pull_request.head.sha }}
@@ -384,6 +379,15 @@ jobs:
         with:
           name: storybook-static
           path: build/renderer/storybook
+
+      - name: Check if secrets are available
+        run: |
+          if [[ "${{ secrets.MY_TEST_SECRET }}" == "xval" ]]; then
+            echo "Access to secrets"
+          else
+            echo "No access to secrets"
+            exit 1
+          fi
 
       - name: Deploy preview
         id: cloudflare-preview
