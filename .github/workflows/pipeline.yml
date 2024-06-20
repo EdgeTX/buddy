@@ -30,7 +30,16 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
+
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -50,7 +59,16 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
+
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -70,7 +88,15 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -98,7 +124,15 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -123,7 +157,7 @@ jobs:
 
     steps:
       - name: Checkout using PR head
-        if: ${{ needs.check-permissions.outputs.checkout-priv == 'true' }}
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
         uses: actions/checkout@v4
         with: 
           ref: ${{  github.event.pull_request.head.sha }}
@@ -227,7 +261,15 @@ jobs:
     needs: compile
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -318,7 +360,15 @@ jobs:
     needs: compile
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head if sufficent permissions
+        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: ${{ needs.check-permissions.outputs.checkout-priv == 'false' }}
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
