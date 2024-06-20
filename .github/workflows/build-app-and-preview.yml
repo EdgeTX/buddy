@@ -8,8 +8,8 @@ on:
       - completed
 
 jobs:
-  if: ${{ github.event.workflow_run.conclusion == 'success' }}
   build-and-test-app:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
