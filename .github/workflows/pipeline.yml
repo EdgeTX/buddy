@@ -10,6 +10,28 @@ on:
   pull_request:
 
 jobs:
+  check-permissions:
+      runs-on: ubuntu-latest
+      outputs:
+        checkout-priv: ${{ steps.check-permissions.outputs.VALID-PRIV }}
+      steps:
+        - name: Get User Permission
+          id: checkAccess
+          uses: actions-cool/check-user-permission@v2
+          with:
+            require: write
+            username: ${{ github.triggering_actor }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        - name: User Permission Not Valid
+          if: steps.checkAccess.outputs.require-result == 'false'
+          run: |
+            echo "VALID-PRIV=false" >> $GITHUB_OUTPUT
+        - name: User Permission Valid
+          if: steps.checkAccess.outputs.require-result == 'true'
+          run: |
+            echo "VALID-PRIV=true" >> $GITHUB_OUTPUT
+
   lint:
     runs-on: ubuntu-22.04
 
@@ -102,10 +124,19 @@ jobs:
           CI: true
 
   storybook:
+    needs: [check-permissions]
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head
+        if: needs.check-permissions.outputs.checkout-priv == 'true'
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: needs.check-permissions.outputs.checkout-priv == 'false'
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -131,6 +162,7 @@ jobs:
           path: storybook-static
 
   compile:
+    needs: [check-permissions]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -139,7 +171,15 @@ jobs:
         os: [macos-latest, ubuntu-22.04, windows-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout using PR head
+        if: needs.check-permissions.outputs.checkout-priv == 'true'
+        uses: actions/checkout@v4
+        with: 
+          ref: ${{  github.event.pull_request.head.sha }}
+
+      - name: Checkout
+        if: needs.check-permissions.outputs.checkout-priv == 'false'
+        uses: actions/checkout@v4
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -322,7 +362,6 @@ jobs:
 
   preview-web:
     needs: [compile, storybook]
-    if: github.event_name == 'pull_request' && !github.event.pull_request.head.repo.fork
     runs-on: ubuntu-22.04
     steps:
       - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}}
