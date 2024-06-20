@@ -58,14 +58,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout using PR head if sufficent permissions
-        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
-        uses: actions/checkout@v4
-        with: 
-          ref: ${{  github.event.pull_request.head.sha }}
-
       - name: Checkout
-        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
         uses: actions/checkout@v4
 
       - name: Use Node.js 20
@@ -94,14 +87,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout using PR head if sufficent permissions
-        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
-        uses: actions/checkout@v4
-        with: 
-          ref: ${{  github.event.pull_request.head.sha }}
-
       - name: Checkout
-        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
         uses: actions/checkout@v4
 
       - name: Use Node.js 20
@@ -125,14 +111,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout using PR head
-        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
-        uses: actions/checkout@v4
-        with: 
-          ref: ${{  github.event.pull_request.head.sha }}
-
       - name: Checkout
-        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
         uses: actions/checkout@v4
 
       - name: Use Node.js 20
@@ -167,14 +146,7 @@ jobs:
         os: [macos-latest, ubuntu-20.04, windows-latest]
 
     steps:
-      - name: Checkout using PR head if sufficent permissions
-        if: ${{ github.event_name == 'pull_request' && needs.check-permissions.outputs.checkout-priv == 'true'}}
-        uses: actions/checkout@v4
-        with: 
-          ref: ${{  github.event.pull_request.head.sha }}
-
       - name: Checkout
-        if: ${{ github.event_name != 'pull_request' || needs.check-permissions.outputs.checkout-priv == 'false' }}
         uses: actions/checkout@v4
 
       - name: Use Node.js 20
