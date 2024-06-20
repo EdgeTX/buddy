@@ -8,6 +8,7 @@ on:
     types:
       - completed
 
+jobs:
   release-web-prod:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
