@@ -2,11 +2,11 @@ name: Release
 
 on:
   workflow_run:
-    workflows: 
+    workflows:
       - Build
-    branches: 
+    branches:
       - main
-    types: 
+    types:
       - completed
 
 jobs:
