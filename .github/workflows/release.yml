@@ -1,11 +1,12 @@
-name: release
+name: Release
 
 on:
   workflow_run:
     workflows: 
-      - build-app-and-preview
-    branches: main
-    types:
+      - Build
+    branches: 
+      - main
+    types: 
       - completed
 
 jobs:
