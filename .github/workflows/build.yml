@@ -1,10 +1,10 @@
-name: build-app-and-preview
+name: Build
 
 on:
   workflow_run:
-    workflows: 
-     - tests-and-compile
-    types:
+    workflows:
+      - Tests
+    types: 
       - completed
 
 jobs:
