@@ -895,6 +895,7 @@ export class WebDFU {
 
     process.events.emit("write/end", bytesSent);
 
+    // restart device
     try {
       await this.dfuseCommand(DFUseCommands.SET_ADDRESS, startAddress, 4);
       await this.download(new ArrayBuffer(0), 0);
@@ -902,7 +903,12 @@ export class WebDFU {
       throw new WebDFUError(`Error during DfuSe manifestation: ${error}`);
     }
 
-    await this.pollUntil((state) => state === dfuCommands.dfuMANIFEST);
+    // some devices may not reply to getStatus()
+    // after reboot command
+    try {
+      await this.pollUntil((state) => state === dfuCommands.dfuMANIFEST);
+      // eslint-disable-next-line no-empty
+    } catch (error) {}
   }
 
   private async doDfuseRead(
