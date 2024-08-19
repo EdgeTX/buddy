@@ -635,9 +635,12 @@ export class WebDFU {
       (ignoreErrors || dfuStatus.state !== dfuCommands.dfuERROR)
     ) {
       // eslint-disable-next-line no-await-in-loop
-      await asyncSleep(dfuStatus.pollTimeout);
-      // eslint-disable-next-line no-await-in-loop
-      dfuStatus = await this.getStatus();
+      await asyncSleep(0);
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        dfuStatus = await this.getStatus();
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
     }
 
     return dfuStatus;
