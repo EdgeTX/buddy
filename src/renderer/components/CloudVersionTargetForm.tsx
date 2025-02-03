@@ -40,8 +40,6 @@ type Props = {
   selectedFlags?: SelectedFlags;
 };
 
-const translateRepository = "flashing";
-
 const CloudVersionTargetForm: React.FC<Props> = ({
   onChanged,
   updateSelectedFlags,
@@ -53,7 +51,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
   flags,
   selectedFlags,
 }) => {
-  const { t } = useTranslation(translateRepository);
+  const { t } = useTranslation("flashing");
   const enableAddFlag = (selectedFlags?.length ?? 0) < (flags?.length ?? 0);
 
   // remove selected flag if it's not in the flags anymore
@@ -213,7 +211,7 @@ const VersionFiltersDropdown: React.FC<{
   updateFilters: (newFilters: VersionFilters) => void;
 }> = ({ filters, updateFilters }) => {
   const [visible, setVisible] = useState(false);
-  const { t } = useTranslation(translateRepository);
+  const { t } = useTranslation("flashing");
 
   const filterNames: Record<keyof VersionFilters, string> = {
     includePrereleases: t(`Include pre-releases`),
@@ -265,7 +263,7 @@ const FormTag: React.FC<FormTagProps> = ({
 }) => {
   const currentFlag = selectedFlags?.at(value.key)?.name;
   const currentValue = selectedFlags?.at(value.key)?.value;
-  const { t } = useTranslation(translateRepository);
+  const { t } = useTranslation("flashing");
 
   const selectedFlagsName = new Set(selectedFlags?.map((flag) => flag.name));
   const flagNames =
