@@ -242,8 +242,7 @@ const VersionFiltersDropdown: React.FC<{
       }
     >
       <Button type="link" size="small" onClick={(e) => e.preventDefault()}>
-        {t(`Filters`)} 
-        <DownOutlined />
+        {t(`Filters`)} <DownOutlined />
       </Button>
     </Dropdown>
   );
