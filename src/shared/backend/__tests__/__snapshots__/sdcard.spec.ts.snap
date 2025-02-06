@@ -2,15 +2,25 @@
 
 exports[`Sdcard Job > should extract the specified sdcard target and sounds to the desired sdcard 2`] = `
 "{
-  "path": ".",
+  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG",
   "name": ".",
   "children": [
     {
-      "path": "./EEPROM",
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/edgetx.sdcard.target",
+      "name": "edgetx.sdcard.target",
+      "size": 2
+    },
+    {
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/edgetx.sdcard.version",
+      "name": "edgetx.sdcard.version",
+      "size": 6
+    },
+    {
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/EEPROM",
       "name": "EEPROM",
       "children": [
         {
-          "path": "./EEPROM/readme.txt",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/EEPROM/readme.txt",
           "name": "readme.txt",
           "size": 105
         }
@@ -18,11 +28,11 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
       "size": 105
     },
     {
-      "path": "./FIRMWARE",
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/FIRMWARE",
       "name": "FIRMWARE",
       "children": [
         {
-          "path": "./FIRMWARE/readme.txt",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/FIRMWARE/readme.txt",
           "name": "readme.txt",
           "size": 116
         }
@@ -30,11 +40,11 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
       "size": 116
     },
     {
-      "path": "./LOGS",
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/LOGS",
       "name": "LOGS",
       "children": [
         {
-          "path": "./LOGS/readme.txt",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/LOGS/readme.txt",
           "name": "readme.txt",
           "size": 84
         }
@@ -42,11 +52,11 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
       "size": 84
     },
     {
-      "path": "./SCREENSHOTS",
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCREENSHOTS",
       "name": "SCREENSHOTS",
       "children": [
         {
-          "path": "./SCREENSHOTS/readme.txt",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCREENSHOTS/readme.txt",
           "name": "readme.txt",
           "size": 88
         }
@@ -54,15 +64,15 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
       "size": 88
     },
     {
-      "path": "./SCRIPTS",
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS",
       "name": "SCRIPTS",
       "children": [
         {
-          "path": "./SCRIPTS/FUNCTIONS",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/FUNCTIONS",
           "name": "FUNCTIONS",
           "children": [
             {
-              "path": "./SCRIPTS/FUNCTIONS/readme.txt",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/FUNCTIONS/readme.txt",
               "name": "readme.txt",
               "size": 46
             }
@@ -70,11 +80,11 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
           "size": 46
         },
         {
-          "path": "./SCRIPTS/MIXES",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/MIXES",
           "name": "MIXES",
           "children": [
             {
-              "path": "./SCRIPTS/MIXES/readme.txt",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/MIXES/readme.txt",
               "name": "readme.txt",
               "size": 42
             }
@@ -82,11 +92,16 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
           "size": 42
         },
         {
-          "path": "./SCRIPTS/TELEMETRY",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/snake.lua",
+          "name": "snake.lua",
+          "size": 3858
+        },
+        {
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/TELEMETRY",
           "name": "TELEMETRY",
           "children": [
             {
-              "path": "./SCRIPTS/TELEMETRY/readme.txt",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/TELEMETRY/readme.txt",
               "name": "readme.txt",
               "size": 114
             }
@@ -94,11 +109,11 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
           "size": 114
         },
         {
-          "path": "./SCRIPTS/TOOLS",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/TOOLS",
           "name": "TOOLS",
           "children": [
             {
-              "path": "./SCRIPTS/TOOLS/readme.txt",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/TOOLS/readme.txt",
               "name": "readme.txt",
               "size": 78
             }
@@ -106,1089 +121,1349 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
           "size": 78
         },
         {
-          "path": "./SCRIPTS/WIZARD",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/WIZARD",
           "name": "WIZARD",
           "children": [
             {
-              "path": "./SCRIPTS/WIZARD/delta.lua",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/WIZARD/delta.lua",
               "name": "delta.lua",
               "size": 10424
             },
             {
-              "path": "./SCRIPTS/WIZARD/multi.lua",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/WIZARD/multi.lua",
               "name": "multi.lua",
               "size": 12120
             },
             {
-              "path": "./SCRIPTS/WIZARD/plane.lua",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/WIZARD/plane.lua",
               "name": "plane.lua",
               "size": 17153
             },
             {
-              "path": "./SCRIPTS/WIZARD/wizard.lua",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SCRIPTS/WIZARD/wizard.lua",
               "name": "wizard.lua",
               "size": 2856
             }
           ],
           "size": 42553
-        },
-        {
-          "path": "./SCRIPTS/snake.lua",
-          "name": "snake.lua",
-          "size": 3858
         }
       ],
       "size": 46691
     },
     {
-      "path": "./SOUNDS",
+      "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS",
       "name": "SOUNDS",
       "children": [
         {
-          "path": "./SOUNDS/.gitkeep",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/.gitkeep",
           "name": ".gitkeep",
           "size": 0
         },
         {
-          "path": "./SOUNDS/cn",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn",
           "name": "cn",
           "children": [
             {
-              "path": "./SOUNDS/cn/3d.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/3d.wav",
               "name": "3d.wav",
               "size": 44878
             },
             {
-              "path": "./SOUNDS/cn/SYSTEM",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/acro.wav",
+              "name": "acro.wav",
+              "size": 81144
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/armed.wav",
+              "name": "armed.wav",
+              "size": 47010
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/crowof.wav",
+              "name": "crowof.wav",
+              "size": 96078
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/crowon.wav",
+              "name": "crowon.wav",
+              "size": 96078
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/disarm.wav",
+              "name": "disarm.wav",
+              "size": 40610
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/engoff.wav",
+              "name": "engoff.wav",
+              "size": 59810
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/flapdn.wav",
+              "name": "flapdn.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/flapup.wav",
+              "name": "flapup.wav",
+              "size": 55544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-1.wav",
+              "name": "fm-1.wav",
+              "size": 85412
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-2.wav",
+              "name": "fm-2.wav",
+              "size": 87544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-3.wav",
+              "name": "fm-3.wav",
+              "size": 87544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-4.wav",
+              "name": "fm-4.wav",
+              "size": 87546
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-5.wav",
+              "name": "fm-5.wav",
+              "size": 85410
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-6.wav",
+              "name": "fm-6.wav",
+              "size": 87544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-7.wav",
+              "name": "fm-7.wav",
+              "size": 87544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-8.wav",
+              "name": "fm-8.wav",
+              "size": 87546
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-acr.wav",
+              "name": "fm-acr.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-ang.wav",
+              "name": "fm-ang.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-crs.wav",
+              "name": "fm-crs.wav",
+              "size": 61946
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-flt.wav",
+              "name": "fm-flt.wav",
+              "size": 61944
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-fst.wav",
+              "name": "fm-fst.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-hor.wav",
+              "name": "fm-hor.wav",
+              "size": 68346
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-id1.wav",
+              "name": "fm-id1.wav",
+              "size": 55544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-id2.wav",
+              "name": "fm-id2.wav",
+              "size": 55544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-lch.wav",
+              "name": "fm-lch.wav",
+              "size": 55546
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-lnd.wav",
+              "name": "fm-lnd.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-nrm.wav",
+              "name": "fm-nrm.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-png.wav",
+              "name": "fm-png.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-pwr.wav",
+              "name": "fm-pwr.wav",
+              "size": 53412
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-rce.wav",
+              "name": "fm-rce.wav",
+              "size": 59810
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-spd.wav",
+              "name": "fm-spd.wav",
+              "size": 57678
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-stb.wav",
+              "name": "fm-stb.wav",
+              "size": 53412
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-thl.wav",
+              "name": "fm-thl.wav",
+              "size": 98210
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-thm.wav",
+              "name": "fm-thm.wav",
+              "size": 68344
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/fm-thr.wav",
+              "name": "fm-thr.wav",
+              "size": 98210
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/geardn.wav",
+              "name": "geardn.wav",
+              "size": 68344
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/gearup.wav",
+              "name": "gearup.wav",
+              "size": 70478
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/landing.wav",
+              "name": "landing.wav",
+              "size": 36344
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/lnding.wav",
+              "name": "lnding.wav",
+              "size": 81146
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/lowbat.wav",
+              "name": "lowbat.wav",
+              "size": 70478
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/lq.wav",
+              "name": "lq.wav",
+              "size": 53412
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/nrmmod.wav",
+              "name": "nrmmod.wav",
+              "size": 85410
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/pattern.wav",
+              "name": "pattern.wav",
+              "size": 32078
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/rathi.wav",
+              "name": "rathi.wav",
+              "size": 55544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/ratlow.wav",
+              "name": "ratlow.wav",
+              "size": 51278
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/ratmed.wav",
+              "name": "ratmed.wav",
+              "size": 51278
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/rfmode.wav",
+              "name": "rfmode.wav",
+              "size": 61944
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/sigcrt.wav",
+              "name": "sigcrt.wav",
+              "size": 93944
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/siglow.wav",
+              "name": "siglow.wav",
+              "size": 79010
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/spdmod.wav",
+              "name": "spdmod.wav",
+              "size": 87544
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/splrdn.wav",
+              "name": "splrdn.wav",
+              "size": 70478
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/splrup.wav",
+              "name": "splrup.wav",
+              "size": 70478
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/sport.wav",
+              "name": "sport.wav",
+              "size": 32078
+            },
+            {
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM",
               "name": "SYSTEM",
               "children": [
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0000.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0000.wav",
                   "name": "0000.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0001.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0001.wav",
                   "name": "0001.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0002.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0002.wav",
                   "name": "0002.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0003.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0003.wav",
                   "name": "0003.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0004.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0004.wav",
                   "name": "0004.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0005.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0005.wav",
                   "name": "0005.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0006.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0006.wav",
                   "name": "0006.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0007.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0007.wav",
                   "name": "0007.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0008.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0008.wav",
                   "name": "0008.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0009.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0009.wav",
                   "name": "0009.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0010.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0010.wav",
                   "name": "0010.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0011.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0011.wav",
                   "name": "0011.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0012.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0012.wav",
                   "name": "0012.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0013.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0013.wav",
                   "name": "0013.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0014.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0014.wav",
                   "name": "0014.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0015.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0015.wav",
                   "name": "0015.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0016.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0016.wav",
                   "name": "0016.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0017.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0017.wav",
                   "name": "0017.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0018.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0018.wav",
                   "name": "0018.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0019.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0019.wav",
                   "name": "0019.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0020.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0020.wav",
                   "name": "0020.wav",
                   "size": 40610
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0021.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0021.wav",
                   "name": "0021.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0022.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0022.wav",
                   "name": "0022.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0023.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0023.wav",
                   "name": "0023.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0024.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0024.wav",
                   "name": "0024.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0025.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0025.wav",
                   "name": "0025.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0026.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0026.wav",
                   "name": "0026.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0027.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0027.wav",
                   "name": "0027.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0028.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0028.wav",
                   "name": "0028.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0029.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0029.wav",
                   "name": "0029.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0030.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0030.wav",
                   "name": "0030.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0031.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0031.wav",
                   "name": "0031.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0032.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0032.wav",
                   "name": "0032.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0033.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0033.wav",
                   "name": "0033.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0034.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0034.wav",
                   "name": "0034.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0035.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0035.wav",
                   "name": "0035.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0036.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0036.wav",
                   "name": "0036.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0037.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0037.wav",
                   "name": "0037.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0038.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0038.wav",
                   "name": "0038.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0039.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0039.wav",
                   "name": "0039.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0040.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0040.wav",
                   "name": "0040.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0041.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0041.wav",
                   "name": "0041.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0042.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0042.wav",
                   "name": "0042.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0043.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0043.wav",
                   "name": "0043.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0044.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0044.wav",
                   "name": "0044.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0045.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0045.wav",
                   "name": "0045.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0046.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0046.wav",
                   "name": "0046.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0047.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0047.wav",
                   "name": "0047.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0048.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0048.wav",
                   "name": "0048.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0049.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0049.wav",
                   "name": "0049.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0050.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0050.wav",
                   "name": "0050.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0051.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0051.wav",
                   "name": "0051.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0052.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0052.wav",
                   "name": "0052.wav",
                   "size": 46456
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0053.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0053.wav",
                   "name": "0053.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0054.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0054.wav",
                   "name": "0054.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0055.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0055.wav",
                   "name": "0055.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0056.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0056.wav",
                   "name": "0056.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0057.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0057.wav",
                   "name": "0057.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0058.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0058.wav",
                   "name": "0058.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0059.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0059.wav",
                   "name": "0059.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0060.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0060.wav",
                   "name": "0060.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0061.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0061.wav",
                   "name": "0061.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0062.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0062.wav",
                   "name": "0062.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0063.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0063.wav",
                   "name": "0063.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0064.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0064.wav",
                   "name": "0064.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0065.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0065.wav",
                   "name": "0065.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0066.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0066.wav",
                   "name": "0066.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0067.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0067.wav",
                   "name": "0067.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0068.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0068.wav",
                   "name": "0068.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0069.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0069.wav",
                   "name": "0069.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0070.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0070.wav",
                   "name": "0070.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0071.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0071.wav",
                   "name": "0071.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0072.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0072.wav",
                   "name": "0072.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0073.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0073.wav",
                   "name": "0073.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0074.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0074.wav",
                   "name": "0074.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0075.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0075.wav",
                   "name": "0075.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0076.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0076.wav",
                   "name": "0076.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0077.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0077.wav",
                   "name": "0077.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0078.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0078.wav",
                   "name": "0078.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0079.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0079.wav",
                   "name": "0079.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0080.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0080.wav",
                   "name": "0080.wav",
                   "size": 45132
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0081.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0081.wav",
                   "name": "0081.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0082.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0082.wav",
                   "name": "0082.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0083.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0083.wav",
                   "name": "0083.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0084.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0084.wav",
                   "name": "0084.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0085.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0085.wav",
                   "name": "0085.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0086.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0086.wav",
                   "name": "0086.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0087.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0087.wav",
                   "name": "0087.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0088.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0088.wav",
                   "name": "0088.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0089.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0089.wav",
                   "name": "0089.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0090.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0090.wav",
                   "name": "0090.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0091.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0091.wav",
                   "name": "0091.wav",
                   "size": 47012
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0092.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0092.wav",
                   "name": "0092.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0093.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0093.wav",
                   "name": "0093.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0094.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0094.wav",
                   "name": "0094.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0095.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0095.wav",
                   "name": "0095.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0096.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0096.wav",
                   "name": "0096.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0097.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0097.wav",
                   "name": "0097.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0098.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0098.wav",
                   "name": "0098.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0099.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0099.wav",
                   "name": "0099.wav",
                   "size": 47010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0100.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0100.wav",
                   "name": "0100.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0101.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0101.wav",
                   "name": "0101.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0102.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0102.wav",
                   "name": "0102.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0103.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0103.wav",
                   "name": "0103.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0104.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0104.wav",
                   "name": "0104.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0105.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0105.wav",
                   "name": "0105.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0106.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0106.wav",
                   "name": "0106.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0107.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0107.wav",
                   "name": "0107.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0108.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0108.wav",
                   "name": "0108.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0109.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0109.wav",
                   "name": "0109.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0110.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0110.wav",
                   "name": "0110.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0111.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0111.wav",
                   "name": "0111.wav",
                   "size": 23546
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0112.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0112.wav",
                   "name": "0112.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0167.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0167.wav",
                   "name": "0167.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0168.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0168.wav",
                   "name": "0168.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0169.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0169.wav",
                   "name": "0169.wav",
                   "size": 34212
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0170.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0170.wav",
                   "name": "0170.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0171.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0171.wav",
                   "name": "0171.wav",
                   "size": 36344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0172.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0172.wav",
                   "name": "0172.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0173.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0173.wav",
                   "name": "0173.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0174.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0174.wav",
                   "name": "0174.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0175.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0175.wav",
                   "name": "0175.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/0176.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/0176.wav",
                   "name": "0176.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/amp0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/amp0.wav",
                   "name": "amp0.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/amp1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/amp1.wav",
                   "name": "amp1.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/celsius0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/celsius0.wav",
                   "name": "celsius0.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/celsius1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/celsius1.wav",
                   "name": "celsius1.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/db0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/db0.wav",
                   "name": "db0.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/db1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/db1.wav",
                   "name": "db1.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/degree0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/degree0.wav",
                   "name": "degree0.wav",
                   "size": 23546
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/degree1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/degree1.wav",
                   "name": "degree1.wav",
                   "size": 23546
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/eebad.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/eebad.wav",
                   "name": "eebad.wav",
                   "size": 104610
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/fahr0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/fahr0.wav",
                   "name": "fahr0.wav",
                   "size": 40610
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/fahr1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/fahr1.wav",
                   "name": "fahr1.wav",
                   "size": 40610
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/foot0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/foot0.wav",
                   "name": "foot0.wav",
                   "size": 36344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/foot1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/foot1.wav",
                   "name": "foot1.wav",
                   "size": 36344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/founce0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/founce0.wav",
                   "name": "founce0.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/founce1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/founce1.wav",
                   "name": "founce1.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/fps0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/fps0.wav",
                   "name": "fps0.wav",
                   "size": 57678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/fps1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/fps1.wav",
                   "name": "fps1.wav",
                   "size": 57678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/g0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/g0.wav",
                   "name": "g0.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/g1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/g1.wav",
                   "name": "g1.wav",
                   "size": 21410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/hello.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/hello.wav",
                   "name": "hello.wav",
                   "size": 136610
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/hertz0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/hertz0.wav",
                   "name": "hertz0.wav",
                   "size": 29944
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/hertz1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/hertz1.wav",
                   "name": "hertz1.wav",
                   "size": 29944
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/hour0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/hour0.wav",
                   "name": "hour0.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/hour1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/hour1.wav",
                   "name": "hour1.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/inactiv.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/inactiv.wav",
                   "name": "inactiv.wav",
                   "size": 134478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/knot0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/knot0.wav",
                   "name": "knot0.wav",
                   "size": 23546
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/knot1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/knot1.wav",
                   "name": "knot1.wav",
                   "size": 23546
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/kph0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/kph0.wav",
                   "name": "kph0.wav",
                   "size": 70478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/kph1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/kph1.wav",
                   "name": "kph1.wav",
                   "size": 70478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/lowbatt.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/lowbatt.wav",
                   "name": "lowbatt.wav",
                   "size": 83278
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mamp0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mamp0.wav",
                   "name": "mamp0.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mamp1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mamp1.wav",
                   "name": "mamp1.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mamph0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mamph0.wav",
                   "name": "mamph0.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mamph1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mamph1.wav",
                   "name": "mamph1.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/maxtrim.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/maxtrim.wav",
                   "name": "maxtrim.wav",
                   "size": 55544
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/meter0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/meter0.wav",
                   "name": "meter0.wav",
                   "size": 27810
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/meter1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/meter1.wav",
                   "name": "meter1.wav",
                   "size": 27810
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/midtrim.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/midtrim.wav",
                   "name": "midtrim.wav",
                   "size": 59812
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mintrim.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mintrim.wav",
                   "name": "mintrim.wav",
                   "size": 59810
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/minute0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/minute0.wav",
                   "name": "minute0.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/minute1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/minute1.wav",
                   "name": "minute1.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/ml0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/ml0.wav",
                   "name": "ml0.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/ml1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/ml1.wav",
                   "name": "ml1.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mlpm0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mlpm0.wav",
                   "name": "mlpm0.wav",
                   "size": 68344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mlpm1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mlpm1.wav",
                   "name": "mlpm1.wav",
                   "size": 68344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/modelpwr.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/modelpwr.wav",
                   "name": "modelpwr.wav",
                   "size": 79010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mph0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mph0.wav",
                   "name": "mph0.wav",
                   "size": 70478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mph1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mph1.wav",
                   "name": "mph1.wav",
                   "size": 70478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mps0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mps0.wav",
                   "name": "mps0.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mps1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mps1.wav",
                   "name": "mps1.wav",
                   "size": 44878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/ms0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/ms0.wav",
                   "name": "ms0.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/ms1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/ms1.wav",
                   "name": "ms1.wav",
                   "size": 38478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mwatt0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mwatt0.wav",
                   "name": "mwatt0.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/mwatt1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/mwatt1.wav",
                   "name": "mwatt1.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/percent0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/percent0.wav",
                   "name": "percent0.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/percent1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/percent1.wav",
                   "name": "percent1.wav",
                   "size": 42744
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rad0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rad0.wav",
                   "name": "rad0.wav",
                   "size": 29944
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rad1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rad1.wav",
                   "name": "rad1.wav",
                   "size": 29944
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rpm0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rpm0.wav",
                   "name": "rpm0.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rpm1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rpm1.wav",
                   "name": "rpm1.wav",
                   "size": 34210
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rssi_org.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rssi_org.wav",
                   "name": "rssi_org.wav",
                   "size": 79010
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rssi_red.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rssi_red.wav",
                   "name": "rssi_red.wav",
                   "size": 96078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/rxko.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/rxko.wav",
                   "name": "rxko.wav",
                   "size": 55544
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/second0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/second0.wav",
                   "name": "second0.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/second1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/second1.wav",
                   "name": "second1.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/sensorko.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/sensorko.wav",
                   "name": "sensorko.wav",
                   "size": 70478
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/servoko.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/servoko.wav",
                   "name": "servoko.wav",
                   "size": 53410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/swalert.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/swalert.wav",
                   "name": "swalert.wav",
                   "size": 168610
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/swr_red.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/swr_red.wav",
                   "name": "swr_red.wav",
                   "size": 57678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/telemko.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/telemko.wav",
                   "name": "telemko.wav",
                   "size": 57678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/telemok.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/telemok.wav",
                   "name": "telemok.wav",
                   "size": 55544
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/thralert.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/thralert.wav",
                   "name": "thralert.wav",
                   "size": 172878
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/timovr1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/timovr1.wav",
                   "name": "timovr1.wav",
                   "size": 128078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/timovr2.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/timovr2.wav",
                   "name": "timovr2.wav",
                   "size": 117410
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/timovr3.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/timovr3.wav",
                   "name": "timovr3.wav",
                   "size": 119544
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/trainko.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/trainko.wav",
                   "name": "trainko.wav",
                   "size": 93944
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/trainok.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/trainok.wav",
                   "name": "trainok.wav",
                   "size": 93944
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/us0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/us0.wav",
                   "name": "us0.wav",
                   "size": 36344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/us1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/us1.wav",
                   "name": "us1.wav",
                   "size": 36344
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/volt0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/volt0.wav",
                   "name": "volt0.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/volt1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/volt1.wav",
                   "name": "volt1.wav",
                   "size": 25678
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/watt0.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/watt0.wav",
                   "name": "watt0.wav",
                   "size": 32078
                 },
                 {
-                  "path": "./SOUNDS/cn/SYSTEM/watt1.wav",
+                  "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/SYSTEM/watt1.wav",
                   "name": "watt1.wav",
                   "size": 32078
                 }
@@ -1196,317 +1471,52 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
               "size": 9513248
             },
             {
-              "path": "./SOUNDS/cn/acro.wav",
-              "name": "acro.wav",
-              "size": 81144
-            },
-            {
-              "path": "./SOUNDS/cn/armed.wav",
-              "name": "armed.wav",
-              "size": 47010
-            },
-            {
-              "path": "./SOUNDS/cn/crowof.wav",
-              "name": "crowof.wav",
-              "size": 96078
-            },
-            {
-              "path": "./SOUNDS/cn/crowon.wav",
-              "name": "crowon.wav",
-              "size": 96078
-            },
-            {
-              "path": "./SOUNDS/cn/disarm.wav",
-              "name": "disarm.wav",
-              "size": 40610
-            },
-            {
-              "path": "./SOUNDS/cn/engoff.wav",
-              "name": "engoff.wav",
-              "size": 59810
-            },
-            {
-              "path": "./SOUNDS/cn/flapdn.wav",
-              "name": "flapdn.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/flapup.wav",
-              "name": "flapup.wav",
-              "size": 55544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-1.wav",
-              "name": "fm-1.wav",
-              "size": 85412
-            },
-            {
-              "path": "./SOUNDS/cn/fm-2.wav",
-              "name": "fm-2.wav",
-              "size": 87544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-3.wav",
-              "name": "fm-3.wav",
-              "size": 87544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-4.wav",
-              "name": "fm-4.wav",
-              "size": 87546
-            },
-            {
-              "path": "./SOUNDS/cn/fm-5.wav",
-              "name": "fm-5.wav",
-              "size": 85410
-            },
-            {
-              "path": "./SOUNDS/cn/fm-6.wav",
-              "name": "fm-6.wav",
-              "size": 87544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-7.wav",
-              "name": "fm-7.wav",
-              "size": 87544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-8.wav",
-              "name": "fm-8.wav",
-              "size": 87546
-            },
-            {
-              "path": "./SOUNDS/cn/fm-acr.wav",
-              "name": "fm-acr.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-ang.wav",
-              "name": "fm-ang.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-crs.wav",
-              "name": "fm-crs.wav",
-              "size": 61946
-            },
-            {
-              "path": "./SOUNDS/cn/fm-flt.wav",
-              "name": "fm-flt.wav",
-              "size": 61944
-            },
-            {
-              "path": "./SOUNDS/cn/fm-fst.wav",
-              "name": "fm-fst.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-hor.wav",
-              "name": "fm-hor.wav",
-              "size": 68346
-            },
-            {
-              "path": "./SOUNDS/cn/fm-id1.wav",
-              "name": "fm-id1.wav",
-              "size": 55544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-id2.wav",
-              "name": "fm-id2.wav",
-              "size": 55544
-            },
-            {
-              "path": "./SOUNDS/cn/fm-lch.wav",
-              "name": "fm-lch.wav",
-              "size": 55546
-            },
-            {
-              "path": "./SOUNDS/cn/fm-lnd.wav",
-              "name": "fm-lnd.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-nrm.wav",
-              "name": "fm-nrm.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-png.wav",
-              "name": "fm-png.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-pwr.wav",
-              "name": "fm-pwr.wav",
-              "size": 53412
-            },
-            {
-              "path": "./SOUNDS/cn/fm-rce.wav",
-              "name": "fm-rce.wav",
-              "size": 59810
-            },
-            {
-              "path": "./SOUNDS/cn/fm-spd.wav",
-              "name": "fm-spd.wav",
-              "size": 57678
-            },
-            {
-              "path": "./SOUNDS/cn/fm-stb.wav",
-              "name": "fm-stb.wav",
-              "size": 53412
-            },
-            {
-              "path": "./SOUNDS/cn/fm-thl.wav",
-              "name": "fm-thl.wav",
-              "size": 98210
-            },
-            {
-              "path": "./SOUNDS/cn/fm-thm.wav",
-              "name": "fm-thm.wav",
-              "size": 68344
-            },
-            {
-              "path": "./SOUNDS/cn/fm-thr.wav",
-              "name": "fm-thr.wav",
-              "size": 98210
-            },
-            {
-              "path": "./SOUNDS/cn/geardn.wav",
-              "name": "geardn.wav",
-              "size": 68344
-            },
-            {
-              "path": "./SOUNDS/cn/gearup.wav",
-              "name": "gearup.wav",
-              "size": 70478
-            },
-            {
-              "path": "./SOUNDS/cn/landing.wav",
-              "name": "landing.wav",
-              "size": 36344
-            },
-            {
-              "path": "./SOUNDS/cn/lnding.wav",
-              "name": "lnding.wav",
-              "size": 81146
-            },
-            {
-              "path": "./SOUNDS/cn/lowbat.wav",
-              "name": "lowbat.wav",
-              "size": 70478
-            },
-            {
-              "path": "./SOUNDS/cn/lq.wav",
-              "name": "lq.wav",
-              "size": 53412
-            },
-            {
-              "path": "./SOUNDS/cn/nrmmod.wav",
-              "name": "nrmmod.wav",
-              "size": 85410
-            },
-            {
-              "path": "./SOUNDS/cn/pattern.wav",
-              "name": "pattern.wav",
-              "size": 32078
-            },
-            {
-              "path": "./SOUNDS/cn/rathi.wav",
-              "name": "rathi.wav",
-              "size": 55544
-            },
-            {
-              "path": "./SOUNDS/cn/ratlow.wav",
-              "name": "ratlow.wav",
-              "size": 51278
-            },
-            {
-              "path": "./SOUNDS/cn/ratmed.wav",
-              "name": "ratmed.wav",
-              "size": 51278
-            },
-            {
-              "path": "./SOUNDS/cn/rfmode.wav",
-              "name": "rfmode.wav",
-              "size": 61944
-            },
-            {
-              "path": "./SOUNDS/cn/sigcrt.wav",
-              "name": "sigcrt.wav",
-              "size": 93944
-            },
-            {
-              "path": "./SOUNDS/cn/siglow.wav",
-              "name": "siglow.wav",
-              "size": 79010
-            },
-            {
-              "path": "./SOUNDS/cn/spdmod.wav",
-              "name": "spdmod.wav",
-              "size": 87544
-            },
-            {
-              "path": "./SOUNDS/cn/splrdn.wav",
-              "name": "splrdn.wav",
-              "size": 70478
-            },
-            {
-              "path": "./SOUNDS/cn/splrup.wav",
-              "name": "splrup.wav",
-              "size": 70478
-            },
-            {
-              "path": "./SOUNDS/cn/sport.wav",
-              "name": "sport.wav",
-              "size": 32078
-            },
-            {
-              "path": "./SOUNDS/cn/takeoff.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/takeoff.wav",
               "name": "takeoff.wav",
               "size": 34210
             },
             {
-              "path": "./SOUNDS/cn/thmmod.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/thmmod.wav",
               "name": "thmmod.wav",
               "size": 93946
             },
             {
-              "path": "./SOUNDS/cn/thract.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/thract.wav",
               "name": "thract.wav",
               "size": 51278
             },
             {
-              "path": "./SOUNDS/cn/thrcut.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/thrcut.wav",
               "name": "thrcut.wav",
               "size": 57678
             },
             {
-              "path": "./SOUNDS/cn/tohigh.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/tohigh.wav",
               "name": "tohigh.wav",
               "size": 32078
             },
             {
-              "path": "./SOUNDS/cn/tolow.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/tolow.wav",
               "name": "tolow.wav",
               "size": 34210
             },
             {
-              "path": "./SOUNDS/cn/trnoff.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/trnoff.wav",
               "name": "trnoff.wav",
               "size": 57678
             },
             {
-              "path": "./SOUNDS/cn/trnon.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/trnon.wav",
               "name": "trnon.wav",
               "size": 53410
             },
             {
-              "path": "./SOUNDS/cn/vrioff.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/vrioff.wav",
               "name": "vrioff.wav",
               "size": 70478
             },
             {
-              "path": "./SOUNDS/cn/vrion.wav",
+              "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/cn/vrion.wav",
               "name": "vrion.wav",
               "size": 70478
             }
@@ -1514,22 +1524,12 @@ exports[`Sdcard Job > should extract the specified sdcard target and sounds to t
           "size": 13688892
         },
         {
-          "path": "./SOUNDS/edgetx.sounds.version",
+          "path": "D:/cygwin64/tmp/tmp-118172-K5Nks1rYNYeG/SOUNDS/edgetx.sounds.version",
           "name": "edgetx.sounds.version",
           "size": 6
         }
       ],
       "size": 13688898
-    },
-    {
-      "path": "./edgetx.sdcard.target",
-      "name": "edgetx.sdcard.target",
-      "size": 2
-    },
-    {
-      "path": "./edgetx.sdcard.version",
-      "name": "edgetx.sdcard.version",
-      "size": 6
     }
   ],
   "size": 13735990
