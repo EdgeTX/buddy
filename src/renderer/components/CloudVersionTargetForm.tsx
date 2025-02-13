@@ -172,7 +172,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
 
       <Form.List name="selectedFlags" initialValue={selectedFlags}>
         {(fields, { add }) => (
-          <Form.Item label="Flags">
+          <Form.Item label={t(`Flags`)}>
             {fields.map((value, index) => (
               <div key={value.key}>
                 <FormTag
@@ -195,7 +195,7 @@ const CloudVersionTargetForm: React.FC<Props> = ({
                   block
                   icon={<PlusOutlined />}
                 >
-                  Add Flag
+                  {t("Add flag")}
                 </Button>
               </Form.Item>
             ) : null}
@@ -263,6 +263,7 @@ const FormTag: React.FC<FormTagProps> = ({
 }) => {
   const currentFlag = selectedFlags?.at(value.key)?.name;
   const currentValue = selectedFlags?.at(value.key)?.value;
+  const { t } = useTranslation("flashing");
 
   const selectedFlagsName = new Set(selectedFlags?.map((flag) => flag.name));
   const flagNames =
@@ -303,17 +304,17 @@ const FormTag: React.FC<FormTagProps> = ({
         <Form.Item
           style={{ width: "50%" }}
           name={[value.name, "name"]}
-          rules={[{ required: true, message: "Missing flag" }]}
+          rules={[{ required: true, message: t("Missing flag") }]}
         >
-          <Select showSearch placeholder="Flag" options={flagNames} />
+          <Select showSearch placeholder={t("Flag")} options={flagNames} />
         </Form.Item>
 
         <Form.Item
           style={{ width: "50%" }}
           name={[value.name, "value"]}
-          rules={[{ required: true, message: "Missing value" }]}
+          rules={[{ required: true, message: t("Missing value") }]}
         >
-          <Select showSearch placeholder="Value" options={flagValues} />
+          <Select showSearch placeholder={t("Value")} options={flagValues} />
         </Form.Item>
       </div>
       <MinusCircleOutlined
