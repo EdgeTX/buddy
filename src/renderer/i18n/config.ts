@@ -38,6 +38,9 @@ void i18n
       // so we have to not keep any of the basic html nodes
       transKeepBasicHtmlNodesFor: [],
     },
+    detection: {
+      convertDetectedLanguage: (lng: string) => lng.split("-")[0],
+    },
   });
 
 export default i18n;
