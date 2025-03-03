@@ -233,5 +233,6 @@
     "@types/testing-library__jest-dom@5.14.3": "patch:@types/testing-library__jest-dom@npm:5.14.3#.yarn/patches/@types-testing-library__jest-dom-npm-5.14.3-0aa35d2c00.patch",
     "snapshot-diff@0.9.0": "patch:snapshot-diff@npm:0.9.0#.yarn/patches/snapshot-diff-npm-0.9.0-44279ef523",
     "styled-components": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

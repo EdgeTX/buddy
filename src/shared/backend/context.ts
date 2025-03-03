@@ -1,5 +1,6 @@
 import { createGithubClient, GithubClient } from "shared/api/github";
 import * as firmwareStore from "./services/firmwareStore";
+import * as backupStore from "./services/backupStore";
 import * as dfu from "./services/dfu";
 import * as sdcardAssets from "./services/sdcardAssets";
 import * as sdcardJobs from "./services/sdcardJobs";
@@ -11,6 +12,7 @@ import { FileSystemApi, UsbApi } from "./types";
 export type Context = {
   github: GithubClient;
   firmwareStore: typeof firmwareStore;
+  backupStore: typeof backupStore;
   dfu: typeof dfu;
   usb: UsbApi;
   fileSystem: FileSystemApi;
@@ -30,6 +32,7 @@ export const createContext =
   (): Context => ({
     github: extras.github ?? createGithubClient(),
     firmwareStore,
+    backupStore,
     dfu,
     sdcardAssets,
     flashJobs,
