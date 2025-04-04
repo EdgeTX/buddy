@@ -157,8 +157,8 @@ const VersionFiltersDropdown: React.FC<{
   };
 
   return (
-    <Dropdown
-      visible={visible}
+    (<Dropdown
+      open={visible}
       trigger={["click"]}
       onVisibleChange={(flag) => setVisible(flag)}
       overlay={
@@ -184,7 +184,7 @@ const VersionFiltersDropdown: React.FC<{
       <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
         {t(`Filters`)} <DownOutlined />
       </a>
-    </Dropdown>
+    </Dropdown>)
   );
 };
 

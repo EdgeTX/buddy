@@ -25,10 +25,10 @@ const WebCompatInfo: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation("compatibility");
   return (
-    <Modal
+    (<Modal
       style={{ maxWidth: "500px", top: "50px" }}
       width="100%"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       closable
       footer={
@@ -103,7 +103,7 @@ const WebCompatInfo: React.FC<Props> = ({
           </Typography.Paragraph>
         </Result>
       </FullHeightCentered>
-    </Modal>
+    </Modal>)
   );
 };
 

@@ -41,7 +41,7 @@ const JobStatusModal: React.FC<Props> = ({
         <Typography.Text>{stepContents[activeStep].title}</Typography.Text>
       </Space>
     }
-    visible
+    open
     okButtonProps={{ style: { display: "none" } }}
     onCancel={onCancel}
   >

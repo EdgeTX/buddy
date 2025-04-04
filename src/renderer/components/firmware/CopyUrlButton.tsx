@@ -29,8 +29,8 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
   }, [copied]);
 
   return (
-    <Tooltip
-      visible={copied}
+    (<Tooltip
+      open={copied}
       trigger={[]}
       placement="top"
       title={t(`Copied to clipboard`)}
@@ -57,7 +57,7 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
       >
         {t(`Copy URL`)}
       </Button>
-    </Tooltip>
+    </Tooltip>)
   );
 };
 

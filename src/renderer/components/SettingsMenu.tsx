@@ -17,10 +17,10 @@ const SettingsMenu: React.FC = () => {
   const availableLanguages = useIsoNames(languages);
 
   return (
-    <Dropdown
+    (<Dropdown
       placement="bottomRight"
       trigger={["click"]}
-      visible={open}
+      open={open}
       onVisibleChange={setOpen}
       arrow
       overlay={
@@ -67,7 +67,7 @@ const SettingsMenu: React.FC = () => {
         style={{ fontSize: "16px", color: "white" }}
         title={t(`settings`)}
       />
-    </Dropdown>
+    </Dropdown>)
   );
 };
 
