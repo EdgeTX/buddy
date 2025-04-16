@@ -115,13 +115,12 @@ describe("<FirmwareSummary />", () => {
           <div
       -       class="sc-aXZVg cZVjIL"
       -       style="margin-bottom: 32px;"
-      +     class="ant-space ant-space-vertical"
+      +     class="ant-space css-dev-only-do-not-override-1yacf91 ant-space-vertical ant-space-gap-row-large ant-space-gap-col-large"
       +     style="width: 100%;"
           >
             <div
-      -         class="ant-skeleton ant-skeleton-element ant-skeleton-active"
+      -         class="ant-skeleton ant-skeleton-element ant-skeleton-active css-dev-only-do-not-override-1yacf91"
       +       class="ant-space-item"
-      +       style="margin-bottom: 24px;"
             >
       -         <span
       -           class="ant-skeleton-avatar ant-skeleton-avatar-lg ant-skeleton-avatar-square"
@@ -137,7 +136,7 @@ describe("<FirmwareSummary />", () => {
               </div>
             </div>
             <div
-      -       class="ant-skeleton ant-skeleton-active"
+      -       class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-1yacf91"
       +       class="ant-space-item"
             >
               <div
@@ -147,13 +146,13 @@ describe("<FirmwareSummary />", () => {
       -         <ul
       -           class="ant-skeleton-paragraph"
       +         <h5
-      +           class="ant-typography"
+      +           class="ant-typography css-dev-only-do-not-override-1yacf91"
       +           style="text-align: center;"
       +         >
       +           EdgeTX "Dauntless" 2.5.0
       +         </h5>
       +         <span
-      +           class="ant-typography ant-typography-secondary"
+      +           class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
       +           style="text-align: center;"
                 >
       -           <li />

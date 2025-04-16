@@ -53,12 +53,12 @@ describe("<DeviceList />", () => {
       @@ -1,9 +1,9 @@
         <DocumentFragment>
           <div
-            class="ant-list ant-list-lg ant-list-split"
+            class="ant-list ant-list-lg ant-list-split css-dev-only-do-not-override-1yacf91"
       -     style="height: 100%; min-width: 350px;"
       +     style="height: 100%; min-width: 350px; opacity: 0.5; pointer-events: none;"
           >
             <div
-              class="ant-spin-nested-loading"
+              class="ant-spin-nested-loading css-dev-only-do-not-override-1yacf91"
             >
               <div
       @@ -77,7 +77,6 @@

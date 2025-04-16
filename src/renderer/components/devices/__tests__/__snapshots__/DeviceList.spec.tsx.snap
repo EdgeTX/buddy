@@ -49,7 +49,7 @@ exports[`<DeviceList /> > should render a device as selected 1`] = `
         class="ant-list-item-meta-title"
       >
         <span
-          class="ant-typography"
+          class="ant-typography css-dev-only-do-not-override-1yacf91"
         >
           STEM32 Bootloader
         </span>
@@ -66,7 +66,7 @@ exports[`<DeviceList /> > should render a device as selected 1`] = `
   >
     <li>
       <span
-        class="ant-typography ant-typography-secondary"
+        class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
       >
         0x3453
         :
@@ -122,7 +122,7 @@ exports[`<DeviceList /> > should render a device details 1`] = `
         class="ant-list-item-meta-title"
       >
         <span
-          class="ant-typography"
+          class="ant-typography css-dev-only-do-not-override-1yacf91"
         >
           STEM32 Bootloader
         </span>
@@ -139,7 +139,7 @@ exports[`<DeviceList /> > should render a device details 1`] = `
   >
     <li>
       <span
-        class="ant-typography ant-typography-secondary"
+        class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
       >
         0x3453
         :
@@ -153,11 +153,11 @@ exports[`<DeviceList /> > should render a device details 1`] = `
 exports[`<DeviceList /> > should render loading when device list is loading 1`] = `
 <DocumentFragment>
   <div
-    class="ant-list ant-list-lg ant-list-split"
+    class="ant-list ant-list-lg ant-list-split css-dev-only-do-not-override-1yacf91"
     style="height: 100%; min-width: 350px;"
   >
     <div
-      class="ant-spin-nested-loading"
+      class="ant-spin-nested-loading css-dev-only-do-not-override-1yacf91"
     >
       <div
         class="ant-spin-container"
@@ -166,7 +166,7 @@ exports[`<DeviceList /> > should render loading when device list is loading 1`] 
           class="ant-list-items"
         >
           <div
-            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active"
+            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active css-dev-only-do-not-override-1yacf91"
           >
             <div
               class="ant-skeleton-header"
@@ -190,7 +190,7 @@ exports[`<DeviceList /> > should render loading when device list is loading 1`] 
             </div>
           </div>
           <div
-            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active"
+            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active css-dev-only-do-not-override-1yacf91"
           >
             <div
               class="ant-skeleton-header"
@@ -214,7 +214,7 @@ exports[`<DeviceList /> > should render loading when device list is loading 1`] 
             </div>
           </div>
           <div
-            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active"
+            class="ant-skeleton ant-skeleton-with-avatar ant-skeleton-active css-dev-only-do-not-override-1yacf91"
           >
             <div
               class="ant-skeleton-header"

@@ -1,6 +1,3 @@
-// import "antd/dist/antd.variable.min.css";
-
-
 import "./index.css";
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
