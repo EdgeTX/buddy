@@ -218,7 +218,7 @@ const VersionFiltersDropdown: React.FC<{
   };
 
   return (
-    (<Dropdown
+    <Dropdown
       open={visible}
       trigger={["click"]}
       onVisibleChange={(flag) => setVisible(flag)}
@@ -244,7 +244,7 @@ const VersionFiltersDropdown: React.FC<{
       <Button type="link" size="small" onClick={(e) => e.preventDefault()}>
         {t(`Filters`)} <DownOutlined />
       </Button>
-    </Dropdown>)
+    </Dropdown>
   );
 };
 
