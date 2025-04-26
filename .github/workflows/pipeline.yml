@@ -325,7 +325,15 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}} 
+        name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - if: ${{ github.event_name == 'push' }}
+        name: Checkout
+        uses: actions/checkout@v4
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
