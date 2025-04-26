@@ -136,7 +136,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
+        os: [macos-latest, ubuntu-22.04, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -188,7 +188,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
+        os: [macos-latest, ubuntu-22.04, windows-latest]
 
     needs: compile
 
@@ -304,7 +304,7 @@ jobs:
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
         with:
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Run tests
@@ -330,7 +330,7 @@ jobs:
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
         with:
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Fetch storybook build
@@ -374,7 +374,7 @@ jobs:
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
         with:
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Publish
