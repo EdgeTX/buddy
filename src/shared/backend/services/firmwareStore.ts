@@ -19,6 +19,8 @@ const firmwareBundleBlobs: Record<string, Promise<Blob>> = {};
 
 const firmwareTargetsCache: Record<string, Promise<Target[]>> = {};
 
+const firmwarePattern = /(\.bin|\.uf2)$/i;
+
 const firmwareBundle = async (url: string): Promise<ZipInfoRaw> => {
   // For github action related assets we can't use Range reads :(
   const reader = url.includes("api.github.com")
@@ -82,7 +84,10 @@ export const firmwareTargets = async (
 
 const firmwareFileNameToId = (fileName: string): string => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const withoutExtension = fileName.split("/").pop()!.replace(".bin", "");
+  const withoutExtension = fileName
+    .split("/")
+    .pop()!
+    .replace(firmwarePattern, "");
   const withoutCommitHash = withoutExtension.split("-").slice(0, -1).join("-");
 
   return withoutCommitHash;
@@ -95,7 +100,8 @@ export const fetchFirmware = async (
   const { entries } = await firmwareBundle(firmwareBundleUrl);
   const firmwareFile = entries.find(
     (entry) =>
-      entry.name.endsWith(".bin") && firmwareFileNameToId(entry.name) === target
+      entry.name.match(firmwarePattern) &&
+      firmwareFileNameToId(entry.name) === target
   );
 
   if (!firmwareFile) {

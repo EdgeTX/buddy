@@ -22,6 +22,32 @@ type Props = {
   isCloudBuild?: boolean;
 };
 
+function isUF2Payload(buffer: ArrayBuffer): boolean {
+  // Need at least 8 bytes to check the magic numbers
+  if (buffer.byteLength < 8) {
+    return false;
+  }
+
+  // UF2 magic numbers at the start of each block
+  const UF2_MAGIC_START1 = 0x0a324655; // "UF2\n"
+  const UF2_MAGIC_START2 = 0x9e5d5157; // Randomly selected
+
+  // Create a DataView to read the buffer
+  const view = new DataView(buffer);
+
+  try {
+    // Read magic numbers from the first block
+    const magicStart1 = view.getUint32(0, true);
+    const magicStart2 = view.getUint32(4, true);
+
+    // If first block doesn't match the magic numbers, it's not UF2
+    return magicStart1 === UF2_MAGIC_START1 && magicStart2 === UF2_MAGIC_START2;
+  } catch (error) {
+    // If there's any error accessing the buffer, it's not a valid UF2
+    return false;
+  }
+}
+
 const DownloadFirmwareButton: React.FC<Props> = ({
   target,
   version,
@@ -63,7 +89,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
         {
           description: t(`Firmware data`),
           accept: {
-            "application/octet-stream": [".bin"],
+            "application/octet-stream": [".bin", ".uf2"],
           },
         },
       ],
@@ -96,9 +122,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
 
       const fileData = response.data.cloudFirmware.base64Data;
       const flagValues = flags.map((flag) => flag.value).join("-");
+      const decodedData = base64ArrayBuffer.decode(fileData);
+      const ext = isUF2Payload(decodedData) ? "uf2" : "bin";
       await promptAndDownload(
-        `${version}-${target}-${flagValues}.bin`,
-        base64ArrayBuffer.decode(fileData)
+        `${version}-${target}-${flagValues}.${ext}`,
+        decodedData
       );
     } else if (validPrVersion) {
       const response = await client.query({
@@ -130,9 +158,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
         response.data.edgeTxPr?.commit?.firmwareBundle?.target?.base64Data;
 
       if (fileData) {
+        const decodedData = base64ArrayBuffer.decode(fileData);
+        const ext = isUF2Payload(decodedData) ? "uf2" : "bin";
         await promptAndDownload(
-          `${target}-${commitId.slice(0, 7)}.bin`,
-          base64ArrayBuffer.decode(fileData)
+          `${target}-${commitId.slice(0, 7)}.${ext}`,
+          decodedData
         );
       }
     } else if (!isLocal && target && version) {
@@ -161,10 +191,9 @@ const DownloadFirmwareButton: React.FC<Props> = ({
         response.data.edgeTxRelease?.firmwareBundle.target?.base64Data;
 
       if (fileData) {
-        await promptAndDownload(
-          `${target}-${version}.bin`,
-          base64ArrayBuffer.decode(fileData)
-        );
+        const decodedData = base64ArrayBuffer.decode(fileData);
+        const ext = isUF2Payload(decodedData) ? "uf2" : "bin";
+        await promptAndDownload(`${target}-${version}.${ext}`, decodedData);
       }
     }
   };

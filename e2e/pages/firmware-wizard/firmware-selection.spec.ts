@@ -129,7 +129,7 @@ const streamToString = (stream: Readable): Promise<string> => {
       // Start waiting for the download
       !isElectron ? page.waitForEvent("download") : undefined,
       // Perform the action that initiates download
-      (await queries.getByText("Download .bin")).click(),
+      (await queries.getByText("Download file")).click(),
     ]);
 
     // In browser we can use the download event
