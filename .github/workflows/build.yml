@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
+        os: [macos-latest, ubuntu-22.04, windows-latest]
 
     steps:
       - name: Checkout
@@ -136,7 +136,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v5
         with:
           run_id: ${{ github.event.workflow_run.id }}
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Run tests
@@ -160,7 +160,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v5
         with:
           run_id: ${{ github.event.workflow_run.id }}
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Fetch storybook build

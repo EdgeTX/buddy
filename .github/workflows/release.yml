@@ -18,7 +18,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v5
         with:
           run_id: ${{ github.event.workflow_run.id }}
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Publish
