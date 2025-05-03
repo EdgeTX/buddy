@@ -122,6 +122,11 @@ export const waitForJobSuccess = async (
       }
       updateStatus({ jobStatus: jobStatus.status, startedAt });
 
+      if (jobStatus.status === "BUILD_ERROR") {
+        clearTimeout(timeoutId);
+        throw new Error("Build failed");
+      }
+
       if (jobStatus.status === "BUILD_SUCCESS") {
         clearTimeout(timeoutId);
         return jobStatus;

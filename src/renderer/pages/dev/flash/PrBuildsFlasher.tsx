@@ -90,7 +90,7 @@ const PrBuildsFlasher: React.FC = () => {
         <Controls>
           <Space size="small">
             <DownloadFirmwareButton target={target} version={version}>
-              {t(`Download .bin`)}
+              {t(`Download file`)}
             </DownloadFirmwareButton>
             <FlashButton
               loading={creatingJob}

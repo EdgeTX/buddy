@@ -239,7 +239,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
             selectedFlags={selectedFlags}
             isCloudBuild={activeTab === "cloudbuild"}
           >
-            {t(`Download .bin`)}
+            {t(`Download file`)}
           </DownloadFirmwareButton>
         )}
         <FlashButton
