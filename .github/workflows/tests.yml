@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -32,7 +32,7 @@ jobs:
         run: yarn lint:all
 
   format:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -54,7 +54,7 @@ jobs:
         run: yarn fmt:check
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -83,7 +83,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   test-types:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -107,7 +107,7 @@ jobs:
           CI: true
 
   storybook:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
