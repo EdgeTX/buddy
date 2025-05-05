@@ -196,3 +196,22 @@ jobs:
             ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
             ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
           edit-mode: replace
+
+  prepare-web-release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Fetch compiled source
+        uses: dawidd6/action-download-artifact@v5
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          name: compiled-ubuntu-22.04
+          path: build
+          
+      - name: Upload web renderer for release
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-renderer
+          retention-days: 1
+          if-no-files-found: error
+          path: build/renderer

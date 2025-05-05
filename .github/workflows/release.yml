@@ -14,12 +14,12 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-22.04
     steps:
-      - name: Fetch compiled source
+      - name: Fetch relayed compiled source
         uses: dawidd6/action-download-artifact@v5
         with:
           run_id: ${{ github.event.workflow_run.id }}
-          name: compiled-ubuntu-22.04
-          path: build
+          name: web-renderer
+          path: build/renderer
 
       - name: Publish
         uses: cloudflare/pages-action@1
