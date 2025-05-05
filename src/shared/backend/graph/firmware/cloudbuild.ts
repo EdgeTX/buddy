@@ -151,10 +151,9 @@ builder.queryType({
           target,
           flags: flags ?? [],
         });
-        return {
-          status: jobStatus.status,
-          downloadUrl: jobStatus.artifacts[0].download_url,
-        };
+        const { status, artifacts } = jobStatus;
+        const downloadUrl = artifacts ? artifacts[0].download_url : undefined;
+        return { status, downloadUrl };
       },
     }),
   }),
@@ -165,7 +164,10 @@ builder.mutationType({
     createCloudFirmware: t.field({
       type: CloudFirmware,
       args: {
-        params: t.arg({ type: CloudFirmwareParams, required: true }),
+        params: t.arg({
+          type: CloudFirmwareParams,
+          required: true,
+        }),
       },
       resolve: async (_, { params }, { cloudbuild }) => {
         const { release, target, flags } = params;
@@ -174,10 +176,9 @@ builder.mutationType({
           target,
           flags: flags ?? [],
         });
-        return {
-          status: jobStatus.status,
-          downloadUrl: jobStatus.artifacts[0].download_url,
-        };
+        const { status, artifacts } = jobStatus;
+        const downloadUrl = artifacts ? artifacts[0].download_url : undefined;
+        return { status, downloadUrl };
       },
     }),
   }),

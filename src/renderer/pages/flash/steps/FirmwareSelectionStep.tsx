@@ -13,6 +13,7 @@ import { Centered, FullHeight } from "renderer/shared/layouts";
 import useVersionFilters from "renderer/hooks/useVersionFilters";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
+import DownloadCloudbuildButton from "renderer/components/firmware/DownloadCloudbuildButton";
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import FlashButton from "renderer/components/flashing/FlashButton";
 import { useTranslation } from "react-i18next";
@@ -232,14 +233,26 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        <DownloadFirmwareButton
-          target={target}
-          version={version}
-          selectedFlags={selectedFlags}
-          isCloudBuild={activeTab === "cloudbuild"}
-        >
-          {t(`Download file`)}
-        </DownloadFirmwareButton>
+        {activeTab === "cloudbuild" && (
+          <DownloadCloudbuildButton
+            target={target}
+            version={version}
+            selectedFlags={selectedFlags}
+            disabled={!isCloudBuildValid}
+          >
+            {t(`Download file`)}
+          </DownloadCloudbuildButton>
+        )}
+        {activeTab !== "cloudbuild" && (
+          <DownloadFirmwareButton
+            target={target}
+            version={version}
+            selectedFlags={selectedFlags}
+            isCloudBuild={false}
+          >
+            {t(`Download file`)}
+          </DownloadFirmwareButton>
+        )}
         <FlashButton
           disabled={
             !target ||

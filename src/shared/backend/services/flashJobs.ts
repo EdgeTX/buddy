@@ -101,6 +101,13 @@ async function fetchFromCloudbuild(
     started: true,
   });
 
+  if (!status.artifacts) {
+    updateStageStatus(jobId, "download", {
+      error: "missing artifact",
+    });
+    return undefined;
+  }
+
   return cloudbuild
     .downloadBinary(status.artifacts[0].download_url)
     .catch((e: Error) => {

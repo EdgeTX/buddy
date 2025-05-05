@@ -133,6 +133,7 @@ builder.mutationType({
               version: t__.string({ required: true }),
               target: t__.string({ required: true }),
               selectedFlags: t__.field({ type: [CloudSelectedFlags] }),
+              isCloudbuild: t__.boolean(),
             }),
           }),
           required: true,
@@ -142,18 +143,18 @@ builder.mutationType({
       resolve: async (_, { firmware, deviceId }, context) => {
         let firmwareData: Buffer | undefined;
         let firmwareBundleUrl: string | undefined;
-        let isCloudBuild = false;
+        const isCloudBuild = firmware.isCloudbuild ?? false;
 
-        if (firmware.selectedFlags) {
-          // check that all flags are set correctly
-          if (
-            firmware.selectedFlags.length > 0 &&
-            !firmware.selectedFlags.every((flag) => flag.name && flag.value)
-          ) {
-            throw new GraphQLError("Specified flags are not valid");
+        if (isCloudBuild) {
+          if (firmware.selectedFlags) {
+            // check that all flags are set correctly
+            if (
+              firmware.selectedFlags.length > 0 &&
+              !firmware.selectedFlags.every((flag) => flag.name && flag.value)
+            ) {
+              throw new GraphQLError("Specified flags are not valid");
+            }
           }
-          // get firmware on cloudbuild
-          isCloudBuild = true;
         } else if (firmware.version === "local") {
           // local firmware
           const localFirmware = context.firmwareStore.getLocalFirmwareById(
