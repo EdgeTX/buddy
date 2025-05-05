@@ -156,8 +156,9 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       is_draft: ${{ steps.check.outputs.is_draft }}
+      pr_number: ${{ steps.check.outputs.pr_number }}
     steps:
-      - name: Check if PR is a draft
+      - name: Check if PR is a draft and extract PR number
         id: check
         uses: actions/github-script@v6
         with:
@@ -181,8 +182,12 @@ jobs:
 
             const pr = prs.find(pr => pr.head.sha === workflowRun.head_sha);
             const isDraft = pr?.draft === true;
+            const prNumber = pr ? pr.number : '';
 
             core.setOutput("is_draft", isDraft.toString());
+            core.setOutput("pr_number", prNumber.toString());
+            
+            console.log(`PR #${prNumber}, Draft status: ${isDraft}`);
 
   preview-web:
     needs: check-draft-status
@@ -190,7 +195,8 @@ jobs:
     if: |
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'pull_request' &&
-      needs.check-draft-status.outputs.is_draft == 'false'
+      needs.check-draft-status.outputs.is_draft == 'false' && 
+      needs.check-draft-status.outputs.pr_number != ''
     permissions:
       contents: read
       deployments: write
@@ -218,24 +224,24 @@ jobs:
           command: pages deploy build/renderer --project-name=buddy --env="buddy (Preview)"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Find preview comment if present
-      #   uses: peter-evans/find-comment@v3
-      #   id: find-preview-comment
-      #   with:
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     comment-author: "github-actions[bot]"
-      #     body-includes: Buddy has been automatically deployed to Cloudflare
+      - name: Find preview comment if present
+        uses: peter-evans/find-comment@v3
+        id: find-preview-comment
+        with:
+          issue-number: ${{ needs.check-draft-status.outputs.pr_number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Buddy has been automatically deployed to Cloudflare
 
-      # - name: Create or update preview URL comment
-      #   uses: peter-evans/create-or-update-comment@v4
-      #   with:
-      #     comment-id: ${{ steps.find-preview-comment.outputs.comment-id }}
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body: |
-      #       EdgeTX Buddy has been automatically deployed to Cloudflare.
-      #       ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
-      #       ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
-      #     edit-mode: replace
+      - name: Create or update preview URL comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-preview-comment.outputs.comment-id }}
+          issue-number: ${{ needs.check-draft-status.outputs.pr_number }}
+          body: |
+            EdgeTX Buddy has been automatically deployed to Cloudflare.
+            ✅ Preview: ${{ steps.cloudflare-preview.outputs.deployment-url }}
+            ✅ Storybook: ${{ steps.cloudflare-preview.outputs.deployment-url }}/storybook
+          edit-mode: replace
 
   prepare-web-release:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
