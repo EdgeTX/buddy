@@ -191,6 +191,9 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'pull_request' &&
       needs.check-draft-status.outputs.is_draft == 'false'
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - name: Fetch compiled source
         uses: dawidd6/action-download-artifact@v5
@@ -213,6 +216,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build/renderer --project-name=buddy
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find preview comment if present
         uses: peter-evans/find-comment@v3
