@@ -37,7 +37,7 @@ jobs:
         run: yarn --immutable
 
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v5
+        uses: dawidd6/action-download-artifact@v9
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: compiled-${{ matrix.os }}
@@ -133,7 +133,7 @@ jobs:
         run: yarn playwright install --with-deps
 
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v5
+        uses: dawidd6/action-download-artifact@v9
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-22.04
@@ -196,14 +196,14 @@ jobs:
       deployments: write
     steps:
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v5
+        uses: dawidd6/action-download-artifact@v9
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-22.04
           path: build
 
       - name: Fetch storybook build
-        uses: dawidd6/action-download-artifact@v5
+        uses: dawidd6/action-download-artifact@v9
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: storybook-static
@@ -242,12 +242,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v5
+        uses: dawidd6/action-download-artifact@v9
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-22.04
           path: build
-          
+
       - name: Upload web renderer for release
         uses: actions/upload-artifact@v4
         with:
