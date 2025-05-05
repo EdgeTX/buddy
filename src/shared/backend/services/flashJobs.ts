@@ -270,12 +270,14 @@ export const cancelJob = (jobId: string): void => {
 export const flash = async (
   jobId: string,
   connection: WebDFU,
-  firmware: Buffer
+  firmware: Buffer,
+  startAddress?: number | undefined
 ): Promise<void> => {
+  const options = startAddress ? { startAddress, reboot: false } : undefined;
   const process = connection.write(
     connection.properties?.TransferSize ?? 1024,
     firmware,
-    true
+    options
   );
 
   await new Promise<void>((resolve, reject) => {

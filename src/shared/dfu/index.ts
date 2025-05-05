@@ -13,6 +13,8 @@
  */
 import { createNanoEvents } from "nanoevents";
 
+import { WebUSB } from "usb";
+
 import {
   WebDFUSettings,
   WebDFUEvent,
@@ -60,6 +62,18 @@ export const dfuCommands = {
 
   STATUS_OK: 0x0,
   STATUS_errVENDOR: 0x0b,
+};
+
+export type DFUseWriteOptions = {
+  startAddress: number;
+  reboot: boolean;
+  force: boolean;
+};
+
+const defaultDFuseWriteOptions: DFUseWriteOptions = {
+  startAddress: NaN,
+  reboot: true,
+  force: false,
 };
 
 function asyncSleep(duration_ms: number) {
@@ -175,7 +189,7 @@ export class WebDFU {
   write(
     xfer_size: number,
     data: ArrayBuffer,
-    manifestationTolerant: boolean
+    options?: Partial<DFUseWriteOptions>
   ): WebDFUProcessWrite {
     const process = new WebDFUProcessWrite();
 
@@ -184,14 +198,9 @@ export class WebDFU {
         let result: Promise<void>;
 
         if (this.type === WebDFUType.SDFUse) {
-          result = this.doDfuseWrite(process, xfer_size, data);
+          result = this.doDfuseWrite(process, xfer_size, data, options);
         } else {
-          result = this.doWrite(
-            process,
-            xfer_size,
-            data,
-            manifestationTolerant
-          );
+          result = this.doWrite(process, xfer_size, data);
         }
 
         result
@@ -210,6 +219,23 @@ export class WebDFU {
     await this.detach().catch(() => {});
     await this.device.reset().catch(() => {});
     await this.device.close().catch(() => {});
+  }
+
+  async rebootIntoDFU(
+    address: number,
+    data: Uint8Array,
+    rebootAddress: number
+  ): Promise<void> {
+    await this.dfuseCommand(DFUseCommands.SET_ADDRESS, address, 4);
+    await this.download(data, 2);
+    await this.pollUntilIdle(dfuCommands.dfuDOWNLOAD_IDLE);
+    // await this.abortToIdle();
+    await this.dfuseCommand(DFUseCommands.SET_ADDRESS, rebootAddress, 4);
+    await this.download(new ArrayBuffer(0), 0);
+    try {
+      await this.getStatus();
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
   }
 
   // Attempt to read the DFU functional descriptor
@@ -247,7 +273,7 @@ export class WebDFU {
     };
   }
 
-  private async findDfuInterfaces(): Promise<WebDFUSettings[]> {
+  async findDfuInterfaces(): Promise<WebDFUSettings[]> {
     const interfaces = [];
 
     for (const conf of this.device.configurations) {
@@ -410,7 +436,7 @@ export class WebDFU {
         // eslint-disable-next-line no-await-in-loop
         strings[index] = await this.readStringDescriptor(index, 0x0409);
       } catch (error) {
-        console.log(error);
+        this.log.warning(error);
         strings[index] = null;
       }
     }
@@ -745,11 +771,10 @@ export class WebDFU {
 
     if (manifestationTolerant) {
       // Transition to MANIFEST_SYNC state
-      let dfuStatus;
       try {
         // Wait until it returns to idle.
         // If it's not really manifestation tolerant, it might transition to MANIFEST_WAIT_RESET
-        dfuStatus = await this.pollUntil(
+        const dfuStatus = await this.pollUntil(
           (state) =>
             state === dfuCommands.dfuIDLE ||
             state === dfuCommands.dfuMANIFEST_WAIT_RESET
@@ -806,7 +831,8 @@ export class WebDFU {
   private async doDfuseWrite(
     process: WebDFUProcessWrite,
     xfer_size: number,
-    data: ArrayBuffer
+    data: ArrayBuffer,
+    options: Partial<DFUseWriteOptions> = defaultDFuseWriteOptions
   ) {
     if (!this.dfuseMemoryInfo || this.dfuseMemoryInfo.segments.length < 1) {
       throw new WebDFUError("No memory map available");
@@ -815,12 +841,14 @@ export class WebDFU {
     process.events.emit("erase/start");
 
     let bytesSent = 0;
+    let erasable = false;
     const expectedSize = data.byteLength;
 
-    let startAddress: number | undefined = this.dfuseStartAddress;
-
-    if (Number.isNaN(startAddress)) {
-      startAddress = this.dfuseMemoryInfo.segments[0]?.start;
+    let { startAddress } = options;
+    if (!startAddress || Number.isNaN(startAddress)) {
+      const segment = this.dfuseMemoryInfo.segments[0];
+      erasable = segment?.erasable ?? false;
+      startAddress = segment?.start;
 
       if (!startAddress) {
         throw new WebDFUError("startAddress not found");
@@ -829,20 +857,27 @@ export class WebDFU {
       this.log.warning(
         `Using inferred start address 0x${startAddress.toString(16)}`
       );
-    } else if (
-      this.getDfuseSegment(startAddress) === null &&
-      data.byteLength !== 0
-    ) {
-      throw new WebDFUError(
-        `Start address 0x${startAddress.toString(
-          16
-        )} outside of memory map bounds`
-      );
+    } else {
+      const segment = this.getDfuseSegment(startAddress);
+      if (segment === null && data.byteLength !== 0 && !options.force) {
+        throw new WebDFUError(
+          `Start address 0x${startAddress.toString(
+            16
+          )} outside of memory map bounds`
+        );
+      }
+      erasable = segment?.erasable ?? false;
     }
 
     await new Promise<void>((resolve, reject) => {
       if (!startAddress) {
         reject(new WebDFUError("startAddress not found"));
+        return;
+      }
+
+      if (!erasable) {
+        process.events.emit("erase/end");
+        resolve();
         return;
       }
 
@@ -895,7 +930,8 @@ export class WebDFU {
 
     process.events.emit("write/end", bytesSent);
 
-    // restart device
+    if (!options.reboot) return;
+
     try {
       await this.dfuseCommand(DFUseCommands.SET_ADDRESS, startAddress, 4);
       await this.download(new ArrayBuffer(0), 0);
@@ -911,37 +947,50 @@ export class WebDFU {
     } catch (error) {}
   }
 
-  private async doDfuseRead(
-    process: WebDFUProcessRead,
-    xfer_size: number,
-    max_size = Infinity
-  ) {
-    if (!this.dfuseMemoryInfo) {
+  private getStartAddress(startAddress: number | undefined): number {
+    if (!this.dfuseMemoryInfo || this.dfuseMemoryInfo.segments.length < 1) {
       throw new WebDFUError("Unknown a DfuSe memory info");
     }
 
-    let startAddress: number | undefined = this.dfuseStartAddress;
-    if (Number.isNaN(startAddress)) {
-      startAddress = this.dfuseMemoryInfo.segments[0]?.start;
-      if (!startAddress) {
+    if (startAddress === undefined || Number.isNaN(startAddress)) {
+      const segmentStartAddress = this.dfuseMemoryInfo.segments[0]?.start;
+      if (!segmentStartAddress) {
         throw new WebDFUError("Unknown memory segments");
       }
       this.log.warning(
-        `Using inferred start address 0x${startAddress.toString(16)}`
+        `Using inferred start address 0x${segmentStartAddress.toString(16)}`
       );
-    } else if (this.getDfuseSegment(startAddress) === null) {
+      return segmentStartAddress;
+    }
+    if (this.getDfuseSegment(startAddress) === null) {
       this.log.warning(
         `Start address 0x${startAddress.toString(
           16
         )} outside of memory map bounds`
       );
     }
+    return startAddress;
+  }
+
+  private async doDfuseRead(
+    process: WebDFUProcessRead,
+    xfer_size: number,
+    max_size = Infinity,
+    startAddress: number | undefined = NaN
+  ) {
+    if (!this.dfuseMemoryInfo) {
+      throw new WebDFUError("Unknown a DfuSe memory info");
+    }
 
     const state = await this.getState();
     if (state !== dfuCommands.dfuIDLE) {
       await this.abortToIdle();
     }
-    await this.dfuseCommand(DFUseCommands.SET_ADDRESS, startAddress, 4);
+    await this.dfuseCommand(
+      DFUseCommands.SET_ADDRESS,
+      this.getStartAddress(startAddress),
+      4
+    );
     await this.abortToIdle();
 
     // DfuSe encodes the read address based on the transfer size,
@@ -1118,4 +1167,25 @@ export class WebDFU {
       throw new WebDFUError(`Special DfuSe command ${command} failed`);
     }
   }
+}
+
+export type WebDFUDevices = Map<USBDevice, WebDFUSettings[]>;
+
+export async function gatherDFUDevices(usb: WebUSB): Promise<WebDFUDevices> {
+  const dfuDevices = new Map();
+  const devices = await usb.getDevices();
+  for (const device of devices) {
+    const dfu = new WebDFU(
+      device,
+      { forceInterfacesName: true },
+      // eslint-disable-next-line no-console
+      { info: console.log, progress: console.log, warning: console.log }
+    );
+    // eslint-disable-next-line no-await-in-loop
+    const settings = await dfu.findDfuInterfaces();
+    if (settings.length > 0) {
+      dfuDevices.set(device, settings);
+    }
+  }
+  return dfuDevices;
 }

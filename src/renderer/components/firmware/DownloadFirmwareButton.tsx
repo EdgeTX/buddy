@@ -10,7 +10,7 @@ import legacyDownload from "js-file-download";
 import config from "shared/config";
 import { useTranslation } from "react-i18next";
 import environment from "shared/environment";
-import isUF2Payload from "shared/uf2/uf2";
+import { isUF2Payload } from "shared/uf2";
 
 type Props = {
   target?: string;
