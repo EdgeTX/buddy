@@ -153,7 +153,7 @@ jobs:
           path: playwright-report
 
   preview-web:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'}}
     runs-on: ubuntu-22.04
     steps:
       - name: Fetch compiled source
