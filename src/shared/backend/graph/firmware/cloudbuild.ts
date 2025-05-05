@@ -76,10 +76,7 @@ const CloudFirmwareParams = builder.inputType("CloudFirmwareParams", {
   fields: (t) => ({
     release: t.string({ required: true }),
     target: t.string({ required: true }),
-    flags: t.field({
-      type: [SelectedFlags],
-      required: true,
-    }),
+    flags: t.field({ type: [SelectedFlags] }),
   }),
 });
 
@@ -148,7 +145,12 @@ builder.queryType({
         params: t.arg({ type: CloudFirmwareParams, required: true }),
       },
       resolve: async (_, { params }, { cloudbuild }) => {
-        const jobStatus = await cloudbuild.queryJobStatus(params);
+        const { release, target, flags } = params;
+        const jobStatus = await cloudbuild.queryJobStatus({
+          release,
+          target,
+          flags: flags ?? [],
+        });
         return {
           status: jobStatus.status,
           downloadUrl: jobStatus.artifacts[0].download_url,
@@ -166,7 +168,12 @@ builder.mutationType({
         params: t.arg({ type: CloudFirmwareParams, required: true }),
       },
       resolve: async (_, { params }, { cloudbuild }) => {
-        const jobStatus = await cloudbuild.createJob(params);
+        const { release, target, flags } = params;
+        const jobStatus = await cloudbuild.createJob({
+          release,
+          target,
+          flags: flags ?? [],
+        });
         return {
           status: jobStatus.status,
           downloadUrl: jobStatus.artifacts[0].download_url,

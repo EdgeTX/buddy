@@ -67,7 +67,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   const isCloudBuildValid =
     version &&
     target &&
-    selectedFlags?.every((flag) => flag.name && flag.value);
+    (selectedFlags?.every((flag) => flag.name && flag.value) ?? true);
 
   const client = useApolloClient();
 
@@ -214,6 +214,11 @@ const DownloadFirmwareButton: React.FC<Props> = ({
             void message.success(t(`Firmware file saved`));
           })
           .catch((e: Error) => {
+            // ignore "Cancel"
+            if (e.name === "AbortError") return;
+
+            // TODO: open modal dialog to trigger full process
+            //   -> fetch backend
             void message.error(
               t(`Could not download firmware: {{message}}`, {
                 message: e.message,

@@ -232,16 +232,14 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        {activeTab !== "cloudbuild" && (
-          <DownloadFirmwareButton
-            target={target}
-            version={version}
-            selectedFlags={selectedFlags}
-            isCloudBuild={activeTab === "cloudbuild"}
-          >
-            {t(`Download file`)}
-          </DownloadFirmwareButton>
-        )}
+        <DownloadFirmwareButton
+          target={target}
+          version={version}
+          selectedFlags={selectedFlags}
+          isCloudBuild={activeTab === "cloudbuild"}
+        >
+          {t(`Download file`)}
+        </DownloadFirmwareButton>
         <FlashButton
           disabled={
             !target ||
