@@ -22,12 +22,12 @@ jobs:
           path: build/renderer
 
       - name: Publish
-        uses: cloudflare/pages-action@1
+        id: cloudflare-publish
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: buddy
-          directory: build/renderer
+          command: pages deploy build/renderer --project-name=buddy
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
