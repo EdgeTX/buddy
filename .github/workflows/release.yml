@@ -138,6 +138,8 @@ jobs:
   release-app:
     needs: [get-build-context, tag-latest]
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       # Use GitHub API to find and download the app-builds artifacts from the build workflow
       - name: Download app build artifacts
