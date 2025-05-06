@@ -183,6 +183,9 @@ jobs:
           done
           find app-builds -type f
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Apply 'latest' tag if not a tagged build
         if: needs.get-build-context.outputs.is_tagged != 'true'
         uses: EndBug/latest-tag@latest
