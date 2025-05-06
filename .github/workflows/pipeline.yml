@@ -286,7 +286,8 @@ jobs:
 
   preview-web:
     needs: [compile, storybook]
-    if: github.event_name == 'pull_request'
+    # Only run for PRs from branches within the same repository, not forks
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -372,12 +373,45 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Fetch binaries
         uses: actions/download-artifact@v4
         with:
           pattern: app-builds-*
           path: app-builds
           merge-multiple: true
+
+      - name: Delete previous latest release
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        run: |
+          # Check if 'latest' release exists and delete it if it does
+          if gh release view latest --repo ${{ github.repository }} &>/dev/null; then
+            echo "Deleting previous 'latest' release"
+            gh release delete latest --yes --repo ${{ github.repository }}
+          else
+            echo "No previous 'latest' release found"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update latest tag
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Delete the tag locally and remotely if it exists
+          git tag -d latest 2>/dev/null || true
+          git push origin :refs/tags/latest 2>/dev/null || true
+          
+          # Create new tag pointing to current commit
+          git tag -a latest -m "Latest build"
+          git push origin latest --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
