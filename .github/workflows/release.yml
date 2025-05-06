@@ -197,7 +197,7 @@ jobs:
           name: "Latest Build"
           files: app-builds/*
           prerelease: true
-          tag: latest
+          tag_name: latest
 
       - name: Release tagged build
         if: needs.get-build-context.outputs.is_tagged == 'true'
@@ -205,4 +205,4 @@ jobs:
         with:
           files: app-builds/*
           prerelease: false
-          tag: ${{ needs.get-build-context.outputs.tag_name }}
+          tag_name: ${{ needs.get-build-context.outputs.tag_name }}
