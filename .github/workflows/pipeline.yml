@@ -292,6 +292,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      pull-requests: write
     steps:
       - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}}
         name: Checkout PR
