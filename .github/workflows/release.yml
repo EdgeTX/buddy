@@ -132,6 +132,8 @@ jobs:
   release-app:
     needs: get-build-context
     runs-on: ubuntu-22.04
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       # Use GitHub API to find and download the app-builds artifacts from the build workflow
       - name: Download app build artifacts
@@ -212,7 +214,7 @@ jobs:
         run: gh release delete latest --yes || echo "No latest release to delete"        
 
       - name: Create release notes
-        if: needs.get-build-context.outputs.is_tagged == 'true'
+        if: needs.get-build-context.outputs.is_tagged != 'true'
         run: |
           gh release delete latest --yes || echo "No latest release to delete"        
           gh release create latest --title "Latest" --generate-notes --prerelease app-builds/*.snap app-builds/*.dmg app-builds/*.msi app-builds/*.AppImage
