@@ -221,7 +221,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build/renderer --project-name=buddy --env="buddy (Preview)"
+          command: pages deploy build/renderer --project-name=buddy
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find preview comment if present

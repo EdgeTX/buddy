@@ -11,6 +11,9 @@ on:
 
 jobs:
   release-web-prod:
+    permissions:
+      contents: read
+      deployments: write  
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-22.04
     steps:
@@ -27,7 +30,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build/renderer --project-name=buddy --env="buddy (Production)"
+          command: pages deploy build/renderer --project-name=buddy
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
