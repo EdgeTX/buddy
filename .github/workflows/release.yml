@@ -224,3 +224,4 @@ jobs:
             app-builds/*.msi
             app-builds/*.AppImage
           draft: true
+          tag_name: ${{ needs.get-build-context.outputs.tag_name }}
