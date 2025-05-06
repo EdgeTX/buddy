@@ -66,9 +66,10 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams<
-    "version" | "target" | "filters" | "selectedFlags"
+    "source" | "version" | "target" | "filters" | "selectedFlags"
   >();
 
+  const source = parseParam("source");
   const version = parseParam("version");
   const target = parseParam("target");
   const { selectedFlags, encodeFlags } = useFlags(parseParam("selectedFlags"));
@@ -79,9 +80,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
     !!target &&
     (selectedFlags?.every((flag) => flag.name && flag.value) ?? true);
 
-  const [activeTab, setActiveTab] = useState<string>(
-    selectedFlags ? "cloudbuild" : "releases"
-  );
+  const [activeTab, setActiveTab] = useState<string>(source ?? "releases");
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -117,6 +116,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
             destroyInactiveTabPane
             onChange={(key) => {
               updateParams({
+                source: key,
                 version: undefined,
                 target: undefined,
               });
@@ -140,6 +140,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   if (activeTab === "releases") {
                     updateParams({
                       ...params,
+                      source: activeTab,
                       filters: encodeFilters(params.filters),
                     });
                   }
@@ -199,6 +200,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 onChanged={(params) => {
                   if (activeTab === "cloudbuild") {
                     updateParams({
+                      source: "cloudbuild",
                       version: params.version,
                       target: params.target,
                       selectedFlags: encodeFlags(params.selectedFlags),

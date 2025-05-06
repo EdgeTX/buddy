@@ -125,6 +125,7 @@ export const startExecution = async (
     firmware: {
       data?: Buffer;
       url?: string;
+      source: string;
       target: string;
       version: string;
       selectedFlags?: { name: string; value: string }[];
@@ -133,8 +134,10 @@ export const startExecution = async (
   context: Context
 ): Promise<void> => {
   const { dfu, firmwareStore } = context;
-  let firmwareData = args.firmware.data;
-  const isCloudBuild = !!args.firmware.selectedFlags;
+  const { firmware } = args;
+  const isCloudBuild = firmware.source === "cloudbuild";
+
+  let firmwareData = firmware.data;
   let dfuProcess: WebDFU | undefined;
 
   const cleanUp = async (): Promise<void> => {

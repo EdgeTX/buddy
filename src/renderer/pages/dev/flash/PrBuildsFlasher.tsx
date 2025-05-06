@@ -103,7 +103,7 @@ const PrBuildsFlasher: React.FC = () => {
                 }
 
                 createFlashJob({
-                  firmware: { target, version },
+                  firmware: { source: "pr", target, version },
                   deviceId: selectedDeviceId,
                 })
                   .then((jobId) => {

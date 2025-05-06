@@ -9,6 +9,7 @@ import { Centered, FullHeight } from "renderer/shared/layouts";
 import DeviceSummary from "renderer/components/devices/DeviceSummary";
 import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
+import DownloadCloudbuildButton from "renderer/components/firmware/DownloadCloudbuildButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
 import { exception } from "react-ga";
@@ -35,16 +36,17 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("flashing");
   const { parseParam } = useQueryParams<
-    "deviceId" | "target" | "version" | "selectedFlags"
+    "source" | "deviceId" | "target" | "version" | "selectedFlags"
   >();
   const navigate = useNavigate();
 
+  const source = parseParam("source");
   const deviceId = parseParam("deviceId");
   const target = parseParam("target");
   const version = parseParam("version");
   const { selectedFlags } = useFlags(parseParam("selectedFlags"));
 
-  const invalidState = !deviceId || !target || !version;
+  const invalidState = !source || !deviceId || !target || !version;
   useEffect(() => {
     if (invalidState) {
       onRestart?.();
@@ -93,8 +95,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                     <div>
                       <FirmwareSummary target={target} version={version} />
                     </div>
-                    {version !== "local" && (
-                      // TODO: if cloudbuild, use other button
+                    {source === "releases" && (
                       <DownloadFirmwareButton
                         size="small"
                         type="link"
@@ -103,6 +104,18 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                       >
                         {t(`Download`)}
                       </DownloadFirmwareButton>
+                    )}
+                    {source === "cloudbuild" && (
+                      <DownloadCloudbuildButton
+                        size="small"
+                        type="link"
+                        disabled={false}
+                        target={target}
+                        version={version}
+                        selectedFlags={selectedFlags}
+                      >
+                        {t(`Download`)}
+                      </DownloadCloudbuildButton>
                     )}
                   </Space>
                 </div>
@@ -135,7 +148,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                   icon={<PlayCircleOutlined />}
                   onClick={() => {
                     createFlashJob({
-                      firmware: { target, version, selectedFlags },
+                      firmware: { source, target, version, selectedFlags },
                       deviceId,
                     })
                       .then((jobId) => {

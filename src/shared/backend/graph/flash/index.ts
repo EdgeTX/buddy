@@ -130,10 +130,10 @@ builder.mutationType({
         firmware: t.arg({
           type: builder.inputType("FlashFirmwareInput", {
             fields: (t__) => ({
+              source: t__.string({ required: true }),
               version: t__.string({ required: true }),
               target: t__.string({ required: true }),
               selectedFlags: t__.field({ type: [CloudSelectedFlags] }),
-              isCloudbuild: t__.boolean(),
             }),
           }),
           required: true,
@@ -143,9 +143,8 @@ builder.mutationType({
       resolve: async (_, { firmware, deviceId }, context) => {
         let firmwareData: Buffer | undefined;
         let firmwareBundleUrl: string | undefined;
-        const isCloudBuild = firmware.isCloudbuild ?? false;
 
-        if (isCloudBuild) {
+        if (firmware.source === "cloudbuild") {
           if (firmware.selectedFlags) {
             // check that all flags are set correctly
             if (
@@ -155,7 +154,7 @@ builder.mutationType({
               throw new GraphQLError("Specified flags are not valid");
             }
           }
-        } else if (firmware.version === "local") {
+        } else if (firmware.source === "local") {
           // local firmware
           const localFirmware = context.firmwareStore.getLocalFirmwareById(
             firmware.target
@@ -215,7 +214,7 @@ builder.mutationType({
         // If we already have the firmware we don't need to download
         // So start the state off assuming no download step
         let job;
-        if (isCloudBuild) {
+        if (firmware.source === "cloudbuild") {
           job = context.flashJobs.createJob(
             ["connect", "build", "download", "erase", "flash"],
             {
@@ -245,6 +244,7 @@ builder.mutationType({
             firmware: {
               data: firmwareData,
               url: firmwareBundleUrl,
+              source: firmware.source,
               target: firmware.target,
               version: firmware.version,
               selectedFlags: firmware.selectedFlags as
