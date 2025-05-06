@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
     tags:
       - "v*"
   pull_request:
@@ -12,7 +11,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -32,7 +30,6 @@ jobs:
 
   format:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -52,10 +49,8 @@ jobs:
 
   test:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -80,10 +75,8 @@ jobs:
 
   test-types:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -103,10 +96,8 @@ jobs:
 
   storybook:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -137,10 +128,8 @@ jobs:
       max-parallel: 3
       matrix:
         os: [macos-latest, ubuntu-22.04, windows-latest]
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -183,18 +172,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
-
     strategy:
       fail-fast: false
       max-parallel: 3
       matrix:
         os: [macos-latest, ubuntu-22.04, windows-latest]
-
     needs: compile
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -260,32 +245,11 @@ jobs:
           name: electron-${{ matrix.os }}-recordings
           path: e2e-recordings
 
-      # - name: Setup xvfb (Linux)
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0
-      #     # start xvfb in the background
-      #     sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
-      # - name: E2E
-      #   run: yarn e2e:production
-
-      # - name: Upload failure artifacts
-      #   if: ${{ failure() }}
-      #   uses: actions/upload-artifact@v2-preview
-      #   with:
-      #     name: diff
-      #     path: |
-      #       packages/configurator/e2e/output/*.png
-      #       packages/configurator/e2e/output/*.webm
-      #       packages/configurator/e2e/output/trace/*.zip
-      # - name: Preview demo
-
   e2e-web:
     needs: compile
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -324,6 +288,9 @@ jobs:
     needs: [compile, storybook]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}}
         name: Checkout PR
@@ -354,6 +321,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build/renderer --project-name=buddy
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find preview comment if present
         uses: peter-evans/find-comment@v3
@@ -378,6 +346,9 @@ jobs:
     needs: [e2e-web, test, storybook]
     runs-on: ubuntu-22.04
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
@@ -386,18 +357,20 @@ jobs:
           path: build
 
       - name: Publish
-        uses: cloudflare/pages-action@1
+        id: cloudflare-publish
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: buddy
-          directory: build/renderer
+          command: pages deploy build/renderer --project-name=buddy
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
     needs: [build-and-test-app, test]
     runs-on: ubuntu-22.04
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
     steps:
       - name: Fetch binaries
         uses: actions/download-artifact@v4
@@ -408,18 +381,25 @@ jobs:
 
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
-        uses: marvinpinto/action-automatic-releases@4edd7a5aabb1bc62e6dc99b3302d587bf3134e20
+        uses: softprops/action-gh-release@v2
         with:
-          title: "Latest Build"
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: app-builds/*
-          automatic_release_tag: "latest"
+          name: "Latest Build"
+          files: |
+            app-builds/*.snap
+            app-builds/*.dmg
+            app-builds/*.msi
+            app-builds/*.AppImage
           prerelease: true
+          tag_name: latest
 
       - name: Release tagged build
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: marvinpinto/action-automatic-releases@4edd7a5aabb1bc62e6dc99b3302d587bf3134e20
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: app-builds/*
-          prerelease: false
+          name: "Release Build"
+          files: |
+            app-builds/*.snap
+            app-builds/*.dmg
+            app-builds/*.msi
+            app-builds/*.AppImage
+          draft: true
