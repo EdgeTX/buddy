@@ -45,6 +45,11 @@ jobs:
           path: app-builds
           merge-multiple: true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
         uses: crowbarmaster/GH-Automatic-Releases@a92588ee071f23d7901a9febcd245debe2343098
