@@ -809,6 +809,68 @@ describe("Mutation", () => {
     });
   });
 
+  describe("Create flash job from Cloudbuild", () => {
+    let jobId: string;
+    let jobUpdatesQueue: AsyncIterator<FlashJobType, any, undefined>;
+
+    afterAll(async () => {
+      if (jobId) {
+        await cancelFlashJob(jobId);
+      }
+    });
+
+    it("should download the fw build and start flashing it, updating the job status", async () => {
+      dfuConnectMock.mockResolvedValue(mockDfuConnection as never);
+      listDevicesMock.mockResolvedValue([mockDevice as never]);
+
+      const { nockDone } = await nock.back(
+        "cloudbuild-firmware-st16-2-11-0.json"
+      );
+
+      const createFlashMutation = await backend.mutate({
+        mutation: gql`
+          mutation CreateFlashJob {
+            createFlashJob(
+              firmware: {
+                source: "cloudbuild"
+                target: "st16"
+                version: "v2.11.0"
+              }
+              deviceId: "some-device-id"
+            ) {
+              id
+            }
+          }
+        `,
+      });
+
+      expect(createFlashMutation.errors).toBeFalsy();
+      ({ id: jobId } = createFlashMutation.data?.createFlashJob as {
+        id: string;
+      });
+      expect(jobId).toBeTruthy();
+
+      jobUpdatesQueue =
+        backend.context.flashJobs.jobUpdates.asyncIterator<FlashJobType>(jobId);
+
+      // For some reason hangs with vitest here
+      // await waitForStageCompleted(jobUpdatesQueue, "connect");
+      await waitForStageCompleted(jobUpdatesQueue, "download");
+      nockDone();
+
+      expect(mockDfuConnection.write).toHaveBeenCalledWith(
+        mockDfuConnection.properties.TransferSize,
+        expect.any(Buffer),
+        true
+      );
+
+      const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
+      expect(md5(Buffer.from(bufferToWrite))).toMatchInlineSnapshot(
+        `"2a08d7ad74317a4e822d5ec2fdb474af"`
+      );
+    });
+  });
+
   describe("Create flash job from local file", () => {
     let jobId: string;
     let jobUpdatesQueue: AsyncIterator<FlashJobType, any, undefined>;

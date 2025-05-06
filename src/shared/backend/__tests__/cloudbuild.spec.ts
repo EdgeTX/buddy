@@ -290,11 +290,44 @@ describe("Cloudbuild Query", () => {
       expect(errors).toBeFalsy();
       const cloudFirmware = data?.cloudFirmware as any;
       expect(cloudFirmware.status).toEqual("BUILD_SUCCESS");
-      expect(cloudFirmware.downloadUrl).toEqual(
-        "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
+      expect(cloudFirmware.downloadUrl).toMatchInlineSnapshot(
+        `"https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"`
       );
       expect(md5(cloudFirmware.base64Data as string)).toMatchInlineSnapshot(
         '"ad9d2d0efef4247c9065a8a175c540a9"'
+      );
+
+      nockDone();
+    });
+  });
+
+  describe("cloudbuildFirmwareCreate", () => {
+    it("should return a status with build success and download url", async () => {
+      const { nockDone } = await nock.back("cloudbuild-job-create.json");
+
+      const { data, errors } = await backend.mutate({
+        mutation: gql`
+          mutation CreateCloudFirmware($params: CloudFirmwareParams!) {
+            createCloudFirmware(params: $params) {
+              status
+              downloadUrl
+            }
+          }
+        `,
+        variables: {
+          params: {
+            release: "v2.11.0",
+            target: "boxer",
+            flags: [{ name: "language", value: "FR" }],
+          },
+        },
+      });
+
+      expect(errors).toBeFalsy();
+      const cloudFirmware = data?.createCloudFirmware as any;
+      expect(cloudFirmware.status).toEqual("BUILD_SUCCESS");
+      expect(cloudFirmware.downloadUrl).toMatchInlineSnapshot(
+        `"https://test-cloudbuild.edgetx.org/8369a2e23a7253a9ea4c9a8cb7c80e5fcf23d235-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"`
       );
 
       nockDone();
