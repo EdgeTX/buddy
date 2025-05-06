@@ -369,7 +369,11 @@ describe("Mutation", () => {
         mutation: gql`
           mutation CreateFlashJob {
             createFlashJob(
-              firmware: { target: "nv14", version: "v2.5.0" }
+              firmware: {
+                source: "releases"
+                target: "nv14"
+                version: "v2.5.0"
+              }
               deviceId: "some-device-id"
             ) {
               id
@@ -766,6 +770,7 @@ describe("Mutation", () => {
           mutation CreateFlashJob {
             createFlashJob(
               firmware: {
+                source: "releases"
                 target: "nv14"
                 version: "pr-1337@217c02e6e06b4500edbb0eca99b5d1d077111aab"
               }
@@ -827,7 +832,7 @@ describe("Mutation", () => {
         mutation: gql`
           mutation CreateFlashJob($target: String!) {
             createFlashJob(
-              firmware: { target: $target, version: "local" }
+              firmware: { source: "file", target: $target, version: "local" }
               deviceId: "some-device-id"
             ) {
               id

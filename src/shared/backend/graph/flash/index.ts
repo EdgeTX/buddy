@@ -154,7 +154,7 @@ builder.mutationType({
               throw new GraphQLError("Specified flags are not valid");
             }
           }
-        } else if (firmware.source === "local") {
+        } else if (firmware.source === "file") {
           // local firmware
           const localFirmware = context.firmwareStore.getLocalFirmwareById(
             firmware.target
