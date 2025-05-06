@@ -29,11 +29,11 @@ jobs:
               repo: context.repo.repo,
               run_id: runId
             });
-            
+
             // Check if the original trigger was a tag
             const isTag = workflowRun.head_branch === null && workflowRun.head_repository.full_name === context.repo.owner + '/' + context.repo.repo;
             let tagName = '';
-            
+
             if (isTag) {
               // Get the tag name from the commit reference
               const refs = await github.rest.git.listMatchingRefs({
@@ -48,7 +48,7 @@ jobs:
                 tagName = tag.ref.replace('refs/tags/', '');
               }
             }
-            
+
             core.setOutput("is_tagged", isTag.toString());
             core.setOutput("tag_name", tagName);
             console.log(`Is tagged build: ${isTag}, Tag name: ${tagName}`);
@@ -69,17 +69,17 @@ jobs:
           script: |
             const runId = context.payload.workflow_run.id;
             console.log(`Finding artifacts from build workflow run ID: ${runId}`);
-            
+
             const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
               run_id: runId
             });
-            
+
             const webRendererArtifact = artifacts.data.artifacts.find(
               artifact => artifact.name === "web-renderer"
             );
-            
+
             if (!webRendererArtifact) {
               core.setFailed('Could not find the web-renderer artifact!');
               console.log('Available artifacts:');
@@ -88,20 +88,20 @@ jobs:
               });
               return;
             }
-            
+
             console.log(`Found web-renderer artifact with ID: ${webRendererArtifact.id}`);
-            
+
             const download = await github.rest.actions.downloadArtifact({
               owner: context.repo.owner,
               repo: context.repo.repo,
               artifact_id: webRendererArtifact.id,
               archive_format: 'zip'
             });
-            
+
             const fs = require('fs');
             fs.writeFileSync('web-renderer.zip', Buffer.from(download.data));
             console.log('Downloaded web-renderer.zip');
-      
+
       - name: Extract web-renderer artifact
         run: |
           mkdir -p build/renderer
@@ -121,6 +121,8 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -129,11 +131,13 @@ jobs:
         if: needs.get-build-context.outputs.is_tagged != 'true'
         uses: EndBug/latest-tag@latest
 
+      - name: Delete "latest" release
+        if: needs.get-build-context.outputs.is_tagged != 'true'
+        run: gh release delete latest --yes || echo "No latest release to delete"
+
   release-app:
-    needs: get-build-context
+    needs: [get-build-context, tag-latest]
     runs-on: ubuntu-22.04
-    env:
-      GH_TOKEN: ${{ github.token }}
     steps:
       # Use GitHub API to find and download the app-builds artifacts from the build workflow
       - name: Download app build artifacts
@@ -144,17 +148,17 @@ jobs:
           script: |
             const runId = context.payload.workflow_run.id;
             console.log(`Finding artifacts from build workflow run ID: ${runId}`);
-            
+
             const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
               run_id: runId
             });
-            
+
             const appArtifacts = artifacts.data.artifacts.filter(
               artifact => artifact.name.startsWith("app-builds-")
             );
-            
+
             if (appArtifacts.length === 0) {
               core.setFailed('Could not find any app-builds-* artifacts!');
               console.log('Available artifacts:');
@@ -163,16 +167,16 @@ jobs:
               });
               return;
             }
-            
+
             console.log(`Found ${appArtifacts.length} app-builds artifacts`);
-            
+
             const fs = require('fs');
             const path = require('path');
-            
+
             if (!fs.existsSync('app-builds')) {
               fs.mkdirSync('app-builds', { recursive: true });
             }
-            
+
             for (const artifact of appArtifacts) {
               console.log(`Downloading artifact: ${artifact.name} (ID: ${artifact.id})`);
               
@@ -187,7 +191,7 @@ jobs:
               fs.writeFileSync(zipPath, Buffer.from(download.data));
               console.log(`Downloaded ${zipPath}`);
             }
-      
+
       - name: Extract app build artifacts
         run: |
           for zip in app-builds/*.zip; do
@@ -209,16 +213,14 @@ jobs:
           prerelease: true
           tag_name: latest
 
-      - name: Delete "latest" release
-        if: needs.get-build-context.outputs.is_tagged != 'true'
-        run: gh release delete latest --yes || echo "No latest release to delete"        
-
-      - name: Create release notes
-        if: needs.get-build-context.outputs.is_tagged != 'true'
-        run: |
-          gh release delete latest --yes || echo "No latest release to delete"        
-          gh release create latest --title "Latest" --generate-notes --prerelease app-builds/*.snap app-builds/*.dmg app-builds/*.msi app-builds/*.AppImage
-
       - name: Release tagged build
         if: needs.get-build-context.outputs.is_tagged == 'true'
-        run: gh release create ${{ needs.get-build-context.outputs.tag_name }} --title "Release ${{ needs.get-build-context.outputs.tag_name }}" app-builds/*.snap app-builds/*.dmg app-builds/*.msi app-builds/*.AppImage
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release Build"
+          files: |
+            app-builds/*.snap
+            app-builds/*.dmg
+            app-builds/*.msi
+            app-builds/*.AppImage
+          draft: true
