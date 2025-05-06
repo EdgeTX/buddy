@@ -2,7 +2,7 @@ import ky from "ky";
 import { Button, Modal, message } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { ButtonSize, ButtonType } from "antd/lib/button";
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import legacyDownload from "js-file-download";
 import isUF2Payload from "shared/uf2/uf2";
@@ -222,6 +222,8 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
     const initialState = state ?? defaultDownloadState;
     setDownloadState({ ...initialState });
   };
+
+  useEffect(() => () => stopPolling());
 
   return (
     <>
