@@ -10,17 +10,59 @@ on:
       - completed
 
 jobs:
+  get-build-context:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-22.04
+    outputs:
+      is_tagged: ${{ steps.check-tag.outputs.is_tagged }}
+      tag_name: ${{ steps.check-tag.outputs.tag_name }}
+    steps:
+      - name: Check if source workflow was triggered by a tag
+        id: check-tag
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = ${{ github.event.workflow_run.id }};
+            const { data: workflowRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+
+            // Check if the original trigger was a tag
+            const isTag = workflowRun.head_branch === null && workflowRun.head_repository.full_name === context.repo.owner + '/' + context.repo.repo;
+            let tagName = '';
+
+            if (isTag) {
+              // Get the tag name from the commit reference
+              const refs = await github.rest.git.listMatchingRefs({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/'
+              });
+              
+              // Find the tag pointing to this commit
+              const tag = refs.data.find(ref => ref.object.sha === workflowRun.head_sha);
+              if (tag) {
+                tagName = tag.ref.replace('refs/tags/', '');
+              }
+            }
+
+            core.setOutput("is_tagged", isTag.toString());
+            core.setOutput("tag_name", tagName);
+            console.log(`Is tagged build: ${isTag}, Tag name: ${tagName}`);
+
   release-web-prod:
+    needs: get-build-context
     permissions:
       contents: read
-      deployments: write  
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      deployments: write
     runs-on: ubuntu-22.04
     steps:
       - name: Fetch relayed compiled source
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           name: web-renderer
           path: build/renderer
 
@@ -34,34 +76,35 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
+    needs: get-build-context
     permissions:
       contents: write
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-22.04
     steps:
       - name: Fetch binaries
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           pattern: app-builds-*
           path: app-builds
           merge-multiple: true
-      
+
+      - name: Apply 'latest' tag if not a tagged build
+        if: needs.get-build-context.outputs.is_tagged != 'true'
+        uses: EndBug/latest-tag@latest
+
       - name: Release latest build
-        if: startsWith(github.ref, 'refs/tags/v') != true
+        if: needs.get-build-context.outputs.is_tagged != 'true'
         uses: softprops/action-gh-release@v2
         with:
           name: "Latest Build"
           files: app-builds/*
           prerelease: true
-
-      - name: Apply 'latest' tag if not a tagged build
-        if: startsWith(github.ref, 'refs/tags/v') != true
-        uses: EndBug/latest-tag@latest
+          tag: latest
 
       - name: Release tagged build
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: needs.get-build-context.outputs.is_tagged == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: app-builds/*
           prerelease: false
+          tag: ${{ needs.get-build-context.outputs.tag_name }}

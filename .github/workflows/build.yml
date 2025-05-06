@@ -8,8 +8,135 @@ on:
       - completed
 
 jobs:
-  build-and-test-app:
+  get-context:
+    runs-on: ubuntu-22.04
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      is_tagged: ${{ steps.check-tag.outputs.is_tagged }}
+      tag_name: ${{ steps.check-tag.outputs.tag_name }}
+    steps:
+      - name: Check if source workflow was triggered by a tag
+        id: check-tag
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = ${{ github.event.workflow_run.id }};
+            const { data: workflowRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+
+            // Check if the original trigger was a tag
+            const isTag = workflowRun.head_branch === null && workflowRun.head_repository.full_name === context.repo.owner + '/' + context.repo.repo;
+            let tagName = '';
+
+            if (isTag) {
+              // Get the tag name from the commit reference
+              const refs = await github.rest.git.listMatchingRefs({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/'
+              });
+              
+              // Find the tag pointing to this commit
+              const tag = refs.data.find(ref => ref.object.sha === workflowRun.head_sha);
+              if (tag) {
+                tagName = tag.ref.replace('refs/tags/', '');
+              }
+            }
+
+            core.setOutput("is_tagged", isTag.toString());
+            core.setOutput("tag_name", tagName);
+            console.log(`Is tagged build: ${isTag}, Tag name: ${tagName}`);
+
+  storybook:
+    needs: get-context
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Build
+        run: yarn build:storybook
+
+      - name: Store storybook
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          retention-days: 1
+          if-no-files-found: error
+          path: storybook-static
+
+  compile:
+    needs: get-context
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, ubuntu-22.04, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install required python deps
+        run: python3 -m pip install setuptools
+
+      - name: Install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+        run: yarn --immutable
+
+      - name: Install build deps (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      - name: Build
+        run: yarn compile:production
+        env:
+          GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
+
+      - name: Store compiled source
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-${{ matrix.os }}
+          retention-days: 1
+          if-no-files-found: error
+          path: build
+
+  build-and-test-app:
+    needs: [get-context, compile]
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
@@ -23,6 +150,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -37,9 +166,8 @@ jobs:
         run: yarn --immutable
 
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-${{ matrix.os }}
           path: build
 
@@ -90,32 +218,14 @@ jobs:
           name: electron-${{ matrix.os }}-recordings
           path: e2e-recordings
 
-      # - name: Setup xvfb (Linux)
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0
-      #     # start xvfb in the background
-      #     sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
-      # - name: E2E
-      #   run: yarn e2e:production
-
-      # - name: Upload failure artifacts
-      #   if: ${{ failure() }}
-      #   uses: actions/upload-artifact@v2-preview
-      #   with:
-      #     name: diff
-      #     path: |
-      #       packages/configurator/e2e/output/*.png
-      #       packages/configurator/e2e/output/*.webm
-      #       packages/configurator/e2e/output/trace/*.zip
-      # - name: Preview demo
-
   e2e-web:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: [get-context, compile]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -133,9 +243,8 @@ jobs:
         run: yarn playwright install --with-deps
 
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-22.04
           path: build
 
@@ -153,6 +262,7 @@ jobs:
           path: playwright-report
 
   check-draft-status:
+    needs: get-context
     runs-on: ubuntu-22.04
     outputs:
       is_draft: ${{ steps.check.outputs.is_draft }}
@@ -173,6 +283,13 @@ jobs:
 
             const branch = workflowRun.head_branch;
 
+            // If this is a tag or not a PR, return false for draft status
+            if (!branch) {
+              core.setOutput("is_draft", "false");
+              core.setOutput("pr_number", "");
+              return;
+            }
+
             const { data: prs } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -186,14 +303,13 @@ jobs:
 
             core.setOutput("is_draft", isDraft.toString());
             core.setOutput("pr_number", prNumber.toString());
-            
+
             console.log(`PR #${prNumber}, Draft status: ${isDraft}`);
 
   preview-web:
-    needs: check-draft-status
+    needs: [get-context, check-draft-status, compile, storybook]
     runs-on: ubuntu-22.04
     if: |
-      github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'pull_request' &&
       needs.check-draft-status.outputs.is_draft == 'false' && 
       needs.check-draft-status.outputs.pr_number != ''
@@ -202,16 +318,14 @@ jobs:
       deployments: write
     steps:
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-22.04
           path: build
 
       - name: Fetch storybook build
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           name: storybook-static
           path: build/renderer/storybook
 
@@ -244,13 +358,13 @@ jobs:
           edit-mode: replace
 
   prepare-web-release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: [get-context, compile, e2e-web]
+    if: ${{ needs.get-context.outputs.is_tagged == 'true' || github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-22.04
     steps:
       - name: Fetch compiled source
-        uses: dawidd6/action-download-artifact@v9
+        uses: actions/download-artifact@v4
         with:
-          run_id: ${{ github.event.workflow_run.id }}
           name: compiled-ubuntu-22.04
           path: build
 
