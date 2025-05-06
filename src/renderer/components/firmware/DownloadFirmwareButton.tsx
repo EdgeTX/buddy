@@ -58,15 +58,14 @@ const DownloadFirmwareButton: React.FC<Props> = ({
       legacyDownload(data, name, "application/octet-stream");
       return;
     }
-    // TODO: use file extension from 'name'
-    const fileExt = isUF2Payload(data) ? ".uf2" : ".bin";
+    const fileExt = name.split(".").pop() ?? "";
     const fileHandle = await window.showSaveFilePicker({
       suggestedName: name,
       types: [
         {
           description: t(`Firmware data`),
           accept: {
-            "application/octet-stream": [fileExt],
+            "application/octet-stream": [`.${fileExt}`],
           },
         },
       ],

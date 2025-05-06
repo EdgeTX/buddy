@@ -6,9 +6,9 @@ import React, { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import legacyDownload from "js-file-download";
 import isUF2Payload from "shared/uf2/uf2";
-import useCloudFirmware from "renderer/hooks/useCloudFirmware";
+import useCreateFirmware from "renderer/hooks/useCreateCloudFirmware";
+import useFirmwareStatus from "renderer/hooks/useCloudFirmwareStatus";
 import { SelectedFlags } from "shared/backend/types";
-import { SelectedFlag } from "renderer/__generated__/tag/graphql";
 import {
   BuildDownloadState,
   DownloadFirmwareTimeline,
@@ -56,14 +56,13 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
   const { t } = useTranslation("flashing");
   const btnContent = children ?? t(`Download firmware`);
 
-  const createCloudFirmware = useCloudFirmware();
-  const flags = (selectedFlags ?? []) as SelectedFlag[];
+  const createFirmware = useCreateFirmware();
+  const firmwareStatus = useFirmwareStatus();
+  const flags = (selectedFlags ?? []) as { name: string; value: string }[];
   const fwParams = {
-    params: {
-      release: version ?? "",
-      target: target ?? "",
-      flags,
-    },
+    release: version ?? "",
+    target: target ?? "",
+    flags,
   };
 
   const getStatus = (start: boolean): void => {
@@ -76,44 +75,75 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
           started: true,
         },
       }));
-    }
-    createCloudFirmware(fwParams)
-      .then((buildStatus) => {
-        const { status, downloadUrl } = buildStatus;
-        const jobStatus = status;
-        const completed = !!downloadUrl;
-
-        setDownloadState((prevState) => {
-          let startedAt;
-          if (!prevState.build.status) {
-            startedAt = new Date().getTime().toString();
-          } else {
-            startedAt = prevState.build.status.startedAt;
-          }
-          const newState = {
-            ...prevState,
-            build: {
-              started: true,
-              status: {
-                jobStatus,
-                startedAt,
-              },
-              completed,
-            },
-          };
-          return newState;
+      createFirmware(fwParams)
+        .then((buildStatus) => {
+          onStatus(buildStatus);
+        })
+        .catch((err: Error) => {
+          onError(err);
         });
+    } else {
+      firmwareStatus(fwParams)
+        .then((buildStatus) => {
+          onStatus(buildStatus);
+        })
+        .catch((err: Error) => {
+          onError(err);
+        });
+    }
+  };
 
-        if (completed) {
-          stopPolling();
-          startFirmwareDownload(downloadUrl).catch((err) => {
-            console.log(err);
-          });
-        }
-      })
-      .catch((err) => {
+  const onStatus = (buildStatus: {
+    status: string;
+    downloadUrl?: string | null;
+  }): void => {
+    const { status, downloadUrl } = buildStatus;
+    const jobStatus = status;
+    const completed = !!downloadUrl;
+
+    setDownloadState((prevState) => {
+      let startedAt;
+      if (!prevState.build.status) {
+        startedAt = new Date().getTime().toString();
+      } else {
+        startedAt = prevState.build.status.startedAt;
+      }
+      const newState = {
+        ...prevState,
+        build: {
+          started: true,
+          status: {
+            jobStatus,
+            startedAt,
+          },
+          completed,
+        },
+      };
+      return newState;
+    });
+
+    if (jobStatus === "BUILD_ERROR") {
+      stopPolling();
+    } else if (completed) {
+      stopPolling();
+      startFirmwareDownload(downloadUrl).catch((err) => {
         console.log(err);
       });
+    }
+  };
+
+  const onError = (err: Error): void => {
+    stopPolling();
+    setDownloadState((prevState) => {
+      const newState = {
+        ...prevState,
+        build: {
+          ...prevState.build,
+          error: err.message,
+        },
+      };
+      return newState;
+    });
   };
 
   const download = async (downloadUrl: string): Promise<void> => {

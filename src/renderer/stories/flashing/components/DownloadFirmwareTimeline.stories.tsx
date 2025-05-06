@@ -6,6 +6,22 @@ export default {
   component: DownloadFirmwareTimeline,
 };
 
+export const createBuildError: React.FC = () => (
+  <DownloadFirmwareTimeline
+    state={{
+      build: {
+        started: true,
+        error: "Cannot create build :(",
+        completed: false,
+      },
+      download: {
+        started: false,
+        completed: false,
+      },
+    }}
+  />
+);
+
 export const building: React.FC = () => (
   <DownloadFirmwareTimeline
     state={{
@@ -34,7 +50,6 @@ export const buildError: React.FC = () => (
           jobStatus: "BUILD_ERROR",
           startedAt: new Date().getTime().toString(),
         },
-        error: "Build failed",
         completed: false,
       },
       download: {

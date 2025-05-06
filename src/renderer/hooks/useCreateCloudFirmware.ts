@@ -15,22 +15,25 @@ export default () => {
   const client = useApolloClient();
 
   return useCallback(
-    (
-      variables: Parameters<NonNullable<(typeof createQuery)["__apiType"]>>[0]
-    ) => {
-      const result = client
-        .mutate({ mutation: createQuery, variables })
-        .then((cloudFirmwareResult) => {
-          if (cloudFirmwareResult.data) {
-            return cloudFirmwareResult.data.createCloudFirmware;
+    (params: {
+      release: string;
+      target: string;
+      flags: { name: string; value: string }[];
+    }) => {
+      const createResult = client
+        .mutate({
+          mutation: createQuery,
+          variables: { params },
+        })
+        .then((result) => {
+          if (result.data) {
+            return result.data.createCloudFirmware;
           }
           throw new Error(
-            cloudFirmwareResult.errors
-              ?.map((error) => error.message)
-              .join(",") ?? ""
+            result.errors?.map((error) => error.message).join(",") ?? ""
           );
         });
-      return result;
+      return createResult;
     },
     [client]
   );

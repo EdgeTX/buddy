@@ -97,11 +97,14 @@ const stageTitle = (
   return config.titles.post;
 };
 
+const isError = (stage: BuildDownloadStageStatus): boolean =>
+  !!stage.error || stage.status?.jobStatus === "BUILD_ERROR";
+
 const stageIcon = (
   config: StageConfig,
   stage: BuildDownloadStageStatus
 ): React.ReactNode => {
-  if (stage.error) {
+  if (isError(stage)) {
     return undefined;
   }
   if (stage.completed) {
@@ -122,7 +125,7 @@ const status = (
     return "finish";
   }
 
-  if (stage.error) {
+  if (isError(stage)) {
     return "error";
   }
 
@@ -153,13 +156,13 @@ const stageDescription = (
 };
 
 const descriptionTextColor = (
-  stageStatus: BuildDownloadStageStatus
+  stage: BuildDownloadStageStatus
 ): "danger" | "secondary" | undefined => {
-  if (stageStatus.error) {
+  if (isError(stage)) {
     return "danger";
   }
 
-  if (!stageStatus.started || stageStatus.completed) {
+  if (!stage.started || stage.completed) {
     return "secondary";
   }
 
@@ -195,6 +198,7 @@ export const DownloadFirmwareTimeline: React.FC<Props> = ({ state }) => {
         // Internals of how ant makes these steps
         stageConfigs.map((config) => {
           const stageStatus = state[config.stage];
+          const error = isError(stageStatus);
           const active = stageStatus.started && !stageStatus.completed;
           return (
             <Steps.Step
@@ -223,14 +227,14 @@ export const DownloadFirmwareTimeline: React.FC<Props> = ({ state }) => {
                     <Typography.Text type={descriptionTextColor(stageStatus)}>
                       {stageDescription(config, stageStatus)}
                     </Typography.Text>
-                    {!stageStatus.error && stageStatus.status && (
+                    {!error && stageStatus.status && (
                       <FlashBuildStatus status={stageStatus.status} />
                     )}
-                    {stageStatus.error && (
+                    {error && (
                       <Alert
                         style={{ marginTop: 16, marginRight: 16 }}
                         message={t(`Error`)}
-                        description={stageStatus.error}
+                        description={stageStatus.error ?? "Build failed"}
                         type="error"
                         action={
                           <Button disabled size="small" danger>
