@@ -11,7 +11,7 @@ on:
 
 jobs:
   get-build-context:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-22.04
     outputs:
       is_tagged: ${{ steps.check-tag.outputs.is_tagged }}
@@ -207,14 +207,16 @@ jobs:
           prerelease: true
           tag_name: latest
 
+      - name: Delete "latest" release
+        if: needs.get-build-context.outputs.is_tagged != 'true'
+        run: gh release delete latest --yes || echo "No latest release to delete"        
+
+      - name: Create release notes
+        if: needs.get-build-context.outputs.is_tagged == 'true'
+        run: |
+          gh release delete latest --yes || echo "No latest release to delete"        
+          gh release create latest --title "Latest" --generate-notes --prerelease app-builds/*.snap app-builds/*.dmg app-builds/*.msi app-builds/*.AppImage
+
       - name: Release tagged build
         if: needs.get-build-context.outputs.is_tagged == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            app-builds/*.snap
-            app-builds/*.dmg
-            app-builds/*.msi
-            app-builds/*.AppImage
-          prerelease: false
-          tag_name: ${{ needs.get-build-context.outputs.tag_name }}
+        run: gh release create ${{ needs.get-build-context.outputs.tag_name }} --title "Release ${{ needs.get-build-context.outputs.tag_name }}" app-builds/*.snap app-builds/*.dmg app-builds/*.msi app-builds/*.AppImage
