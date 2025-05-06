@@ -14,7 +14,65 @@ jobs:
     outputs:
       is_tagged: ${{ steps.check-tag.outputs.is_tagged }}
       tag_name: ${{ steps.check-tag.outputs.tag_name }}
+      original_event: ${{ steps.check-source.outputs.original_event }}
+      original_ref: ${{ steps.check-source.outputs.original_ref }}
+      original_branch: ${{ steps.check-source.outputs.original_branch }}
+      should_release: ${{ steps.check-source.outputs.should_release }}
     steps:
+      - name: Get source workflow information
+        id: check-source
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const { data: workflowRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            // Extract original event type and branch information
+            const originalEvent = workflowRun.event;
+            const originalRef = workflowRun.head_repository ? 
+              `${workflowRun.head_repository.owner.login}:${workflowRun.head_branch}` : 
+              'unknown';
+            const originalBranch = workflowRun.head_branch || 'unknown';
+            
+            console.log(`Original trigger - Event: ${originalEvent}, Ref: ${originalRef}, Branch: ${originalBranch}`);
+            
+            // Determine if this should trigger a release later
+            // Release only if it's a push to main or a tag
+            const isMainPush = originalEvent === 'push' && originalBranch === 'main';
+            const isTag = originalEvent === 'push' && originalBranch === null;
+            const shouldRelease = isMainPush || isTag;
+            
+            core.setOutput("original_event", originalEvent);
+            core.setOutput("original_ref", originalRef);
+            core.setOutput("original_branch", originalBranch);
+            core.setOutput("should_release", shouldRelease.toString());
+            
+            // Create a build-context.json file to pass between workflows
+            const fs = require('fs');
+            const buildContext = {
+              original_event: originalEvent,
+              original_ref: originalRef,
+              original_branch: originalBranch,
+              should_release: shouldRelease,
+              workflow_run_id: runId,
+              head_sha: workflowRun.head_sha
+            };
+            
+            fs.writeFileSync('build-context.json', JSON.stringify(buildContext, null, 2));
+            console.log('Created build-context.json with workflow information');
+
+      - name: Upload build context
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-context
+          path: build-context.json
+          retention-days: 1
+
       - name: Check if source workflow was triggered by a tag
         id: check-tag
         uses: actions/github-script@v6
@@ -359,7 +417,7 @@ jobs:
 
   prepare-web-release:
     needs: [get-context, compile, e2e-web]
-    if: ${{ needs.get-context.outputs.is_tagged == 'true' || github.ref == 'refs/heads/main' }}
+    if: ${{ needs.get-context.outputs.should_release == 'true' }}
     runs-on: ubuntu-22.04
     steps:
       - name: Fetch compiled source
@@ -367,6 +425,18 @@ jobs:
         with:
           name: compiled-ubuntu-22.04
           path: build
+
+      - name: Add build context to web release
+        run: |
+          mkdir -p build/info
+          echo "{
+            \"build\": {
+              \"original_event\": \"${{ needs.get-context.outputs.original_event }}\", 
+              \"original_branch\": \"${{ needs.get-context.outputs.original_branch }}\",
+              \"is_tagged\": ${{ needs.get-context.outputs.is_tagged }},
+              \"tag_name\": \"${{ needs.get-context.outputs.tag_name }}\"
+            }
+          }" > build/info/build-info.json
 
       - name: Upload web renderer for release
         uses: actions/upload-artifact@v4
