@@ -29,11 +29,11 @@ jobs:
               repo: context.repo.repo,
               run_id: runId
             });
-
+            
             // Check if the original trigger was a tag
             const isTag = workflowRun.head_branch === null && workflowRun.head_repository.full_name === context.repo.owner + '/' + context.repo.repo;
             let tagName = '';
-
+            
             if (isTag) {
               // Get the tag name from the commit reference
               const refs = await github.rest.git.listMatchingRefs({
@@ -48,7 +48,7 @@ jobs:
                 tagName = tag.ref.replace('refs/tags/', '');
               }
             }
-
+            
             core.setOutput("is_tagged", isTag.toString());
             core.setOutput("tag_name", tagName);
             console.log(`Is tagged build: ${isTag}, Tag name: ${tagName}`);
@@ -60,11 +60,52 @@ jobs:
       deployments: write
     runs-on: ubuntu-22.04
     steps:
-      - name: Fetch relayed compiled source
-        uses: actions/download-artifact@v4
+      # Use GitHub API to find and download the web-renderer artifact from the build workflow
+      - name: Download web-renderer artifact
+        id: download-artifact
+        uses: actions/github-script@v6
         with:
-          name: web-renderer
-          path: build/renderer
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = context.payload.workflow_run.id;
+            console.log(`Finding artifacts from build workflow run ID: ${runId}`);
+            
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            const webRendererArtifact = artifacts.data.artifacts.find(
+              artifact => artifact.name === "web-renderer"
+            );
+            
+            if (!webRendererArtifact) {
+              core.setFailed('Could not find the web-renderer artifact!');
+              console.log('Available artifacts:');
+              artifacts.data.artifacts.forEach(art => {
+                console.log(`- ${art.name} (ID: ${art.id})`);
+              });
+              return;
+            }
+            
+            console.log(`Found web-renderer artifact with ID: ${webRendererArtifact.id}`);
+            
+            const download = await github.rest.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: webRendererArtifact.id,
+              archive_format: 'zip'
+            });
+            
+            const fs = require('fs');
+            fs.writeFileSync('web-renderer.zip', Buffer.from(download.data));
+            console.log('Downloaded web-renderer.zip');
+      
+      - name: Extract web-renderer artifact
+        run: |
+          mkdir -p build/renderer
+          unzip web-renderer.zip -d build/renderer
 
       - name: Publish
         id: cloudflare-publish
@@ -81,12 +122,66 @@ jobs:
       contents: write
     runs-on: ubuntu-22.04
     steps:
-      - name: Fetch binaries
-        uses: actions/download-artifact@v4
+      # Use GitHub API to find and download the app-builds artifacts from the build workflow
+      - name: Download app build artifacts
+        id: download-app-builds
+        uses: actions/github-script@v6
         with:
-          pattern: app-builds-*
-          path: app-builds
-          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = context.payload.workflow_run.id;
+            console.log(`Finding artifacts from build workflow run ID: ${runId}`);
+            
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            const appArtifacts = artifacts.data.artifacts.filter(
+              artifact => artifact.name.startsWith("app-builds-")
+            );
+            
+            if (appArtifacts.length === 0) {
+              core.setFailed('Could not find any app-builds-* artifacts!');
+              console.log('Available artifacts:');
+              artifacts.data.artifacts.forEach(art => {
+                console.log(`- ${art.name} (ID: ${art.id})`);
+              });
+              return;
+            }
+            
+            console.log(`Found ${appArtifacts.length} app-builds artifacts`);
+            
+            const fs = require('fs');
+            const path = require('path');
+            
+            if (!fs.existsSync('app-builds')) {
+              fs.mkdirSync('app-builds', { recursive: true });
+            }
+            
+            for (const artifact of appArtifacts) {
+              console.log(`Downloading artifact: ${artifact.name} (ID: ${artifact.id})`);
+              
+              const download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id,
+                archive_format: 'zip'
+              });
+              
+              const zipPath = path.join('app-builds', `${artifact.name}.zip`);
+              fs.writeFileSync(zipPath, Buffer.from(download.data));
+              console.log(`Downloaded ${zipPath}`);
+            }
+      
+      - name: Extract app build artifacts
+        run: |
+          for zip in app-builds/*.zip; do
+            unzip "$zip" -d app-builds/
+            rm "$zip"
+          done
+          find app-builds -type f
 
       - name: Apply 'latest' tag if not a tagged build
         if: needs.get-build-context.outputs.is_tagged != 'true'
