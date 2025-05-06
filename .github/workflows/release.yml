@@ -34,6 +34,8 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
+    permissions:
+      contents: write
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-22.04
     steps:
@@ -44,26 +46,22 @@ jobs:
           pattern: app-builds-*
           path: app-builds
           merge-multiple: true
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
+      
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
-        uses: crowbarmaster/GH-Automatic-Releases@a92588ee071f23d7901a9febcd245debe2343098
+        uses: softprops/action-gh-release@v2
         with:
-          title: "Latest Build"
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          name: "Latest Build"
           files: app-builds/*
-          automatic_release_tag: "latest"
           prerelease: true
+
+      - name: Apply 'latest' tag if not a tagged build
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        uses: EndBug/latest-tag@latest
 
       - name: Release tagged build
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: crowbarmaster/GH-Automatic-Releases@a92588ee071f23d7901a9febcd245debe2343098
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: app-builds/*
           prerelease: false
