@@ -94,6 +94,7 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                       <FirmwareSummary target={target} version={version} />
                     </div>
                     {version !== "local" && (
+                      // TODO: if cloudbuild, use other button
                       <DownloadFirmwareButton
                         size="small"
                         type="link"

@@ -244,12 +244,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
           </DownloadCloudbuildButton>
         )}
         {activeTab !== "cloudbuild" && (
-          <DownloadFirmwareButton
-            target={target}
-            version={version}
-            selectedFlags={selectedFlags}
-            isCloudBuild={false}
-          >
+          <DownloadFirmwareButton target={target} version={version}>
             {t(`Download file`)}
           </DownloadFirmwareButton>
         )}
