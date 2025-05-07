@@ -153,8 +153,6 @@ const DownloadFirmwareButton: React.FC<Props> = ({
             // ignore "Cancel"
             if (e.name === "AbortError") return;
 
-            // TODO: open modal dialog to trigger full process
-            //   -> fetch backend
             void message.error(
               t(`Could not download firmware: {{message}}`, {
                 message: e.message,

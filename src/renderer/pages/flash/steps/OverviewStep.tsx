@@ -109,7 +109,6 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                       <DownloadCloudbuildButton
                         size="small"
                         type="link"
-                        disabled={false}
                         target={target}
                         version={version}
                         selectedFlags={selectedFlags}

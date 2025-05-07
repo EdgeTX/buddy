@@ -21,8 +21,6 @@ type Props = {
   children?: string;
   type?: ButtonType;
   size?: ButtonSize;
-  disabled: boolean;
-  state?: BuildDownloadState;
 };
 
 type Timeout = ReturnType<typeof setInterval>;
@@ -39,19 +37,15 @@ const defaultDownloadState: BuildDownloadState = {
 };
 
 const DownloadCloudbuildButton: React.FC<Props> = ({
-  state,
   target,
   version,
   selectedFlags,
   children,
   type,
   size,
-  disabled,
 }) => {
   const [open, setOpen] = React.useState<boolean>(false);
-  const [downloadState, setDownloadState] = useState(
-    state ?? defaultDownloadState
-  );
+  const [downloadState, setDownloadState] = useState(defaultDownloadState);
   const intervalRef = useRef<Timeout>();
   const { t } = useTranslation("flashing");
   const btnContent = children ?? t(`Download firmware`);
@@ -64,6 +58,8 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
     target: target ?? "",
     flags,
   };
+  const isBuildValid =
+    !!version && !!target && flags.every((flag) => flag.name && flag.value);
 
   const getStatus = (start: boolean): void => {
     if (start) {
@@ -219,36 +215,42 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
   const closeDialog = (): void => {
     setOpen(false);
     stopPolling();
-    const initialState = state ?? defaultDownloadState;
-    setDownloadState({ ...initialState });
+    setDownloadState({ ...defaultDownloadState });
   };
 
-  useEffect(() => () => stopPolling());
+  useEffect(
+    () => () => {
+      stopPolling();
+    },
+    []
+  );
 
   return (
     <>
       <Button
         type={type}
         icon={<DownloadOutlined />}
-        disabled={disabled}
+        disabled={!isBuildValid}
         size={size}
         onClick={openDialog}
       >
         {btnContent}
       </Button>
-      <Modal
-        title={t(`Cloudbuild download`)}
-        footer={
-          <Button type="primary" onClick={closeDialog}>
-            {t(`Cancel`)}
-          </Button>
-        }
-        closable={false}
-        visible={open}
-        onCancel={closeDialog}
-      >
-        <DownloadFirmwareTimeline state={downloadState} />
-      </Modal>
+      {open && (
+        <Modal
+          title={t(`Cloudbuild download`)}
+          footer={
+            <Button type="primary" onClick={closeDialog}>
+              {t(`Cancel`)}
+            </Button>
+          }
+          closable={false}
+          visible
+          onCancel={closeDialog}
+        >
+          <DownloadFirmwareTimeline state={downloadState} />
+        </Modal>
+      )}
     </>
   );
 };
