@@ -4,14 +4,14 @@ exports[`<Markdown /> > should return the given markdown string as html 1`] = `
 <DocumentFragment>
   <div>
     <h1
-      class="ant-typography"
+      class="ant-typography css-dev-only-do-not-override-1yacf91"
     >
       This is my markdown
     </h1>
     <ul>
       <li>
         <article
-          class="ant-typography"
+          class="ant-typography css-dev-only-do-not-override-1yacf91"
         >
           A bullet point
         </article>
@@ -22,7 +22,7 @@ exports[`<Markdown /> > should return the given markdown string as html 1`] = `
     </p>
     <p>
       <a
-        class="ant-typography"
+        class="ant-typography css-dev-only-do-not-override-1yacf91"
         href="https://google.com"
         rel="noopener noreferrer"
         target="_blank"

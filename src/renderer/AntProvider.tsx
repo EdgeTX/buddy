@@ -1,8 +1,7 @@
 import { ConfigProvider } from "antd";
-import { Locale } from "antd/lib/locale-provider";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchAntLocale } from "./i18n/ant";
+import { fetchAntLocale, Locale } from "./i18n/ant";
 
 const AntProvider: React.FC = ({ children }) => {
   const [locale, setLocale] = useState<Locale>();

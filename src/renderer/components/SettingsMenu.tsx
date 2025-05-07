@@ -20,7 +20,7 @@ const SettingsMenu: React.FC = () => {
     <Dropdown
       placement="bottomRight"
       trigger={["click"]}
-      visible={open}
+      open={open}
       onVisibleChange={setOpen}
       arrow
       overlay={
