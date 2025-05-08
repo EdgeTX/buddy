@@ -76,10 +76,7 @@ const CloudFirmwareParams = builder.inputType("CloudFirmwareParams", {
   fields: (t) => ({
     release: t.string({ required: true }),
     target: t.string({ required: true }),
-    flags: t.field({
-      type: [SelectedFlags],
-      required: true,
-    }),
+    flags: t.field({ type: [SelectedFlags] }),
   }),
 });
 
@@ -148,11 +145,15 @@ builder.queryType({
         params: t.arg({ type: CloudFirmwareParams, required: true }),
       },
       resolve: async (_, { params }, { cloudbuild }) => {
-        const jobStatus = await cloudbuild.queryJobStatus(params);
-        return {
-          status: jobStatus.status,
-          downloadUrl: jobStatus.artifacts[0].download_url,
-        };
+        const { release, target, flags } = params;
+        const jobStatus = await cloudbuild.queryJobStatus({
+          release,
+          target,
+          flags: flags ?? [],
+        });
+        const { status, artifacts } = jobStatus;
+        const downloadUrl = artifacts ? artifacts[0].download_url : undefined;
+        return { status, downloadUrl };
       },
     }),
   }),
@@ -163,14 +164,21 @@ builder.mutationType({
     createCloudFirmware: t.field({
       type: CloudFirmware,
       args: {
-        params: t.arg({ type: CloudFirmwareParams, required: true }),
+        params: t.arg({
+          type: CloudFirmwareParams,
+          required: true,
+        }),
       },
       resolve: async (_, { params }, { cloudbuild }) => {
-        const jobStatus = await cloudbuild.createJob(params);
-        return {
-          status: jobStatus.status,
-          downloadUrl: jobStatus.artifacts[0].download_url,
-        };
+        const { release, target, flags } = params;
+        const jobStatus = await cloudbuild.createJob({
+          release,
+          target,
+          flags: flags ?? [],
+        });
+        const { status, artifacts } = jobStatus;
+        const downloadUrl = artifacts ? artifacts[0].download_url : undefined;
+        return { status, downloadUrl };
       },
     }),
   }),

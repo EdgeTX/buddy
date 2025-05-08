@@ -6,7 +6,7 @@ import {
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Button, Card, Empty, Typography } from "antd";
 import React, { useEffect } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import { Centered } from "renderer/shared/layouts";
 import styled from "styled-components";
@@ -155,17 +155,17 @@ const DeviceSelector: React.FC<Props> = ({
                 variant === "electron" ? (
                   t(`No devices found`)
                 ) : (
-                  <Trans t={t}>
-                    Add a device to get started
+                  <>
+                    {t(`Add a device to get started`)}
                     <br />
                     <a
                       target="_blank"
                       href="https://manual.edgetx.org/edgetx-how-to/access-dfu-and-bootloader-mode"
                       rel="noreferrer"
                     >
-                      How to access DFU for your handset
+                      {t(`How to access DFU for your handset`)}
                     </a>
-                  </Trans>
+                  </>
                 )
               }
             >

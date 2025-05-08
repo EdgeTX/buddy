@@ -42,7 +42,7 @@ type Artifact = {
 type Job = {
   status: JobStatus;
   build_attempts: number;
-  artifacts: [Artifact];
+  artifacts?: [Artifact];
   build_started_at: string;
   build_ended_at: string;
   created_at: string;
