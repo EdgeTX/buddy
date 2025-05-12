@@ -8,11 +8,20 @@
     "productName": "EdgeTX Buddy",
     "appId": "org.edgetx.buddy",
     "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "publish": [
         "github"
       ],
       "category": "your.app.category.type",
-      "artifactName": "edgetx-buddy-${version}.${ext}"
+      "artifactName": "edgetx-buddy-${version}-${arch}.${ext}"
     },
     "linux": {
       "publish": [
