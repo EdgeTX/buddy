@@ -1,5 +1,7 @@
-import { Locale } from "antd/lib/locale-provider";
+import { ConfigProviderProps } from "antd";
 import languages from "./languages";
+
+export type Locale = ConfigProviderProps["locale"];
 
 type Language = (typeof languages)[number];
 
