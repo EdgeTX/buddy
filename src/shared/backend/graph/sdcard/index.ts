@@ -6,8 +6,19 @@ import { isArrayOf, isNotUndefined, isString } from "type-guards";
 import semver from "semver";
 import { createBuilder } from "shared/backend/utils/builder";
 import type { TypeOf } from "shared/backend/types";
+import type { Context } from "shared/backend/context";
+import {
+  startAssetsExecution,
+  buildBackupPlan,
+  restoreFromZip,
+  exportBackupToZip,
+} from "shared/backend/services/sdcardJobs";
+import * as yaml from "js-yaml";
+import GraphQLJSON from "graphql-type-json";
 
 const builder = createBuilder();
+builder.addScalarType("JSON", GraphQLJSON, {});
+
 // TODO: Move SD card assets to own module
 
 const EXPECTED_ROOT_ENTRIES = [
@@ -376,6 +387,27 @@ builder.queryType({
       resolve: (_, { jobId }, { sdcardJobs }) =>
         sdcardJobs.getSdcardJob(jobId.toString()) ?? null,
     }),
+    //! new new may need refined into using predefined logic -----------------------
+    sdcardAssetsDirectory: t.field({
+      type: SdcardAssetsDirectory,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { id }) => {
+        console.log("🔥 resolver sdcardAssetsDirectory for id=", id);
+
+        const entry = directories.find((d) => d.id === id);
+        if (!entry) return null;
+        try {
+          await arrayFromAsync(entry.handle.keys());
+          return { id, name: entry.handle.name };
+        } catch {
+          return null;
+        }
+      },
+    }),
+    //! new new may need refined into using predefined logic -----------------------
   }),
 });
 
@@ -591,6 +623,217 @@ builder.mutationType({
         return job;
       },
     }),
+    //! new new may need refined into using predefined logic -----------------------
+    pickSdcardAssetsDirectory: t.field({
+      type: SdcardAssetsDirectory,
+      nullable: true,
+      resolve: async (_, __, { fileSystem }) => {
+        const handle = await fileSystem
+          .requestWritableDirectory({ id: "edgetx-sdcard" })
+          .catch(() => undefined);
+        if (!handle) return null;
+        const id = uuid.v4();
+        directories.push({ id, handle });
+        if (directories.length > maxDirectoriesHandles) directories.shift();
+        return { id, name: handle.name };
+      },
+    }),
+    createSdcardBackupJob: t.field({
+      type: SdcardWriteJob,
+      args: {
+        directoryId: t.arg.id({ required: true }),
+        models: t.arg({ type: SdcardModelsInput }),
+        themes: t.arg({ type: SdcardThemesInput }),
+        direction: t.arg({ type: BackupDirectionEnum, required: true }),
+      },
+      resolve: async (_, args, context: Context) => {
+        const directoryId = String(args.directoryId);
+        const entry = directories.find((d) => d.id === directoryId);
+        if (!entry) {
+          throw new GraphQLError("SD card directory not found");
+        }
+
+        const localHandle = await context.fileSystem
+          .requestWritableDirectory({ id: "local-backup" })
+          .catch(() => {
+            throw new GraphQLError("Local directory not selected");
+          });
+
+        const selectedModels = args.models?.ids ?? [];
+        const selectedThemes = args.themes?.ids ?? [];
+        if (!selectedModels.length && !selectedThemes.length) {
+          throw new GraphQLError("No models or themes specified");
+        }
+
+        const sourceHandle =
+          args.direction === "TO_LOCAL" ? entry.handle : localHandle;
+        const targetHandle =
+          args.direction === "TO_LOCAL" ? localHandle : entry.handle;
+
+        const job = context.sdcardJobs.createSdcardJob(["write"]);
+
+        void startAssetsExecution(job.id.toString(), {
+          sourceHandle,
+          targetHandle,
+          filterPaths: selectedModels
+            .map((m) => `MODELS/${m}`)
+            .concat(selectedThemes.map((th) => `THEMES/${th}`)),
+          overwrite: false,
+          autoRename: true,
+        });
+
+        return job;
+      },
+    }),
+    generateBackupPlan: t.field({
+      type: BackupPlan,
+      args: {
+        directoryId: t.arg.id({ required: true }),
+        paths: t.arg({ type: SdcardPathsInput, required: true }),
+        direction: t.arg({ type: BackupDirectionEnum, required: true }),
+      },
+      resolve: async (_, { directoryId, paths, direction }, { fileSystem }) => {
+        const entry = directories.find((d) => d.id === directoryId);
+        if (!entry) throw new GraphQLError("SD card directory not found");
+
+        // pick the two handles
+        const localHandle =
+          direction === "TO_LOCAL"
+            ? await fileSystem
+                .requestWritableDirectory({ id: "local-backup" })
+                .catch(() => {
+                  // user cancelled or failed the local pick
+                  throw new GraphQLError("Local backup directory not selected");
+                })
+            : entry.handle;
+        const sdHandle = direction === "TO_LOCAL" ? entry.handle : localHandle;
+
+        // build the raw plan, catching missing-file errors
+        let raw;
+        try {
+          raw = await buildBackupPlan(sdHandle, localHandle, paths.paths);
+        } catch (err: unknown) {
+          if (err instanceof DOMException && err.name === "NotFoundError") {
+            // convert to a controlled GraphQLError
+            throw new GraphQLError(
+              `Could not find one of the requested paths: ${err.message}`
+            );
+          }
+          throw err;
+        }
+
+        // map it into the shape your GraphQL type wants:
+        return {
+          toCopy: raw.toCopy,
+          identical: raw.identical,
+          conflicts: raw.conflicts.map(({ path, srcSize, dstSize }) => ({
+            path,
+            existingSize: dstSize,
+            incomingSize: srcSize,
+          })),
+        };
+      },
+    }),
+    executeBackup: t.field({
+      type: SdcardWriteJob,
+      args: {
+        directoryId: t.arg.id({ required: true }),
+        // re-pass same paths for context
+        paths: t.arg({ type: SdcardPathsInput, required: true }),
+        direction: t.arg({ type: BackupDirectionEnum, required: true }),
+        conflictResolutions: t.arg({
+          type: ConflictResolutionsInput,
+          required: true,
+        }),
+      },
+      resolve: async (
+        _,
+        { directoryId, paths, direction, conflictResolutions },
+        context
+      ) => {
+        console.log(
+          "🔥 executeBackup resolver firing for",
+          directoryId,
+          paths,
+          direction
+        );
+        const entry = directories.find((d) => d.id === directoryId);
+        console.log("   found entry?", !!entry);
+        if (!entry) throw new GraphQLError("SD card directory not found");
+
+        const localHandle =
+          direction === "TO_LOCAL"
+            ? await context.fileSystem
+                .requestWritableDirectory({
+                  id: "local-backup",
+                })
+                .catch(() => {
+                  // user cancelled or failed the local pick
+                  throw new GraphQLError("Local backup directory not selected");
+                })
+            : entry.handle;
+        const sdHandle = direction === "TO_LOCAL" ? entry.handle : localHandle;
+
+        const job = context.sdcardJobs.createSdcardJob(["download", "write"]);
+
+        // kick off the real copy on the next tick, so the client can subscribe first
+        const execArgs = {
+          sourceHandle: direction === "TO_LOCAL" ? sdHandle : localHandle,
+          targetHandle: direction === "TO_LOCAL" ? localHandle : sdHandle,
+          filterPaths: paths.paths,
+          conflictResolutions: conflictResolutions.items,
+        };
+        setTimeout(() => {
+          console.log("   calling startAssetsExecution with jobId=", job.id);
+          void startAssetsExecution(job.id.toString(), execArgs);
+        }, 0);
+        return job;
+      },
+    }),
+    exportBackupToZip: t.field({
+      type: "String",
+      args: {
+        directoryId: t.arg.id({ required: true }),
+        paths: t.arg({ type: SdcardPathsInput, required: true }),
+      },
+      resolve: async (_, { directoryId, paths }) => {
+        const entry = directories.find((d) => d.id === directoryId);
+        if (!entry) throw new GraphQLError("SD card directory not found");
+        const zipBlob = await exportBackupToZip(entry.handle, paths.paths);
+        // convert Blob → Base64
+        const arrayBuf = await zipBlob.arrayBuffer();
+        const b64 = Buffer.from(arrayBuf).toString("base64");
+        return `data:application/zip;base64,${b64}`;
+      },
+    }),
+    restoreFromZip: t.field({
+      type: SdcardWriteJob,
+      args: {
+        directoryId: t.arg.id({ required: true }),
+        zipData: t.arg({ type: "String", required: true }), // data-URL or base64
+        conflictResolutions: t.arg({
+          type: ConflictResolutionsInput,
+          required: true,
+        }),
+      },
+      resolve: (_, { directoryId, zipData, conflictResolutions }, context) => {
+        const entry = directories.find((d) => d.id === directoryId);
+        if (!entry) throw new GraphQLError("SD card directory not found");
+        // decode zipData
+        const base64 = zipData.replace(/^data:.*;base64,/, "");
+        const buf = Buffer.from(base64, "base64");
+        const job = context.sdcardJobs.createSdcardJob(["download", "write"]);
+        void restoreFromZip(
+          buf,
+          entry.handle,
+          conflictResolutions.items,
+          /* overwrite */ false,
+          /* autoRename */ true
+        );
+        return job;
+      },
+    }),
+    //! new new may need refined into using predefined logic -----------------------
   }),
 });
 
@@ -734,6 +977,275 @@ builder.objectFields(SdcardDirectory, (t) => ({
         target:
           (await readVersionFromFile(handle, "edgetx.sdcard.target")) ?? null,
       };
+    },
+  }),
+}));
+
+export const SdcardAssetsDirectory = builder.simpleObject(
+  "SdcardAssetsDirectory",
+  {
+    fields: (t) => ({
+      id: t.id(),
+      name: t.string(),
+    }),
+  }
+);
+
+const SdcardPathsInput = builder.inputType("SdcardPathsInput", {
+  fields: (t) => ({
+    paths: t.stringList({
+      required: true,
+      description:
+        "List of file or directory paths (relative to SD-card root) to include in the backup.",
+    }),
+  }),
+});
+
+const ConflictEntry = builder.simpleObject("ConflictEntry", {
+  fields: (t) => ({
+    path: t.string(), // relative path
+    existingSize: t.int(), // on target
+    incomingSize: t.int(), // from source
+    // maybe also checksums or arrayBuffers for diff…
+  }),
+});
+const BackupPlan = builder.simpleObject("BackupPlan", {
+  fields: (t) => ({
+    toCopy: t.stringList(), // paths we’ll copy
+    identical: t.stringList(), // paths we can skip
+    conflicts: t.field({ type: [ConflictEntry] }),
+  }),
+});
+
+const ConflictResolutionInput = builder.inputType("ConflictResolutionInput", {
+  fields: (t) => ({
+    path: t.string({ required: true }),
+    action: t.field({
+      type: builder.enumType("ConflictAction", {
+        values: ["OVERWRITE", "SKIP", "RENAME"] as const,
+      }),
+      required: true,
+    }),
+  }),
+});
+
+const ConflictResolutionsInput = builder.inputType("ConflictResolutionsInput", {
+  fields: (t) => ({
+    items: t.field({
+      type: [ConflictResolutionInput],
+      required: true,
+    }),
+  }),
+});
+
+const SdcardModelsInput = builder.inputType("SdcardModelsInput", {
+  fields: (t) => ({
+    ids: t.idList({
+      required: true,
+      description: "List of model directory names to backup",
+    }),
+  }),
+});
+
+const SdcardModelEntry = builder.simpleObject("SdcardModelEntry", {
+  fields: (t) => ({
+    name: t.string(), // the filename
+    yaml: t.string(), // raw text
+    directoryId: t.id(), // ← new
+  }),
+});
+
+builder.objectFields(SdcardModelEntry, (t) => ({
+  parsed: t.field({
+    type: "JSON",
+    nullable: true,
+    resolve: ({ yaml: txt }) => {
+      try {
+        return txt ? yaml.load(txt) : null;
+      } catch {
+        return null;
+      }
+    },
+  }),
+  bitmapName: t.string({
+    nullable: true,
+    resolve: ({ yaml: txt }): string | null => {
+      if (!txt) return null;
+      // strongly-typed guard
+      type ModelDoc = { header?: { bitmap?: unknown } };
+      const loaded = yaml.load(txt) as ModelDoc;
+      const { header } = loaded;
+      if (!header || typeof header.bitmap !== "string") {
+        return null;
+      }
+      return header.bitmap;
+    },
+  }),
+  bitmapDataUrl: t.string({
+    nullable: true,
+    resolve: async ({ directoryId, yaml: txt }): Promise<string | null> => {
+      if (!txt) return null;
+
+      // 1) parse & guard
+      type ModelDoc = { header?: { bitmap?: unknown } };
+      let raw: unknown;
+      try {
+        raw = yaml.load(txt);
+      } catch {
+        return null;
+      }
+
+      if (
+        typeof raw !== "object" ||
+        raw === null ||
+        typeof (raw as ModelDoc).header !== "object"
+      ) {
+        return null;
+      }
+      const header = (raw as ModelDoc).header!;
+
+      if (typeof header.bitmap !== "string") {
+        return null;
+      }
+
+      const bmp = header.bitmap;
+
+      // 2) filesystem access
+      try {
+        const assets = getDirectoryHandle(directoryId.toString());
+        const imgs = await assets.getDirectoryHandle("IMAGES", {
+          create: false,
+        });
+        const fileHandle = await imgs.getFileHandle(bmp, { create: false });
+        const blob = await fileHandle.getFile();
+        const arrayBuf = await blob.arrayBuffer();
+        const b64 = Buffer.from(arrayBuf).toString("base64");
+        const ext = bmp.split(".").pop() ?? "png";
+        return `data:image/${ext};base64,${b64}`;
+      } catch (e) {
+        // if the image truly isn't there, just return null instead of error
+        if (e instanceof DOMException && e.name === "NotFoundError") {
+          console.warn(`Could not find "${bmp}" in IMAGES/—returning null`);
+          return null;
+        }
+        // for any other FS issue you can still throw or also return null
+        console.error("Unexpected filesystem error while loading bitmap:", e);
+        return null;
+      }
+    },
+  }),
+}));
+
+const SdcardThemesInput = builder.inputType("SdcardThemesInput", {
+  fields: (t) => ({
+    ids: t.stringList({
+      required: true,
+      description: "List of theme directory names to backup",
+    }),
+  }),
+});
+
+const SdcardRadioEntry = builder.simpleObject("SdcardRadioEntry", {
+  fields: (t) => ({
+    name: t.string(),
+    yaml: t.string(),
+  }),
+});
+
+builder.objectFields(SdcardRadioEntry, (t) => ({
+  parsed: t.field({
+    type: "JSON",
+    nullable: true,
+    resolve: ({ yaml: yamlText }: { yaml: string }) => {
+      try {
+        return yamlText ? yaml.load(yamlText) : null;
+      } catch {
+        return null;
+      }
+    },
+  }),
+}));
+
+const BackupDirectionEnum = builder.enumType("BackupDirection", {
+  values: ["TO_LOCAL", "TO_SDCARD"] as const,
+});
+
+builder.objectFields(SdcardAssetsDirectory, (t) => ({
+  isValid: t.boolean({
+    resolve: async ({ id }) => {
+      const handle = getDirectoryHandle(id.toString());
+      return !!(await findAsync(handle.keys(), (entry) =>
+        EXPECTED_ROOT_ENTRIES.includes(entry)
+      ));
+    },
+  }),
+  models: t.field({
+    type: [SdcardModelEntry],
+    resolve: async ({ id }) => {
+      const root = getDirectoryHandle(id.toString());
+      const modelsDir = await root
+        .getDirectoryHandle("MODELS", { create: true })
+        .catch(() => undefined);
+      if (!modelsDir) return [];
+
+      const entries = await arrayFromAsync(modelsDir.values());
+      const ymlFiles = entries.filter(
+        (e): e is FileSystemFileHandle =>
+          e.kind === "file" && e.name.toLowerCase().endsWith(".yml")
+      );
+
+      return Promise.all(
+        ymlFiles.map(async (file) => {
+          const blob = await file.getFile();
+          const text = await blob.text();
+          return {
+            name: file.name,
+            yaml: text,
+            directoryId: id.toString(),
+          };
+        })
+      );
+    },
+  }),
+  radio: t.field({
+    type: [SdcardRadioEntry],
+    resolve: async ({ id }) => {
+      const root = getDirectoryHandle(id.toString());
+      const radioDir = await root
+        .getDirectoryHandle("RADIO", { create: true })
+        .catch(() => undefined);
+      if (!radioDir) return [];
+
+      const entries = await arrayFromAsync(radioDir.values());
+      const ymlFiles = entries.filter(
+        (e): e is FileSystemFileHandle =>
+          e.kind === "file" && e.name.toLowerCase().endsWith(".yml")
+      );
+
+      const result = await Promise.all(
+        ymlFiles.map(async (file) => {
+          const blob = await file.getFile();
+          const text = await blob.text();
+          return {
+            name: file.name,
+            yaml: text,
+          };
+        })
+      );
+      return result;
+    },
+  }),
+  themes: t.stringList({
+    resolve: async ({ id }) => {
+      const handle = getDirectoryHandle(id.toString());
+      const dirHandle = await handle
+        .getDirectoryHandle("THEMES", { create: true })
+        .catch(() => undefined);
+      if (!dirHandle) return [];
+      const entries = await arrayFromAsync(dirHandle.values());
+      return entries
+        .filter((e): e is FileSystemDirectoryHandle => e.kind === "directory")
+        .map((d) => d.name);
     },
   }),
 }));
