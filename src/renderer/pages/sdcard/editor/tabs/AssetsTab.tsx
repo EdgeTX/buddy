@@ -49,18 +49,19 @@ const Container = styled.div`
   height: 100%;
   margin: 8px;
   overflow-y: auto;
+
   > * {
     flex: 1;
-    margin: 0 16px;
+    margin-left: 16px;
+    margin-right: 16px;
   }
+
   > .divider {
     flex: 0;
     height: 100%;
     margin: 0;
   }
 `;
-
-const { Text } = Typography;
 
 const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
   // query‐param hooks
@@ -158,30 +159,35 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
     ));
   } else if (!selectedPackRelease) {
     soundsContent = (
-      <Empty
-        image={<ExclamationCircleOutlined />}
-        description="Select pack version to see sounds"
-        style={{ padding: 16 }}
-      />
+      <FullHeightCentered style={{ alignItems: "center" }}>
+        <Empty
+          style={{ margin: "8px" }}
+          className="ant-empty-normal"
+          imageStyle={{ height: "unset", fontSize: "32px" }}
+          image={<ExclamationCircleOutlined />}
+          description={<p>Select SD Card version to see available sounds</p>}
+        />
+      </FullHeightCentered>
     );
   } else {
     soundsContent = (
       <List<{ id: string; name: string }>
+        size="large"
+        style={{ height: "100%" }}
         dataSource={availableSounds}
         renderItem={(item) => (
-          <List.Item key={item.id}>
-            <SelectableListItem
-              aria-selected={item.id === soundsId}
-              onClick={() =>
-                updateParams({
-                  soundsId: item.id === soundsId ? undefined : item.id,
-                })
-              }
-              style={{ textAlign: "center", width: "100%" }}
-            >
-              {item.name}
-            </SelectableListItem>
-          </List.Item>
+          <SelectableListItem
+            key={item.id}
+            aria-selected={item.id === soundsId}
+            style={{ textAlign: "center" }}
+            onClick={() =>
+              updateParams({
+                soundsId: item.id === soundsId ? undefined : item.id,
+              })
+            }
+          >
+            {item.name}
+          </SelectableListItem>
         )}
       />
     );
@@ -213,57 +219,72 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
         <Container>
           {/* Version/Target column */}
           <FullHeight>
-            {!loadingAssetInfo &&
-              !assetInfoError &&
-              (!sdcardInfo?.pack.version || !sdcardInfo.pack.target) && (
-                <Alert
-                  message="Warning"
-                  description="Could not detect current version; select and apply."
-                  type="warning"
-                  showIcon
-                  style={{ margin: "0 16px 16px" }}
-                />
-              )}
             <Centered>
-              <VersionTargetForm
-                disabled={!sdcardInfo || loadingAssetInfo || loadingPacks}
-                versions={{
-                  available: versionOptions,
-                  selectedId: packVersion,
-                }}
-                targets={{
-                  available: targetOptions,
-                  selectedId: packTarget,
-                }}
-                filters={filters}
-                onChanged={({ version, target, filters: f }) =>
-                  updateParams({
-                    packVersion:
-                      version === sdcardInfo?.pack.version
-                        ? undefined
-                        : version,
-                    packTarget:
-                      target === sdcardInfo?.pack.target ? undefined : target,
-                    filters: encodeFilters(f),
-                  })
-                }
-              />
+              <div style={{ width: "100%", maxWidth: "400px" }}>
+                {!loadingAssetInfo &&
+                  !assetInfoError &&
+                  (!sdcardInfo?.pack.version || !sdcardInfo.pack.target) && (
+                    <Alert
+                      message="Warning"
+                      description="Could not detect current version; select and apply."
+                      type="warning"
+                      showIcon
+                      style={{ marginBottom: "16px" }}
+                    />
+                  )}
+                <VersionTargetForm
+                  disabled={!sdcardInfo || loadingAssetInfo || loadingPacks}
+                  versions={{
+                    available: versionOptions,
+                    selectedId: packVersion,
+                  }}
+                  targets={{
+                    available: targetOptions,
+                    selectedId: packTarget,
+                  }}
+                  filters={filters}
+                  onChanged={({ version, target, filters: f }) =>
+                    updateParams({
+                      packVersion:
+                        version === sdcardInfo?.pack.version
+                          ? undefined
+                          : version,
+                      packTarget:
+                        target === sdcardInfo?.pack.target ? undefined : target,
+                      filters: encodeFilters(f),
+                    })
+                  }
+                />
+              </div>
             </Centered>
           </FullHeight>
 
           <Divider type="vertical" className="divider" />
-
-          {/* Sounds column */}
-          <FullHeightCentered>
-            <div style={{ width: 300, padding: "0 16px" }}>
-              <Text style={{ display: "block", lineHeight: "48px" }}>
-                Available sounds{soundsVersion ? ` (${soundsVersion})` : ""}
-              </Text>
-              <Card bodyStyle={{ padding: 0 }}>{soundsContent}</Card>
-            </div>
+          {/* Sounds Column */}
+          <FullHeightCentered style={{ alignItems: "center" }}>
+            <FullHeight
+              style={{
+                width: "100%",
+                maxWidth: "300px",
+              }}
+            >
+              <Typography style={{ lineHeight: "48px" }}>
+                Available sounds {soundsVersion ? `(${soundsVersion})` : ""}
+              </Typography>
+              <Card
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  maxHeight: "500px",
+                  overflowY: "auto",
+                }}
+                bodyStyle={{ height: "100%", padding: 0 }}
+              >
+                {soundsContent}
+              </Card>
+            </FullHeight>
           </FullHeightCentered>
         </Container>
-
         {/* Bottom buttons */}
         <Centered>
           <Space size="middle" style={{ marginTop: 16 }}>
@@ -284,7 +305,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
                 })
               }
             >
-              Revert
+              Revert changes
             </Button>
 
             <Button
@@ -315,7 +336,7 @@ const AssetsTab: React.FC<{ directoryId: string }> = ({ directoryId }) => {
                 });
               }}
             >
-              Apply
+              Apply changes
             </Button>
 
             <Button
