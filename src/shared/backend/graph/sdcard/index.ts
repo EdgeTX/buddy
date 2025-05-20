@@ -1181,6 +1181,15 @@ const SdcardThemesInput = builder.inputType("SdcardThemesInput", {
   }),
 });
 
+export const SdcardThemeEntry = builder.simpleObject("SdcardThemeEntry", {
+  fields: (t) => ({
+    name: t.string(),
+    yaml: t.string(),
+    logoUrl: t.string({ nullable: true }),
+    backgroundUrl: t.string({ nullable: true }),
+  }),
+});
+
 const SdcardRadioEntry = builder.simpleObject("SdcardRadioEntry", {
   fields: (t) => ({
     name: t.string(),
@@ -1271,17 +1280,77 @@ builder.objectFields(SdcardAssetsDirectory, (t) => ({
       return result;
     },
   }),
-  themes: t.stringList({
-    resolve: async ({ id }) => {
-      const handle = getDirectoryHandle(id.toString());
-      const dirHandle = await handle
+  themes: t.field({
+    type: [SdcardThemeEntry],
+    resolve: async (
+      /** parent.id is string|number */ parent
+    ): Promise<
+      {
+        name: string;
+        yaml: string;
+        logoUrl?: string;
+        backgroundUrl?: string;
+      }[]
+    > => {
+      // coerce to string
+      const id = parent.id.toString();
+      const root = getDirectoryHandle(id);
+      const themesDir = await root
         .getDirectoryHandle("THEMES", { create: true })
         .catch(() => undefined);
-      if (!dirHandle) return [];
-      const entries = await arrayFromAsync(dirHandle.values());
-      return entries
-        .filter((e): e is FileSystemDirectoryHandle => e.kind === "directory")
-        .map((d) => d.name);
+      if (!themesDir) return [];
+
+      // get each sub-folder
+      const entries = await arrayFromAsync(themesDir.values());
+      const folders = entries.filter(
+        (e): e is FileSystemDirectoryHandle => e.kind === "directory"
+      );
+
+      // helper to make a data-URL from a FileSystemFileHandle
+      const toDataUrl = async (fh: FileSystemFileHandle): Promise<string> => {
+        const file = await fh.getFile();
+        const buf = await file.arrayBuffer();
+        return `data:${file.type};base64,${Buffer.from(buf).toString(
+          "base64"
+        )}`;
+      };
+
+      return Promise.all(
+        folders.map(async (folder) => {
+          const files = await arrayFromAsync(folder.values());
+
+          const yamlHandle = files.find(
+            (f): f is FileSystemFileHandle =>
+              f.kind === "file" && f.name.toLowerCase().endsWith(".yml")
+          );
+          const logoHandle = files.find(
+            (f): f is FileSystemFileHandle =>
+              f.kind === "file" && f.name.toLowerCase() === "logo.png"
+          );
+          const bgHandle = files.find(
+            (f): f is FileSystemFileHandle =>
+              f.kind === "file" && f.name.toLowerCase() === "background.png"
+          );
+
+          // read theme.yml into a string
+          const themeYaml = yamlHandle
+            ? await (await yamlHandle.getFile()).text()
+            : "";
+
+          // read PNGs into data-URLs
+          const logoUrl = logoHandle ? await toDataUrl(logoHandle) : undefined;
+          const backgroundUrl = bgHandle
+            ? await toDataUrl(bgHandle)
+            : undefined;
+
+          return {
+            name: folder.name,
+            yaml: themeYaml,
+            logoUrl,
+            backgroundUrl,
+          };
+        })
+      );
     },
   }),
 }));

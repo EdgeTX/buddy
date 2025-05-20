@@ -189,10 +189,14 @@ const SdcardEditor: React.FC = () => {
             <Space style={{ marginTop: 16 }}>
               <Button
                 type="primary"
-                disabled={selectedModels.length === 0}
+                disabled={
+                  selectedRadio.length === 0 &&
+                  selectedModels.length === 0 &&
+                  selectedThemes.length === 0
+                }
                 onClick={() => setBackupAsset("MODELS")}
               >
-                Backup Selected Models
+                Backup
               </Button>
               <Button onClick={() => setRestoreAsset("MODELS")}>
                 Restore Models
@@ -211,10 +215,14 @@ const SdcardEditor: React.FC = () => {
             <Space style={{ marginTop: 16 }}>
               <Button
                 type="primary"
-                disabled={selectedThemes.length === 0}
+                disabled={
+                  selectedRadio.length === 0 &&
+                  selectedModels.length === 0 &&
+                  selectedThemes.length === 0
+                }
                 onClick={() => setBackupAsset("THEMES")}
               >
-                Backup Selected Themes
+                Backup
               </Button>
               <Button onClick={() => setRestoreAsset("THEMES")}>
                 Restore Themes
@@ -227,19 +235,31 @@ const SdcardEditor: React.FC = () => {
           <PaneContent>
             <RadioListTab
               radio={assets?.radio ?? []}
-              selected={selectedRadio}
-              onToggle={toggleRadio}
+              selectedRadio={selectedRadio}
+              onToggleRadio={toggleRadio}
+              allModels={assets?.models.map((m) => m.name) ?? []}
+              selectedModels={selectedModels}
+              onToggleModel={toggleModel}
+              allThemes={
+                assets?.themes.map((t: { name: string }) => t.name) ?? []
+              }
+              selectedThemes={selectedThemes}
+              onToggleTheme={toggleTheme}
             />
             <Space style={{ marginTop: 16 }}>
               <Button
                 type="primary"
-                disabled={selectedRadio.length === 0}
+                disabled={
+                  selectedRadio.length === 0 &&
+                  selectedModels.length === 0 &&
+                  selectedThemes.length === 0
+                }
                 onClick={() => setBackupAsset("RADIO")}
               >
-                Backup Selected Radio
+                Backup
               </Button>
               <Button onClick={() => setRestoreAsset("RADIO")}>
-                Restore Radio
+                Restore Radio Settings
               </Button>
             </Space>
           </PaneContent>

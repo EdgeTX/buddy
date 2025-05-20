@@ -1,8 +1,14 @@
-import ky, { DownloadProgress } from "ky";
+import ky from "ky";
 import { ZipEntry, unzipRaw } from "unzipit";
 import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
 import environment from "shared/environment";
+
+type DownloadProgress = {
+  percent: number;
+  totalBytes: number;
+  transferredBytes: number;
+};
 
 type ManifestResponse = {
   targets: [string, string, string][];

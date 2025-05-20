@@ -136,7 +136,12 @@ export const FULL_SDCARD_INFO = gql`
         bitmapName
         bitmapDataUrl
       }
-      themes
+      themes {
+        name
+        yaml
+        logoUrl
+        backgroundUrl
+      }
       radio {
         name
         yaml
@@ -161,7 +166,12 @@ export const FULL_SDCARD_INFO = gql`
         bitmapName: string | null;
         bitmapDataUrl: string | null;
       }[];
-      themes: string[];
+      themes: {
+        name: string;
+        yaml: string;
+        logoUrl?: string;
+        backgroundUrl?: string;
+      }[];
       radio: { name: string; yaml: string; parsed: unknown }[];
     } | null;
   },
@@ -180,7 +190,12 @@ export const SD_CARD_DIRECTORY_INFO = gql`
         bitmapName
         bitmapDataUrl
       }
-      themes
+      themes {
+        name
+        yaml
+        logoUrl
+        backgroundUrl
+      }
       radio {
         name
         yaml
@@ -204,7 +219,12 @@ export type SdcardAssetsDirectoryInfoData = {
       bitmapName: string | null;
       bitmapDataUrl: string | null;
     }[];
-    themes: string[];
+    themes: {
+      name: string;
+      yaml: string;
+      logoUrl?: string;
+      backgroundUrl?: string;
+    }[];
     radio: {
       name: string;
       yaml: string;
