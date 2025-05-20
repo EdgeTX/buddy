@@ -1,234 +1,344 @@
 // src/renderer/pages/sdcard/editor/tabs/RestoreTab.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Upload,
   Button,
+  Table,
   Select,
-  Progress,
+  Spin,
   Alert,
-  Typography,
   Space,
+  Typography,
+  Checkbox,
+  message,
 } from "antd";
-import { RcFile } from "antd/lib/upload";
+import type { ColumnType } from "antd/lib/table";
+import type { RcFile, UploadProps } from "antd/lib/upload";
 import JSZip from "jszip";
-import DiffViewer from "react-diff-viewer-continued";
-import { useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import {
-  GENERATE_BACKUP_PLAN,
-  GenerateBackupPlanData,
-  GenerateBackupPlanVars,
-  RESTORE_FROM_ZIP,
-  RestoreFromZipData,
-  RestoreFromZipVars,
+  SD_CARD_DIRECTORY_INFO,
+  GENERATE_RESTORE_PLAN,
+  CreateRestorePlanData,
+  CreateRestorePlanVars,
+  CREATE_SDCARD_RESTORE_JOB,
+  CreateSdcardRestoreJobData,
+  CreateSdcardRestoreJobVars,
 } from "renderer/pages/sdcard/editor/sdcard.gql";
+import JobExecutionModal from "renderer/pages/sdcard/editor/JobExecutionModal";
 
-const { Title, Text } = Typography;
+const { Title, Paragraph, Text } = Typography;
+const { Option } = Select;
 
-export type ConflictRow = {
+type ConflictRow = {
   key: string;
   path: string;
-  incomingContent: string;
-  existingContent: string;
+  incomingSize: number;
+  existingSize: number;
+  action: "OVERWRITE" | "SKIP" | "RENAME";
 };
-
-type AssetType = "MODELS" | "THEMES" | "RADIO";
 
 type RestoreTabProps = {
   directoryId: string;
-  assetType: AssetType;
-  selected: string[];
+  assetType: "MODELS" | "THEMES" | "RADIO";
+  // eslint-disable-next-line react/no-unused-prop-types
+  selected: string[]; // (we ignore this here, since the ZIP itself determines what to restore)
 };
 
-const RestoreTab: React.FC<RestoreTabProps> = ({
-  directoryId,
-  assetType,
-  selected,
-}) => {
-  // Accumulate directory uploads
-  const pickedFiles = useRef<(File & { webkitRelativePath?: string })[]>([]);
+const RestoreTab: React.FC<RestoreTabProps> = ({ directoryId, assetType }) => {
+  // ensure SD-card handle is valid
+  const { loading: infoLoading, error: infoError } = useQuery(
+    SD_CARD_DIRECTORY_INFO,
+    { variables: { directoryId } }
+  );
 
-  const [zipBlob, setZipBlob] = useState<Blob | null>(null);
-  const [zipInstance, setZipInstance] = useState<JSZip | null>(null);
-  const [conflicts, setConflicts] = useState<ConflictRow[]>([]);
+  // file + zip state
+  const [file, setFile] = useState<RcFile | null>(null);
+  const [zipDataUrl, setZipDataUrl] = useState<string>();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [paths, setPaths] = useState<string[]>([]);
+
+  // flow state
+  const [phase, setPhase] = useState<"select" | "plan" | "execute">("select");
+  const [plan, setPlan] =
+    useState<CreateRestorePlanData["generateRestorePlan"]>();
   const [resolutions, setResolutions] = useState<
-    Record<string, "OVERWRITE" | "SKIP" | "RENAME">
-  >({});
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+    { path: string; action: ConflictRow["action"] }[]
+  >([]);
+  const [overwrite, setOverwrite] = useState(false);
+  const [autoRename, setAutoRename] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
 
-  // 1) Plan-mutation
-  const [generatePlan, { data: planData, loading: planning }] = useMutation<
-    GenerateBackupPlanData,
-    GenerateBackupPlanVars
-  >(GENERATE_BACKUP_PLAN);
-
-  // 2) Restore-mutation
-  const [restoreZip, { loading: restoring }] = useMutation<
-    RestoreFromZipData,
-    RestoreFromZipVars
-  >(RESTORE_FROM_ZIP, {
-    onError: (e) => setError(e.message),
-    onCompleted: () => setProgress(100),
+  // Generate the restore plan
+  const [runPlan, { loading: planning }] = useMutation<
+    CreateRestorePlanData,
+    CreateRestorePlanVars
+  >(GENERATE_RESTORE_PLAN, {
+    onCompleted(data) {
+      setPlan(data.generateRestorePlan);
+      setResolutions(
+        data.generateRestorePlan.conflicts.map((c) => ({
+          path: c.path,
+          action: "SKIP" as const,
+        }))
+      );
+    },
+    onError(err) {
+      void message.error(err.message);
+      setPhase("select");
+      setFile(null);
+      setPaths([]);
+    },
   });
 
-  // Build diffs when we have both a ZIP and a plan
+  // Fire plan as soon as we've unpacked the zip
   useEffect(() => {
-    if (!planData || !zipInstance) return;
-    void (async () => {
-      const rows: ConflictRow[] = await Promise.all(
-        planData.generateBackupPlan.conflicts.map(async (c) => {
-          const ze = zipInstance.file(c.path);
-          const incoming = ze ? await ze.async("string") : "";
-          // TODO: read existing content from FS via showDirectoryPicker
-          const existing = "";
-          return {
-            key: c.path,
-            path: c.path,
-            incomingContent: incoming,
-            existingContent: existing,
-          };
-        })
-      );
-      setConflicts(rows);
-      setResolutions(
-        rows.reduce<Record<string, "OVERWRITE" | "SKIP" | "RENAME">>(
-          (acc, r) => ({ ...acc, [r.key]: "SKIP" }),
-          {}
-        )
-      );
-    })();
-  }, [planData, zipInstance]);
-
-  // Handle both ZIP files and directory uploads
-  const handleUpload = async (file: RcFile): Promise<boolean> => {
-    const fileWithPath = file as unknown as File & {
-      webkitRelativePath?: string;
-    };
-    let blob: Blob;
-    let zip: JSZip;
-
-    if (/\.(zip|etx)$/i.test(fileWithPath.name)) {
-      // Dropped a .zip or .etx
-      blob = fileWithPath;
-      zip = await JSZip.loadAsync(blob);
-    } else {
-      // Directory upload: accumulate and re-zip
-      pickedFiles.current.push(fileWithPath);
-      const z = new JSZip();
-      pickedFiles.current.forEach((f) => {
-        const path = f.webkitRelativePath;
-        z.file(path, f);
-      });
-      blob = await z.generateAsync({ type: "blob" });
-      zip = await JSZip.loadAsync(blob);
-    }
-
-    setZipBlob(blob);
-    setZipInstance(zip);
-
-    const allPaths = Object.keys(zip.files).filter((p) => !zip.files[p]!.dir);
-    const filtered = allPaths.filter((p) => {
-      const [, name] = p.split(`${assetType}/`);
-      return !!name && selected.includes(name);
-    });
-
-    await generatePlan({
-      variables: {
-        directoryId,
-        paths: { paths: filtered },
-        direction: "TO_SDCARD",
-      },
-    });
-
-    // Prevent antd from auto-uploading
-    return false;
-  };
-
-  // Perform the restore when confirmed
-  const handleRestore = (): void => {
-    if (!zipBlob) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      const items = conflicts.map((r) => ({
-        path: r.path,
-        action: resolutions[r.key]!,
-      }));
-      void restoreZip({
+    if (zipDataUrl && phase === "select" && !planning) {
+      setPhase("plan");
+      void runPlan({
         variables: {
           directoryId,
-          zipData: dataUrl,
-          conflictResolutions: { items },
+          zipData: zipDataUrl,
         },
       });
+    }
+  }, [zipDataUrl, phase, planning, runPlan, directoryId]);
+
+  // Create the restore job
+  const [runRestore, { loading: restoring }] = useMutation<
+    CreateSdcardRestoreJobData,
+    CreateSdcardRestoreJobVars
+  >(CREATE_SDCARD_RESTORE_JOB, {
+    onCompleted(data) {
+      setJobId(data.createSdcardRestoreJob.id);
+      setPhase("execute");
+    },
+    onError(err) {
+      void message.error(err.message);
+    },
+  });
+
+  // handle file selection
+  const handleBeforeUpload: UploadProps["beforeUpload"] = (f) => {
+    setFile(f);
+    // read Data URL for sending
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const url = e.target?.result;
+      if (typeof url === "string") setZipDataUrl(url);
     };
-    reader.readAsDataURL(zipBlob);
+    reader.readAsDataURL(f);
+
+    // unpack for plan
+    f.arrayBuffer()
+      .then((buf) => new JSZip().loadAsync(buf))
+      .then((zip) => {
+        const entryNames = Object.values(zip.files)
+          .filter((ent) => !ent.dir)
+          .map((ent) => ent.name);
+        setPaths(entryNames);
+      })
+      .catch((err: unknown) => {
+        // narrow down to Error or string – avoids `any` in template literal
+        const msg = err instanceof Error ? err.message : String(err);
+        void message.error(`Failed to read ZIP: ${msg}`);
+      });
+
+    return false; // prevent auto‐upload
   };
 
-  return (
-    <Space direction="vertical" style={{ width: "100%" }}>
-      {/* two buttons: one for ZIP/.etx, one for folders */}
-      <Space wrap>
-        <Upload
-          accept=".zip,.etx"
-          beforeUpload={handleUpload}
-          showUploadList={false}
+  // column defs for conflicts
+  const conflictCols: ColumnType<ConflictRow>[] = [
+    { title: "Path", dataIndex: "path", key: "path" },
+    {
+      title: "Incoming",
+      dataIndex: "incomingSize",
+      key: "incomingSize",
+      render: (n: number) => `${n} bytes`,
+    },
+    {
+      title: "Existing",
+      dataIndex: "existingSize",
+      key: "existingSize",
+      render: (n: number) => `${n} bytes`,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: unknown, rec: ConflictRow) => (
+        <Select<ConflictRow["action"]>
+          value={rec.action}
+          onChange={(val) =>
+            setResolutions((prev) =>
+              prev.map((r) => (r.path === rec.path ? { ...r, action: val } : r))
+            )
+          }
+          style={{ width: 120 }}
         >
-          <Button>Pick a .zip or .etx</Button>
-        </Upload>
+          <Option value="OVERWRITE">Overwrite</Option>
+          <Option value="SKIP">Skip</Option>
+          <Option value="RENAME">Rename</Option>
+        </Select>
+      ),
+    },
+  ];
 
-        <Upload
-          multiple
-          directory
-          beforeUpload={handleUpload}
-          showUploadList={false}
-        >
-          <Button>Pick a folder</Button>
-        </Upload>
-      </Space>
+  // reset helper after completion/cancel
+  const resetAll = (): void => {
+    setPhase("select");
+    setFile(null);
+    setZipDataUrl(undefined);
+    setPaths([]);
+    setPlan(undefined);
+    setResolutions([]);
+    setOverwrite(false);
+    setAutoRename(false);
+    setJobId(null);
+  };
 
-      {planning && <Progress percent={50} status="active" />}
+  if (infoLoading) return <Spin style={{ margin: 40 }} />;
+  if (infoError) return <Alert type="error" message={infoError.message} />;
 
-      {conflicts.length > 0 && (
-        <>
-          <Title level={4}>Conflicts & Diff Preview</Title>
-          {conflicts.map((row) => (
-            <div key={row.key} style={{ marginBottom: 24 }}>
-              <Text strong>{row.path}</Text>
-              <DiffViewer
-                oldValue={row.existingContent}
-                newValue={row.incomingContent}
-              />
-              <Select<"OVERWRITE" | "SKIP" | "RENAME">
-                value={resolutions[row.key]}
-                onChange={(v) =>
-                  setResolutions((prev) => ({ ...prev, [row.key]: v }))
-                }
-                style={{ width: 120, marginTop: 8 }}
-              >
-                <Select.Option value="OVERWRITE">Overwrite</Select.Option>
-                <Select.Option value="SKIP">Skip</Select.Option>
-                <Select.Option value="RENAME">Rename</Select.Option>
-              </Select>
-            </div>
-          ))}
-        </>
-      )}
-
-      <Button
-        type="primary"
-        disabled={!zipBlob || planning || restoring}
-        onClick={handleRestore}
+  // 1) File‐select stage
+  if (phase === "select") {
+    return (
+      <Space
+        direction="vertical"
+        style={{ width: "100%", textAlign: "center", marginTop: 40 }}
       >
-        Confirm & Restore {assetType}
-      </Button>
+        <Upload
+          beforeUpload={handleBeforeUpload}
+          showUploadList={false}
+          accept=".zip,.etx"
+          maxCount={1}
+        >
+          <Button>Select Backup ZIP or ETX</Button>
+        </Upload>
+        {file && <Text>Selected file: {file.name}</Text>}
+      </Space>
+    );
+  }
 
-      {restoring && (
-        <Progress percent={progress} status={error ? "exception" : "active"} />
-      )}
-      {error && <Alert type="error" message={error} />}
-    </Space>
-  );
+  // 2) Planning stage
+  if (phase === "plan" && !plan) {
+    return (
+      <Space
+        direction="vertical"
+        style={{ width: "100%", textAlign: "center", marginTop: 40 }}
+      >
+        <Spin size="large" />
+        <Text>Generating restore plan…</Text>
+      </Space>
+    );
+  }
+
+  // 3) Show plan & conflict resolution
+  if (phase === "plan" && plan) {
+    const rows: ConflictRow[] = plan.conflicts.map((c) => ({
+      key: c.path,
+      path: c.path,
+      incomingSize: c.incomingSize,
+      existingSize: c.existingSize,
+      action: resolutions.find((r) => r.path === c.path)?.action ?? "SKIP",
+    }));
+
+    return (
+      <Space direction="vertical" style={{ width: "100%" }}>
+        <Title level={4}>{assetType} Restore Plan</Title>
+
+        <Paragraph>
+          <strong>To Restore ({plan.toCopy.length})</strong>
+          <br />
+          {plan.toCopy.map((p) => (
+            <div key={p}>{p}</div>
+          ))}
+        </Paragraph>
+
+        <Paragraph>
+          <strong>Identical ({plan.identical.length})</strong>
+          <br />
+          {plan.identical.map((p) => (
+            <div key={p}>{p}</div>
+          ))}
+        </Paragraph>
+
+        {rows.length > 0 ? (
+          <>
+            <Paragraph>
+              <strong>Conflicts</strong>
+            </Paragraph>
+            <Table<ConflictRow>
+              dataSource={rows}
+              columns={conflictCols}
+              pagination={false}
+              size="small"
+            />
+          </>
+        ) : (
+          <Alert type="info" message="No conflicts detected." />
+        )}
+
+        <Space style={{ marginTop: 16 }}>
+          <Checkbox
+            checked={overwrite}
+            onChange={(e) => setOverwrite(e.target.checked)}
+          >
+            Overwrite existing files
+          </Checkbox>
+          <Checkbox
+            checked={autoRename}
+            onChange={(e) => setAutoRename(e.target.checked)}
+          >
+            Auto rename files if conflict
+          </Checkbox>
+        </Space>
+
+        <Space style={{ marginTop: 16 }}>
+          <Button
+            type="primary"
+            loading={restoring}
+            disabled={!zipDataUrl || restoring}
+            onClick={() => {
+              void runRestore({
+                variables: {
+                  directoryId,
+                  zipData: zipDataUrl!,
+                  options: {
+                    conflictResolutions: { items: resolutions },
+                    overwrite,
+                    autoRename,
+                  },
+                },
+              });
+            }}
+          >
+            Confirm & Run Restore
+          </Button>
+        </Space>
+      </Space>
+    );
+  }
+
+  // 4) Execute stage
+  if (phase === "execute") {
+    if (!jobId) return <Spin style={{ margin: 40 }} />;
+
+    return (
+      <JobExecutionModal
+        jobId={jobId}
+        onCompleted={() => {
+          void message.success("Restore completed");
+          resetAll();
+        }}
+        onCancelled={() => {
+          void message.warning("Restore cancelled");
+          resetAll();
+        }}
+      />
+    );
+  }
+
+  return null;
 };
 
 export default RestoreTab;

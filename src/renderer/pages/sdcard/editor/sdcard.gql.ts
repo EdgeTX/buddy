@@ -383,32 +383,70 @@ export type ExportBackupToZipVars = {
   paths: { paths: string[] };
 };
 
-export const RESTORE_FROM_ZIP = gql`
-  mutation RestoreFromZip(
+// --- CREATE_SDCARD_RESTORE_JOB ---
+export type CreateSdcardRestoreJobData = {
+  createSdcardRestoreJob: { id: string };
+};
+export type CreateSdcardRestoreJobVars = {
+  directoryId: string;
+  zipData: string;
+  options: {
+    conflictResolutions: {
+      items: { path: string; action: "OVERWRITE" | "SKIP" | "RENAME" }[];
+    };
+    overwrite?: boolean;
+    autoRename?: boolean;
+  };
+};
+
+export const CREATE_SDCARD_RESTORE_JOB = gql`
+  mutation CreateSdcardRestoreJob(
     $directoryId: ID!
     $zipData: String!
-    $conflictResolutions: ConflictResolutionsInput!
+    $options: RestoreOptionsInput!
   ) {
-    restoreFromZip(
+    createSdcardRestoreJob(
       directoryId: $directoryId
       zipData: $zipData
-      conflictResolutions: $conflictResolutions
+      options: $options
     ) {
       id
     }
   }
-` as TypedDocumentNode<RestoreFromZipData, RestoreFromZipVars>;
+` as TypedDocumentNode<CreateSdcardRestoreJobData, CreateSdcardRestoreJobVars>;
 
-export type RestoreFromZipData = {
-  restoreFromZip: {
-    id: string;
+export const GENERATE_RESTORE_PLAN = gql`
+  mutation GenerateRestorePlan($directoryId: ID!, $zipData: String!) {
+    generateRestorePlan(directoryId: $directoryId, zipData: $zipData) {
+      toCopy
+      identical
+      conflicts {
+        path
+        existingSize
+        incomingSize
+      }
+    }
+  }
+` as TypedDocumentNode<
+  {
+    generateRestorePlan: {
+      toCopy: string[];
+      identical: string[];
+      conflicts: { path: string; existingSize: number; incomingSize: number }[];
+    };
+  },
+  { directoryId: string; zipData: string }
+>;
+
+// Types for GenerateRestorePlan
+export type CreateRestorePlanData = {
+  generateRestorePlan: {
+    toCopy: string[];
+    identical: string[];
+    conflicts: { path: string; existingSize: number; incomingSize: number }[];
   };
 };
-
-export type RestoreFromZipVars = {
+export type CreateRestorePlanVars = {
   directoryId: string;
   zipData: string;
-  conflictResolutions: {
-    items: { path: string; action: "OVERWRITE" | "SKIP" | "RENAME" }[];
-  };
 };

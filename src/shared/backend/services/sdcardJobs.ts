@@ -470,7 +470,6 @@ export type ExecutionArgs = {
   autoRename?: boolean;
 };
 
-// --- Utility functions ---
 async function listFiles(
   dir: FileSystemDirectoryHandle,
   prefix = ""
@@ -486,7 +485,6 @@ async function listFiles(
             name: relPath,
             arrayBuffer: () => file.arrayBuffer(),
             size: file.size,
-            // assuming imported ZipEntry includes needed fields
           } as unknown as ZipEntry,
         ];
       }
@@ -549,7 +547,6 @@ async function compareEntry(
   const parts = entry.name.split("/");
   const fileName = parts.pop()!;
   try {
-    // now BOTH missing folders and missing files fall through to 'NEW'
     const parent = await getParentHandle(target, parts);
     const existingHandle = await parent.getFileHandle(fileName, {
       create: false,
@@ -567,10 +564,8 @@ async function compareEntry(
     };
   } catch (err: unknown) {
     if (err instanceof DOMException && err.name === "NotFoundError") {
-      // either the directory or the file itself wasn’t there, so it’s NEW
       return "NEW";
     }
-    // any other error should still bubble up
     throw err;
   }
 }
@@ -618,10 +613,8 @@ export async function buildBackupPlan(
   target: FileSystemDirectoryHandle,
   filterPaths: string[]
 ): Promise<BackupPlan> {
-  // 1) Grab every file under the source
   const allEntries = await listFiles(source);
 
-  // 2) Find any model‐YAMLs that reference bitmaps
   const extraImagePaths = new Set<string>();
   await Promise.all(
     filterPaths
@@ -630,7 +623,6 @@ export async function buildBackupPlan(
         const entry = allEntries.find((e) => e.name === modelPath);
         if (!entry) return;
 
-        // 1️⃣ load as unknown
         let loaded: unknown;
         try {
           loaded = yaml.load(
@@ -642,32 +634,25 @@ export async function buildBackupPlan(
           return;
         }
 
-        // 2️⃣ narrow to object
         if (typeof loaded !== "object" || loaded === null) return;
         const doc = loaded as Record<string, unknown>;
 
-        // 3️⃣ check for header
         const hdr = doc.header;
         if (typeof hdr !== "object" || hdr === null) return;
         const header = hdr as Record<string, unknown>;
 
-        // 4️⃣ check for bitmap string
         const maybeBmp = header.bitmap;
         if (typeof maybeBmp !== "string") return;
 
-        // 5️⃣ safe to use
         extraImagePaths.add(`IMAGES/${maybeBmp}`);
       })
   );
 
-  // 3) Build the list of “toConsider” entries:
-  //    anything matching the original filterPaths *or* the extra images
   const pathsToMatch = [...filterPaths, ...Array.from(extraImagePaths)];
   const toConsider = allEntries.filter((e) =>
     pathsToMatch.some((p) => e.name === p || e.name.startsWith(`${p}/`))
   );
 
-  // 4) Compare each entry against the target
   const results = await Promise.all(
     toConsider.map(async (entry) => {
       const res = await compareEntry(entry, target);
@@ -675,7 +660,6 @@ export async function buildBackupPlan(
     })
   );
 
-  // 5) Fold into your plan object
   return results.reduce<BackupPlan>(
     (plan, { entry, res }) => {
       if (res === "IDENTICAL") plan.identical.push(entry.name);
@@ -737,10 +721,44 @@ export async function exportBackupToZip(
   sourceHandle: FileSystemDirectoryHandle,
   filterPaths: string[]
 ): Promise<Blob> {
-  const all = await listFiles(sourceHandle);
-  const filtered = all.filter((e) =>
-    filterPaths.some((p) => e.name === p || e.name.startsWith(`${p}/`))
+  // 1) gather all files
+  const allEntries = await listFiles(sourceHandle);
+
+  // 2) find any MODEL/*.yml entries that reference bitmaps
+  const extraImagePaths = new Set<string>();
+  await Promise.all(
+    filterPaths
+      .filter((p) => p.startsWith("MODELS/") && p.endsWith(".yml"))
+      .map(async (modelPath) => {
+        const entry = allEntries.find((e) => e.name === modelPath);
+        if (!entry) return;
+        let loaded: unknown;
+        try {
+          const text = new TextDecoder().decode(await entry.arrayBuffer());
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          loaded = yaml.load(text);
+        } catch {
+          return;
+        }
+        if (typeof loaded !== "object" || loaded === null) return;
+        const doc = loaded as Record<string, unknown>;
+        const hdr = doc.header;
+        if (typeof hdr !== "object" || hdr === null) return;
+        const headerObj = hdr as Record<string, unknown>;
+        const maybeBmp = headerObj.bitmap;
+        if (typeof maybeBmp === "string") {
+          extraImagePaths.add(`IMAGES/${maybeBmp}`);
+        }
+      })
   );
+
+  // 3) filter entries by original selection + any extra images
+  const pathsToMatch = [...filterPaths, ...extraImagePaths];
+  const filtered = allEntries.filter((e) =>
+    pathsToMatch.some((p) => e.name === p || e.name.startsWith(`${p}/`))
+  );
+
+  // 4) build ZIP
   const zip = new JSZip();
   await Promise.all(
     filtered.map(async (e) => zip.file(e.name, await e.arrayBuffer()))
@@ -748,78 +766,7 @@ export async function exportBackupToZip(
   return zip.generateAsync({ type: "blob" });
 }
 
-export async function restoreFromZip(
-  zipData: Blob | ArrayBuffer,
-  targetHandle: FileSystemDirectoryHandle,
-  conflictResolutions: ConflictResolution[] = [],
-  overwrite = false,
-  autoRename = false
-): Promise<void> {
-  const zip = new JSZip();
-  const raw = zipData instanceof Blob ? await zipData.arrayBuffer() : zipData;
-  const loaded = await zip.loadAsync(raw);
-
-  const entries = (
-    await Promise.all(
-      Object.entries(loaded.files).map(async ([path, ze]) => {
-        if (ze.dir) return null;
-        const buf = await ze.async("arraybuffer");
-        return {
-          name: path,
-          arrayBuffer: () => Promise.resolve(buf),
-          size: buf.byteLength,
-        } as ZipEntry;
-      })
-    )
-  ).filter((x): x is ZipEntry => x != null);
-
-  const plan: BackupPlan = await entries.reduce<Promise<BackupPlan>>(
-    async (pP, entry) => {
-      const p = await pP;
-      const cmp = await compareEntry(entry, targetHandle);
-      if (cmp === "IDENTICAL") p.identical.push(entry.name);
-      else if (cmp === "NEW") p.toCopy.push(entry.name);
-      else p.conflicts.push(cmp);
-      return p;
-    },
-    Promise.resolve({ toCopy: [], identical: [], conflicts: [] })
-  );
-
-  const resMap = new Map(conflictResolutions.map((r) => [r.path, r.action]));
-  const toProc = [...plan.toCopy, ...plan.conflicts.map((c) => c.path)];
-
-  await Promise.all(
-    toProc.map(async (path) => {
-      const entry = entries.find((e) => e.name === path);
-      if (!entry) return;
-      const action = resMap.get(path);
-      if (
-        plan.conflicts.some((c) => c.path === path) &&
-        action !== "OVERWRITE" &&
-        action !== "RENAME" &&
-        !overwrite
-      )
-        return;
-
-      const parts = path.split("/");
-      const name = parts.pop() ?? "";
-      const parent = await getParentHandle(targetHandle, parts);
-      const dest =
-        action === "RENAME" ||
-        (!action && autoRename && plan.conflicts.some((c) => c.path === path))
-          ? await autoRenameName(name, parent)
-          : name;
-
-      const data = await entry.arrayBuffer();
-      const handle = await parent.getFileHandle(dest, { create: true });
-      const writer = await handle.createWritable();
-      await writer.write(data);
-      await writer.close();
-    })
-  );
-}
-
-export const startAssetsExecution = async (
+export const startBackupExecution = async (
   jobId: string,
   args: ExecutionArgs
 ): Promise<void> => {
@@ -927,6 +874,155 @@ export const startAssetsExecution = async (
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error(`[${jobId}] ❗️ Error in startAssetsExecution: ${msg}`);
     updateStageStatus(jobId, "write", { error: msg });
+    cancelSdcardJob(jobId);
+  }
+};
+
+export async function buildRestorePlan(
+  zipData: Blob | ArrayBuffer,
+  target: FileSystemDirectoryHandle
+): Promise<BackupPlan> {
+  const entries = await unzipToEntries(zipData);
+  const plan = await entries.reduce<Promise<BackupPlan>>(async (pP, entry) => {
+    const foo = await pP;
+    const cmp = await compareEntry(entry, target);
+    if (cmp === "IDENTICAL") foo.identical.push(entry.name);
+    else if (cmp === "NEW") foo.toCopy.push(entry.name);
+    else foo.conflicts.push(cmp);
+    return foo;
+  }, Promise.resolve({ toCopy: [], identical: [], conflicts: [] }));
+  return plan;
+}
+
+export async function unzipToEntries(
+  zipData: Blob | ArrayBuffer
+): Promise<ZipEntry[]> {
+  const zip = new JSZip();
+  const buffer =
+    zipData instanceof Blob ? await zipData.arrayBuffer() : zipData;
+  const loaded = await zip.loadAsync(buffer);
+
+  const entryPromises = Object.entries(loaded.files)
+    .filter(([, ze]) => !ze.dir)
+    .map(async ([path, ze]) => {
+      const buf = await ze.async("arraybuffer");
+      return {
+        name: path,
+        size: buf.byteLength,
+        arrayBuffer: () => Promise.resolve(buf),
+      } as ZipEntry;
+    });
+
+  return Promise.all(entryPromises);
+}
+
+export async function restoreFromZip(
+  zipData: Blob | ArrayBuffer
+): Promise<ZipEntry[]> {
+  return unzipToEntries(zipData);
+}
+
+export const startRestoreExecution = async (
+  jobId: string,
+  zipData: Blob | ArrayBuffer,
+  targetHandle: FileSystemDirectoryHandle,
+  options: {
+    conflictResolutions: {
+      path: string;
+      action: "OVERWRITE" | "SKIP" | "RENAME";
+    }[];
+    overwrite: boolean;
+    autoRename: boolean;
+  }
+): Promise<void> => {
+  try {
+    // Download phase
+    updateStageStatus(jobId, "download", { started: true, progress: 0 });
+    const entries = await unzipToEntries(zipData);
+    updateStageStatus(jobId, "download", { completed: true, progress: 1 });
+
+    // Build restore plan
+    const plan = await buildRestorePlan(zipData, targetHandle);
+
+    // Write phase init
+    updateStageStatus(jobId, "write", {
+      started: true,
+      progress: 0,
+      writes: [],
+    });
+
+    // Map user resolutions
+    const resMap = new Map<string, "OVERWRITE" | "SKIP" | "RENAME">(
+      options.conflictResolutions.map((cr) => [cr.path, cr.action])
+    );
+
+    // Files to process: new + conflicts
+    const toProc = [...plan.toCopy, ...plan.conflicts.map((c) => c.path)];
+    const total = toProc.length;
+
+    type WriteRecord = {
+      name: string;
+      startTime: string;
+      completedTime: string | null;
+    };
+    const writes: WriteRecord[] = [];
+
+    // Process files sequentially
+    await toProc.reduce<Promise<void>>(
+      (chain, path, idx) =>
+        chain.then(async () => {
+          const startTime = new Date().toISOString();
+          const record: WriteRecord = {
+            name: path,
+            startTime,
+            completedTime: null,
+          };
+          writes.push(record);
+          updateStageStatus(jobId, "write", { writes });
+
+          const isConflict = plan.conflicts.some((c) => c.path === path);
+          // get the user-selected action, if any
+          const action = resMap.get(path);
+
+          // Determine per-file options
+          let fileOptions = {
+            overwrite: options.overwrite,
+            autoRename: options.autoRename,
+          };
+
+          if (isConflict && action) {
+            switch (action) {
+              case "SKIP":
+                // skip this file entirely
+                record.completedTime = new Date().toISOString();
+                return;
+
+              case "OVERWRITE":
+                fileOptions = { overwrite: true, autoRename: false };
+                break;
+
+              case "RENAME":
+                fileOptions = { overwrite: false, autoRename: true };
+                break;
+            }
+          }
+
+          const entry = entries.find((e) => e.name === path);
+          if (entry) {
+            await executeSingleCopy(entry, targetHandle, fileOptions);
+          }
+
+          record.completedTime = new Date().toISOString();
+          const progress = (idx + 1) / total;
+          updateStageStatus(jobId, "write", { writes, progress });
+        }),
+      Promise.resolve()
+    );
+
+    // Finalize write phase
+    updateStageStatus(jobId, "write", { completed: true, progress: 1, writes });
+  } catch (err) {
+    updateStageStatus(jobId, "write", { error: (err as Error).message });
     cancelSdcardJob(jobId);
   }
 };

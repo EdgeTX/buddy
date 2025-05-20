@@ -139,28 +139,6 @@ const JobExecutionModal: React.FC<Props> = ({
     }
   );
 
-  // const isRunning = !!(jobId && !error && !jobCancelled && !jobCompleted);
-
-  // or give them a prompt if they try to leave the page during flashing
-  // (outside of electron)
-  //   useEffect(() => {
-  //     if (isRunning) {
-  //       const beforeUnload = (e: BeforeUnloadEvent): void => {
-  //         e.preventDefault();
-  //         e.returnValue = "";
-  //       };
-
-  //       if (!environment.isElectron) {
-  //         window.addEventListener("beforeunload", beforeUnload);
-  //       }
-
-  //       return () => {
-  //         window.removeEventListener("beforeunload", beforeUnload);
-  //       };
-  //     }
-  //     return undefined;
-  //   }, [isRunning]);
-
   // Cancel the job if the user navigates away (unrenders the component)
   useEffect(
     () => () => {

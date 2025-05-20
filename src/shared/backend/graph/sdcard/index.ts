@@ -8,10 +8,11 @@ import { createBuilder } from "shared/backend/utils/builder";
 import type { TypeOf } from "shared/backend/types";
 import type { Context } from "shared/backend/context";
 import {
-  startAssetsExecution,
+  startBackupExecution,
   buildBackupPlan,
-  restoreFromZip,
   exportBackupToZip,
+  startRestoreExecution,
+  buildRestorePlan,
 } from "shared/backend/services/sdcardJobs";
 import * as yaml from "js-yaml";
 import GraphQLJSON from "graphql-type-json";
@@ -672,7 +673,7 @@ builder.mutationType({
 
         const job = context.sdcardJobs.createSdcardJob(["write"]);
 
-        void startAssetsExecution(job.id.toString(), {
+        void startBackupExecution(job.id.toString(), {
           sourceHandle,
           targetHandle,
           filterPaths: selectedModels
@@ -696,25 +697,21 @@ builder.mutationType({
         const entry = directories.find((d) => d.id === directoryId);
         if (!entry) throw new GraphQLError("SD card directory not found");
 
-        // pick the two handles
         const localHandle =
           direction === "TO_LOCAL"
             ? await fileSystem
                 .requestWritableDirectory({ id: "local-backup" })
                 .catch(() => {
-                  // user cancelled or failed the local pick
                   throw new GraphQLError("Local backup directory not selected");
                 })
             : entry.handle;
         const sdHandle = direction === "TO_LOCAL" ? entry.handle : localHandle;
 
-        // build the raw plan, catching missing-file errors
         let raw;
         try {
           raw = await buildBackupPlan(sdHandle, localHandle, paths.paths);
         } catch (err: unknown) {
           if (err instanceof DOMException && err.name === "NotFoundError") {
-            // convert to a controlled GraphQLError
             throw new GraphQLError(
               `Could not find one of the requested paths: ${err.message}`
             );
@@ -722,7 +719,6 @@ builder.mutationType({
           throw err;
         }
 
-        // map it into the shape your GraphQL type wants:
         return {
           toCopy: raw.toCopy,
           identical: raw.identical,
@@ -738,7 +734,6 @@ builder.mutationType({
       type: SdcardWriteJob,
       args: {
         directoryId: t.arg.id({ required: true }),
-        // re-pass same paths for context
         paths: t.arg({ type: SdcardPathsInput, required: true }),
         direction: t.arg({ type: BackupDirectionEnum, required: true }),
         conflictResolutions: t.arg({
@@ -768,7 +763,6 @@ builder.mutationType({
                   id: "local-backup",
                 })
                 .catch(() => {
-                  // user cancelled or failed the local pick
                   throw new GraphQLError("Local backup directory not selected");
                 })
             : entry.handle;
@@ -776,7 +770,6 @@ builder.mutationType({
 
         const job = context.sdcardJobs.createSdcardJob(["download", "write"]);
 
-        // kick off the real copy on the next tick, so the client can subscribe first
         const execArgs = {
           sourceHandle: direction === "TO_LOCAL" ? sdHandle : localHandle,
           targetHandle: direction === "TO_LOCAL" ? localHandle : sdHandle,
@@ -785,7 +778,7 @@ builder.mutationType({
         };
         setTimeout(() => {
           console.log("   calling startAssetsExecution with jobId=", job.id);
-          void startAssetsExecution(job.id.toString(), execArgs);
+          void startBackupExecution(job.id.toString(), execArgs);
         }, 0);
         return job;
       },
@@ -800,39 +793,43 @@ builder.mutationType({
         const entry = directories.find((d) => d.id === directoryId);
         if (!entry) throw new GraphQLError("SD card directory not found");
         const zipBlob = await exportBackupToZip(entry.handle, paths.paths);
-        // convert Blob → Base64
         const arrayBuf = await zipBlob.arrayBuffer();
         const b64 = Buffer.from(arrayBuf).toString("base64");
         return `data:application/zip;base64,${b64}`;
       },
     }),
-    restoreFromZip: t.field({
+    createSdcardRestoreJob: t.field({
       type: SdcardWriteJob,
       args: {
         directoryId: t.arg.id({ required: true }),
-        zipData: t.arg({ type: "String", required: true }), // data-URL or base64
-        conflictResolutions: t.arg({
-          type: ConflictResolutionsInput,
-          required: true,
-        }),
+        zipData: t.arg.string({ required: true }),
+        options: t.arg({ type: RestoreOptionsInput, required: true }),
       },
-      resolve: (_, { directoryId, zipData, conflictResolutions }, context) => {
+      resolve(_, { directoryId, zipData, options }, context) {
         const entry = directories.find((d) => d.id === directoryId);
         if (!entry) throw new GraphQLError("SD card directory not found");
-        // decode zipData
-        const base64 = zipData.replace(/^data:.*;base64,/, "");
-        const buf = Buffer.from(base64, "base64");
-        const job = context.sdcardJobs.createSdcardJob(["download", "write"]);
-        void restoreFromZip(
-          buf,
-          entry.handle,
-          conflictResolutions.items,
-          /* overwrite */ false,
-          /* autoRename */ true
+
+        const buf = Buffer.from(
+          zipData.replace(/^data:.*;base64,/, ""),
+          "base64"
         );
+
+        // create the job record
+        const job = context.sdcardJobs.createSdcardJob(["download", "write"]);
+
+        // kick off the real restore engine, not just unzip
+        setTimeout(() => {
+          startRestoreExecution(job.id.toString(), buf, entry.handle, {
+            conflictResolutions: options.conflictResolutions.items,
+            overwrite: options.overwrite ?? false,
+            autoRename: options.autoRename ?? false,
+          }).catch((err) => console.error("restore failed", err));
+        }, 0);
+
         return job;
       },
     }),
+
     //! new new may need refined into using predefined logic -----------------------
   }),
 });
@@ -1003,17 +1000,60 @@ const SdcardPathsInput = builder.inputType("SdcardPathsInput", {
 
 const ConflictEntry = builder.simpleObject("ConflictEntry", {
   fields: (t) => ({
-    path: t.string(), // relative path
-    existingSize: t.int(), // on target
-    incomingSize: t.int(), // from source
+    path: t.string(),
+    existingSize: t.int(),
+    incomingSize: t.int(),
     // maybe also checksums or arrayBuffers for diff…
   }),
 });
 const BackupPlan = builder.simpleObject("BackupPlan", {
   fields: (t) => ({
-    toCopy: t.stringList(), // paths we’ll copy
-    identical: t.stringList(), // paths we can skip
+    toCopy: t.stringList(),
+    identical: t.stringList(),
     conflicts: t.field({ type: [ConflictEntry] }),
+  }),
+});
+
+builder.mutationField("generateRestorePlan", (t) =>
+  t.field({
+    type: BackupPlan,
+    args: {
+      directoryId: t.arg.id({ required: true }),
+      zipData: t.arg.string({ required: true }),
+    },
+    resolve: async (_, { directoryId, zipData }) => {
+      const entry = directories.find((d) => d.id === directoryId);
+      if (!entry) throw new GraphQLError("SD card not found");
+
+      // decode base64
+      const b64 = zipData.replace(/^data:.*;base64,/, "");
+      const buf = Buffer.from(b64, "base64");
+
+      // build the raw plan (with srcSize/dstSize)
+      const raw = await buildRestorePlan(buf, entry.handle);
+
+      // remap to GraphQL shape
+      return {
+        toCopy: raw.toCopy,
+        identical: raw.identical,
+        conflicts: raw.conflicts.map(({ path, srcSize, dstSize }) => ({
+          path,
+          incomingSize: srcSize,
+          existingSize: dstSize,
+        })),
+      };
+    },
+  })
+);
+
+const RestoreOptionsInput = builder.inputType("RestoreOptionsInput", {
+  fields: (t) => ({
+    conflictResolutions: t.field({
+      type: ConflictResolutionsInput,
+      required: true,
+    }),
+    overwrite: t.boolean(),
+    autoRename: t.boolean(),
   }),
 });
 
@@ -1049,9 +1089,9 @@ const SdcardModelsInput = builder.inputType("SdcardModelsInput", {
 
 const SdcardModelEntry = builder.simpleObject("SdcardModelEntry", {
   fields: (t) => ({
-    name: t.string(), // the filename
-    yaml: t.string(), // raw text
-    directoryId: t.id(), // ← new
+    name: t.string(),
+    yaml: t.string(),
+    directoryId: t.id(),
   }),
 });
 
@@ -1071,7 +1111,6 @@ builder.objectFields(SdcardModelEntry, (t) => ({
     nullable: true,
     resolve: ({ yaml: txt }): string | null => {
       if (!txt) return null;
-      // strongly-typed guard
       type ModelDoc = { header?: { bitmap?: unknown } };
       const loaded = yaml.load(txt) as ModelDoc;
       const { header } = loaded;
@@ -1086,7 +1125,6 @@ builder.objectFields(SdcardModelEntry, (t) => ({
     resolve: async ({ directoryId, yaml: txt }): Promise<string | null> => {
       if (!txt) return null;
 
-      // 1) parse & guard
       type ModelDoc = { header?: { bitmap?: unknown } };
       let raw: unknown;
       try {
@@ -1110,7 +1148,6 @@ builder.objectFields(SdcardModelEntry, (t) => ({
 
       const bmp = header.bitmap;
 
-      // 2) filesystem access
       try {
         const assets = getDirectoryHandle(directoryId.toString());
         const imgs = await assets.getDirectoryHandle("IMAGES", {
@@ -1123,12 +1160,11 @@ builder.objectFields(SdcardModelEntry, (t) => ({
         const ext = bmp.split(".").pop() ?? "png";
         return `data:image/${ext};base64,${b64}`;
       } catch (e) {
-        // if the image truly isn't there, just return null instead of error
         if (e instanceof DOMException && e.name === "NotFoundError") {
           console.warn(`Could not find "${bmp}" in IMAGES/—returning null`);
           return null;
         }
-        // for any other FS issue you can still throw or also return null
+
         console.error("Unexpected filesystem error while loading bitmap:", e);
         return null;
       }

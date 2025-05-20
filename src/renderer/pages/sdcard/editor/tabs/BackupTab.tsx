@@ -1,19 +1,14 @@
 // renderer/pages/sdcard/editor/tabs/BackupTab.tsx
 import React, { useState } from "react";
-import {
-  useMutation,
-  useQuery,
-  // useSubscription
-} from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   Button,
   Table,
   Select,
-  // Progress,
   Alert,
   Spin,
-  Space,
   Typography,
+  Space,
   message,
 } from "antd";
 import type { ColumnType } from "antd/lib/table";
@@ -28,9 +23,6 @@ import {
   EXPORT_BACKUP_TO_ZIP,
   ExportBackupToZipData,
   ExportBackupToZipVars,
-  // BACKUP_JOB_UPDATES,
-  // BackupJobUpdatesData,
-  // BackupJobUpdatesVars,
   SdcardAssetsDirectoryInfoData,
   SdcardAssetsDirectoryInfoVars,
   EXECUTE_BACKUP,
@@ -105,6 +97,15 @@ const BackupTab: React.FC<BackupTabProps> = ({
     },
   });
 
+  // ─── auto‐run plan on mount ───────────────────────────────────────────────
+  React.useEffect(() => {
+    if (selected.length > 0 && phase === "plan" && !plan && !planning) {
+      void runPlan();
+    }
+    // we only want this to run once when the modal opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // execute
   const [runExec, { loading: executing }] = useMutation<
     ExecuteBackupDataGQL,
@@ -129,24 +130,7 @@ const BackupTab: React.FC<BackupTabProps> = ({
     }
   );
 
-  // // subscription for progress
-  // const { data: updates } = useSubscription<
-  //   BackupJobUpdatesData,
-  //   BackupJobUpdatesVars
-  // >(BACKUP_JOB_UPDATES, {
-  //   variables: { jobId: jobId! },
-  //   skip: !jobId,
-  // })
-
-  // // derive progress + writes…
-  // const rawProgress = updates?.sdcardWriteJobUpdates.stages.write.progress ?? 0
-  // const progress = Math.round(rawProgress * 100)
-  // const writes = updates?.sdcardWriteJobUpdates.stages.write.writes ?? []
-  // const doneCount = writes.filter((w) => !!w.completedTime).length
-  // const totalCount = writes.length
-  // const writeError = updates?.sdcardWriteJobUpdates.stages.write.error
-
-  // conflict table columns (unchanged)…
+  // conflict table columns
   const conflictCols: ColumnType<ConflictRow>[] = [
     { title: "Path", dataIndex: "path", key: "path" },
     {
@@ -185,16 +169,18 @@ const BackupTab: React.FC<BackupTabProps> = ({
   if (infoLoading) return <Spin style={{ margin: 40 }} />;
   if (infoError) return <Alert type="error" message={infoError.message} />;
 
+  // while the plan is coming back, show a spinner/message:
   if (phase === "plan" && !plan) {
     return (
-      <Button
-        type="primary"
-        disabled={selected.length === 0 || planning}
-        loading={planning}
-        onClick={() => void runPlan()}
+      <Space
+        direction="vertical"
+        style={{ width: "100%", textAlign: "center", marginTop: 40 }}
       >
-        Generate {assetType} Backup Plan
-      </Button>
+        <Spin size="large" />
+        <Typography.Text>
+          Generating <strong>{assetType}</strong> backup plan…
+        </Typography.Text>
+      </Space>
     );
   }
 
@@ -308,43 +294,6 @@ const BackupTab: React.FC<BackupTabProps> = ({
 
   // (Should never reach here – but TS wants a return on every path)
   return null;
-  // <Space direction="vertical" style={{ width: '100%' }}>
-  //   <Title level={4}>Backing up {assetType.toLowerCase()}…</Title>
-  //   <Progress
-  //     percent={progress}
-  //     status={writeError ? 'exception' : 'active'}
-  //   />
-  //   <Typography.Text>
-  //     {doneCount} of {totalCount} files written
-  //   </Typography.Text>
-  //   <div
-  //     style={{
-  //       maxHeight: 200,
-  //       overflowY: 'auto',
-  //       marginTop: 8,
-  //       padding: 8,
-  //       background: '#f5f5f5',
-  //       fontFamily: 'monospace',
-  //       fontSize: 12,
-  //     }}
-  //   >
-  //     {writes.map((w) => (
-  //       <div key={w.name}>
-  //         {w.name} — start: {w.startTime}{' '}
-  //         {w.completedTime
-  //           ? `✅ done at ${w.completedTime}`
-  //           : '⏳ still writing'}
-  //       </div>
-  //     ))}
-  //   </div>
-  //   {writeError && (
-  //     <Alert
-  //       type="error"
-  //       message={`Backup failed: ${writeError}`}
-  //       style={{ marginTop: 12 }}
-  //     />
-  //   )}
-  // </Space>
 };
 
 export default BackupTab;
