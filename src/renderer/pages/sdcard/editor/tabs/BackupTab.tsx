@@ -72,6 +72,7 @@ const BackupTab: React.FC<BackupTabProps> = ({
     { path: string; action: ConflictRow["action"] }[]
   >([]);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [exportFormat, setExportFormat] = useState<"zip" | "etx">("zip");
 
   // generate plan
   const [runPlan, { loading: planning }] = useMutation<
@@ -243,25 +244,37 @@ const BackupTab: React.FC<BackupTabProps> = ({
         >
           Confirm &amp; Run Backup
         </Button>
-        <Button
-          style={{ marginLeft: 8 }}
-          onClick={async () => {
-            const { data } = await exportZip({
-              variables: {
-                directoryId,
-                paths: { paths: selected.map((n) => `${assetType}/${n}`) },
-              },
-            });
-            if (data?.exportBackupToZip) {
-              const link = document.createElement("a");
-              link.href = data.exportBackupToZip;
-              link.download = `edgetx-${assetType.toLowerCase()}-backup-${Date.now()}.zip`;
-              link.click();
-            }
-          }}
-        >
-          Export .zip
-        </Button>
+        <Space style={{ marginTop: 16 }}>
+          {/* format picker */}
+          <Select<"zip" | "etx">
+            value={exportFormat}
+            onChange={setExportFormat}
+            style={{ width: 80 }}
+          >
+            <Option value="zip">ZIP</Option>
+            <Option value="etx">ETX</Option>
+          </Select>
+
+          {/* export button using chosen format */}
+          <Button
+            onClick={async () => {
+              const { data } = await exportZip({
+                variables: {
+                  directoryId,
+                  paths: { paths: selected.map((n) => `${assetType}/${n}`) },
+                },
+              });
+              if (data?.exportBackupToZip) {
+                const link = document.createElement("a");
+                link.href = data.exportBackupToZip;
+                link.download = `edgetx-${assetType.toLowerCase()}-backup-${Date.now()}.${exportFormat}`;
+                link.click();
+              }
+            }}
+          >
+            Export .{exportFormat}
+          </Button>
+        </Space>
       </Space>
     );
   }
