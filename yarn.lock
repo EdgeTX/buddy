@@ -2006,7 +2006,7 @@ __metadata:
     which: ^2.0.2
   bin:
     node-gyp: ./bin/node-gyp.js
-  checksum: 016fbf95d819bcfae07310420116a609922b2c5bc577dedfa88143c82fb87f7616ab8737e185231b584ed7817dc243e4bda55c0501727e602d3cc10fcc92b40e
+  checksum: f357931ae77e0e49f2044de30a75f5bb096fc76948e5baa26c29aa0fac285f31
   languageName: node
   linkType: hard
 
@@ -2059,7 +2059,7 @@ __metadata:
     yargs: ^17.0.1
   bin:
     electron-rebuild: lib/cli.js
-  checksum: e561819926c30c7ad284f721d1d66453f59f8e5ea54a7cc9148a00e8ab3cedb6aa57fe4789f39a3454a3eb90b41a5f7d7461246ee3a16c63c8d3db23db94a391
+  checksum: f357931ae77e0e49f2044de30a75f5bb096fc76948e5baa26c29aa0fac285f31
   languageName: node
   linkType: hard
 
