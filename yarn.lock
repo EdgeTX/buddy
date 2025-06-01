@@ -11977,7 +11977,7 @@ __metadata:
     node-bindings-loader: ^1.5.0
     p-limit: ^3.1.0
     p-map: ^5.5.0
-    playwright: ^1.29.1
+    playwright: 1.29.1
     prettier: ^2.8.8
     range-parser: ^1.2.1
     react: ^17.0.2
@@ -14107,16 +14107,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:2.3.2":
-  version: 2.3.2
-  resolution: "fsevents@npm:2.3.2"
-  dependencies:
-    node-gyp: latest
-  checksum: be78a3efa3e181cda3cf7a4637cb527bcebb0bd0ea0440105a3bb45b86f9245b307dc10a2507e8f4498a7d4ec349d1910f4d73e4d4495b16103106e07eee735b
-  conditions: os=darwin
-  languageName: node
-  linkType: hard
-
 "fsevents@npm:^1.2.7":
   version: 1.2.13
   resolution: "fsevents@npm:1.2.13"
@@ -14134,15 +14124,6 @@ __metadata:
   dependencies:
     node-gyp: latest
   checksum: a1f0c44595123ed717febbc478aa952e47adfc28e2092be66b8ab1635147254ca6cfe1df792a8997f22716d4cbafc73309899ff7bfac2ac3ad8cf2e4ecc3ec60
-  conditions: os=darwin
-  languageName: node
-  linkType: hard
-
-"fsevents@patch:fsevents@2.3.2#~builtin<compat/fsevents>":
-  version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
-  dependencies:
-    node-gyp: latest
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -20130,27 +20111,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.52.0":
-  version: 1.52.0
-  resolution: "playwright-core@npm:1.52.0"
-  bin:
-    playwright-core: cli.js
-  checksum: 640945507e6ca2144e9f596b2a6ecac042c2fd3683ff99e6271e9a7b38f3602d415f282609d569456f66680aab8b3c5bb1b257d8fb63a7fc0ed648261110421f
-  languageName: node
-  linkType: hard
-
-"playwright@npm:^1.29.1":
-  version: 1.52.0
-  resolution: "playwright@npm:1.52.0"
+"playwright@npm:1.29.1":
+  version: 1.29.1
+  resolution: "playwright@npm:1.29.1"
   dependencies:
-    fsevents: 2.3.2
-    playwright-core: 1.52.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
+    playwright-core: 1.29.1
   bin:
     playwright: cli.js
-  checksum: 2c6edf1e15e59bbaf77f3fa0fe0ac975793c17cff835d9c8b8bc6395a3b6f1c01898b3058ab37891b2e4d424bcc8f1b4844fe70d943e0143d239d7451408c579
+  checksum: db049c6f72fe329d1c5b5daf2b4f212fbe1f57dba075bdffc4b71a473149bf20af36528cc3819c250bbef1f0366c105b3c63e66fb82524310061a1cca99437ae
   languageName: node
   linkType: hard
 
