@@ -19,6 +19,23 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+        # ─────── DEBUG: compare actual vs expected checksum ───────
+      - name: Debug node-gyp.tar.gz checksum
+        run: |
+          # 1) Download the exact tarball that Yarn is expecting
+          curl -L \
+            "https://github.com/electron/node-gyp/archive/06b29aafb7708acef8b3669835c8a7857ebc92d2.tar.gz" \
+            -o node-gyp-archive.tar.gz
+
+          # 2) Compute its SHA-256
+          echo "----- Actual SHA-256 of downloaded tarball -----"
+          sha256sum node-gyp-archive.tar.gz
+
+          # 3) Show the “expected” checksum from yarn.lock
+          echo "----- Expected SHA-256 from yarn.lock -----"
+          grep -C1 "06b29aafb7708acef8b3669835c8a7857ebc92d2" yarn.lock | grep checksum || echo "not found"
+
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
