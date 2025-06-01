@@ -22,20 +22,24 @@ jobs:
         # ─────── DEBUG: compare actual vs expected checksum ───────
       - name: Debug node-gyp.tar.gz checksum
         run: |
-          # 1) Download the exact tarball that Yarn is expecting
+          # 1) Download the exact GitHub tarball that Yarn will fetch
           curl -L \
             "https://github.com/electron/node-gyp/archive/06b29aafb7708acef8b3669835c8a7857ebc92d2.tar.gz" \
             -o node-gyp-archive.tar.gz
 
           # 2) Compute its SHA-256
           echo "----- Actual SHA-256 of downloaded tarball -----"
-          sha256sum node-gyp-archive.tar.gz
+          sha256sum node-gyp-archive.tar.gz || shasum -a 256 node-gyp-archive.tar.gz
 
-          # 3) Show the “expected” checksum from yarn.lock
+          # 3) Extract the entire lockfile block for that Git ref and show its checksum
           echo "----- Expected SHA-256 from yarn.lock -----"
-          grep -C1 "06b29aafb7708acef8b3669835c8a7857ebc92d2" yarn.lock | grep checksum || echo "not found"
-
-
+          awk '
+            # When we see the line whose key contains our Git URL + commit, start printing
+            /@electron\/node-gyp.*06b29aafb7708acef8b3669835c8a7857ebc92d2/ { printing=1 }
+            printing { print }
+            # Stop once we've printed the "linkType" line (end of block)
+            /linkType: hard/ { exit }
+          ' yarn.lock | grep checksum || echo "— no checksum: line found in that block —"
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
