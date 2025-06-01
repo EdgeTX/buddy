@@ -148,6 +148,16 @@ const SdcardDirectory = builder.simpleObject("SdcardDirectory", {
   }),
 });
 
+export const SdcardAssetsDirectory = builder.simpleObject(
+  "SdcardAssetsDirectory",
+  {
+    fields: (t) => ({
+      id: t.id(),
+      name: t.string(),
+    }),
+  }
+);
+
 const getDirectoryHandle = (id: string): FileSystemDirectoryHandle => {
   const handle = directories.find((directory) => directory.id === id)?.handle;
 
@@ -173,6 +183,110 @@ const readVersionFromFile = async (
   }
   return undefined;
 };
+
+const SdcardPathsInput = builder.inputType("SdcardPathsInput", {
+  fields: (t) => ({
+    paths: t.stringList({
+      required: true,
+      description:
+        "List of file or directory paths (relative to SD-card root) to include in the backup.",
+    }),
+  }),
+});
+
+const ConflictEntry = builder.simpleObject("ConflictEntry", {
+  fields: (t) => ({
+    path: t.string(),
+    existingSize: t.int(),
+    incomingSize: t.int(),
+    // maybe also checksums or arrayBuffers for diff…
+  }),
+});
+const BackupPlan = builder.simpleObject("BackupPlan", {
+  fields: (t) => ({
+    toCopy: t.stringList(),
+    identical: t.stringList(),
+    conflicts: t.field({ type: [ConflictEntry] }),
+  }),
+});
+
+export const SdcardThemeEntry = builder.simpleObject("SdcardThemeEntry", {
+  fields: (t) => ({
+    name: t.string(),
+    yaml: t.string(),
+    logoUrl: t.string({ nullable: true }),
+    backgroundUrl: t.string({ nullable: true }),
+  }),
+});
+
+const BackupDirectionEnum = builder.enumType("BackupDirection", {
+  values: ["TO_LOCAL", "TO_SDCARD"] as const,
+});
+
+const SdcardThemesInput = builder.inputType("SdcardThemesInput", {
+  fields: (t) => ({
+    ids: t.stringList({
+      required: true,
+      description: "List of theme directory names to backup",
+    }),
+  }),
+});
+
+const SdcardModelsInput = builder.inputType("SdcardModelsInput", {
+  fields: (t) => ({
+    ids: t.idList({
+      required: true,
+      description: "List of model directory names to backup",
+    }),
+  }),
+});
+
+const ConflictResolutionInput = builder.inputType("ConflictResolutionInput", {
+  fields: (t) => ({
+    path: t.string({ required: true }),
+    action: t.field({
+      type: builder.enumType("ConflictAction", {
+        values: ["OVERWRITE", "SKIP", "RENAME"] as const,
+      }),
+      required: true,
+    }),
+  }),
+});
+
+const ConflictResolutionsInput = builder.inputType("ConflictResolutionsInput", {
+  fields: (t) => ({
+    items: t.field({
+      type: [ConflictResolutionInput],
+      required: true,
+    }),
+  }),
+});
+
+const RestoreOptionsInput = builder.inputType("RestoreOptionsInput", {
+  fields: (t) => ({
+    conflictResolutions: t.field({
+      type: ConflictResolutionsInput,
+      required: true,
+    }),
+    overwrite: t.boolean(),
+    autoRename: t.boolean(),
+  }),
+});
+
+const SdcardModelEntry = builder.simpleObject("SdcardModelEntry", {
+  fields: (t) => ({
+    name: t.string(),
+    yaml: t.string(),
+    directoryId: t.id(),
+  }),
+});
+
+const SdcardRadioEntry = builder.simpleObject("SdcardRadioEntry", {
+  fields: (t) => ({
+    name: t.string(),
+    yaml: t.string(),
+  }),
+});
 
 /**
  * Try to find the sounds which are the most up to date
@@ -978,42 +1092,6 @@ builder.objectFields(SdcardDirectory, (t) => ({
   }),
 }));
 
-export const SdcardAssetsDirectory = builder.simpleObject(
-  "SdcardAssetsDirectory",
-  {
-    fields: (t) => ({
-      id: t.id(),
-      name: t.string(),
-    }),
-  }
-);
-
-const SdcardPathsInput = builder.inputType("SdcardPathsInput", {
-  fields: (t) => ({
-    paths: t.stringList({
-      required: true,
-      description:
-        "List of file or directory paths (relative to SD-card root) to include in the backup.",
-    }),
-  }),
-});
-
-const ConflictEntry = builder.simpleObject("ConflictEntry", {
-  fields: (t) => ({
-    path: t.string(),
-    existingSize: t.int(),
-    incomingSize: t.int(),
-    // maybe also checksums or arrayBuffers for diff…
-  }),
-});
-const BackupPlan = builder.simpleObject("BackupPlan", {
-  fields: (t) => ({
-    toCopy: t.stringList(),
-    identical: t.stringList(),
-    conflicts: t.field({ type: [ConflictEntry] }),
-  }),
-});
-
 builder.mutationField("generateRestorePlan", (t) =>
   t.field({
     type: BackupPlan,
@@ -1045,55 +1123,6 @@ builder.mutationField("generateRestorePlan", (t) =>
     },
   })
 );
-
-const RestoreOptionsInput = builder.inputType("RestoreOptionsInput", {
-  fields: (t) => ({
-    conflictResolutions: t.field({
-      type: ConflictResolutionsInput,
-      required: true,
-    }),
-    overwrite: t.boolean(),
-    autoRename: t.boolean(),
-  }),
-});
-
-const ConflictResolutionInput = builder.inputType("ConflictResolutionInput", {
-  fields: (t) => ({
-    path: t.string({ required: true }),
-    action: t.field({
-      type: builder.enumType("ConflictAction", {
-        values: ["OVERWRITE", "SKIP", "RENAME"] as const,
-      }),
-      required: true,
-    }),
-  }),
-});
-
-const ConflictResolutionsInput = builder.inputType("ConflictResolutionsInput", {
-  fields: (t) => ({
-    items: t.field({
-      type: [ConflictResolutionInput],
-      required: true,
-    }),
-  }),
-});
-
-const SdcardModelsInput = builder.inputType("SdcardModelsInput", {
-  fields: (t) => ({
-    ids: t.idList({
-      required: true,
-      description: "List of model directory names to backup",
-    }),
-  }),
-});
-
-const SdcardModelEntry = builder.simpleObject("SdcardModelEntry", {
-  fields: (t) => ({
-    name: t.string(),
-    yaml: t.string(),
-    directoryId: t.id(),
-  }),
-});
 
 builder.objectFields(SdcardModelEntry, (t) => ({
   parsed: t.field({
@@ -1172,31 +1201,6 @@ builder.objectFields(SdcardModelEntry, (t) => ({
   }),
 }));
 
-const SdcardThemesInput = builder.inputType("SdcardThemesInput", {
-  fields: (t) => ({
-    ids: t.stringList({
-      required: true,
-      description: "List of theme directory names to backup",
-    }),
-  }),
-});
-
-export const SdcardThemeEntry = builder.simpleObject("SdcardThemeEntry", {
-  fields: (t) => ({
-    name: t.string(),
-    yaml: t.string(),
-    logoUrl: t.string({ nullable: true }),
-    backgroundUrl: t.string({ nullable: true }),
-  }),
-});
-
-const SdcardRadioEntry = builder.simpleObject("SdcardRadioEntry", {
-  fields: (t) => ({
-    name: t.string(),
-    yaml: t.string(),
-  }),
-});
-
 builder.objectFields(SdcardRadioEntry, (t) => ({
   parsed: t.field({
     type: "JSON",
@@ -1210,10 +1214,6 @@ builder.objectFields(SdcardRadioEntry, (t) => ({
     },
   }),
 }));
-
-const BackupDirectionEnum = builder.enumType("BackupDirection", {
-  values: ["TO_LOCAL", "TO_SDCARD"] as const,
-});
 
 builder.objectFields(SdcardAssetsDirectory, (t) => ({
   isValid: t.boolean({
