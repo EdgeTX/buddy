@@ -31,9 +31,9 @@ jobs:
           echo "----- Actual SHA-256 of downloaded tarball -----"
           sha256sum node-gyp-archive.tar.gz || shasum -a 256 node-gyp-archive.tar.gz
 
-          # 3) Extract the lockfile block for that Git ref and show its checksum
+          # 3) Extract only the standalone node-gyp block and show its checksum
           echo "----- Expected SHA-256 from yarn.lock -----"
-          sed -n '/@electron\/node-gyp.*06b29aafb7708acef8b3669835c8a7857ebc92d2/,/linkType: hard/p' yarn.lock \
+          sed -n '/^"@electron\/node-gyp@git+https:\/\/github\.com\/electron\/node-gyp\.git#06b29aafb7708acef8b3669835c8a7857ebc92d2":/,/linkType: hard/p' yarn.lock \
             | grep 'checksum:' \
             || echo "— no checksum: line found in that block —"
 

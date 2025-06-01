@@ -239,6 +239,7 @@
     "snapshot-diff@0.9.0": "patch:snapshot-diff@npm:0.9.0#.yarn/patches/snapshot-diff-npm-0.9.0-44279ef523",
     "styled-components": "^5",
     "hoist-non-react-statics/@types/react": "17.x",
-    "@types/react": "17.x"
+    "@types/react": "17.x",
+    "@electron/node-gyp@*": "npm:node-gyp@9.6.0"
   }
 }
