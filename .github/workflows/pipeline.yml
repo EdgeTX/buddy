@@ -19,6 +19,11 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
       - name: Verify which Yarn is running
@@ -63,6 +68,11 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
 
@@ -89,6 +99,11 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
 
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
@@ -124,6 +139,11 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
 
@@ -152,6 +172,11 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
 
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
@@ -192,6 +217,11 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
 
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
@@ -250,6 +280,11 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
 
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
@@ -328,6 +363,11 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
 
       - name: Prepend project’s Yarn Berry to $PATH
         run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
