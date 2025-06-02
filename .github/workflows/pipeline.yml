@@ -19,6 +19,13 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+  
         # ─────── DEBUG: compare actual vs expected checksum ───────
       - name: Debug node-gyp.tar.gz checksum
         run: |-
@@ -56,6 +63,14 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
@@ -74,6 +89,14 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
 
       - name: Install
         env:
@@ -101,6 +124,14 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
@@ -121,6 +152,14 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
 
       - name: Install
         env:
@@ -153,6 +192,14 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
 
       - name: Setup Python 3.9
         uses: actions/setup-python@v5
@@ -203,6 +250,14 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
 
       - name: Install
         env:
@@ -273,6 +328,14 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
 
       - name: Install
         env:
