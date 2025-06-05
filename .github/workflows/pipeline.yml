@@ -19,14 +19,44 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+  
+        # ─────── DEBUG: compare actual vs expected checksum ───────
+      - name: Debug node-gyp.tar.gz checksum
+        run: |-
+          # 1) Download the exact tarball that Yarn will fetch
+          curl -L \
+            "https://github.com/electron/node-gyp/archive/06b29aafb7708acef8b3669835c8a7857ebc92d2.tar.gz" \
+            -o node-gyp-archive.tar.gz
+
+          # 2) Compute its SHA-256
+          echo "----- Actual SHA-256 of downloaded tarball -----"
+          sha256sum node-gyp-archive.tar.gz || shasum -a 256 node-gyp-archive.tar.gz
+
+          # 3) Extract only the standalone node-gyp block and show its checksum
+          echo "----- Expected SHA-256 from yarn.lock -----"
+          sed -n '/^"@electron\/node-gyp@git+https:\/\/github\.com\/electron\/node-gyp\.git#06b29aafb7708acef8b3669835c8a7857ebc92d2":/,/linkType: hard/p' yarn.lock \
+            | grep 'checksum:' \
+            || echo "— no checksum: line found in that block —"
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable
 
       - name: Lint
-        run: yarn lint:all
+        run: ./.yarn/releases/yarn-berry.cjs lint:all
 
   format:
     runs-on: ubuntu-22.04
@@ -38,14 +68,27 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable --mode=skip-build
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable --mode=skip-build
 
       - name: Format
-        run: yarn fmt:check
+        run: ./.yarn/releases/yarn-berry.cjs fmt:check
 
   test:
     runs-on: ubuntu-22.04
@@ -57,14 +100,27 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable
 
       - name: Test
-        run: yarn test --coverage
+        run: ./.yarn/releases/yarn-berry.cjs test --coverage
         env:
           CI: true
 
@@ -83,14 +139,27 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable
 
       - name: Test types
-        run: yarn test:types
+        run: ./.yarn/releases/yarn-berry.cjs test:types
         env:
           CI: true
 
@@ -104,14 +173,27 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable
 
       - name: Build
-        run: yarn build:storybook
+        run: ./.yarn/releases/yarn-berry.cjs build:storybook
 
       - name: Store storybook
         uses: actions/upload-artifact@v4
@@ -136,6 +218,19 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Setup Python 3.9
         uses: actions/setup-python@v5
         with:
@@ -148,7 +243,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable
 
       - name: Install build deps (Linux)
         if: runner.os == 'Linux'
@@ -156,7 +251,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y libudev-dev
 
       - name: Build
-        run: yarn compile:production
+        run: ./.yarn/releases/yarn-berry.cjs compile:production
         env:
           GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
@@ -186,11 +281,24 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
@@ -199,7 +307,7 @@ jobs:
           path: build
 
       - name: Build
-        run: yarn run pack
+        run: ./.yarn/releases/yarn-berry.cjs run pack
 
       - name: Upload build
         uses: actions/upload-artifact@v4
@@ -215,7 +323,7 @@ jobs:
             dist/latest-mac.yml
             dist/latest-linux.yml
 
-      - run: yarn playwright install --with-deps chromium chromium
+      - run: ./.yarn/releases/yarn-berry.cjs playwright install --with-deps chromium chromium
 
       - name: Setup xvfb (Linux)
         if: runner.os == 'Linux'
@@ -224,7 +332,7 @@ jobs:
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Run tests
-        run: yarn e2e:app
+        run: ./.yarn/releases/yarn-berry.cjs e2e:app
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
@@ -256,14 +364,27 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Make Berry the “yarn” binary
+        run: |
+          ln -s $GITHUB_WORKSPACE/.yarn/releases/yarn-berry.cjs \
+                $GITHUB_WORKSPACE/.yarn/releases/yarn
+
+      - name: Prepend project’s Yarn Berry to $PATH
+        run: echo "${{ github.workspace }}/.yarn/releases" >> $GITHUB_PATH
+
+      - name: Verify which Yarn is running
+        run: |
+          which yarn
+          yarn --version
+
       - name: Install
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-        run: yarn --immutable --mode=skip-build
+        run: ./.yarn/releases/yarn-berry.cjs install --immutable --mode=skip-build
 
       - name: Install browsers
-        run: yarn playwright install --with-deps
+        run: ./.yarn/releases/yarn-berry.cjs playwright install --with-deps
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
@@ -272,7 +393,7 @@ jobs:
           path: build
 
       - name: Run tests
-        run: yarn e2e:web
+        run: ./.yarn/releases/yarn-berry.cjs e2e:web
         env:
           CI: "true"
           PWTEST_VIDEO: "true"
