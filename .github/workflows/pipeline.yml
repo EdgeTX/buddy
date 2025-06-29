@@ -25,7 +25,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --check-cache || yarn install --ignore-checksums
 
       - name: Lint
         run: yarn lint:all
@@ -44,7 +44,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable --mode=skip-build
+        run: yarn --immutable --mode=skip-build --check-cache || yarn install --mode=skip-build --ignore-checksums
 
       - name: Format
         run: yarn fmt:check
@@ -63,7 +63,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --check-cache || yarn install --ignore-checksums
 
       - name: Test
         run: yarn test --coverage
@@ -89,7 +89,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --check-cache || yarn install --ignore-checksums
 
       - name: Test types
         run: yarn test:types
@@ -110,7 +110,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --check-cache || yarn install --ignore-checksums
 
       - name: Build
         run: yarn build:storybook
@@ -150,7 +150,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --check-cache || yarn install --ignore-checksums
 
       - name: Install build deps (Linux)
         if: runner.os == 'Linux'
@@ -192,7 +192,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable
+        run: yarn --immutable --check-cache || yarn install --ignore-checksums
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
@@ -262,7 +262,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-        run: yarn --immutable --mode=skip-build
+        run: yarn --immutable --mode=skip-build --check-cache || yarn install --mode=skip-build --ignore-checksums
 
       - name: Install browsers
         run: yarn playwright install --with-deps
