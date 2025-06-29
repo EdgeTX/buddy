@@ -357,7 +357,7 @@ jobs:
   release-web-prod:
     needs: [e2e-web, test, storybook]
     runs-on: ubuntu-22.04
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.repository == 'EdgeTX/buddy'
     permissions:
       contents: read
       deployments: write
