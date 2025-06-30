@@ -8,6 +8,8 @@
     "productName": "EdgeTX Buddy",
     "appId": "org.edgetx.buddy",
     "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "./entitlements.mac.plist",
       "target": [
         {
           "target": "dmg",
