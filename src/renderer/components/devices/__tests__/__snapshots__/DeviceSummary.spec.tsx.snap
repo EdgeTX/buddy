@@ -22,12 +22,11 @@ exports[`<DeviceSummary /> > should show details about the given device 1`] = `
 }
 
 <div
-    class="ant-space ant-space-vertical"
+    class="ant-space css-dev-only-do-not-override-1yacf91 ant-space-vertical ant-space-gap-row-large ant-space-gap-col-large"
     style="width: 100%;"
   >
     <div
       class="ant-space-item"
-      style="margin-bottom: 24px;"
     >
       <div
         class="c0"
@@ -61,14 +60,14 @@ exports[`<DeviceSummary /> > should show details about the given device 1`] = `
         class="c0"
       >
         <h5
-          class="ant-typography"
+          class="ant-typography css-dev-only-do-not-override-1yacf91"
           style="text-align: center;"
         >
           STEM32 Bootloader 2
         </h5>
         <div>
           <span
-            class="ant-typography ant-typography-secondary"
+            class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
             style="text-align: center;"
           >
             375897983475
@@ -76,7 +75,7 @@ exports[`<DeviceSummary /> > should show details about the given device 1`] = `
         </div>
         <div>
           <span
-            class="ant-typography ant-typography-secondary"
+            class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
             style="text-align: center;"
           >
             0x3453:0x4358
@@ -94,19 +93,19 @@ exports[`<DeviceSummary /> > should show loading skeleton before displaying devi
 - First value
 + Second value
 
-@@ -34,27 +34,33 @@
+@@ -33,27 +33,33 @@
       </div>
       <div
         class="ant-space-item"
       >
         <div
--         class="ant-skeleton ant-skeleton-active"
+-         class="ant-skeleton ant-skeleton-active css-dev-only-do-not-override-1yacf91"
 +         class="sc-aXZVg cZVjIL"
         >
 -         <div
 -           class="ant-skeleton-content"
 +         <h5
-+           class="ant-typography"
++           class="ant-typography css-dev-only-do-not-override-1yacf91"
 +           style="text-align: center;"
           >
 -           <h3
@@ -119,7 +118,7 @@ exports[`<DeviceSummary /> > should show loading skeleton before displaying devi
 +         </h5>
 +         <div>
 +           <span
-+             class="ant-typography ant-typography-secondary"
++             class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
 +             style="text-align: center;"
             >
 -             <li />
@@ -132,7 +131,7 @@ exports[`<DeviceSummary /> > should show loading skeleton before displaying devi
 +         </div>
 +         <div>
 +           <span
-+             class="ant-typography ant-typography-secondary"
++             class="ant-typography ant-typography-secondary css-dev-only-do-not-override-1yacf91"
 +             style="text-align: center;"
 +           >
 +             0x3453:0x4358
