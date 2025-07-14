@@ -207,6 +207,19 @@ jobs:
           name: compiled-${{ matrix.os }}
           path: build
 
+      - name: Setup Code Signing (macOS)
+        if: runner.os == 'macOS' && github.event_name != 'pull_request'
+        run: |
+          # Code signing
+          echo 'CSC_LINK=${{ secrets.APPLE_CERT }}' >> $GITHUB_ENV
+          echo 'CSC_KEY_PASSWORD=${{ secrets.APPLE_CERT_PASSWORD }}' >> $GITHUB_ENV
+          # Notarization
+          mkdir -p ~/private_keys/
+          echo '${{ secrets.APPLE_API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+          echo 'APPLE_API_KEY=~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8' >> $GITHUB_ENV
+          echo 'APPLE_API_KEY_ID=${{ secrets.APPLE_API_KEY_ID }}' >> $GITHUB_ENV
+          echo 'APPLE_API_ISSUER=${{ secrets.APPLE_API_ISSUER_ID }}' >> $GITHUB_ENV
+
       - name: Build
         run: yarn run pack
 
