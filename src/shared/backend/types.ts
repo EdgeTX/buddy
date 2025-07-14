@@ -1,7 +1,10 @@
 import type { ObjectRef, outputShapeKey } from "@pothos/core";
 
 export type FileSystemApi = {
+  /** for picking/creating the SD-card directory */
   requestWritableDirectory: typeof window.showDirectoryPicker;
+  /** for selecting one or more model/theme files */
+  requestFileHandles?: typeof window.showOpenFilePicker;
 };
 
 export type UsbApi = {
