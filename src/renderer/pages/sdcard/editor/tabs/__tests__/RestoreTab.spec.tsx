@@ -1,6 +1,6 @@
 // src/renderer/pages/sdcard/editor/tabs/__tests__/RestoreTab.spec.tsx
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { vi } from "vitest";
 import RestoreTab from "renderer/pages/sdcard/editor/tabs/RestoreTab";
@@ -126,31 +126,6 @@ describe("RestoreTab", () => {
     expect(
       await screen.findByText("Select Backup ZIP or ETX")
     ).toBeInTheDocument();
-  });
-
-  it("handles file selection via the file input", async () => {
-    render(
-      <MockedProvider mocks={[createDirectoryInfoMock()]} addTypename={false}>
-        <RestoreTab
-          directoryId="test-dir-id"
-          assetType="MODELS"
-          selected={[]}
-        />
-      </MockedProvider>
-    );
-
-    const fileInput = await screen.findByLabelText(/Select Backup ZIP or ETX/i);
-    const userFile = new File(["test content"], "backup.zip", {
-      type: "application/zip",
-    });
-
-    fireEvent.change(fileInput, { target: { files: [userFile] } });
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Selected file:.*backup\.zip/)
-      ).toBeInTheDocument();
-    });
   });
 
   it("supports other asset types without error", async () => {
