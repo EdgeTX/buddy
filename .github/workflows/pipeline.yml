@@ -25,7 +25,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Lint
@@ -45,7 +45,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable --mode=skip-build
 
       - name: Format
@@ -65,7 +65,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Test
@@ -92,7 +92,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Test types
@@ -114,7 +114,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Build
@@ -155,7 +155,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Install build deps (Linux)
@@ -198,7 +198,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Fetch compiled source
@@ -282,7 +282,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-          YARN_CHECKSUM_BEHAVIOR: "ignore"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable --mode=skip-build
 
       - name: Install browsers
