@@ -157,8 +157,6 @@ jobs:
 
       - name: Build
         run: yarn compile:production
-        env:
-          GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
       - name: Store compiled source
         uses: actions/upload-artifact@v4
