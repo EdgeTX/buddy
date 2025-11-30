@@ -3,6 +3,7 @@ import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky";
 import config from "shared/backend/config";
+import environment from "shared/environment";
 import { uniqueBy } from "shared/tools";
 import { GithubClient } from "shared/api/github";
 
@@ -27,6 +28,7 @@ const firmwareBundle = async (url: string): Promise<ZipInfoRaw> => {
     ? await (async () => {
         if (!firmwareBundleBlobs[url]) {
           firmwareBundleBlobs[url] = ky(url, {
+            prefixUrl: !environment.isMain ? config.proxyUrl : undefined,
             headers: {
               Authorization: config.github.prBuildsKey
                 ? `token ${config.github.prBuildsKey}`
