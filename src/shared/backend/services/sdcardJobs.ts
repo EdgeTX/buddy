@@ -276,7 +276,7 @@ const erase = async (
           )
           .catch((e) => {
             const error = e as Error;
-            // Some weird macos folder or file already deleted
+            // Handle stale file system handles or file already deleted
             if (
               error.message.includes(
                 "An operation that depends on state cached in an interface object"
