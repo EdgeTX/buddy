@@ -1371,9 +1371,13 @@ describe("Sdcard Job", () => {
 
     expect(errors).toBeFalsy();
     // Erase should complete successfully despite NotFoundError
-    expect(data?.sdcardWriteJobStatus.stages.erase.completed).toBe(true);
-    expect(data?.sdcardWriteJobStatus.stages.erase.error).toBeNull();
+    expect((data as any)?.sdcardWriteJobStatus?.stages.erase.completed).toBe(
+      true
+    );
+    expect((data as any)?.sdcardWriteJobStatus?.stages.erase.error).toBeNull();
     // Write should also complete
-    expect(data?.sdcardWriteJobStatus.stages.write.completed).toBe(true);
+    expect((data as any)?.sdcardWriteJobStatus?.stages.write.completed).toBe(
+      true
+    );
   });
 });
