@@ -1271,4 +1271,113 @@ describe("Sdcard Job", () => {
     `);
     expect(directorySnapshot(tempDir.path)).toMatchSnapshot();
   });
+
+  it("should continue erasing even if a file/directory is not found during deletion", async () => {
+    const handle = await getOriginPrivateDirectory(nodeAdapter, tempDir.path);
+    // @ts-expect-error is readonly but this is testing
+    handle.name = tempDir.path;
+
+    // Create some files and directories to erase
+    await Promise.all([
+      fs.mkdir(path.join(tempDir.path, "EEPROM")), // Should not be deleted
+      fs.mkdir(path.join(tempDir.path, "THEMES")),
+      fs.mkdir(path.join(tempDir.path, "SCRIPTS")),
+    ]);
+
+    // Mock removeEntry to throw NotFoundError for one entry
+    const originalRemoveEntry = handle.removeEntry.bind(handle);
+    handle.removeEntry = vitest.fn(
+      async (name: string, options?: { recursive?: boolean }) => {
+        if (name === "THEMES") {
+          const error = new Error("Entry not found");
+          error.name = "NotFoundError";
+          throw error;
+        }
+        return originalRemoveEntry(name, options);
+      }
+    );
+
+    requestWritableDirectory.mockResolvedValue(handle);
+
+    const directoryRequest = await backend.mutate({
+      mutation: gql`
+        mutation RequestDirectory {
+          pickSdcardDirectory {
+            id
+            name
+          }
+        }
+      `,
+    });
+
+    const { id: directoryId } = directoryRequest.data?.pickSdcardDirectory as {
+      id: string;
+    };
+
+    const { nockDone } = await nock.back("sdcard-job-jumper-t8-cn-latest.json");
+
+    const createJobRequest = await backend.mutate({
+      mutation: gql`
+        mutation CreateSdcardJob($directoryId: ID!) {
+          createSdcardWriteJob(
+            directoryId: $directoryId
+            pack: { target: "t8", version: "latest" }
+            sounds: { ids: ["cn"], version: "latest" }
+          ) {
+            id
+          }
+        }
+      `,
+      variables: {
+        directoryId,
+      },
+    });
+
+    const jobId = (
+      createJobRequest.data?.createSdcardWriteJob as { id: string } | null
+    )?.id;
+
+    expect(createJobRequest.errors).toBeFalsy();
+    expect(jobId).toBeTruthy();
+
+    await waitForSdcardJobCompleted(jobId!);
+    nockDone();
+
+    const { data, errors } = await backend.query({
+      query: gql`
+        query SdcardJobStatus($id: ID!) {
+          sdcardWriteJobStatus(jobId: $id) {
+            cancelled
+            stages {
+              erase {
+                started
+                completed
+                progress
+                error
+              }
+              write {
+                started
+                completed
+                progress
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        id: jobId,
+      },
+    });
+
+    expect(errors).toBeFalsy();
+    // Erase should complete successfully despite NotFoundError
+    expect((data as any)?.sdcardWriteJobStatus?.stages.erase.completed).toBe(
+      true
+    );
+    expect((data as any)?.sdcardWriteJobStatus?.stages.erase.error).toBeNull();
+    // Write should also complete
+    expect((data as any)?.sdcardWriteJobStatus?.stages.write.completed).toBe(
+      true
+    );
+  });
 });
