@@ -219,7 +219,7 @@ const VersionFiltersDropdown: React.FC<{
 
   return (
     <Dropdown
-      visible={visible}
+      open={visible}
       trigger={["click"]}
       onVisibleChange={(flag) => setVisible(flag)}
       overlay={

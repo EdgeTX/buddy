@@ -30,7 +30,7 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
 
   return (
     <Tooltip
-      visible={copied}
+      open={copied}
       trigger={[]}
       placement="top"
       title={t(`Copied to clipboard`)}

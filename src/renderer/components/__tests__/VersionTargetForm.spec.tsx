@@ -204,20 +204,20 @@ describe("<VersionTargetForm />", () => {
       - First value
       + Second value
 
-      @@ -52,11 +52,11 @@
-                          />
-                        </span>
+      @@ -62,11 +62,11 @@
+                              />
+                            </span>
+                            <span
+                              class="ant-select-selection-placeholder"
+                            >
+      -                       Select firmware version
+      +                       Some placeholder for version
+                            </span>
+                          </span>
+                        </div>
                         <span
-                          class="ant-select-selection-placeholder"
-                        >
-      -                   Select firmware version
-      +                   Some placeholder for version
-                        </span>
-                      </div>
-                      <span
-                        aria-hidden="true"
-                        class="ant-select-arrow"
-      @@ -209,7 +209,6 @@
+                          aria-hidden="true"
+      @@ -239,7 +239,6 @@
                   </div>
                 </div>
               </div>
@@ -254,20 +254,20 @@ describe("<VersionTargetForm />", () => {
       - First value
       + Second value
 
-      @@ -173,11 +173,11 @@
-                          />
-                        </span>
+      @@ -202,11 +202,11 @@
+                              />
+                            </span>
+                            <span
+                              class="ant-select-selection-placeholder"
+                            >
+      -                       Select radio model
+      +                       Some placeholder for version
+                            </span>
+                          </span>
+                        </div>
                         <span
-                          class="ant-select-selection-placeholder"
-                        >
-      -                   Select radio model
-      +                   Some placeholder for version
-                        </span>
-                      </div>
-                      <span
-                        aria-hidden="true"
-                        class="ant-select-arrow"
-      @@ -208,7 +208,6 @@
+                          aria-hidden="true"
+      @@ -239,7 +239,6 @@
                   </div>
                 </div>
               </div>
