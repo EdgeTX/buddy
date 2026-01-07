@@ -22,25 +22,25 @@ const FlashButton: React.FC<Props> = ({
   target,
 }) => {
   const { t } = useTranslation("flashing");
-  const flashingAvailable = environment.isElectron || checks.hasUsbApi;
   const isUf2OnlyModel = target && UF2_ONLY_MODELS.includes(target);
-  const isDisabled = disabled || !flashingAvailable || isUf2OnlyModel;
-  const showUf2Tooltip = isUf2OnlyModel && flashingAvailable;
+  const flashingAvailable =
+    (environment.isElectron || checks.hasUsbApi) && !isUf2OnlyModel;
+
+  let tooltipTitle: string | undefined;
+  if (isUf2OnlyModel) {
+    tooltipTitle = t(`This radio should be flashed via UF2 instead`);
+  } else if (!flashingAvailable) {
+    tooltipTitle = t(`Not supported by your browser`);
+  }
 
   return (
     <Tooltip
-      trigger={isDisabled ? ["hover", "click"] : []}
+      trigger={!flashingAvailable ? ["hover", "click"] : []}
       placement="top"
-      title={
-        showUf2Tooltip
-          ? t(`This radio should be flashed via UF2 method`)
-          : !flashingAvailable
-            ? t(`Not supported by your browser`)
-            : undefined
-      }
+      title={tooltipTitle}
     >
       <Button
-        disabled={isDisabled}
+        disabled={disabled || !flashingAvailable}
         loading={loading}
         type="primary"
         icon={flashingAvailable ? <UsbOutlined /> : <WarningOutlined />}

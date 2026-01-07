@@ -110,6 +110,7 @@
   "Start flashing": "Zapsat do rádia",
   "The type of radio you want to flash": "Typ rádia, do kterého chcete zapsat firmware",
   "The version of EdgeTX to flash": "Verze EdgeTX, kterou chcete zapsat do rádia",
+  "This radio should be flashed via UF2 instead": "This radio should be flashed via UF2 instead",
   "These can be built locally or downloaded from the EdgeTX releases": "Můžete sestavit ručně nebo stáhnout EdgeTX vydání",
   "Unknown firmware": "Neznámý firmware",
   "Value": "Value",
