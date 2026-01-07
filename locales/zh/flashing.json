@@ -110,6 +110,7 @@
   "Start flashing": "开始刷写",
   "The type of radio you want to flash": "您要刷写的遥控器类型",
   "The version of EdgeTX to flash": "要刷写的 EdgeTX 版本",
+  "Flash this radio via Bootloader and UF2": "Flash this radio via Bootloader and UF2",
   "These can be built locally or downloaded from the EdgeTX releases": "这些可以在本地编译或从 EdgeTX 发布版本下载",
   "Unknown firmware": "未知固件",
   "Value": "值",

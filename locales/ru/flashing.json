@@ -110,6 +110,7 @@
   "Start flashing": "Начать прошивку",
   "The type of radio you want to flash": "Тип радио, который вы хотите прошить",
   "The version of EdgeTX to flash": "Версия Edge TX для прошивки",
+  "Flash this radio via Bootloader and UF2": "Flash this radio via Bootloader and UF2",
   "These can be built locally or downloaded from the EdgeTX releases": "Они могут быть созданы локально или загружены из выпусков Edge T X",
   "Unknown firmware": "Неизвестное ПО",
   "Value": "Значение",

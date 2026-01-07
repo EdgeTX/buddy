@@ -251,6 +251,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         )}
         <FlashButton
           disabled={!isBuildValid}
+          target={target}
           onClick={() => {
             onNext?.();
           }}

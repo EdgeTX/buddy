@@ -110,6 +110,7 @@
   "Start flashing": "Inizio il flash",
   "The type of radio you want to flash": "Il tipo di radio che vuoi flashare",
   "The version of EdgeTX to flash": "La versione di EdgeTX da flashare",
+  "Flash this radio via Bootloader and UF2": "Flash this radio via Bootloader and UF2",
   "These can be built locally or downloaded from the EdgeTX releases": "Può essere compilato localmente o scaricato dallle release di EdgeTX",
   "Unknown firmware": "Firmware sconosciuto",
   "Value": "Valore",
