@@ -97,6 +97,7 @@ const PrBuildsFlasher: React.FC = () => {
               disabled={
                 !target || !version || !selectedDeviceId || !!flashJobId
               }
+              target={target}
               onClick={() => {
                 if (!target || !version || !selectedDeviceId) {
                   return;
