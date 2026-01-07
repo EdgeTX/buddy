@@ -28,7 +28,7 @@ const FlashButton: React.FC<Props> = ({
 
   let tooltipTitle: string | undefined;
   if (isUf2OnlyModel) {
-    tooltipTitle = t(`This radio should be flashed via UF2 instead`);
+    tooltipTitle = t(`Flash this radio via Bootloader and UF2`);
   } else if (!flashingAvailable) {
     tooltipTitle = t(`Not supported by your browser`);
   }
