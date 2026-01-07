@@ -275,11 +275,13 @@ const erase = async (
             entry.kind === "directory" ? { recursive: true } : undefined
           )
           .catch((e) => {
-            // Some weird macos folder
+            const error = e as Error;
+            // Handle stale file system handles or file already deleted
             if (
-              (e as Error).message.includes(
+              error.message.includes(
                 "An operation that depends on state cached in an interface object"
-              )
+              ) ||
+              error.name === "NotFoundError"
             ) {
               return;
             }
