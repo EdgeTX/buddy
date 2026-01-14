@@ -132,14 +132,16 @@ const createWindow = (): void => {
         APOLLO_DEVELOPER_TOOLS,
         // eslint-disable-next-line import/no-extraneous-dependencies
       } = await import("electron-devtools-installer");
-      installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log("Error loading React DevTools: ", err)
-      );
-      installExtension(APOLLO_DEVELOPER_TOOLS).catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log("Error loading Apollo DevTools: ", err)
-      );
+      // forceDownload = true will redownload the latest unpacked extension,
+      // avoiding any bad .crx headers lingering on disk
+      installExtension(REACT_DEVELOPER_TOOLS, true)
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.error("Error loading React DevTools:", err));
+
+      installExtension(APOLLO_DEVELOPER_TOOLS, true)
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.error("Error loading Apollo DevTools:", err));
+
       mainWindow?.webContents.openDevTools({ mode: "detach" });
     }
   });

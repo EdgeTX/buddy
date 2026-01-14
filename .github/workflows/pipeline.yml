@@ -7,6 +7,8 @@ on:
     tags:
       - "v*"
   pull_request:
+  workflow_dispatch:   
+
 
 jobs:
   lint:
@@ -23,6 +25,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Lint
@@ -42,6 +45,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable --mode=skip-build
 
       - name: Format
@@ -61,6 +65,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Test
@@ -87,6 +92,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Test types
@@ -108,6 +114,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Build
@@ -148,6 +155,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Install build deps (Linux)
@@ -188,6 +196,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable
 
       - name: Fetch compiled source
@@ -271,6 +280,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+          YARN_CHECKSUM_BEHAVIOR: "update"
         run: yarn --immutable --mode=skip-build
 
       - name: Install browsers
@@ -358,7 +368,7 @@ jobs:
   release-web-prod:
     needs: [e2e-web, test, storybook]
     runs-on: ubuntu-22.04
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.repository == 'EdgeTX/buddy'
     permissions:
       contents: read
       deployments: write
