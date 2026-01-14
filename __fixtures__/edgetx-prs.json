@@ -2,7 +2,7 @@
     {
         "scope": "https://api.github.com:443",
         "method": "GET",
-        "path": "/repos/EdgeTX/edgetx/pulls?sort=created&state=open&direction=desc",
+        "path": "/repos/EdgeTX/edgetx/pulls?sort=created&state=open&direction=desc&per_page=100",
         "body": "",
         "status": 200,
         "response": [
