@@ -322,8 +322,8 @@ export type UF2Reader = {
   data: Uint8Array;
   device: string;
   version: string;
-  blocks: typeof getBlocks;
-  addressRanges: typeof getAddressRanges;
+  blocks: () => UF2BlockGenerator;
+  addressRanges: () => UF2AddressRangeGenerator;
 };
 
 export const newUF2Reader = (data: Uint8Array): UF2Reader => {
@@ -346,8 +346,8 @@ export const newUF2Reader = (data: Uint8Array): UF2Reader => {
     version = getFirmwareVersion(block.extensions) ?? "unknown";
   }
 
-  const blocks: typeof getBlocks = () => getBlocks(data);
-  const addressRanges: typeof getAddressRanges = () => getAddressRanges(data);
+  const blocks = (): UF2BlockGenerator => getBlocks(data);
+  const addressRanges = (): UF2AddressRangeGenerator => getAddressRanges(data);
 
   return {
     data,

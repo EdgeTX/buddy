@@ -26,6 +26,15 @@ export default (jobId?: string) => {
             download {
               ...FlashJobStageData
             }
+            eraseBL {
+              ...FlashJobStageData
+            }
+            flashBL {
+              ...FlashJobStageData
+            }
+            reboot {
+              ...FlashJobStageData
+            }
             erase {
               ...FlashJobStageData
             }
@@ -72,6 +81,15 @@ export default (jobId?: string) => {
                   ...FlashJobStageData
                 }
                 download {
+                  ...FlashJobStageData
+                }
+                eraseBL {
+                  ...FlashJobStageData
+                }
+                flashBL {
+                  ...FlashJobStageData
+                }
+                reboot {
                   ...FlashJobStageData
                 }
                 erase {

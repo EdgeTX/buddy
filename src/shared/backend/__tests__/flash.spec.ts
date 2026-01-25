@@ -6,7 +6,7 @@ import nock from "nock";
 import { waitForStageCompleted } from "test-utils/tools";
 import { WebDFU } from "shared/dfu";
 import md5 from "md5";
-import { connect } from "shared/backend/services/dfu";
+import { connect, reconnect } from "shared/backend/services/dfu";
 import { FlashJobType } from "shared/backend/graph/flash";
 import { delay } from "shared/tools";
 
@@ -18,6 +18,7 @@ const listDevicesMock = vitest.fn() as MockedFunction<
 >;
 
 const dfuConnectMock = vitest.fn() as MockedFunction<typeof connect>;
+const dfuReconnectMock = vitest.fn() as MockedFunction<typeof reconnect>;
 
 const dfuWriteFunc = vitest.fn() as MockedFunction<WebDFU["write"]>;
 const dfuForceUnprotectFunc = vitest.fn() as MockedFunction<
@@ -31,6 +32,7 @@ const backend = createExecutor({
   },
   dfu: {
     connect: dfuConnectMock,
+    reconnect: dfuReconnectMock,
   },
 });
 

@@ -436,7 +436,7 @@ export class WebDFU {
         // eslint-disable-next-line no-await-in-loop
         strings[index] = await this.readStringDescriptor(index, 0x0409);
       } catch (error) {
-        this.log.warning(error);
+        this.log.warning(`could not read string descriptor: ${error}`);
         strings[index] = null;
       }
     }

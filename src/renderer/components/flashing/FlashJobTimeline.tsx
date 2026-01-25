@@ -30,6 +30,9 @@ type FlashingState = {
   connect: FlashingStageStatus;
   build?: FlashingStageStatus | null;
   download?: FlashingStageStatus | null;
+  eraseBL?: FlashingStageStatus | null;
+  flashBL?: FlashingStageStatus | null;
+  reboot?: FlashingStageStatus | null;
   erase: FlashingStageStatus;
   flash: FlashingStageStatus;
 };
@@ -107,7 +110,59 @@ const useStageConfigs = (): StageConfig[] => {
         Icon: CloudDownloadOutlined,
       },
       {
-        titles: { pre: t(`Erase`), active: t(`Erasing`), post: t(`Erased`) },
+        titles: {
+          pre: t(`Erase bootloader`),
+          active: t(`Erasing bootloader`),
+          post: t(`Bootloader erased`),
+        },
+        stage: "eraseBL",
+        description: {
+          pre: t(`Remove existing bootloader`),
+          active: t(`Removing existing bootloader from radio`),
+          post: t(`Existing bootloader erased`),
+          error: t(`Could not erase existing bootloader`),
+        },
+        Icon: DeleteOutlined,
+        showProgress: true,
+      },
+      {
+        titles: {
+          pre: t(`Flash bootloader`),
+          active: t(`Flashing bootloader`),
+          post: t(`Bootloader flashed`),
+        },
+        stage: "flashBL",
+        description: {
+          pre: t(`Write new bootloader`),
+          active: t(`Writing new bootloader to radio`),
+          post: t(`New bootloader flashed`),
+          error: t(`Could not write new bootloader to radio`),
+        },
+        Icon: DoubleRightOutlined,
+        showProgress: true,
+      },
+      {
+        titles: {
+          pre: t(`Reboot`),
+          active: t(`Rebooting`),
+          post: t(`Rebooted`),
+        },
+        stage: "reboot",
+        description: {
+          pre: t(`Reboot into bootloader`),
+          active: t(`Rebooting into bootloader`),
+          post: t(`Rebooted into bootloader`),
+          error: t(`Could not reboot into bootloader`),
+        },
+        Icon: DoubleRightOutlined,
+        showProgress: true,
+      },
+      {
+        titles: {
+          pre: t(`Erase firmware`),
+          active: t(`Erasing firmware`),
+          post: t(`Firmware erased`),
+        },
         stage: "erase",
         description: {
           pre: t(`Remove existing firmware`),
@@ -119,7 +174,11 @@ const useStageConfigs = (): StageConfig[] => {
         showProgress: true,
       },
       {
-        titles: { pre: t(`Flash`), active: t(`Flashing`), post: t(`Flashed`) },
+        titles: {
+          pre: t(`Flash firmware`),
+          active: t(`Flashing firmware`),
+          post: t(`Firmware flashed`),
+        },
         stage: "flash",
         description: {
           pre: t(`Write new firmware`),
