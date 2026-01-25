@@ -1,5 +1,4 @@
 import { gql, useQuery } from "@apollo/client";
-import { exception } from "react-ga";
 import { useEffect } from "react";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -99,12 +98,7 @@ export default (jobId?: string) => {
         variables: {
           jobId,
         },
-        onError: (subscriptionError) => {
-          exception({
-            description: `Could not subscribe to flash job: ${subscriptionError.message}`,
-            fatal: true,
-          });
-        },
+        onError: () => {},
         updateQuery: (existing, { subscriptionData }) => ({
           flashJobStatus: {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -128,15 +122,6 @@ export default (jobId?: string) => {
       (stage) => stage && typeof stage !== "string" && stage.error
     ) as { error: string } | undefined
   )?.error;
-
-  useEffect(() => {
-    if (jobError) {
-      exception({
-        description: `Error during flash: ${jobError}`,
-        fatal: true,
-      });
-    }
-  }, [jobError]);
 
   return {
     data,
