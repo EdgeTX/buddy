@@ -53,12 +53,16 @@ test.describe.parallel("Flashing", () => {
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Erased", undefined, { timeout: 10000 })
+        await queries.findByText("Firmware erased", undefined, {
+          timeout: 10000,
+        })
       ).isVisible()
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Flashed", undefined, { timeout: 10000 })
+        await queries.findByText("Firmware flashed", undefined, {
+          timeout: 10000,
+        })
       ).isVisible()
     ).toBeTruthy();
     expect(
@@ -99,12 +103,16 @@ test.describe.parallel("Flashing", () => {
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Erased", undefined, { timeout: 10000 })
+        await queries.findByText("Firmware erased", undefined, {
+          timeout: 10000,
+        })
       ).isVisible()
     ).toBeTruthy();
     expect(
       await (
-        await queries.findByText("Flashed", undefined, { timeout: 10000 })
+        await queries.findByText("Firmware flashed", undefined, {
+          timeout: 10000,
+        })
       ).isVisible()
     ).toBeTruthy();
     expect(
