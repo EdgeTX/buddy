@@ -326,7 +326,7 @@ const FlashJobTimeline: React.FC<Props> = ({
       style={{
         height: "100%",
         transition: "max-height 0.25s ease-out",
-        maxHeight: lastStepCompleted ? "275px" : "600px",
+        maxHeight: lastStepCompleted ? "375px" : "600px",
       }}
     >
       {
