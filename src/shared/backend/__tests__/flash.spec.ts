@@ -441,7 +441,7 @@ describe("Mutation", () => {
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        undefined
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
@@ -801,7 +801,7 @@ describe("Mutation", () => {
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        undefined
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
@@ -860,15 +860,19 @@ describe("Mutation", () => {
       await waitForStageCompleted(jobUpdatesQueue, "download");
       nockDone();
 
+      // Flashing UF2 payload passes startAddress + reboot params
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        { reboot: false, startAddress: 0x08000000 }
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
+      // write() is called first with bootloader only
+      expect(bufferToWrite.byteLength).toBe(65536);
+
       expect(md5(Buffer.from(bufferToWrite))).toMatchInlineSnapshot(
-        `"2a08d7ad74317a4e822d5ec2fdb474af"`
+        `"980229639386abbf82e625e511653d42"`
       );
     });
   });
@@ -931,7 +935,7 @@ describe("Mutation", () => {
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        undefined
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];

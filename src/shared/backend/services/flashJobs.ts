@@ -275,7 +275,13 @@ export const startExecution = async (
         } else {
           const { payload, startAddress } = range;
           // eslint-disable-next-line no-await-in-loop
-          await flash(jobId, dfuProcess, payload, startAddress, isBootloader);
+          await flash(
+            jobId,
+            dfuProcess,
+            Buffer.from(payload),
+            startAddress,
+            isBootloader
+          );
         }
       }
     }
@@ -320,7 +326,6 @@ export const updateStageStatus = (
     stages: { ...job.stages, [stage]: { ...currentStatus, ...status } },
   };
 
-  console.log(JSON.stringify(updatedJob));
   updateJob(jobId, updatedJob);
 };
 
