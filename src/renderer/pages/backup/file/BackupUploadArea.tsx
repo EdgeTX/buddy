@@ -261,9 +261,9 @@ const BackupUploadArea: React.FC<Props> = ({
           height: "100%",
         }}
         showUploadList={false}
-        multiple={false}
+        multiple
         disabled={loadingState}
-        beforeUpload={async (file) => {
+        beforeUpload={(file, fileList) => {
           // Accept .etx, .zip, and .yml files
           const isValidFormat =
             file.name.endsWith(".etx") ||
@@ -275,7 +275,7 @@ const BackupUploadArea: React.FC<Props> = ({
               title: t("Error"),
               content: t("Please select a .etx, .zip or .yml file"),
             });
-            return false;
+            return Upload.LIST_IGNORE;
           }
 
           const isLt100M = file.size / 1024 / 1024 < 100;
@@ -284,19 +284,142 @@ const BackupUploadArea: React.FC<Props> = ({
               title: t("Error"),
               content: t("File must be smaller than 100MB"),
             });
-            return false;
+            return Upload.LIST_IGNORE;
           }
 
-          setEncoding(true);
-          try {
-            onFileSelected({
-              name: file.name,
-              base64Data: Buffer.from(await file.arrayBuffer()).toString(
-                "base64"
-              ),
-            });
-          } finally {
-            setEncoding(false);
+          // Process all files only once when it's the last file
+          if (fileList[fileList.length - 1] === file) {
+            setEncoding(true);
+            void (async () => {
+              try {
+                // Process each file sequentially
+                await fileList.reduce(async (previousPromise, f) => {
+                  await previousPromise;
+                  const base64Data = Buffer.from(
+                    await f.arrayBuffer()
+                  ).toString("base64");
+
+                  const isZipOrEtx =
+                    f.name.endsWith(".zip") || f.name.endsWith(".etx");
+
+                  if (isZipOrEtx) {
+                    // Process zip/etx file - extract models and add them individually
+                    const extractedItems = await extractYamlFromZip(base64Data);
+
+                    // Create an array with fileName (object key), displayName (header.name), and content
+                    const modelList: ModelItem[] = Object.entries(
+                      extractedItems
+                    )
+                      .map(
+                        ([fileName, data]: [
+                          string,
+                          Record<string, unknown>
+                        ]) => ({
+                          id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
+                          fileName,
+                          displayName:
+                            ((
+                              data.header as Record<string, unknown> | undefined
+                            )?.name as string | undefined) ?? fileName,
+                          content: data,
+                          source: "individual",
+                        })
+                      )
+                      .filter((item) => item.fileName !== "labels"); // Exclude labels
+
+                    // Check for collisions with existing models and add new models
+                    const newModelIds: string[] = [];
+                    setItems((prevItems) => {
+                      const existingFileNames = new Set(
+                        prevItems.map((item) => item.fileName)
+                      );
+                      const newModels: ModelItem[] = [];
+                      const collisions: string[] = [];
+
+                      modelList.forEach((model) => {
+                        if (existingFileNames.has(model.fileName)) {
+                          collisions.push(model.displayName);
+                        } else {
+                          newModels.push(model);
+                          newModelIds.push(model.id);
+                        }
+                      });
+
+                      // Show collision warning if any
+                      if (collisions.length > 0) {
+                        Modal.warning({
+                          title: t("Model already exists in the list"),
+                          content: `${t(
+                            "The following models were skipped because they already exist"
+                          )}: ${collisions.join(", ")}`,
+                        });
+                      }
+
+                      return [...prevItems, ...newModels];
+                    });
+
+                    // Add new model IDs to selection
+                    setSelectedModels((prevSelected) => [
+                      ...prevSelected,
+                      ...newModelIds,
+                    ]);
+                  } else if (
+                    f.name.endsWith(".yml") ||
+                    f.name.endsWith(".yaml")
+                  ) {
+                    // Process individual YAML file
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    const parsed: ParsedYamlFile = parseYamlFile(
+                      base64Data,
+                      f.name
+                    );
+
+                    const newItem: ModelItem = {
+                      id: `individual-${f.name}-${Date.now()}-${Math.random()}`,
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                      fileName: parsed.fileName,
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                      displayName:
+                        ((
+                          parsed.content.header as
+                            | Record<string, unknown>
+                            | undefined
+                        )?.name as string | undefined) ?? parsed.fileName,
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                      content: parsed.content,
+                      source: "individual",
+                    };
+
+                    // Check for collision and add to existing items
+                    setItems((prevItems) => {
+                      const existingModel = prevItems.find(
+                        (item) => item.fileName === parsed.fileName
+                      );
+                      if (existingModel) {
+                        Modal.warning({
+                          title: t("Model already exists in the list"),
+                          content: `${existingModel.displayName}`,
+                        });
+                        return prevItems;
+                      }
+                      return [...prevItems, newItem];
+                    });
+
+                    setSelectedModels((prevSelected) => [
+                      ...prevSelected,
+                      newItem.id,
+                    ]);
+                  }
+                }, Promise.resolve());
+              } catch (error) {
+                Modal.error({
+                  title: t("Error"),
+                  content: t("Error processing file"),
+                });
+              } finally {
+                setEncoding(false);
+              }
+            })();
           }
           return false;
         }}
@@ -425,9 +548,9 @@ const BackupUploadArea: React.FC<Props> = ({
           >
             <Upload
               showUploadList={false}
-              multiple={false}
+              multiple
               disabled={loadingState ?? restoring}
-              beforeUpload={async (file) => {
+              beforeUpload={(file, fileList) => {
                 const isValidFormat =
                   file.name.endsWith(".etx") ||
                   file.name.endsWith(".zip") ||
@@ -437,7 +560,7 @@ const BackupUploadArea: React.FC<Props> = ({
                     title: t("Error"),
                     content: t("Please select a .etx, .zip or .yml file"),
                   });
-                  return false;
+                  return Upload.LIST_IGNORE;
                 }
 
                 const isLt100M = file.size / 1024 / 1024 < 100;
@@ -446,19 +569,148 @@ const BackupUploadArea: React.FC<Props> = ({
                     title: t("Error"),
                     content: t("File must be smaller than 100MB"),
                   });
-                  return false;
+                  return Upload.LIST_IGNORE;
                 }
 
-                setEncoding(true);
-                try {
-                  onFileSelected({
-                    name: file.name,
-                    base64Data: Buffer.from(await file.arrayBuffer()).toString(
-                      "base64"
-                    ),
-                  });
-                } finally {
-                  setEncoding(false);
+                // Process all files only once when it's the last file
+                if (fileList[fileList.length - 1] === file) {
+                  setEncoding(true);
+                  void (async () => {
+                    try {
+                      // Process each file sequentially
+                      await fileList.reduce(async (previousPromise, f) => {
+                        await previousPromise;
+                        const base64Data = Buffer.from(
+                          await f.arrayBuffer()
+                        ).toString("base64");
+
+                        const isZipOrEtx =
+                          f.name.endsWith(".zip") || f.name.endsWith(".etx");
+
+                        if (isZipOrEtx) {
+                          // Process zip/etx file - extract models and add them individually
+                          const extractedItems = await extractYamlFromZip(
+                            base64Data
+                          );
+
+                          // Create an array with fileName (object key), displayName (header.name), and content
+                          const modelList: ModelItem[] = Object.entries(
+                            extractedItems
+                          )
+                            .map(
+                              ([fileName, data]: [
+                                string,
+                                Record<string, unknown>
+                              ]) => ({
+                                id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
+                                fileName,
+                                displayName:
+                                  ((
+                                    data.header as
+                                      | Record<string, unknown>
+                                      | undefined
+                                  )?.name as string | undefined) ?? fileName,
+                                content: data,
+                                source: "individual",
+                              })
+                            )
+                            .filter((item) => item.fileName !== "labels"); // Exclude labels
+
+                          // Check for collisions with existing models and add new models
+                          const newModelIds: string[] = [];
+                          setItems((prevItems) => {
+                            const existingFileNames = new Set(
+                              prevItems.map((item) => item.fileName)
+                            );
+                            const newModels: ModelItem[] = [];
+                            const collisions: string[] = [];
+
+                            modelList.forEach((model) => {
+                              if (existingFileNames.has(model.fileName)) {
+                                collisions.push(model.displayName);
+                              } else {
+                                newModels.push(model);
+                                newModelIds.push(model.id);
+                              }
+                            });
+
+                            // Show collision warning if any
+                            if (collisions.length > 0) {
+                              Modal.warning({
+                                title: t("Model already exists in the list"),
+                                content: `${t(
+                                  "The following models were skipped because they already exist"
+                                )}: ${collisions.join(", ")}`,
+                              });
+                            }
+
+                            return [...prevItems, ...newModels];
+                          });
+
+                          // Add new model IDs to selection
+                          setSelectedModels((prevSelected) => [
+                            ...prevSelected,
+                            ...newModelIds,
+                          ]);
+                        } else if (
+                          f.name.endsWith(".yml") ||
+                          f.name.endsWith(".yaml")
+                        ) {
+                          // Process individual YAML file
+                          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                          const parsed: ParsedYamlFile = parseYamlFile(
+                            base64Data,
+                            f.name
+                          );
+
+                          const newItem: ModelItem = {
+                            id: `individual-${
+                              f.name
+                            }-${Date.now()}-${Math.random()}`,
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                            fileName: parsed.fileName,
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                            displayName:
+                              ((
+                                parsed.content.header as
+                                  | Record<string, unknown>
+                                  | undefined
+                              )?.name as string | undefined) ?? parsed.fileName,
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                            content: parsed.content,
+                            source: "individual",
+                          };
+
+                          // Check for collision and add to existing items
+                          setItems((prevItems) => {
+                            const existingModel = prevItems.find(
+                              (item) => item.fileName === parsed.fileName
+                            );
+                            if (existingModel) {
+                              Modal.warning({
+                                title: t("Model already exists in the list"),
+                                content: `${existingModel.displayName}`,
+                              });
+                              return prevItems;
+                            }
+                            return [...prevItems, newItem];
+                          });
+
+                          setSelectedModels((prevSelected) => [
+                            ...prevSelected,
+                            newItem.id,
+                          ]);
+                        }
+                      }, Promise.resolve());
+                    } catch (error) {
+                      Modal.error({
+                        title: t("Error"),
+                        content: t("Error processing file"),
+                      });
+                    } finally {
+                      setEncoding(false);
+                    }
+                  })();
                 }
                 return false;
               }}

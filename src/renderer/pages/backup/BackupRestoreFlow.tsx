@@ -452,7 +452,8 @@ const BackupRestoreFlow: React.FC = () => {
       onRestoreModels={handleRestoreModels}
       onPreviewModel={handlePreviewModel}
       onResetAfterRestore={() => {
-        // Clear file selection after restore
+        // Clear file selection and deselect SD card after restore
+        setDirectory(null);
         updateParams({
           target: undefined,
           version: undefined,

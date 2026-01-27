@@ -20,7 +20,7 @@ const Container = styled.div`
   }
 
   > :first-child {
-    max-width: 340px;
+    max-width: 200px;
   }
 
   @media screen and (max-width: 800px) {
