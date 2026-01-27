@@ -6,7 +6,7 @@ import nock from "nock";
 import { waitForStageCompleted } from "test-utils/tools";
 import { WebDFU } from "shared/dfu";
 import md5 from "md5";
-import { connect } from "shared/backend/services/dfu";
+import { connect, reconnect } from "shared/backend/services/dfu";
 import { FlashJobType } from "shared/backend/graph/flash";
 import { delay } from "shared/tools";
 
@@ -18,6 +18,7 @@ const listDevicesMock = vitest.fn() as MockedFunction<
 >;
 
 const dfuConnectMock = vitest.fn() as MockedFunction<typeof connect>;
+const dfuReconnectMock = vitest.fn() as MockedFunction<typeof reconnect>;
 
 const dfuWriteFunc = vitest.fn() as MockedFunction<WebDFU["write"]>;
 const dfuForceUnprotectFunc = vitest.fn() as MockedFunction<
@@ -31,6 +32,7 @@ const backend = createExecutor({
   },
   dfu: {
     connect: dfuConnectMock,
+    reconnect: dfuReconnectMock,
   },
 });
 
@@ -439,7 +441,7 @@ describe("Mutation", () => {
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        undefined
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
@@ -799,7 +801,7 @@ describe("Mutation", () => {
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        undefined
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
@@ -824,7 +826,7 @@ describe("Mutation", () => {
       listDevicesMock.mockResolvedValue([mockDevice as never]);
 
       const { nockDone } = await nock.back(
-        "cloudbuild-firmware-st16-2-11-0.json"
+        "cloudbuild-firmware-st16-2-11-4.json"
       );
 
       const createFlashMutation = await backend.mutate({
@@ -834,7 +836,7 @@ describe("Mutation", () => {
               firmware: {
                 source: "cloudbuild"
                 target: "st16"
-                version: "v2.11.0"
+                version: "v2.11.4"
               }
               deviceId: "some-device-id"
             ) {
@@ -858,15 +860,19 @@ describe("Mutation", () => {
       await waitForStageCompleted(jobUpdatesQueue, "download");
       nockDone();
 
+      // Flashing UF2 payload passes startAddress + reboot params
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        { reboot: false, startAddress: 0x08000000 }
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];
+      // write() is called first with bootloader only
+      expect(bufferToWrite.byteLength).toBe(65536);
+
       expect(md5(Buffer.from(bufferToWrite))).toMatchInlineSnapshot(
-        `"2a08d7ad74317a4e822d5ec2fdb474af"`
+        `"9844bbfdc9ffb0db935149ad43badf87"`
       );
     });
   });
@@ -929,7 +935,7 @@ describe("Mutation", () => {
       expect(mockDfuConnection.write).toHaveBeenCalledWith(
         mockDfuConnection.properties.TransferSize,
         expect.any(Buffer),
-        true
+        undefined
       );
 
       const bufferToWrite = mockDfuConnection.write.mock.calls[0]![1];

@@ -12,7 +12,6 @@ import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwar
 import DownloadCloudbuildButton from "renderer/components/firmware/DownloadCloudbuildButton";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
-import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
 import useFlags from "renderer/hooks/useFlags";
 
@@ -154,11 +153,6 @@ const OverviewStep: StepComponent = ({ onRestart, onPrevious }) => {
                         navigate(`./${jobId}`);
                       })
                       .catch((e: Error) => {
-                        exception({
-                          description: `Error creating flash job: ${e.message}`,
-                          fatal: true,
-                        });
-
                         void message.error(
                           t(`Could not create job: {{message}}`, {
                             message: e.message,

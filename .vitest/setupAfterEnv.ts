@@ -31,8 +31,6 @@ vi.mock("shared/dfu", () => ({
 //   return actual;
 // });
 
-vi.mock("react-ga", () => ({ exception: vi.fn() }));
-
 // vi.mock("use-media", () => {
 //   const actual = vi.importActual(
 //     "use-media"
