@@ -1,6 +1,6 @@
 {
   "(Latest)": "(Апошняя)",
-  "Add a device to get started<1></1><2>How to access DFU for your handset</2>": "Add a device to get started<1></1><2>How to access DFU for your handset</2>",
+  "Add a device to get started": "Дадайце прыладу, каб пачаць працу",
   "Add flag": "Дадаць сцяг",
   "Add new device": "Дадаць новую прыладу",
   "Available devices": "Даступныя прылады",
@@ -66,6 +66,7 @@
   "Flag": "Сцяг",
   "Flags": "Сцягі",
   "Flash": "Прашыўка",
+  "Flash this radio via Bootloader and UF2": "Flash this radio via Bootloader and UF2",
   "Flash via USB": "Прошивка праз USB",
   "Flashed": "Прашыўка",
   "Flashing": "Прашыўка",
@@ -110,7 +111,6 @@
   "Start flashing": "Пачаць прашыўку",
   "The type of radio you want to flash": "Тып радыё, які вы хочаце перапрашыць",
   "The version of EdgeTX to flash": "Версія Edge TX для ПЗ",
-  "Flash this radio via Bootloader and UF2": "Flash this radio via Bootloader and UF2",
   "These can be built locally or downloaded from the EdgeTX releases": "Яны могуць быць створаны лакальна ці загружаны з выпускаў Edge TX",
   "Unknown firmware": "Невядомае ПЗ",
   "Value": "Значэнне",
