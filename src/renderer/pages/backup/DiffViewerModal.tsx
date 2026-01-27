@@ -76,25 +76,29 @@ const DiffViewerModal: React.FC<DiffViewerModalProps> = ({
   const renderContentWithHighlight = (
     content: string,
     compareContent: string
-  ): React.ReactElement[] => {
+  ): JSX.Element => {
     const lines = content.split("\n");
     const compareLines = compareContent.split("\n");
 
-    return lines.map((line, index) => {
-      const isDifferent = compareLines[index] !== line;
-      const style: React.CSSProperties = isDifferent
-        ? { backgroundColor: "#fff1f0", color: "#cf1322" }
-        : {};
+    return (
+      <>
+        {lines.map((line, index) => {
+          const isDifferent = compareLines[index] !== line;
+          const style: React.CSSProperties = isDifferent
+            ? { backgroundColor: "#fff1f0", color: "#cf1322" }
+            : {};
 
-      // Use line content + index for unique key, avoiding array index alone
-      const uniqueKey = `${line.substring(0, 30)}-${index}`;
+          // Use line content + index for unique key, avoiding array index alone
+          const uniqueKey = `${line.substring(0, 30)}-${index}`;
 
-      return (
-        <div key={uniqueKey} style={style}>
-          {line || " "}
-        </div>
-      );
-    });
+          return (
+            <div key={uniqueKey} style={style}>
+              {line || " "}
+            </div>
+          );
+        })}
+      </>
+    );
   };
 
   return (
