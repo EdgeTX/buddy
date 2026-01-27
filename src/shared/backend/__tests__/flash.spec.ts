@@ -826,7 +826,7 @@ describe("Mutation", () => {
       listDevicesMock.mockResolvedValue([mockDevice as never]);
 
       const { nockDone } = await nock.back(
-        "cloudbuild-firmware-st16-2-11-0.json"
+        "cloudbuild-firmware-st16-2-11-4.json"
       );
 
       const createFlashMutation = await backend.mutate({
@@ -836,7 +836,7 @@ describe("Mutation", () => {
               firmware: {
                 source: "cloudbuild"
                 target: "st16"
-                version: "v2.11.0"
+                version: "v2.11.4"
               }
               deviceId: "some-device-id"
             ) {
@@ -872,7 +872,7 @@ describe("Mutation", () => {
       expect(bufferToWrite.byteLength).toBe(65536);
 
       expect(md5(Buffer.from(bufferToWrite))).toMatchInlineSnapshot(
-        `"980229639386abbf82e625e511653d42"`
+        `"9844bbfdc9ffb0db935149ad43badf87"`
       );
     });
   });
