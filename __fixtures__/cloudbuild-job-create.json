@@ -1,0 +1,69 @@
+[
+    {
+        "scope": "https://cloudbuild.edgetx.org:443",
+        "method": "POST",
+        "path": "/api/jobs",
+        "body": {
+            "release": "v2.11.0",
+            "target": "boxer",
+            "flags": [
+                {
+                    "name": "language",
+                    "value": "FR"
+                }
+            ]
+        },
+        "status": 201,
+        "response": {
+            "id": "a1796deb-8ff0-463c-8923-69296f52c78e",
+            "status": "BUILD_SUCCESS",
+            "build_attempts": 1,
+            "commit_hash": "8369a2e23a7253a9ea4c9a8cb7c80e5fcf23d235",
+            "release": "v2.11.0",
+            "target": "boxer",
+            "flags": [
+                {
+                    "name": "language",
+                    "value": "FR"
+                }
+            ],
+            "build_flags": [
+                {
+                    "key": "TRANSLATIONS",
+                    "value": "FR"
+                }
+            ],
+            "artifacts": [
+                {
+                    "id": "59010c82-c274-4d9b-9ec7-6a403b533480",
+                    "slug": "firmware",
+                    "download_url": "https://test-cloudbuild.edgetx.org/8369a2e23a7253a9ea4c9a8cb7c80e5fcf23d235-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin",
+                    "size": 529296,
+                    "created_at": "2025-05-02T08:22:15.260668Z",
+                    "updated_at": "2025-05-02T08:22:15.260668Z"
+                }
+            ],
+            "container_image": "ghcr.io/edgetx/edgetx-builder:2.11",
+            "build_flags_hash": "fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042",
+            "build_started_at": "2025-05-02T08:21:35.354443Z",
+            "build_ended_at": "2025-05-02T08:22:15.254989Z",
+            "created_at": "2025-05-02T08:21:34.836623Z",
+            "updated_at": "2025-05-02T08:22:15.258205Z"
+        },
+        "rawHeaders": {
+            "access-control-allow-origin": "*",
+            "alt-svc": "h3=\":443\"; ma=86400",
+            "cf-cache-status": "DYNAMIC",
+            "cf-ray": "93b928dead48ef91-WAW",
+            "connection": "keep-alive",
+            "content-length": "941",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Tue, 06 May 2025 14:27:40 GMT",
+            "nel": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}",
+            "report-to": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v4?s=HilH2M2xtAa1zi8HB2Mw0WvJBs3%2BknVobIcpNim1OoALqJokDZ3cHluEoloUu4JuIgOL7Tcdvic6BYFtN0ySsZSVQcqMhQJS5Y5wPEmzBUHi9MCex99pFEM8PGMiEAQBa1slW4kFsZ0%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}",
+            "server": "cloudflare",
+            "server-timing": "cfL4;desc=\"?proto=TCP&rtt=38849&min_rtt=38149&rtt_var=14806&sent=4&recv=5&lost=0&retrans=0&sent_bytes=2837&recv_bytes=823&delivery_rate=75912&cwnd=251&unsent_bytes=0&cid=a85668e1138adfe2&ts=158&x=0\""
+        },
+        "responseIsBinary": false
+    }
+]

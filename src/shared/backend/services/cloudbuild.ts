@@ -42,7 +42,7 @@ type Artifact = {
 type Job = {
   status: JobStatus;
   build_attempts: number;
-  artifacts: [Artifact];
+  artifacts?: [Artifact];
   build_started_at: string;
   build_ended_at: string;
   created_at: string;
@@ -122,6 +122,11 @@ export const waitForJobSuccess = async (
       }
       updateStatus({ jobStatus: jobStatus.status, startedAt });
 
+      if (jobStatus.status === "BUILD_ERROR") {
+        clearTimeout(timeoutId);
+        throw new Error("Build failed");
+      }
+
       if (jobStatus.status === "BUILD_SUCCESS") {
         clearTimeout(timeoutId);
         return jobStatus;
@@ -131,7 +136,7 @@ export const waitForJobSuccess = async (
     } catch (err) {
       // ignore controller abort error, it's timeout
       if (err instanceof Error && err.name === "AbortError") {
-        console.error(err);
+        // Expected timeout abort
       } else {
         throw err;
       }

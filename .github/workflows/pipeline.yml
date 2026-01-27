@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
     tags:
       - "v*"
   pull_request:
@@ -12,7 +11,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -32,7 +30,6 @@ jobs:
 
   format:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -52,10 +49,8 @@ jobs:
 
   test:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -80,10 +75,8 @@ jobs:
 
   test-types:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -103,10 +96,8 @@ jobs:
 
   storybook:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -136,11 +127,9 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
-
+        os: [macos-latest, ubuntu-22.04, windows-latest]
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -150,7 +139,7 @@ jobs:
       - name: Setup Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Install required python deps
         run: python3 -m pip install setuptools
@@ -168,8 +157,6 @@ jobs:
 
       - name: Build
         run: yarn compile:production
-        env:
-          GITHUB_PR_BUILDS_KEY: ${{ secrets.PR_BUILDS_TOKEN }}
 
       - name: Store compiled source
         uses: actions/upload-artifact@v4
@@ -183,18 +170,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       DISPLAY: :0
-
     strategy:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
-
+        os: [macos-latest, ubuntu-22.04, windows-latest]
     needs: compile
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -212,6 +195,19 @@ jobs:
         with:
           name: compiled-${{ matrix.os }}
           path: build
+
+      - name: Setup Code Signing (macOS)
+        if: runner.os == 'macOS' && github.event_name != 'pull_request'
+        run: |
+          # Code signing
+          echo 'CSC_LINK=${{ secrets.APPLE_CERT }}' >> $GITHUB_ENV
+          echo 'CSC_KEY_PASSWORD=${{ secrets.APPLE_CERT_PASSWORD }}' >> $GITHUB_ENV
+          # Notarization
+          mkdir -p ~/private_keys/
+          echo '${{ secrets.APPLE_API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+          echo 'APPLE_API_KEY=~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8' >> $GITHUB_ENV
+          echo 'APPLE_API_KEY_ID=${{ secrets.APPLE_API_KEY_ID }}' >> $GITHUB_ENV
+          echo 'APPLE_API_ISSUER=${{ secrets.APPLE_API_ISSUER_ID }}' >> $GITHUB_ENV
 
       - name: Build
         run: yarn run pack
@@ -260,32 +256,11 @@ jobs:
           name: electron-${{ matrix.os }}-recordings
           path: e2e-recordings
 
-      # - name: Setup xvfb (Linux)
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0
-      #     # start xvfb in the background
-      #     sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
-      # - name: E2E
-      #   run: yarn e2e:production
-
-      # - name: Upload failure artifacts
-      #   if: ${{ failure() }}
-      #   uses: actions/upload-artifact@v2-preview
-      #   with:
-      #     name: diff
-      #     path: |
-      #       packages/configurator/e2e/output/*.png
-      #       packages/configurator/e2e/output/*.webm
-      #       packages/configurator/e2e/output/trace/*.zip
-      # - name: Preview demo
-
   e2e-web:
     needs: compile
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -304,7 +279,7 @@ jobs:
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
         with:
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Run tests
@@ -322,15 +297,28 @@ jobs:
 
   preview-web:
     needs: [compile, storybook]
-    if: github.event_name == 'pull_request'
+    # Only run for PRs from branches within the same repository, not forks
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}}
+        name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - if: ${{ github.event_name == 'push' }}
+        name: Checkout
+        uses: actions/checkout@v4
 
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
         with:
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Fetch storybook build
@@ -346,13 +334,14 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build/renderer --project-name=buddy
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find preview comment if present
         uses: peter-evans/find-comment@v3
         id: find-preview-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
+          comment-author: "github-actions[bot]"
           body-includes: Buddy has been automatically deployed to Cloudflare
 
       - name: Create or update preview URL comment
@@ -370,27 +359,37 @@ jobs:
     needs: [e2e-web, test, storybook]
     runs-on: ubuntu-22.04
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      deployments: write
     steps:
       - name: Fetch compiled source
         uses: actions/download-artifact@v4
         with:
-          name: compiled-ubuntu-20.04
+          name: compiled-ubuntu-22.04
           path: build
 
       - name: Publish
-        uses: cloudflare/pages-action@1
+        id: cloudflare-publish
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: buddy
-          directory: build/renderer
+          command: pages deploy build/renderer --project-name=buddy
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release-app:
     needs: [build-and-test-app, test]
     runs-on: ubuntu-22.04
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Fetch binaries
         uses: actions/download-artifact@v4
         with:
@@ -398,20 +397,55 @@ jobs:
           path: app-builds
           merge-multiple: true
 
+      - name: Delete previous latest release
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        run: |
+          # Check if 'latest' release exists and delete it if it does
+          if gh release view latest --repo ${{ github.repository }} &>/dev/null; then
+            echo "Deleting previous 'latest' release"
+            gh release delete latest --yes --repo ${{ github.repository }}
+          else
+            echo "No previous 'latest' release found"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update latest tag
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Delete the tag locally and remotely if it exists
+          git tag -d latest 2>/dev/null || true
+          git push origin :refs/tags/latest 2>/dev/null || true
+          
+          # Create new tag pointing to current commit
+          git tag -a latest -m "Latest build"
+          git push origin latest --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
-        uses: marvinpinto/action-automatic-releases@4edd7a5aabb1bc62e6dc99b3302d587bf3134e20
+        uses: softprops/action-gh-release@v2
         with:
-          title: "Latest Build"
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: app-builds/*
-          automatic_release_tag: "latest"
+          name: "Latest Build"
+          files: |
+            app-builds/*.snap
+            app-builds/*.dmg
+            app-builds/*.msi
+            app-builds/*.AppImage
           prerelease: true
+          tag_name: latest
 
       - name: Release tagged build
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: marvinpinto/action-automatic-releases@4edd7a5aabb1bc62e6dc99b3302d587bf3134e20
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: app-builds/*
-          prerelease: false
+          name: "Release Build"
+          files: |
+            app-builds/*.snap
+            app-builds/*.dmg
+            app-builds/*.msi
+            app-builds/*.AppImage
+          draft: true

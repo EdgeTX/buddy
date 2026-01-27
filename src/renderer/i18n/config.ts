@@ -32,7 +32,9 @@ void i18n
     },
     defaultNS: "common",
     ns: namespaces,
-    debug: process.env.NODE_ENV !== "production",
+    debug:
+      process.env.NODE_ENV !== "production" &&
+      process.env.I18N_DEBUG === "true",
     react: {
       // locale extraction doesn't understand this property,
       // so we have to not keep any of the basic html nodes

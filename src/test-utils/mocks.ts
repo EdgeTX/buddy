@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { MockedResponse } from "@apollo/client/testing";
 import gql from "graphql-tag";
 import { times } from "shared/tools";
@@ -604,7 +605,7 @@ export const cloudbuildJobStatus = (
       query CloudFirmware($params: CloudFirmwareParams!) {
         cloudFirmwareStatus(params: $params) {
           status
-          download_url
+          downloadUrl
           base64Data
         }
       }
@@ -623,10 +624,55 @@ export const cloudbuildJobStatus = (
         ? { error: "build not found" }
         : {
             status: build_finished ? "BUILD_SUCCESS" : "BUILD_IN_PROGRESS",
-            download_url: build_finished
+            downloadUrl: build_finished
               ? "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042.bin"
               : undefined,
             base64Data: "VnMNysjG34htutTrWZJVmA==",
+          },
+    },
+  },
+  delay,
+});
+
+export const createCloudFirmware = (
+  release: string,
+  target: string,
+  flags: { name: string; value: string }[],
+  build_finished?: boolean,
+  build_error?: boolean,
+  error?: boolean,
+  delay = 200
+): MockedResponse => ({
+  request: {
+    query: gql`
+      mutation CreateCloudFirmware($params: CloudFirmwareParams!) {
+        createCloudFirmware(params: $params) {
+          status
+          downloadUrl
+        }
+      }
+    `,
+    variables: {
+      params: {
+        release,
+        target,
+        flags,
+      },
+    },
+  },
+  result: {
+    data: {
+      createCloudFirmware: error
+        ? { error: "build not found" }
+        : {
+            status: build_error
+              ? "BUILD_ERROR"
+              : build_finished
+              ? "BUILD_SUCCESS"
+              : "BUILD_IN_PROGRESS",
+            downloadUrl: build_finished
+              ? "https://test-cloudbuild.edgetx.org/da28e356449e54c57f0e5e356bd5ec5709128ff7-fe4a260cd3251164f544654df3504a9c5d7f1e0b0d8a565941415ed4e9b8e042"
+              : "",
           },
     },
   },

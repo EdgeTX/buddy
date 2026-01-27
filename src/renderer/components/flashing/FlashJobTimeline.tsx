@@ -53,7 +53,7 @@ type StageConfig = {
     post: string;
     error: string;
   };
-  showProgess?: boolean;
+  showProgress?: boolean;
   Icon: React.FC;
 };
 
@@ -116,7 +116,7 @@ const useStageConfigs = (): StageConfig[] => {
           error: t(`Could not erase existing firmware`),
         },
         Icon: DeleteOutlined,
-        showProgess: true,
+        showProgress: true,
       },
       {
         titles: { pre: t(`Flash`), active: t(`Flashing`), post: t(`Flashed`) },
@@ -130,7 +130,7 @@ const useStageConfigs = (): StageConfig[] => {
           error: t(`Could not write new firmware to radio`),
         },
         Icon: DoubleRightOutlined,
-        showProgess: true,
+        showProgress: true,
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -308,7 +308,7 @@ const FlashJobTimeline: React.FC<Props> = ({
                     {!stageStatus.error && stageStatus.status && (
                       <FlashBuildStatus status={stageStatus.status} />
                     )}
-                    {config.showProgess && !isSpecialError && (
+                    {config.showProgress && !isSpecialError && (
                       <div
                         style={{
                           marginRight: 32,

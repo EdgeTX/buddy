@@ -111,7 +111,6 @@ Promise<void> => {
           return true;
         })
         .catch((e: Error) => {
-          console.error(e);
           updateStageStatus(jobId, "erase", { error: e.message });
           return false;
         });
@@ -155,11 +154,10 @@ Promise<void> => {
         updateStageStatus(jobId, "write", { completed: true });
       })
       .catch((e: Error) => {
-        console.error(e);
         updateStageStatus(jobId, "write", { error: e.message });
       });
-  })().catch((e) => {
-    console.error(e);
+  })().catch(() => {
+    // Error handled above
     cancelSdcardJob(jobId);
   });
 };
@@ -275,11 +273,13 @@ const erase = async (
             entry.kind === "directory" ? { recursive: true } : undefined
           )
           .catch((e) => {
-            // Some weird macos folder
+            const error = e as Error;
+            // Handle stale file system handles or file already deleted
             if (
-              (e as Error).message.includes(
+              error.message.includes(
                 "An operation that depends on state cached in an interface object"
-              )
+              ) ||
+              error.name === "NotFoundError"
             ) {
               return;
             }

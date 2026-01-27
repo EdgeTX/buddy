@@ -26,7 +26,7 @@ test("Latest firmware is pre selected by default", async ({
 test("Radio model can be searched", async ({ queries, page }) => {
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (
-    await queries.findByText('EdgeTX "Flying Dutchman" v2.8.5', undefined, {
+    await queries.findByText('EdgeTX "Centurion" v2.10.6', undefined, {
       timeout: 20000,
     })
   ).click();
@@ -63,7 +63,7 @@ test("Flash via USB is disabled if model is not selected", async ({
   await expectFlashButtonIsDisabled();
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await (
-    await queries.findByText('EdgeTX "Flying Dutchman" v2.8.5', undefined, {
+    await queries.findByText('EdgeTX "Centurion" v2.10.6', undefined, {
       timeout: 20000,
     })
   ).click();
@@ -96,8 +96,8 @@ const streamToString = (stream: Readable): Promise<string> => {
     testCase: "Can download the selected firmware target",
     radioName: "FrSky X-Lite S",
     expected: {
-      fileName: "xlites-v2.8.5.bin",
-      fileHash: "ac0467c5a9ec9e8cee22b7a2a97e523e",
+      fileName: "xlites-v2.10.6.bin",
+      fileHash: "517d8108fdc638091c6e5f0804e82a6f",
     },
   },
   {
@@ -106,15 +106,15 @@ const streamToString = (stream: Readable): Promise<string> => {
     expected: {
       // In this case `x7` could match `x7-access` due to the way the code names
       // were previously matched
-      fileName: "x7-v2.8.5.bin",
-      fileHash: "1e4f20364c0a2b9caeb3b8bdae61858e",
+      fileName: "x7-v2.10.6.bin",
+      fileHash: "f8322236e059ecdfa6487aea8b4668b0",
     },
   },
 ].forEach(({ testCase, radioName, expected }) => {
   test(testCase, async ({ queries, page, isElectron, tempDownloadDir }) => {
     await (await queries.findByLabelText("Firmware version")).press("Enter");
     await (
-      await queries.findByText('EdgeTX "Flying Dutchman" v2.8.5', undefined, {
+      await queries.findByText('EdgeTX "Centurion" v2.10.6', undefined, {
         timeout: 20000,
       })
     ).click();
@@ -129,7 +129,7 @@ const streamToString = (stream: Readable): Promise<string> => {
       // Start waiting for the download
       !isElectron ? page.waitForEvent("download") : undefined,
       // Perform the action that initiates download
-      (await queries.getByText("Download .bin")).click(),
+      (await queries.getByText("Download file")).click(),
     ]);
 
     // In browser we can use the download event
@@ -160,9 +160,7 @@ test("Copy URL button copies a link to the selected firmware", async ({
   test.skip(browserName !== "chromium");
   await (await queries.findByLabelText("Firmware version")).press("Enter");
   await page
-    .locator(
-      ".ant-select-item-option[title='EdgeTX \"Flying Dutchman\" v2.8.5']"
-    )
+    .locator(".ant-select-item-option[title='EdgeTX \"Centurion\" v2.10.6']")
     .click();
 
   const radioSelector = await queries.findByLabelText("Radio model");
@@ -183,9 +181,9 @@ test("Copy URL button copies a link to the selected firmware", async ({
 
   if (isElectron) {
     expect(copiedUrl).toBe(
-      "buddy.edgetx.org/#/flash?version=v2.8.5&target=x10"
+      "buddy.edgetx.org/#/flash?version=v2.10.6&target=x10"
     );
   } else {
-    expect(copiedUrl).toBe("localhost:8081/#/flash?version=v2.8.5&target=x10");
+    expect(copiedUrl).toBe("localhost:8081/#/flash?version=v2.10.6&target=x10");
   }
 });

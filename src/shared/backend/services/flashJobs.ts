@@ -38,7 +38,7 @@ export const createJob = (
   return job;
 };
 
-export const startExecution = async (
+async function fetchFromCloudbuild(
   jobId: string,
   args: {
     device: USBDevice;
@@ -50,10 +50,94 @@ export const startExecution = async (
       selectedFlags?: { name: string; value: string }[];
     };
   },
-  { dfu, firmwareStore, cloudbuild }: Context
+  { cloudbuild }: Context
+): Promise<Buffer | undefined> {
+  updateStageStatus(jobId, "build", { started: true });
+
+  const params = {
+    release: args.firmware.version,
+    target: args.firmware.target,
+    flags: args.firmware.selectedFlags ?? [],
+  };
+
+  let status = await cloudbuild.createJob(params).catch((e: Error) => {
+    updateStageStatus(jobId, "build", {
+      error: e.message,
+    });
+    return undefined;
+  });
+
+  if (!status || isCancelled(jobId)) {
+    return undefined;
+  }
+
+  // if the build is creating, wait
+  if (status.status !== "BUILD_SUCCESS") {
+    updateStageStatus(jobId, "build", {});
+    status = await cloudbuild
+      .waitForJobSuccess(params, (statusData) => {
+        updateStageStatus(jobId, "build", {
+          status: statusData,
+          progress: 0,
+        });
+      })
+      .catch((e: Error) => {
+        updateStageStatus(jobId, "build", {
+          error: e.message,
+        });
+        return undefined;
+      });
+    if (!status || isCancelled(jobId)) {
+      return undefined;
+    }
+  }
+
+  updateStageStatus(jobId, "build", {
+    completed: true,
+  });
+
+  // success, download
+  updateStageStatus(jobId, "download", {
+    started: true,
+  });
+
+  if (!status.artifacts) {
+    updateStageStatus(jobId, "download", {
+      error: "missing artifact",
+    });
+    return undefined;
+  }
+
+  return cloudbuild
+    .downloadBinary(status.artifacts[0].download_url)
+    .catch((e: Error) => {
+      updateStageStatus(jobId, "download", {
+        error: e.message,
+      });
+      return undefined;
+    });
+}
+
+export const startExecution = async (
+  jobId: string,
+  args: {
+    device: USBDevice;
+    firmware: {
+      data?: Buffer;
+      url?: string;
+      source: string;
+      target: string;
+      version: string;
+      selectedFlags?: { name: string; value: string }[];
+    };
+  },
+  context: Context
 ): Promise<void> => {
-  let firmwareData = args.firmware.data;
-  const isCloudBuild = !!args.firmware.selectedFlags;
+  const { dfu, firmwareStore } = context;
+  const { firmware } = args;
+  const isCloudBuild = firmware.source === "cloudbuild";
+
+  let firmwareData = firmware.data;
   let dfuProcess: WebDFU | undefined;
 
   const cleanUp = async (): Promise<void> => {
@@ -99,66 +183,10 @@ export const startExecution = async (
     });
 
     if (isCloudBuild) {
-      updateStageStatus(jobId, "build", { started: true });
-
-      const params = {
-        release: args.firmware.version,
-        target: args.firmware.target,
-        flags: args.firmware.selectedFlags ?? [],
-      };
-
-      let status = await cloudbuild.createJob(params).catch((e: Error) => {
-        updateStageStatus(jobId, "build", {
-          error: e.message,
-        });
-        return undefined;
-      });
-
-      if (!status || isCancelled(jobId)) {
-        return;
-      }
-
-      // if the build is creating, wait
-      if (status.status !== "BUILD_SUCCESS") {
-        updateStageStatus(jobId, "build", {});
-        status = await cloudbuild
-          .waitForJobSuccess(params, (statusData) => {
-            updateStageStatus(jobId, "build", {
-              status: statusData,
-              progress: 0,
-            });
-          })
-          .catch((e: Error) => {
-            updateStageStatus(jobId, "build", {
-              error: e.message,
-            });
-            return undefined;
-          });
-        if (!status || isCancelled(jobId)) {
-          return;
-        }
-      }
-
-      updateStageStatus(jobId, "build", {
-        completed: true,
-      });
-
-      // success, download
-      updateStageStatus(jobId, "download", {
-        started: true,
-      });
-      firmwareData = await cloudbuild
-        .downloadBinary(status.artifacts[0].download_url)
-        .catch((e: Error) => {
-          updateStageStatus(jobId, "download", {
-            error: e.message,
-          });
-          return undefined;
-        });
+      firmwareData = await fetchFromCloudbuild(jobId, args, context);
       if (!firmwareData || isCancelled(jobId)) {
         return;
       }
-
       updateStageStatus(jobId, "download", {
         completed: true,
         progress: 100,
@@ -195,8 +223,8 @@ export const startExecution = async (
 
     await flash(jobId, dfuProcess, firmwareData);
   })()
-    .catch(async (e) => {
-      console.error(e, await dfuProcess?.getStatus().catch(() => ({})));
+    .catch(async () => {
+      // Error handled in flash() function
     })
     .finally(async () => {
       await cleanUp();

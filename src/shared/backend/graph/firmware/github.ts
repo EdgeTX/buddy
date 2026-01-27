@@ -130,6 +130,7 @@ builder.queryType({
           sort: "created",
           state: "open",
           direction: "desc",
+          per_page: 100,
         });
 
         return prs.data.map((pr) => ({

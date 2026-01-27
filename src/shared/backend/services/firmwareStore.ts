@@ -3,6 +3,7 @@ import { ZipInfoRaw, unzipRaw } from "unzipit";
 import ZipHTTPRangeReader from "shared/backend/utils/ZipHTTPRangeReader";
 import ky from "ky";
 import config from "shared/backend/config";
+import environment from "shared/environment";
 import { uniqueBy } from "shared/tools";
 import { GithubClient } from "shared/api/github";
 
@@ -19,12 +20,15 @@ const firmwareBundleBlobs: Record<string, Promise<Blob>> = {};
 
 const firmwareTargetsCache: Record<string, Promise<Target[]>> = {};
 
+const firmwarePattern = /(\.bin|\.uf2)$/i;
+
 const firmwareBundle = async (url: string): Promise<ZipInfoRaw> => {
   // For github action related assets we can't use Range reads :(
   const reader = url.includes("api.github.com")
     ? await (async () => {
         if (!firmwareBundleBlobs[url]) {
           firmwareBundleBlobs[url] = ky(url, {
+            prefixUrl: !environment.isMain ? config.proxyUrl : undefined,
             headers: {
               Authorization: config.github.prBuildsKey
                 ? `token ${config.github.prBuildsKey}`
@@ -82,7 +86,10 @@ export const firmwareTargets = async (
 
 const firmwareFileNameToId = (fileName: string): string => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const withoutExtension = fileName.split("/").pop()!.replace(".bin", "");
+  const withoutExtension = fileName
+    .split("/")
+    .pop()!
+    .replace(firmwarePattern, "");
   const withoutCommitHash = withoutExtension.split("-").slice(0, -1).join("-");
 
   return withoutCommitHash;
@@ -95,7 +102,8 @@ export const fetchFirmware = async (
   const { entries } = await firmwareBundle(firmwareBundleUrl);
   const firmwareFile = entries.find(
     (entry) =>
-      entry.name.endsWith(".bin") && firmwareFileNameToId(entry.name) === target
+      entry.name.match(firmwarePattern) &&
+      firmwareFileNameToId(entry.name) === target
   );
 
   if (!firmwareFile) {

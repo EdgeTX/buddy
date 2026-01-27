@@ -13,6 +13,7 @@ import { Centered, FullHeight } from "renderer/shared/layouts";
 import useVersionFilters from "renderer/hooks/useVersionFilters";
 import useIsMobile from "renderer/hooks/useIsMobile";
 import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwareButton";
+import DownloadCloudbuildButton from "renderer/components/firmware/DownloadCloudbuildButton";
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import FlashButton from "renderer/components/flashing/FlashButton";
 import { useTranslation } from "react-i18next";
@@ -65,22 +66,21 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation("flashing");
   const { parseParam, updateParams } = useQueryParams<
-    "version" | "target" | "filters" | "selectedFlags"
+    "source" | "version" | "target" | "filters" | "selectedFlags"
   >();
 
+  const source = parseParam("source");
   const version = parseParam("version");
   const target = parseParam("target");
   const { selectedFlags, encodeFlags } = useFlags(parseParam("selectedFlags"));
   const { filters, encodeFilters } = useVersionFilters(parseParam("filters"));
 
-  const isCloudBuildValid =
+  const isBuildValid =
     !!version &&
     !!target &&
     (selectedFlags?.every((flag) => flag.name && flag.value) ?? true);
 
-  const [activeTab, setActiveTab] = useState<string>(
-    selectedFlags ? "cloudbuild" : "releases"
-  );
+  const [activeTab, setActiveTab] = useState<string>(source ?? "releases");
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -116,6 +116,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
             destroyInactiveTabPane
             onChange={(key) => {
               updateParams({
+                source: key,
                 version: undefined,
                 target: undefined,
               });
@@ -139,6 +140,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                   if (activeTab === "releases") {
                     updateParams({
                       ...params,
+                      source: activeTab,
                       filters: encodeFilters(params.filters),
                     });
                   }
@@ -198,6 +200,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
                 onChanged={(params) => {
                   if (activeTab === "cloudbuild") {
                     updateParams({
+                      source: "cloudbuild",
                       version: params.version,
                       target: params.target,
                       selectedFlags: encodeFlags(params.selectedFlags),
@@ -232,22 +235,23 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
-        {activeTab !== "cloudbuild" && (
-          <DownloadFirmwareButton
+        {activeTab === "cloudbuild" && (
+          <DownloadCloudbuildButton
             target={target}
             version={version}
             selectedFlags={selectedFlags}
-            isCloudBuild={activeTab === "cloudbuild"}
           >
-            {t(`Download .bin`)}
+            {t(`Download file`)}
+          </DownloadCloudbuildButton>
+        )}
+        {activeTab !== "cloudbuild" && (
+          <DownloadFirmwareButton target={target} version={version}>
+            {t(`Download file`)}
           </DownloadFirmwareButton>
         )}
         <FlashButton
-          disabled={
-            !target ||
-            !version ||
-            (activeTab === "cloudbuild" && !isCloudBuildValid)
-          }
+          disabled={!isBuildValid}
+          target={target}
           onClick={() => {
             onNext?.();
           }}
