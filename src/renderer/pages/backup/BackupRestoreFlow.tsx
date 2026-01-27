@@ -131,7 +131,7 @@ const BackupRestoreFlow: React.FC = () => {
           backupContent
         }
       }
-    `)
+    `) as import("@apollo/client").DocumentNode
   );
 
   const { data } = useQuery(

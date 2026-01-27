@@ -15,6 +15,7 @@ import {
   Radio,
   Space,
 } from "antd";
+import type { RadioChangeEvent } from "antd";
 import React, { useState } from "react";
 import { useMutation, gql, useQuery } from "@apollo/client";
 import environment from "shared/environment";
@@ -178,7 +179,7 @@ const BackupCreateFlow: React.FC = () => {
     setProgress(0);
 
     const isoString = new Date().toISOString();
-    const timestamp: string = isoString.replace(/[:.]/g, "-").split("T")[0];
+    const timestamp = isoString.replace(/[:.]/g, "-").split("T")[0]!;
 
     // Simulate progress
     const interval = setInterval(() => {
@@ -411,7 +412,7 @@ const BackupCreateFlow: React.FC = () => {
             <Typography.Text strong>{t(`Export format`)}</Typography.Text>
             <Radio.Group
               value={downloadFormat}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(e: RadioChangeEvent) => {
                 const value = e.target.value as "etx" | "zip" | "individual";
                 setDownloadFormat(value);
               }}

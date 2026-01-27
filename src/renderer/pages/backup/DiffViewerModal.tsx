@@ -76,7 +76,7 @@ const DiffViewerModal: React.FC<DiffViewerModalProps> = ({
   const renderContentWithHighlight = (
     content: string,
     compareContent: string
-  ): React.ReactNode => {
+  ): React.ReactElement[] => {
     const lines = content.split("\n");
     const compareLines = compareContent.split("\n");
 
