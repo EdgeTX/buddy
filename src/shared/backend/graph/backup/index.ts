@@ -1,7 +1,8 @@
-import { createBuilder } from "shared/backend/utils/builder";
-
-const builder = createBuilder();
+import { mergeSchemas } from "@graphql-tools/schema";
+import local from "./local";
 
 export default {
-  schema: builder.toSchema({}),
+  schema: mergeSchemas({
+    schemas: [local.schema],
+  }),
 };

@@ -5,14 +5,35 @@ import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
 import BackupUploadArea from "./BackupUploadArea";
 
+type ModelItem = {
+  id: string;
+  fileName: string;
+  displayName: string;
+  content: Record<string, unknown>;
+  source: string;
+};
+
 type BackupUploaderProps = {
   onFileUploaded: (fileId?: string) => void;
+  onRestoreModels?: (models: ModelItem[]) => void;
+  onPreviewModel?: (
+    modelContent: Record<string, unknown>,
+    modelName: string
+  ) => void;
+  onResetAfterRestore?: () => void;
   selectedFile?: string;
+  directorySelected?: boolean;
+  restoring?: boolean;
 };
 
 const BackupUploader: React.FC<BackupUploaderProps> = ({
   onFileUploaded,
+  onRestoreModels,
+  onPreviewModel,
+  onResetAfterRestore,
   selectedFile,
+  directorySelected,
+  restoring,
 }) => {
   const { t } = useTranslation("backup");
   const { data, loading } = useQuery(
@@ -21,6 +42,7 @@ const BackupUploader: React.FC<BackupUploaderProps> = ({
         localBackup(byId: $fileId) {
           id
           name
+          base64Data
         }
       }
     `),
@@ -57,6 +79,9 @@ const BackupUploader: React.FC<BackupUploaderProps> = ({
     <BackupUploadArea
       loading={loading || uploading}
       uploadedFile={backupInfo ?? undefined}
+      directorySelected={directorySelected}
+      restoring={restoring}
+      onResetAfterRestore={onResetAfterRestore}
       onFileSelected={(file) => {
         if (file) {
           void registerBackup({
@@ -67,8 +92,7 @@ const BackupUploader: React.FC<BackupUploaderProps> = ({
           })
             .then((result) => {
               if (result.data) {
-                console.log(result);
-                // onFileUploaded(result.data.registerLocalBackup.id);
+                onFileUploaded(result.data.registerLocalBackup.id);
               }
             })
             .catch((e: Error) => {
@@ -82,6 +106,8 @@ const BackupUploader: React.FC<BackupUploaderProps> = ({
           onFileUploaded();
         }
       }}
+      onRestoreModels={onRestoreModels}
+      onPreviewModel={onPreviewModel}
     />
   );
 };

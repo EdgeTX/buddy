@@ -1,6 +1,6 @@
 {
   "(Latest)": "(Poslední)",
-  "Add a device to get started": "Přidejte zařízení",
+  "Add a device to get started<1></1><2>How to access DFU for your handset</2>": "Add a device to get started<1></1><2>How to access DFU for your handset</2>",
   "Add flag": "Add flag",
   "Add new device": "Přidat zařízení",
   "Available devices": "Dostupná zařízení",
@@ -68,7 +68,6 @@
   "Flashing done": "Zapisování dokončeno",
   "Flashing EdgeTX": "Zapisování EdgeTX",
   "Go back": "Zpět",
-  "How to access DFU for your handset": "Jak přistupovat k DFU pro váš přístroj",
   "In queue": "In queue",
   "Include pre-releases": "Include pre-releases",
   "Loading commits...": "Stahuji commity...",

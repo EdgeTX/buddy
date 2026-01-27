@@ -1,6 +1,6 @@
 {
   "(Latest)": "(Neueste)",
-  "Add a device to get started": "Fügen Sie ein Gerät hinzu, um loszulegen",
+  "Add a device to get started<1></1><2>How to access DFU for your handset</2>": "Add a device to get started<1></1><2>How to access DFU for your handset</2>",
   "Add flag": "Schalter hinzufügen",
   "Add new device": "Neues Gerät hinzufügen",
   "Available devices": "Verfügbare Geräte",
@@ -68,7 +68,6 @@
   "Flashing done": "Flashen fertig",
   "Flashing EdgeTX": "Flashe EdgeTX",
   "Go back": "Zurück",
-  "How to access DFU for your handset": "So greifen Sie auf den DFU-Modus für Ihr Gerät zu",
   "In queue": "In queue",
   "Include pre-releases": "Vorabversionen einbeziehen",
   "Loading commits...": "Commits werden geladen...",

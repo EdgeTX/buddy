@@ -1,6 +1,6 @@
 {
   "(Latest)": "(Senaste)",
-  "Add a device to get started": "Lägg till en enhet för att börja",
+  "Add a device to get started<1></1><2>How to access DFU for your handset</2>": "Add a device to get started<1></1><2>How to access DFU for your handset</2>",
   "Add flag": "Addera flagga",
   "Add new device": "Lägg till ny enhet",
   "Available devices": "Tillgängliga enheter",
@@ -68,7 +68,6 @@
   "Flashing done": "Flashning klar",
   "Flashing EdgeTX": "Flashar EdgeTX",
   "Go back": "Tillbaka",
-  "How to access DFU for your handset": "Hur man får tillgång till DFU för din handenhet",
   "In queue": "I kö",
   "Include pre-releases": "Inkludera utvecklingsversioner",
   "Loading commits...": "Läser in git commits...",

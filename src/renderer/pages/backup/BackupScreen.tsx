@@ -1,67 +1,94 @@
-import { Divider } from "antd";
-import React from "react";
-import {
-  FullHeightCentered,
-  FullHeight,
-  Centered,
-} from "renderer/shared/layouts";
+import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
+import { Tabs, Typography } from "antd";
+import React, { useState } from "react";
+import { FullHeight } from "renderer/shared/layouts";
 import styled from "styled-components";
-import useQueryParams from "renderer/hooks/useQueryParams";
-import BackupUploader from "./file/BackupUploader";
+import { useTranslation } from "react-i18next";
+import BackupRestoreFlow from "./BackupRestoreFlow";
+import BackupCreateFlow from "./BackupCreateFlow";
 
 const Container = styled.div`
   display: flex;
+  flex-direction: row;
   height: 100%;
-  width: 100%;
+  padding: 32px;
+  gap: 24px;
+
+  > * {
+    flex: 1;
+    height: 100%;
+  }
+
+  > :first-child {
+    max-width: 340px;
+  }
+
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
+    padding: 16px;
+    gap: 24px;
+
+    > :first-child {
+      max-width: 100%;
+    }
+  }
+`;
+
+const ContentContainer = styled.div`
+  overflow-y: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const BackupScreen: React.FC = () => {
-  const { parseParam, updateParams } = useQueryParams<
-    "version" | "target" | "filters" | "selectedFlags"
-  >();
-
-  const version = parseParam("version");
-  const target = parseParam("target");
-
-  const backupUploadArea = (
-    <BackupUploader
-      selectedFile={version === "local" ? target : undefined}
-      onFileUploaded={(fileId) => {
-        if (fileId) {
-          updateParams({
-            target: fileId,
-            version: "local",
-          });
-        } else {
-          updateParams({
-            target: undefined,
-            version: undefined,
-          });
-        }
-      }}
-    />
-  );
+  const { t } = useTranslation("backup");
+  const [activeTab, setActiveTab] = useState<string>("restore");
 
   return (
-    <Container>
-      <FullHeightCentered style={{ flex: 1, alignItems: "center" }}>
-        <FullHeight
-          style={{
-            margin: "16px",
-            maxWidth: 600,
-            width: "100%",
-            maxHeight: 900,
-            justifyContent: "space-between",
-          }}
+    <FullHeight>
+      <Container>
+        <Tabs
+          activeKey={activeTab}
+          onChange={(key) => setActiveTab(key)}
+          tabPosition="left"
         >
-          {backupUploadArea}
-        </FullHeight>
-      </FullHeightCentered>
-      <Divider type="vertical" style={{ height: "100%" }} />
-      <FullHeightCentered style={{ flex: 1, maxWidth: "600px" }}>
-        <Centered />
-      </FullHeightCentered>
-    </Container>
+          <Tabs.TabPane
+            tab={
+              <span>
+                <UploadOutlined />
+                {t(`Restore backup`)}
+              </span>
+            }
+            key="restore"
+          >
+            {/* Content rendered on the right side */}
+          </Tabs.TabPane>
+          <Tabs.TabPane
+            tab={
+              <span>
+                <DownloadOutlined />
+                {t(`Create backup`)}
+              </span>
+            }
+            key="create"
+          >
+            {/* Content rendered on the right side */}
+          </Tabs.TabPane>
+        </Tabs>
+
+        <ContentContainer>
+          <Typography.Title
+            level={3}
+            style={{ marginTop: 0, marginBottom: 12 }}
+          >
+            {activeTab === "restore" ? t(`Restore backup`) : t(`Create backup`)}
+          </Typography.Title>
+          {activeTab === "restore" && <BackupRestoreFlow />}
+          {activeTab === "create" && <BackupCreateFlow />}
+        </ContentContainer>
+      </Container>
+    </FullHeight>
   );
 };
 

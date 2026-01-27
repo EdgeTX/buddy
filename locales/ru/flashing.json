@@ -1,6 +1,6 @@
 {
   "(Latest)": "(Последняя)",
-  "Add a device to get started": "Добавьте устройство, чтобы начать работу",
+  "Add a device to get started<1></1><2>How to access DFU for your handset</2>": "Add a device to get started<1></1><2>How to access DFU for your handset</2>",
   "Add flag": "Добав флаг",
   "Add new device": "Добавить новое устройство",
   "Available devices": "Доступные устройства",
@@ -68,7 +68,6 @@
   "Flashing done": "Перепрошивка завершена",
   "Flashing EdgeTX": "Прошивка EdgeTX",
   "Go back": "Назад",
-  "How to access DFU for your handset": "Как получить доступ к DFU для вашего аппарата",
   "In queue": "In queue",
   "Include pre-releases": "Включать пре-релизы",
   "Loading commits...": "Загрузка коммитов...",

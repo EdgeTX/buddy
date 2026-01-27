@@ -6,6 +6,11 @@ import { isArrayOf, isNotUndefined, isString } from "type-guards";
 import semver from "semver";
 import { createBuilder } from "shared/backend/utils/builder";
 import type { TypeOf } from "shared/backend/types";
+import {
+  registerDirectory,
+  getDirectoryHandleById as getDirectoryHandleByIdFromStore,
+  getAllDirectories,
+} from "shared/backend/graph/backup/sdcard-directory-store";
 
 const builder = createBuilder();
 // TODO: Move SD card assets to own module
@@ -137,7 +142,7 @@ const SdcardDirectory = builder.simpleObject("SdcardDirectory", {
 });
 
 const getDirectoryHandle = (id: string): FileSystemDirectoryHandle => {
-  const handle = directories.find((directory) => directory.id === id)?.handle;
+  const handle = getDirectoryHandleByIdFromStore(id);
 
   if (!handle) {
     throw new GraphQLError("Directory handle does not exist");
@@ -340,6 +345,7 @@ builder.queryType({
         id: t.arg.id({ required: true }),
       },
       resolve: async (_, { id }) => {
+        const directories = getAllDirectories();
         const handle = directories.find(
           (directory) => directory.id === id
         )?.handle;
@@ -363,6 +369,37 @@ builder.queryType({
                 ids: [],
               },
               themes: [],
+            }
+          : null;
+      },
+    }),
+    sdcardModelsDirectory: t.field({
+      type: SdcardDirectory,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+      },
+      resolve: async (_, { id }) => {
+        const directories = getAllDirectories();
+        const handle = directories.find(
+          (directory) => directory.id === id
+        )?.handle;
+
+        // Make sure the directory still exists
+        if (handle) {
+          try {
+            await arrayFromAsync(handle.keys());
+          } catch {
+            return null;
+          }
+        }
+
+        return handle
+          ? {
+              id,
+              name: handle.name,
+              pack: { version: null, target: null },
+              models: [],
             }
           : null;
       },
@@ -442,14 +479,7 @@ builder.mutationType({
         }
 
         const id = uuid.v4();
-        directories.push({
-          id,
-          handle,
-        });
-
-        if (directories.length > maxDirectoriesHandles) {
-          directories.shift();
-        }
+        registerDirectory(id, handle);
 
         return {
           id,
@@ -459,6 +489,7 @@ builder.mutationType({
             version: null,
             target: null,
           },
+          models: [],
           sounds: {
             ids: [],
             version: null,
@@ -490,6 +521,7 @@ builder.mutationType({
         clean: t.arg.boolean(),
       },
       resolve: async (_, { directoryId, pack, clean, sounds }, context) => {
+        const directories = getAllDirectories();
         const directory = directories.find((d) => d.id === directoryId);
 
         if (!directory) {
@@ -642,6 +674,49 @@ builder.objectFields(SdcardDirectory, (t) => ({
       ));
     },
   }),
+  models: t.stringList({
+    resolve: async ({ id }) => {
+      const handle = getDirectoryHandle(id.toString());
+      const modelsDirectoryHandle = await handle
+        .getDirectoryHandle("MODELS", { create: true })
+        .catch(() => undefined);
+
+      if (modelsDirectoryHandle) {
+        const modelFiles = await arrayFromAsync(modelsDirectoryHandle.values());
+        const modelFileConfigs = await Promise.all(
+          modelFiles
+            .filter(
+              (file): file is FileSystemFileHandle =>
+                file.kind === "file" &&
+                file.name.endsWith(".yml") &&
+                file.name !== "labels.yml"
+            )
+            .map((file) => file.name.replace(".yml", ""))
+        );
+
+        return modelFileConfigs;
+      }
+      return [];
+    },
+  }),
+  hasLabels: t.boolean({
+    resolve: async ({ id }) => {
+      const handle = getDirectoryHandle(id.toString());
+      const modelsDirectoryHandle = await handle
+        .getDirectoryHandle("MODELS", { create: true })
+        .catch(() => undefined);
+
+      if (modelsDirectoryHandle) {
+        try {
+          await modelsDirectoryHandle.getFileHandle("labels.yml");
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    },
+  }),
   themes: t.stringList({
     resolve: async ({ id }) => {
       const handle = getDirectoryHandle(id.toString());
@@ -737,12 +812,6 @@ builder.objectFields(SdcardDirectory, (t) => ({
     },
   }),
 }));
-
-const maxDirectoriesHandles = 5;
-const directories: {
-  handle: FileSystemDirectoryHandle;
-  id: string;
-}[] = [];
 
 export default {
   schema: builder.toSchema({}),
