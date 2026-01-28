@@ -27,6 +27,7 @@ export default () => {
         })
         .then((result) => {
           if (result.data) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
             return result.data.createCloudFirmware;
           }
           throw new Error(

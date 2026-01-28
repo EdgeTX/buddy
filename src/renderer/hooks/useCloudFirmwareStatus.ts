@@ -26,6 +26,7 @@ export default () => {
           variables: { params },
           fetchPolicy: "network-only",
         })
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
         .then((result) => result.data.cloudFirmware);
       return queryResult;
     },

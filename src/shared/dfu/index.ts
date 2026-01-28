@@ -410,7 +410,6 @@ export class WebDFU {
         // eslint-disable-next-line no-await-in-loop
         strings[index] = await this.readStringDescriptor(index, 0x0409);
       } catch (error) {
-        console.log(error);
         strings[index] = null;
       }
     }

@@ -223,8 +223,8 @@ export const startExecution = async (
 
     await flash(jobId, dfuProcess, firmwareData);
   })()
-    .catch(async (e) => {
-      console.error(e, await dfuProcess?.getStatus().catch(() => ({})));
+    .catch(async () => {
+      // Error handled in flash() function
     })
     .finally(async () => {
       await cleanUp();

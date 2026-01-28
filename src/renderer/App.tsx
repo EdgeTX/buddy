@@ -5,6 +5,7 @@ import environment from "shared/environment";
 import Layout from "./Layout";
 import FlashingWizard from "./pages/flash/FlashingWizard";
 import FlashExecution from "./pages/flash/FlashExecution";
+import BackupScreen from "./pages/backup/BackupScreen";
 import SdcardEditor from "./pages/sdcard/SdcardEditor";
 import SelectSdcardScreen from "./pages/sdcard/SelectSdcardScreen";
 import CompatNoticeHandler from "./compatibility/CompatNoticeHandler";
@@ -26,6 +27,7 @@ const App: React.FC = () => (
       <Routes>
         <Route path="/flash" element={<FlashingWizard />} />
         <Route path="/flash/:jobId" element={<FlashExecution />} />
+        <Route path="/backup" element={<BackupScreen />} />
         <Route path="/dev/*" element={<DevTools route="/dev/" />} />
         <Route path="/sdcard" element={<SelectSdcardScreen />} />
         <Route path="/sdcard/:directoryId" element={<SdcardEditor />} />
