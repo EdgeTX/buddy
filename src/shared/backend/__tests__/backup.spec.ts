@@ -473,6 +473,43 @@ describe("Backup", () => {
           "model05",
         ]);
       });
+
+      it("should error when MODELS directory does not exist", async () => {
+        // Don't create MODELS directory - use empty tempDir
+
+        // Pick directory
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Query available slots - should fail because MODELS doesn't exist
+        const { errors } = await backend.query({
+          query: gql`
+            query GetSlots($directoryId: ID!, $count: Int!) {
+              availableModelSlots(directoryId: $directoryId, count: $count)
+            }
+          `,
+          variables: { directoryId, count: 3 },
+        });
+
+        expect(errors).toBeTruthy();
+      });
     });
   });
 
@@ -834,6 +871,68 @@ describe("Backup", () => {
         const files = await fs.readdir(modelsPath);
         expect(files).toContain("model99.yml");
         expect(files).not.toContain("model01.yml");
+      });
+
+      it("should return failed status when backup data is corrupted", async () => {
+        await setupSdcardDirectory(tempDir.path);
+
+        // Register a backup with corrupted (non-ZIP) data
+        const corruptedData = Buffer.from("this is not a valid zip file");
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: corruptedData.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        // Pick directory
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Try to restore corrupted backup - should return failed status
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                status
+                error
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        // Should not throw GraphQL error, but return a failed status
+        expect(errors).toBeFalsy();
+        expect((data as any)?.restoreBackupToSdcard.status).toBe("failed");
+        expect((data as any)?.restoreBackupToSdcard.error).toBeTruthy();
       });
     });
 
@@ -1349,6 +1448,101 @@ describe("Backup", () => {
 
         expect(errors).toBeTruthy();
         expect(errors?.[0]?.message).toContain("Directory not found");
+      });
+
+      it("createBackupFromSdcard should error when no models found", async () => {
+        // Create empty MODELS directory
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Pick directory
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Try to create backup from empty models directory
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation CreateBackup($directoryId: ID!) {
+              createBackupFromSdcard(directoryId: $directoryId) {
+                id
+              }
+            }
+          `,
+          variables: {
+            directoryId,
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("No models found");
+        void modelsPath; // Use variable to avoid lint warning
+      });
+
+      it("downloadIndividualModels should error when no models found", async () => {
+        // Create empty MODELS directory
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Pick directory
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Try to download nonexistent models
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation DownloadModels(
+              $directoryId: ID!
+              $selectedModels: [String!]!
+            ) {
+              downloadIndividualModels(
+                directoryId: $directoryId
+                selectedModels: $selectedModels
+              ) {
+                fileName
+              }
+            }
+          `,
+          variables: {
+            directoryId,
+            selectedModels: ["nonexistent01", "nonexistent02"],
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("No models found");
+        void modelsPath; // Use variable to avoid lint warning
       });
     });
   });
