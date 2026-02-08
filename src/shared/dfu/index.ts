@@ -262,7 +262,7 @@ export class WebDFU {
               configuration: conf,
               interface: intf,
               alternate: alt,
-              name: alt.interfaceName,
+              name: alt.interfaceName ?? undefined,
             });
           }
         }
