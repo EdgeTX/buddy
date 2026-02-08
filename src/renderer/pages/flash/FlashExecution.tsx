@@ -145,29 +145,27 @@ const FlashExecution: React.FC = () => {
             }}
           >
             <Centered>
-              {
-                (!completed ? (
-                  <>
-                    <div
-                      style={{
-                        marginBottom: "32px",
-                      }}
-                    >
-                      <Typography.Title level={1}>
-                        {t(`Flashing EdgeTX`)}
-                      </Typography.Title>
-                      {firmwareSummary}
-                    </div>
-                    <Typography.Text>
-                      {t(
-                        `Please leave this window open whilst your radio is being flashed`
-                      )}
-                    </Typography.Text>
-                  </>
-                ) : (
-                  renderFlashResult()
-                ))
-              }
+              {!completed ? (
+                <>
+                  <div
+                    style={{
+                      marginBottom: "32px",
+                    }}
+                  >
+                    <Typography.Title level={1}>
+                      {t(`Flashing EdgeTX`)}
+                    </Typography.Title>
+                    {firmwareSummary}
+                  </div>
+                  <Typography.Text>
+                    {t(
+                      `Please leave this window open whilst your radio is being flashed`
+                    )}
+                  </Typography.Text>
+                </>
+              ) : (
+                renderFlashResult()
+              )}
             </Centered>
           </FullHeight>
           <Divider

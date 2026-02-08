@@ -135,7 +135,7 @@ export const BaseLayout: React.FC<{
           bottom: 0,
         }}
       >
-        <FooterElements>{footerContents }</FooterElements>
+        <FooterElements>{footerContents}</FooterElements>
       </Footer>
     </MainLayout>
   );
