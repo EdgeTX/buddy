@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any */
 import gql from "graphql-tag";
 import { MockedFunction } from "vitest";
 import { createExecutor } from "test-utils/backend";
@@ -117,7 +118,7 @@ describe("Backup", () => {
           },
         });
 
-        const backupId = registerResult.data?.registerLocalBackup?.id;
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
 
         // Now query it
         const { data, errors } = await backend.query({
@@ -185,7 +186,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Query models
         const { data, errors } = await backend.query({
@@ -230,7 +231,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         const { data, errors } = await backend.query({
           query: gql`
@@ -286,7 +287,7 @@ describe("Backup", () => {
           variables: { data: base64Data },
         });
 
-        const backupId = registerResult.data?.registerLocalBackup?.id;
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
 
         // Pick directory
         const handle = await getOriginPrivateDirectory(
@@ -307,7 +308,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Check collisions
         const { data, errors } = await backend.query({
@@ -328,15 +329,15 @@ describe("Backup", () => {
         });
 
         expect(errors).toBeFalsy();
-        expect(data?.checkModelCollisions).toHaveLength(1);
-        expect(data?.checkModelCollisions[0]).toMatchObject({
+        expect((data as any)?.checkModelCollisions).toHaveLength(1);
+        expect((data as any)?.checkModelCollisions[0]).toMatchObject({
           fileName: "model01",
           displayName: "Backup Model",
         });
-        expect(data?.checkModelCollisions[0].existingContent).toContain(
-          "Existing Model"
-        );
-        expect(data?.checkModelCollisions[0].backupContent).toContain(
+        expect(
+          (data as any)?.checkModelCollisions[0].existingContent
+        ).toContain("Existing Model");
+        expect((data as any)?.checkModelCollisions[0].backupContent).toContain(
           "Backup Model"
         );
       });
@@ -367,7 +368,7 @@ describe("Backup", () => {
           variables: { data: base64Data },
         });
 
-        const backupId = registerResult.data?.registerLocalBackup?.id;
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
 
         // Pick directory
         const handle = await getOriginPrivateDirectory(
@@ -388,7 +389,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Check collisions
         const { data, errors } = await backend.query({
@@ -453,7 +454,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Query available slots
         const { data, errors } = await backend.query({
@@ -537,8 +538,8 @@ describe("Backup", () => {
         });
 
         expect(errors).toBeFalsy();
-        expect(data?.registerLocalBackup.id).toEqual(
-          data?.registerLocalBackup.name
+        expect((data as any)?.registerLocalBackup.id).toEqual(
+          (data as any)?.registerLocalBackup.name
         );
       });
 
@@ -563,7 +564,7 @@ describe("Backup", () => {
           });
 
           backupIds.push(
-            (result.data?.registerLocalBackup?.id as string) || ""
+            ((result.data?.registerLocalBackup as any)?.id as string) || ""
           );
         }
 
@@ -618,7 +619,7 @@ describe("Backup", () => {
           variables: { data: backupZip.toString("base64") },
         });
 
-        const backupId = registerResult.data?.registerLocalBackup?.id;
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
 
         // Pick directory
         const handle = await getOriginPrivateDirectory(
@@ -639,7 +640,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Restore backup
         const { data, errors } = await backend.mutate({
@@ -701,7 +702,7 @@ describe("Backup", () => {
           variables: { data: backupZip.toString("base64") },
         });
 
-        const backupId = registerResult.data?.registerLocalBackup?.id;
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
 
         // Pick directory
         const handle = await getOriginPrivateDirectory(
@@ -722,7 +723,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Restore only model01 and model03
         const { data, errors } = await backend.mutate({
@@ -750,7 +751,7 @@ describe("Backup", () => {
         });
 
         expect(errors).toBeFalsy();
-        expect(data?.restoreBackupToSdcard.filesWritten).toBe(2);
+        expect((data as any)?.restoreBackupToSdcard.filesWritten).toBe(2);
 
         // Verify only selected files exist
         const files = await fs.readdir(modelsPath);
@@ -778,7 +779,7 @@ describe("Backup", () => {
           variables: { data: backupZip.toString("base64") },
         });
 
-        const backupId = registerResult.data?.registerLocalBackup?.id;
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
 
         // Pick directory
         const handle = await getOriginPrivateDirectory(
@@ -799,7 +800,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Restore with rename
         const { data, errors } = await backend.mutate({
@@ -827,7 +828,7 @@ describe("Backup", () => {
         });
 
         expect(errors).toBeFalsy();
-        expect(data?.restoreBackupToSdcard.filesWritten).toBe(1);
+        expect((data as any)?.restoreBackupToSdcard.filesWritten).toBe(1);
 
         // Verify renamed file exists
         const files = await fs.readdir(modelsPath);
@@ -869,7 +870,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Create backup
         const { data, errors } = await backend.mutate({
@@ -899,7 +900,7 @@ describe("Backup", () => {
 
         // Verify backup contains models
         const backupBuffer = Buffer.from(
-          (data?.createBackupFromSdcard?.base64Data ?? "") as string,
+          ((data as any)?.createBackupFromSdcard?.base64Data ?? "") as string,
           "base64"
         );
         const { unzipSync } = await import("fflate");
@@ -946,7 +947,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Create backup with selected models
         const { data, errors } = await backend.mutate({
@@ -973,7 +974,7 @@ describe("Backup", () => {
 
         // Verify backup contains only selected models
         const backupBuffer = Buffer.from(
-          (data?.createBackupFromSdcard?.base64Data ?? "") as string,
+          ((data as any)?.createBackupFromSdcard?.base64Data ?? "") as string,
           "base64"
         );
         const { unzipSync } = await import("fflate");
@@ -1019,7 +1020,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Download models
         const { data, errors } = await backend.mutate({
@@ -1098,7 +1099,7 @@ describe("Backup", () => {
           `,
         });
 
-        const directoryId = pickResult.data?.pickSdcardDirectory?.id;
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
         // Download with labels
         const { data, errors } = await backend.mutate({
