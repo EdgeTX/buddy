@@ -139,7 +139,9 @@ export const restoreBackupToDirectory = async (
   let filesWritten = 0;
 
   try {
-    const { entries } = await unzipRaw(new Blob([backup.data]));
+    // Convert Buffer to Uint8Array for proper Blob handling in jsdom/browser environments
+    const uint8Array = new Uint8Array(backup.data);
+    const { entries } = await unzipRaw(new Blob([uint8Array]));
 
     // Filter for MODELS directory entries
     const modelEntries = entries.filter(
@@ -307,7 +309,9 @@ export const checkModelCollisions = async (
   }[] = [];
 
   try {
-    const { entries } = await unzipRaw(new Blob([backup.data]));
+    // Convert Buffer to Uint8Array for proper Blob handling in jsdom/browser environments
+    const uint8Array = new Uint8Array(backup.data);
+    const { entries } = await unzipRaw(new Blob([uint8Array]));
     const yaml = await import("yaml");
 
     // Filter for MODELS directory entries
