@@ -1133,6 +1133,223 @@ describe("Backup", () => {
           ])
         );
       });
+
+      it("should throw error when directory not found", async () => {
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation DownloadModels(
+              $directoryId: ID!
+              $selectedModels: [String!]!
+            ) {
+              downloadIndividualModels(
+                directoryId: $directoryId
+                selectedModels: $selectedModels
+              ) {
+                fileName
+              }
+            }
+          `,
+          variables: {
+            directoryId: "nonexistent-directory",
+            selectedModels: ["model01"],
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Directory not found");
+      });
+    });
+
+    describe("Error handling", () => {
+      it("restoreBackupToSdcard should error when backup not found", async () => {
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                status
+                error
+              }
+            }
+          `,
+          variables: {
+            backupId: "nonexistent-backup",
+            directoryId: "some-directory",
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Backup not found");
+      });
+
+      it("createBackupFromSdcard should error when directory not found", async () => {
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation CreateBackup($directoryId: ID!) {
+              createBackupFromSdcard(directoryId: $directoryId) {
+                id
+              }
+            }
+          `,
+          variables: {
+            directoryId: "nonexistent-directory",
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Directory not found");
+      });
+
+      it("sdcardModelsWithNames should error when directory not found", async () => {
+        const { errors } = await backend.query({
+          query: gql`
+            query GetModels($directoryId: ID!) {
+              sdcardModelsWithNames(directoryId: $directoryId) {
+                fileName
+              }
+            }
+          `,
+          variables: {
+            directoryId: "nonexistent-directory",
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Directory not found");
+      });
+
+      it("checkModelCollisions should error when backup not found", async () => {
+        const { errors } = await backend.query({
+          query: gql`
+            query CheckCollisions($backupId: ID!, $directoryId: ID!) {
+              checkModelCollisions(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                fileName
+              }
+            }
+          `,
+          variables: {
+            backupId: "nonexistent-backup",
+            directoryId: "some-directory",
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Backup not found");
+      });
+
+      it("availableModelSlots should error when directory not found", async () => {
+        const { errors } = await backend.query({
+          query: gql`
+            query GetSlots($directoryId: ID!, $count: Int!) {
+              availableModelSlots(directoryId: $directoryId, count: $count)
+            }
+          `,
+          variables: {
+            directoryId: "nonexistent-directory",
+            count: 5,
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Directory not found");
+      });
+
+      it("checkModelCollisions should error when backup exists but directory not found", async () => {
+        // First register a backup
+        const modelContent = createModelYaml("TestModel");
+        const zipBuffer = createBackupZip([
+          { name: "model01", content: modelContent },
+        ]);
+        const base64Data = zipBuffer.toString("base64");
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!, $name: String) {
+              registerLocalBackup(backupBase64Data: $data, fileName: $name) {
+                id
+              }
+            }
+          `,
+          variables: {
+            data: base64Data,
+            name: "test.etx",
+          },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        // Try to check collisions with nonexistent directory
+        const { errors } = await backend.query({
+          query: gql`
+            query CheckCollisions($backupId: ID!, $directoryId: ID!) {
+              checkModelCollisions(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                fileName
+              }
+            }
+          `,
+          variables: {
+            backupId,
+            directoryId: "nonexistent-directory",
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Directory not found");
+      });
+
+      it("restoreBackupToSdcard should error when backup exists but directory not found", async () => {
+        // First register a backup
+        const modelContent = createModelYaml("TestModel");
+        const zipBuffer = createBackupZip([
+          { name: "model01", content: modelContent },
+        ]);
+        const base64Data = zipBuffer.toString("base64");
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!, $name: String) {
+              registerLocalBackup(backupBase64Data: $data, fileName: $name) {
+                id
+              }
+            }
+          `,
+          variables: {
+            data: base64Data,
+            name: "test.etx",
+          },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        // Try to restore to nonexistent directory
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                status
+              }
+            }
+          `,
+          variables: {
+            backupId,
+            directoryId: "nonexistent-directory",
+          },
+        });
+
+        expect(errors).toBeTruthy();
+        expect(errors?.[0]?.message).toContain("Directory not found");
+      });
     });
   });
 });
