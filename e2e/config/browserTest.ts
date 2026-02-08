@@ -122,6 +122,7 @@ const test = baseTest.extend<
   },
 });
 
+export { test };
 export const playwrightTest = test;
 export const browserTest = test;
 export const contextTest = test;
