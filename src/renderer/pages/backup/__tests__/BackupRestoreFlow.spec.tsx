@@ -64,16 +64,16 @@ describe("<BackupRestoreFlow />", () => {
   beforeAll(() => {
     // Mock document.createElement for download links
     const originalCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, "createElement").mockImplementation(
-      (tagName: string) => {
-        const element = originalCreateElement(tagName);
-        if (tagName === "a") {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-          (element as any).click = vi.fn();
-        }
-        return element;
+    vi.spyOn(document, "createElement").mockImplementation(((
+      tagName: string
+    ) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === "a") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+        (element as any).click = vi.fn();
       }
-    );
+      return element;
+    }) as typeof document.createElement);
 
     // Mock URL.createObjectURL and revokeObjectURL
     global.URL.createObjectURL = vi.fn(() => "mock-url");

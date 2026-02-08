@@ -276,10 +276,7 @@ describe("<BackupUploader />", () => {
   it("should pass directorySelected prop to BackupUploadArea", () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <BackupUploader
-          onFileUploaded={mockOnFileUploaded}
-          directorySelected
-        />
+        <BackupUploader onFileUploaded={mockOnFileUploaded} directorySelected />
       </MockedProvider>
     );
 
