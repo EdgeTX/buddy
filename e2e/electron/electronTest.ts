@@ -10,7 +10,10 @@ export { expect } from "@playwright/test";
 const electronVersion = require("electron/package.json").version as string;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const electronTest = baseTest.extend<ElectronTestFixtures, PageWorkerFixtures>({
+export const electronTest = baseTest.extend<
+  ElectronTestFixtures,
+  PageWorkerFixtures
+>({
   browserVersion: [electronVersion, { scope: "worker" }],
   browserMajorVersion: [
     Number(electronVersion.split(".")[0]),
@@ -47,6 +50,3 @@ const electronTest = baseTest.extend<ElectronTestFixtures, PageWorkerFixtures>({
     await run(await electronApp.firstWindow());
   },
 });
-
-export { electronTest };
-export { electronTest as test };
