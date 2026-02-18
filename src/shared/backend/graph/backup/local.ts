@@ -230,9 +230,17 @@ builder.mutationType({
         }
 
         // Parse modelRenames JSON if provided
-        const renamesMap = modelRenames
-          ? (JSON.parse(modelRenames) as Record<string, string>)
-          : undefined;
+        let renamesMap: Record<string, string> | undefined;
+        if (modelRenames) {
+          try {
+            renamesMap = JSON.parse(modelRenames) as Record<string, string>;
+          } catch (error) {
+            throw new GraphQLError(
+              "Invalid modelRenames JSON: " +
+                (error instanceof Error ? error.message : "Unknown error")
+            );
+          }
+        }
 
         // Execute the restore operation
         try {
