@@ -86,7 +86,7 @@ vi.mock("renderer/pages/backup/file/BackupUploadArea", () => ({
         <button
           type="button"
           data-testid="preview-btn"
-          onClick={() => onPreviewModel({}, "model01")}
+          onClick={() => onPreviewModel({}, "model00")}
         >
           Preview
         </button>
@@ -322,7 +322,7 @@ describe("<BackupUploader />", () => {
     const previewBtn = screen.getByTestId("preview-btn");
     previewBtn.click();
 
-    expect(mockOnPreviewModel).toHaveBeenCalledWith({}, "model01");
+    expect(mockOnPreviewModel).toHaveBeenCalledWith({}, "model00");
   });
 
   it("should trigger onResetAfterRestore callback", () => {

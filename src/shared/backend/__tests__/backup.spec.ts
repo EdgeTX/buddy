@@ -159,11 +159,11 @@ describe("Backup", () => {
 
         // Create model files
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("My Quad")
         );
         await fs.writeFile(
-          path.join(modelsPath, "model02.yml"),
+          path.join(modelsPath, "model01.yml"),
           createModelYaml("Trainer Plane")
         );
 
@@ -204,8 +204,8 @@ describe("Backup", () => {
         expect(errors).toBeFalsy();
         expect(data?.sdcardModelsWithNames).toEqual(
           expect.arrayContaining([
-            { fileName: "model01", displayName: "My Quad" },
-            { fileName: "model02", displayName: "Trainer Plane" },
+            { fileName: "model00", displayName: "My Quad" },
+            { fileName: "model01", displayName: "Trainer Plane" },
           ])
         );
       });
@@ -266,13 +266,13 @@ describe("Backup", () => {
 
         // Create existing model on SD card
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("Existing Model")
         );
 
         // Register backup with same model name
         const backupZip = createBackupZip([
-          { name: "model01", content: createModelYaml("Backup Model") },
+          { name: "model00", content: createModelYaml("Backup Model") },
         ]);
         const base64Data = backupZip.toString("base64");
 
@@ -331,7 +331,7 @@ describe("Backup", () => {
         expect(errors).toBeFalsy();
         expect((data as any)?.checkModelCollisions).toHaveLength(1);
         expect((data as any)?.checkModelCollisions[0]).toMatchObject({
-          fileName: "model01",
+          fileName: "model00",
           displayName: "Backup Model",
         });
         expect(
@@ -347,13 +347,13 @@ describe("Backup", () => {
 
         // Create existing model with different name
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("Existing Model")
         );
 
         // Register backup with different model name
         const backupZip = createBackupZip([
-          { name: "model02", content: createModelYaml("Backup Model") },
+          { name: "model01", content: createModelYaml("Backup Model") },
         ]);
         const base64Data = backupZip.toString("base64");
 
@@ -425,13 +425,13 @@ describe("Backup", () => {
       it("should return available model slots", async () => {
         const modelsPath = await setupSdcardDirectory(tempDir.path);
 
-        // Create some existing models (slots 1 and 2 are taken)
+        // Create some existing models (slots 0 and 1 are taken)
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("Model 1")
         );
         await fs.writeFile(
-          path.join(modelsPath, "model02.yml"),
+          path.join(modelsPath, "model01.yml"),
           createModelYaml("Model 2")
         );
 
@@ -468,9 +468,9 @@ describe("Backup", () => {
 
         expect(errors).toBeFalsy();
         expect(data?.availableModelSlots).toEqual([
+          "model02",
           "model03",
           "model04",
-          "model05",
         ]);
       });
 
@@ -558,7 +558,7 @@ describe("Backup", () => {
 
       it("should use id as name when fileName not provided", async () => {
         const zipBuffer = createBackupZip([
-          { name: "model01", content: createModelYaml("TestModel") },
+          { name: "model00", content: createModelYaml("TestModel") },
         ]);
         const base64Data = zipBuffer.toString("base64");
 
@@ -586,7 +586,7 @@ describe("Backup", () => {
         // Register 5 backups
         for (let i = 0; i < 5; i += 1) {
           const zipBuffer = createBackupZip([
-            { name: `model0${i}`, content: createModelYaml(`Model ${i}`) },
+            { name: `mode0l0${i}`, content: createModelYaml(`Model ${i}`) },
           ]);
 
           const result = await backend.mutate({
@@ -641,8 +641,8 @@ describe("Backup", () => {
 
         // Register backup
         const backupZip = createBackupZip([
-          { name: "model01", content: createModelYaml("Restored Model 1") },
-          { name: "model02", content: createModelYaml("Restored Model 2") },
+          { name: "model00", content: createModelYaml("Restored Model 1") },
+          { name: "model01", content: createModelYaml("Restored Model 2") },
         ]);
 
         const registerResult = await backend.mutate({
@@ -706,13 +706,13 @@ describe("Backup", () => {
 
         // Verify files were created
         const model1Content = await fs.readFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           "utf-8"
         );
         expect(model1Content).toContain("Restored Model 1");
 
         const model2Content = await fs.readFile(
-          path.join(modelsPath, "model02.yml"),
+          path.join(modelsPath, "model01.yml"),
           "utf-8"
         );
         expect(model2Content).toContain("Restored Model 2");
@@ -723,9 +723,9 @@ describe("Backup", () => {
 
         // Register backup with multiple models
         const backupZip = createBackupZip([
-          { name: "model01", content: createModelYaml("Model 1") },
-          { name: "model02", content: createModelYaml("Model 2") },
-          { name: "model03", content: createModelYaml("Model 3") },
+          { name: "model00", content: createModelYaml("Model 1") },
+          { name: "model01", content: createModelYaml("Model 2") },
+          { name: "model02", content: createModelYaml("Model 3") },
         ]);
 
         const registerResult = await backend.mutate({
@@ -762,7 +762,7 @@ describe("Backup", () => {
 
         const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
 
-        // Restore only model01 and model03
+        // Restore only model00 and model01
         const { data, errors } = await backend.mutate({
           mutation: gql`
             mutation RestoreBackup(
@@ -783,7 +783,7 @@ describe("Backup", () => {
           variables: {
             backupId,
             directoryId,
-            selectedModels: ["model01", "model03"],
+            selectedModels: ["model00", "model01"],
           },
         });
 
@@ -792,8 +792,8 @@ describe("Backup", () => {
 
         // Verify only selected files exist
         const files = await fs.readdir(modelsPath);
+        expect(files).toContain("model00.yml");
         expect(files).toContain("model01.yml");
-        expect(files).toContain("model03.yml");
         expect(files).not.toContain("model02.yml");
       });
 
@@ -802,7 +802,7 @@ describe("Backup", () => {
 
         // Register backup
         const backupZip = createBackupZip([
-          { name: "model01", content: createModelYaml("Original Model") },
+          { name: "model00", content: createModelYaml("Original Model") },
         ]);
 
         const registerResult = await backend.mutate({
@@ -860,7 +860,7 @@ describe("Backup", () => {
           variables: {
             backupId,
             directoryId,
-            modelRenames: JSON.stringify({ model01: "model99" }),
+            modelRenames: JSON.stringify({ model00: "model59" }),
           },
         });
 
@@ -869,8 +869,8 @@ describe("Backup", () => {
 
         // Verify renamed file exists
         const files = await fs.readdir(modelsPath);
-        expect(files).toContain("model99.yml");
-        expect(files).not.toContain("model01.yml");
+        expect(files).toContain("model59.yml");
+        expect(files).not.toContain("model00.yml");
       });
 
       it("should return failed status when backup data is corrupted", async () => {
@@ -942,11 +942,11 @@ describe("Backup", () => {
 
         // Create model files on SD card
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("My Quad")
         );
         await fs.writeFile(
-          path.join(modelsPath, "model02.yml"),
+          path.join(modelsPath, "model01.yml"),
           createModelYaml("Trainer")
         );
 
@@ -1006,8 +1006,8 @@ describe("Backup", () => {
         const unzipped = unzipSync(new Uint8Array(backupBuffer));
 
         const files = Object.keys(unzipped);
+        expect(files).toContain("MODELS/model00.yml");
         expect(files).toContain("MODELS/model01.yml");
-        expect(files).toContain("MODELS/model02.yml");
       });
 
       it("should create backup with only selected models", async () => {
@@ -1015,15 +1015,15 @@ describe("Backup", () => {
 
         // Create model files
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("Model 1")
         );
         await fs.writeFile(
-          path.join(modelsPath, "model02.yml"),
+          path.join(modelsPath, "model01.yml"),
           createModelYaml("Model 2")
         );
         await fs.writeFile(
-          path.join(modelsPath, "model03.yml"),
+          path.join(modelsPath, "model02.yml"),
           createModelYaml("Model 3")
         );
 
@@ -1065,7 +1065,7 @@ describe("Backup", () => {
           `,
           variables: {
             directoryId,
-            selectedModels: ["model01", "model03"],
+            selectedModels: ["model00", "model01"],
           },
         });
 
@@ -1080,8 +1080,8 @@ describe("Backup", () => {
         const unzipped = unzipSync(new Uint8Array(backupBuffer));
 
         const files = Object.keys(unzipped);
+        expect(files).toContain("MODELS/model00.yml");
         expect(files).toContain("MODELS/model01.yml");
-        expect(files).toContain("MODELS/model03.yml");
         expect(files).not.toContain("MODELS/model02.yml");
       });
     });
@@ -1092,11 +1092,11 @@ describe("Backup", () => {
 
         // Create model files
         await fs.writeFile(
-          path.join(modelsPath, "model01.yml"),
+          path.join(modelsPath, "model00.yml"),
           createModelYaml("My Quad")
         );
         await fs.writeFile(
-          path.join(modelsPath, "model02.yml"),
+          path.join(modelsPath, "model01.yml"),
           createModelYaml("Trainer")
         );
 
@@ -1139,7 +1139,7 @@ describe("Backup", () => {
           `,
           variables: {
             directoryId,
-            selectedModels: ["model01", "model02"],
+            selectedModels: ["model00", "model01"],
           },
         });
 
@@ -1147,8 +1147,8 @@ describe("Backup", () => {
         expect(data?.downloadIndividualModels).toHaveLength(2);
         expect(data?.downloadIndividualModels).toEqual(
           expect.arrayContaining([
+            expect.objectContaining({ fileName: "model00.yml" }),
             expect.objectContaining({ fileName: "model01.yml" }),
-            expect.objectContaining({ fileName: "model02.yml" }),
           ])
         );
 
@@ -1158,7 +1158,7 @@ describe("Backup", () => {
             fileName: string;
             base64Data: string;
           }[]
-        ).find((m) => m.fileName === "model01.yml");
+        ).find((m) => m.fileName === "model00.yml");
         const content = Buffer.from(
           model1?.base64Data ?? "",
           "base64"

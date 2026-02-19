@@ -6,6 +6,7 @@ import ky from "ky";
 import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
 import { GithubClient } from "shared/api/github";
+import { MAX_MODELS } from "shared/firmware-constants";
 
 export type Target = {
   name: string;
@@ -377,7 +378,7 @@ export const checkModelCollisions = async (
 };
 
 /**
- * Find available model slots (model01-model64)
+ * Find available model slots
  */
 export const findAvailableModelSlots = async (
   directoryHandle: FileSystemDirectoryHandle,
@@ -388,8 +389,8 @@ export const findAvailableModelSlots = async (
   try {
     const modelsDirectory = await directoryHandle.getDirectoryHandle("MODELS");
 
-    // Check slots from model01 to model64
-    for (let i = 1; i <= 64 && availableSlots.length < count; i++) {
+    // Check slots
+    for (let i = 0; i < MAX_MODELS && availableSlots.length < count; i++) {
       const slotName = `model${i.toString().padStart(2, "0")}`;
       const fileName = `${slotName}.yml`;
 

@@ -6,7 +6,7 @@ import DiffViewerModal from "renderer/pages/backup/DiffViewerModal";
 describe("<DiffViewerModal />", () => {
   const defaultProps = {
     visible: true,
-    modelName: "model01",
+    modelName: "model00",
     existingContent: `header:
   name: MyQuad
   labels: ""

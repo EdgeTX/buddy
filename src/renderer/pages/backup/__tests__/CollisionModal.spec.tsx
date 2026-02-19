@@ -6,20 +6,20 @@ import CollisionModal from "renderer/pages/backup/CollisionModal";
 describe("<CollisionModal />", () => {
   const defaultCollisions = [
     {
-      fileName: "model01",
+      fileName: "model00",
       displayName: "My Quad",
       existingContent: "existing content",
       backupContent: "backup content",
     },
     {
-      fileName: "model02",
+      fileName: "model01",
       displayName: "My Plane",
       existingContent: "existing content 2",
       backupContent: "backup content 2",
     },
   ];
 
-  const defaultAvailableSlots = ["model03", "model04", "model05"];
+  const defaultAvailableSlots = ["model02", "model03", "model04"];
 
   const defaultProps = {
     visible: true,
@@ -62,18 +62,18 @@ describe("<CollisionModal />", () => {
       screen.getByText((content) => content.includes("Available slots"))
     ).toBeInTheDocument();
     expect(
-      screen.getByText((content) => content.includes("model03"))
+      screen.getByText((content) => content.includes("model02"))
     ).toBeInTheDocument();
   });
 
   it("should truncate available slots list when more than 5 slots", () => {
     const manySlots = [
+      "model02",
       "model03",
       "model04",
       "model05",
       "model06",
       "model07",
-      "model08",
     ];
     render(<CollisionModal {...defaultProps} availableSlots={manySlots} />);
 
@@ -127,12 +127,12 @@ describe("<CollisionModal />", () => {
     // Should show renames in the list
     expect(
       screen.getByText((content) =>
-        content.includes("model01.yml → model03.yml")
+        content.includes("model00.yml → model02.yml")
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText((content) =>
-        content.includes("model02.yml → model04.yml")
+        content.includes("model01.yml → model03.yml")
       )
     ).toBeInTheDocument();
   });
@@ -141,7 +141,7 @@ describe("<CollisionModal />", () => {
     render(
       <CollisionModal
         {...defaultProps}
-        availableSlots={["model03"]}
+        availableSlots={["model02"]}
         collisions={defaultCollisions}
       />
     );
@@ -167,8 +167,8 @@ describe("<CollisionModal />", () => {
 
     expect(onResolve).toHaveBeenCalledWith(
       {
+        model00: "model02",
         model01: "model03",
-        model02: "model04",
       },
       false
     );

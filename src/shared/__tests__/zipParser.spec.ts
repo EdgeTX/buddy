@@ -79,23 +79,23 @@ describe("zipParser", () => {
   describe("extractYamlFromZip", () => {
     it("should extract YAML files from MODELS folder in ZIP", async () => {
       const zipBuffer = createZipWithModels([
-        { name: "model01", content: createModelYaml("Quad Racing") },
-        { name: "model02", content: createModelYaml("Trainer") },
+        { name: "model00", content: createModelYaml("Quad Racing") },
+        { name: "model01", content: createModelYaml("Trainer") },
       ]);
       const base64Data = zipBuffer.toString("base64");
 
       const result = await extractYamlFromZip(base64Data);
 
       expect(Object.keys(result)).toHaveLength(2);
+      expect(result.model00).toBeDefined();
       expect(result.model01).toBeDefined();
-      expect(result.model02).toBeDefined();
-      expect((result as any).model01.header).toEqual({
+      expect((result as any).model00.header).toEqual({
         name: "Quad Racing",
         labels: "",
         bitmap: "",
         modelId: 1,
       });
-      expect((result as any).model02.header).toEqual({
+      expect((result as any).model01.header).toEqual({
         name: "Trainer",
         labels: "",
         bitmap: "",
@@ -117,19 +117,19 @@ describe("zipParser", () => {
 
     it("should only extract .yml files from MODELS folder", async () => {
       const zipBuffer = createZipWithFiles([
-        { path: "MODELS/model01.yml", content: createModelYaml("Model1") },
-        { path: "MODELS/model02.txt", content: "Not a YAML" },
+        { path: "MODELS/model00.yml", content: createModelYaml("Model1") },
+        { path: "MODELS/model01.bin", content: "Not a YAML" },
         { path: "MODELS/readme.md", content: "Documentation" },
-        { path: "OTHER/model03.yml", content: createModelYaml("Model3") },
+        { path: "OTHER/model02.yml", content: createModelYaml("Model3") },
       ]);
       const base64Data = zipBuffer.toString("base64");
 
       const result = await extractYamlFromZip(base64Data);
 
       expect(Object.keys(result)).toHaveLength(1);
-      expect(result.model01).toBeDefined();
+      expect(result.model00).toBeDefined();
+      expect(result.model01).toBeUndefined();
       expect(result.model02).toBeUndefined();
-      expect(result.model03).toBeUndefined();
     });
 
     it("should handle empty ZIP file", async () => {
@@ -212,9 +212,9 @@ mixData:
       const yamlContent = createModelYaml("Test Model");
       const base64Data = Buffer.from(yamlContent).toString("base64");
 
-      const result = parseYamlFile(base64Data, "model01.yml");
+      const result = parseYamlFile(base64Data, "model00.yml");
 
-      expect(result.fileName).toBe("model01");
+      expect(result.fileName).toBe("model00");
       expect(result.content.header).toEqual({
         name: "Test Model",
         labels: "",
