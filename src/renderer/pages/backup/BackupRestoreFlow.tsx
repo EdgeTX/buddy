@@ -14,6 +14,7 @@ import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 import { gql } from "graphql-tag";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import environment from "shared/environment";
+import { MAX_MODELS } from "shared/firmware-constants";
 import checks from "renderer/compatibility/checks";
 import { useTranslation } from "react-i18next";
 import yaml from "yaml";
@@ -225,11 +226,11 @@ const BackupRestoreFlow: React.FC = () => {
             | undefined;
 
           if (collisionData && collisionData.length > 0) {
-            // Generate available slot names (model01-model60 minus existing)
+            // Generate available slot names (model1-modelMAX_MODELS minus existing)
             const existingNames = new Set(directoryData.models);
             const slots: string[] = [];
-            for (let i = 1; i <= 60; i += 1) {
-              const slotName = `model${i.toString().padStart(2, "0")}`;
+            for (let i = 1; i <= MAX_MODELS; i += 1) {
+              const slotName = `model${i}`;
               if (!existingNames.has(slotName)) {
                 slots.push(slotName);
               }

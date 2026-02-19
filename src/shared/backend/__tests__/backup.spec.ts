@@ -8,6 +8,7 @@ import tmp from "tmp-promise";
 import fs from "fs/promises";
 import path from "path";
 import { execSync } from "child_process";
+import { MAX_MODELS } from "shared/firmware-constants";
 
 const requestWritableDirectory = vitest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -860,7 +861,7 @@ describe("Backup", () => {
           variables: {
             backupId,
             directoryId,
-            modelRenames: JSON.stringify({ model1: "model59" }),
+            modelRenames: JSON.stringify({ model1: `model${MAX_MODELS - 1}` }),
           },
         });
 
@@ -869,7 +870,7 @@ describe("Backup", () => {
 
         // Verify renamed file exists
         const files = await fs.readdir(modelsPath);
-        expect(files).toContain("model59.yml");
+        expect(files).toContain(`model${MAX_MODELS - 1}.yml`);
         expect(files).not.toContain("model1.yml");
       });
 
