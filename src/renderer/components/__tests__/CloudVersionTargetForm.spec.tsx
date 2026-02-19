@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render } from "test-utils/testing-library";
+import { screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import CloudVersionTargetForm from "renderer/components/CloudVersionTargetForm";
 

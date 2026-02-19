@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render } from "test-utils/testing-library";
+import { screen } from "@testing-library/react";
 import BackupFileSummary from "renderer/components/backup/summary-variants/BackupFileSummary";
 
 describe("<BackupFileSummary />", () => {

@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render } from "test-utils/testing-library";
+import { screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import BackupCreateFlow from "renderer/pages/backup/BackupCreateFlow";
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
