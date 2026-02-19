@@ -8,7 +8,11 @@ import tmp from "tmp-promise";
 import fs from "fs/promises";
 import path from "path";
 import { execSync } from "child_process";
-import { MAX_MODELS } from "shared/firmware-constants";
+import {
+  MAX_MODELS,
+  MAX_MODELS_BW,
+  MAX_MODELS_COLOR,
+} from "shared/firmware-constants";
 
 const requestWritableDirectory = vitest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -41,15 +45,23 @@ timers:
  * Helper to create a backup ZIP buffer with model files
  * Uses a subprocess to avoid jsdom's broken fflate behavior
  */
-const createBackupZip = (models: { name: string; content: string }[]) => {
+const createBackupZip = (
+  models: { name: string; content: string }[],
+  extraFiles?: Record<string, string>
+) => {
   // Create the ZIP in a separate Node process to avoid jsdom issues
   const modelsJson = JSON.stringify(models);
+  const extraJson = JSON.stringify(extraFiles ?? {});
   const script = `
     const fflate = require('fflate');
     const models = JSON.parse(process.argv[1]);
+    const extra = JSON.parse(process.argv[2]);
     const files = {};
     for (const model of models) {
       files['MODELS/' + model.name + '.yml'] = new TextEncoder().encode(model.content);
+    }
+    for (const [path, content] of Object.entries(extra)) {
+      files[path] = new TextEncoder().encode(content);
     }
     const zipped = fflate.zipSync(files, { level: 6 });
     process.stdout.write(Buffer.from(zipped).toString('base64'));
@@ -58,7 +70,7 @@ const createBackupZip = (models: { name: string; content: string }[]) => {
   const result = execSync(
     `node -e "${script
       .replace(/"/g, '\\"')
-      .replace(/\n/g, " ")}" '${modelsJson}'`,
+      .replace(/\n/g, " ")}" '${modelsJson}' '${extraJson}'`,
     {
       encoding: "utf-8",
     }
@@ -423,10 +435,10 @@ describe("Backup", () => {
         await tempDir.cleanup().catch(() => {});
       });
 
-      it("should return available model slots", async () => {
+      it("should return available model slots (colorlcd with labels.yml)", async () => {
         const modelsPath = await setupSdcardDirectory(tempDir.path);
 
-        // Create some existing models (slots 0 and 1 are taken)
+        // Create some existing models and labels.yml to indicate colorlcd
         await fs.writeFile(
           path.join(modelsPath, "model1.yml"),
           createModelYaml("Model 1")
@@ -434,6 +446,10 @@ describe("Backup", () => {
         await fs.writeFile(
           path.join(modelsPath, "model2.yml"),
           createModelYaml("Model 2")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "labels.yml"),
+          "Models: {}\nLabels: {}\nSort: 1\n"
         );
 
         // Pick directory
@@ -510,6 +526,57 @@ describe("Backup", () => {
         });
 
         expect(errors).toBeTruthy();
+      });
+
+      it("should return B&W model slots (no labels.yml)", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Create B&W-style models (no labels.yml)
+        await fs.writeFile(
+          path.join(modelsPath, "model00.yml"),
+          createModelYaml("Model 0")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model01.yml"),
+          createModelYaml("Model 1")
+        );
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.query({
+          query: gql`
+            query GetSlots($directoryId: ID!, $count: Int!) {
+              availableModelSlots(directoryId: $directoryId, count: $count)
+            }
+          `,
+          variables: { directoryId, count: 3 },
+        });
+
+        expect(errors).toBeFalsy();
+        // B&W: model00 and model01 are taken, so model02, model03, model04 should be available
+        expect(data?.availableModelSlots).toEqual([
+          "model02",
+          "model03",
+          "model04",
+        ]);
       });
     });
   });
@@ -1544,6 +1611,264 @@ describe("Backup", () => {
         expect(errors).toBeTruthy();
         expect(errors?.[0]?.message).toContain("No models found");
         void modelsPath; // Use variable to avoid lint warning
+      });
+    });
+
+    describe("macOS resource fork filtering", () => {
+      it("should exclude macOS ._ prefix files from model listing", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Create a real model and a macOS resource fork
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("Real Model")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "._model1.yml"),
+          "macOS resource fork data"
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "._labels.yml"),
+          "macOS resource fork data"
+        );
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.query({
+          query: gql`
+            query GetModels($directoryId: ID!) {
+              sdcardModelsWithNames(directoryId: $directoryId) {
+                fileName
+                displayName
+              }
+            }
+          `,
+          variables: { directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data?.sdcardModelsWithNames).toHaveLength(1);
+        expect(data?.sdcardModelsWithNames).toEqual([
+          { fileName: "model1", displayName: "Real Model" },
+        ]);
+      });
+
+      it("should exclude macOS ._ prefix files from backup creation", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("Real Model")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "._model1.yml"),
+          "macOS resource fork data"
+        );
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation CreateBackup($directoryId: ID!) {
+              createBackupFromSdcard(directoryId: $directoryId) {
+                base64Data
+              }
+            }
+          `,
+          variables: { directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+
+        const backupBuffer = Buffer.from(
+          ((data as any)?.createBackupFromSdcard?.base64Data ?? "") as string,
+          "base64"
+        );
+        const { unzipSync } = await import("fflate");
+        const unzipped = unzipSync(new Uint8Array(backupBuffer));
+
+        const files = Object.keys(unzipped);
+        expect(files).toContain("MODELS/model1.yml");
+        expect(files).not.toContain("MODELS/._model1.yml");
+      });
+    });
+
+    describe("RADIO/radio.yml inclusion", () => {
+      it("should include RADIO/radio.yml in backup if it exists", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+        const radioPath = path.join(tempDir.path, "RADIO");
+        await fs.mkdir(radioPath, { recursive: true });
+
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("My Model")
+        );
+        await fs.writeFile(
+          path.join(radioPath, "radio.yml"),
+          "baud: 115200\nversion: 2.10\n"
+        );
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation CreateBackup($directoryId: ID!) {
+              createBackupFromSdcard(directoryId: $directoryId) {
+                base64Data
+              }
+            }
+          `,
+          variables: { directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+
+        const backupBuffer = Buffer.from(
+          ((data as any)?.createBackupFromSdcard?.base64Data ?? "") as string,
+          "base64"
+        );
+        const { unzipSync } = await import("fflate");
+        const unzipped = unzipSync(new Uint8Array(backupBuffer));
+
+        const files = Object.keys(unzipped);
+        expect(files).toContain("MODELS/model1.yml");
+        expect(files).toContain("RADIO/radio.yml");
+      });
+
+      it("should restore RADIO/radio.yml from backup if present", async () => {
+        await setupSdcardDirectory(tempDir.path);
+
+        // Create backup with RADIO/radio.yml
+        const radioContent = "baud: 115200\nversion: 2.10\n";
+        const backupZip = createBackupZip(
+          [{ name: "model1", content: createModelYaml("Test") }],
+          { "RADIO/radio.yml": radioContent }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+                overwriteExisting: true
+              ) {
+                status
+                filesWritten
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        expect((data as any)?.restoreBackupToSdcard.status).toBe("completed");
+
+        // Verify RADIO/radio.yml was restored
+        const radioPath = path.join(tempDir.path, "RADIO", "radio.yml");
+        const restored = await fs.readFile(radioPath, "utf-8");
+        expect(restored).toContain("baud: 115200");
+      });
+    });
+
+    describe("firmware-constants", () => {
+      it("MAX_MODELS_BW should be 60", () => {
+        expect(MAX_MODELS_BW).toBe(60);
+      });
+
+      it("MAX_MODELS_COLOR should be 99", () => {
+        expect(MAX_MODELS_COLOR).toBe(99);
+      });
+
+      it("MAX_MODELS should equal MAX_MODELS_BW for backwards compatibility", () => {
+        expect(MAX_MODELS).toBe(MAX_MODELS_BW);
       });
     });
   });

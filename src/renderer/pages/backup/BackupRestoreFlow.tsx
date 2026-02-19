@@ -14,10 +14,11 @@ import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 import { gql } from "graphql-tag";
 import useQueryParams from "renderer/hooks/useQueryParams";
 import environment from "shared/environment";
-import { MAX_MODELS } from "shared/firmware-constants";
+import { getMaxModels, modelSlotName } from "shared/firmware-constants";
 import checks from "renderer/compatibility/checks";
 import { useTranslation } from "react-i18next";
 import yaml from "yaml";
+import { zipSync } from "fflate";
 import BackupUploader from "./file/BackupUploader";
 import CollisionModal from "./CollisionModal";
 import DiffViewerModal from "./DiffViewerModal";
@@ -42,7 +43,7 @@ const BackupRestoreFlow: React.FC = () => {
     name: string;
     content: string;
   } | null>(null);
-  const [overwriteExisting, setOverwriteExisting] = useState(false);
+  const [collisionDetection, setCollisionDetection] = useState(true);
   const [pendingRestore, setPendingRestore] = useState<{
     models: ModelItem[];
   } | null>(null);
@@ -182,9 +183,9 @@ const BackupRestoreFlow: React.FC = () => {
       return;
     }
 
-    // Check if we need to check collisions (when not overwriting)
+    // Check if we need to check collisions (when collision detection is enabled)
     if (
-      !overwriteExisting &&
+      collisionDetection &&
       directoryData?.models &&
       directoryData.models.length > 0
     ) {
@@ -226,11 +227,13 @@ const BackupRestoreFlow: React.FC = () => {
             | undefined;
 
           if (collisionData && collisionData.length > 0) {
-            // Generate available slot names (model1-modelMAX_MODELS minus existing)
+            // Generate available slot names using appropriate naming scheme
+            const hasLabels = directoryData.hasLabels ?? false;
+            const maxModels = getMaxModels(hasLabels);
             const existingNames = new Set(directoryData.models);
             const slots: string[] = [];
-            for (let i = 1; i <= MAX_MODELS; i += 1) {
-              const slotName = `model${i}`;
+            for (let i = 1; i <= maxModels; i += 1) {
+              const slotName = modelSlotName(i, hasLabels);
               if (!existingNames.has(slotName)) {
                 slots.push(slotName);
               }
@@ -249,20 +252,17 @@ const BackupRestoreFlow: React.FC = () => {
     }
 
     // No collision check needed or no collisions found, proceed with restore
-    executeRestore(models, {}, overwriteExisting);
+    executeRestore(models, {}, !collisionDetection);
   };
 
   const createTemporaryBackupFromModels = async (
     models: ModelItem[]
   ): Promise<string | null> => {
-    const yamlLib = await import("yaml");
-    const { zipSync } = await import("fflate");
-
     // Create files object for the ZIP
     const files: Record<string, Uint8Array> = {};
 
     models.forEach((model) => {
-      const yamlContent = yamlLib.stringify(model.content);
+      const yamlContent = yaml.stringify(model.content);
       const buffer = new TextEncoder().encode(yamlContent);
       files[`MODELS/${model.fileName}.yml`] = buffer;
     });
@@ -302,14 +302,11 @@ const BackupRestoreFlow: React.FC = () => {
 
     // Create a temporary backup with the selected models
     const createTemporaryBackup = async (): Promise<string> => {
-      const yamlLib = await import("yaml");
-      const { zipSync } = await import("fflate");
-
       // Create files object for the ZIP
       const files: Record<string, Uint8Array> = {};
 
       models.forEach((model) => {
-        const yamlContent = yamlLib.stringify(model.content);
+        const yamlContent = yaml.stringify(model.content);
         const buffer = new TextEncoder().encode(yamlContent);
         files[`MODELS/${model.fileName}.yml`] = buffer;
       });
@@ -595,14 +592,14 @@ const BackupRestoreFlow: React.FC = () => {
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: "12px" }}>
                   {t(
-                    "When disabled, you'll be asked how to handle models that already exist on your SD card"
+                    "When enabled, you'll be asked how to handle models that already exist on your SD card"
                   )}
                 </Typography.Text>
               </div>
             </div>
             <Switch
-              checked={overwriteExisting}
-              onChange={setOverwriteExisting}
+              checked={collisionDetection}
+              onChange={setCollisionDetection}
             />
           </div>
         </Card>

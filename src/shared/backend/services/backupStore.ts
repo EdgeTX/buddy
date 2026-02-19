@@ -6,7 +6,11 @@ import ky from "ky";
 import config from "shared/backend/config";
 import { uniqueBy } from "shared/tools";
 import { GithubClient } from "shared/api/github";
-import { MAX_MODELS } from "shared/firmware-constants";
+import {
+  getMaxModels,
+  modelSlotName,
+  isValidModelFile,
+} from "shared/firmware-constants";
 
 export type Target = {
   name: string;
@@ -144,10 +148,11 @@ export const restoreBackupToDirectory = async (
     const uint8Array = new Uint8Array(backup.data);
     const { entries } = await unzipRaw(new Blob([uint8Array]));
 
-    // Filter for MODELS directory entries
-    const modelEntries = entries.filter(
-      (entry) => entry.name.startsWith("MODELS/") && entry.name.endsWith(".yml")
-    );
+    // Filter for MODELS directory entries (excluding macOS resource forks and labels)
+    const modelEntries = entries.filter((entry) => {
+      const fileName = entry.name.split("/").pop() ?? "";
+      return entry.name.startsWith("MODELS/") && isValidModelFile(fileName);
+    });
 
     // Filter by selected models if specified
     const entriesToRestore = options?.selectedModels
@@ -279,6 +284,33 @@ export const restoreBackupToDirectory = async (
       }
     }
 
+    // Restore RADIO/radio.yml if present in the backup
+    const radioEntry = entries.find(
+      (entry) => entry.name === "RADIO/radio.yml" && !entry.name.includes("/._")
+    );
+    if (radioEntry) {
+      try {
+        const radioDirectory = await directoryHandle.getDirectoryHandle(
+          "RADIO",
+          { create: true }
+        );
+        const radioFileHandle = await radioDirectory.getFileHandle(
+          "radio.yml",
+          { create: true }
+        );
+        const writable = await radioFileHandle.createWritable();
+        const content = await radioEntry.arrayBuffer();
+        await writable.write(content);
+        await writable.close();
+      } catch (error) {
+        errors.push(
+          `Failed to restore RADIO/radio.yml: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
+    }
+
     return {
       success: errors.length === 0 || filesWritten > 0,
       filesWritten,
@@ -317,10 +349,11 @@ export const checkModelCollisions = async (
     const { entries } = await unzipRaw(new Blob([uint8Array]));
     const yaml = await import("yaml");
 
-    // Filter for MODELS directory entries
-    const modelEntries = entries.filter(
-      (entry) => entry.name.startsWith("MODELS/") && entry.name.endsWith(".yml")
-    );
+    // Filter for MODELS directory entries (excluding macOS resource forks and labels)
+    const modelEntries = entries.filter((entry) => {
+      const fileName = entry.name.split("/").pop() ?? "";
+      return entry.name.startsWith("MODELS/") && isValidModelFile(fileName);
+    });
 
     // Filter by selected models if specified
     const entriesToCheck = selectedModels
@@ -381,6 +414,7 @@ export const checkModelCollisions = async (
 
 /**
  * Find available model slots
+ * Detects radio type (B&W vs ColourLCD) based on the presence of labels.yml
  */
 export const findAvailableModelSlots = async (
   directoryHandle: FileSystemDirectoryHandle,
@@ -391,9 +425,20 @@ export const findAvailableModelSlots = async (
   try {
     const modelsDirectory = await directoryHandle.getDirectoryHandle("MODELS");
 
-    // Check slots
-    for (let i = 1; i <= MAX_MODELS && availableSlots.length < count; i++) {
-      const slotName = `model${i}`;
+    // Detect radio type: labels.yml exists = ColourLCD
+    let isColorLcd = false;
+    try {
+      await modelsDirectory.getFileHandle("labels.yml");
+      isColorLcd = true;
+    } catch {
+      // No labels.yml = B&W radio
+    }
+
+    const maxModels = getMaxModels(isColorLcd);
+
+    // Check slots using appropriate naming scheme
+    for (let i = 1; i <= maxModels && availableSlots.length < count; i++) {
+      const slotName = modelSlotName(i, isColorLcd);
       const fileName = `${slotName}.yml`;
 
       try {
@@ -424,15 +469,10 @@ export const getModelsWithNames = async (
     // Dynamic import of yaml
     const yaml = await import("yaml");
 
-    // Iterate through MODELS directory
+    // Iterate through MODELS directory (excluding macOS resource forks and labels)
     for await (const entry of modelsDirectory.values()) {
-      if (entry.kind === "file" && entry.name.endsWith(".yml")) {
+      if (entry.kind === "file" && isValidModelFile(entry.name)) {
         const modelFileName = entry.name.replace(".yml", "");
-
-        // Skip labels file
-        if (modelFileName === "labels") {
-          continue;
-        }
 
         const fileHandle = entry;
         const file = await fileHandle.getFile();
@@ -496,15 +536,10 @@ export const createBackupFromDirectory = async (
       labelsData = yaml.parse(labelsContent) as Record<string, unknown>;
     } catch {}
 
-    // Iterate through MODELS directory
+    // Iterate through MODELS directory (excluding macOS resource forks and labels)
     for await (const entry of modelsDirectory.values()) {
-      if (entry.kind === "file" && entry.name.endsWith(".yml")) {
+      if (entry.kind === "file" && isValidModelFile(entry.name)) {
         const modelName = entry.name.replace(".yml", "");
-
-        // Skip labels file in first pass
-        if (modelName === "labels") {
-          continue;
-        }
 
         // Filter by selected models if specified
         if (
@@ -521,6 +556,17 @@ export const createBackupFromDirectory = async (
 
         files[`MODELS/${entry.name}`] = uint8Array;
       }
+    }
+
+    // Include RADIO/radio.yml if it exists (needed for Companion compatibility)
+    try {
+      const radioDirectory = await directoryHandle.getDirectoryHandle("RADIO");
+      const radioFileHandle = await radioDirectory.getFileHandle("radio.yml");
+      const radioFile = await radioFileHandle.getFile();
+      const radioArrayBuffer = await radioFile.arrayBuffer();
+      files["RADIO/radio.yml"] = new Uint8Array(radioArrayBuffer);
+    } catch {
+      // RADIO/radio.yml not found — ok for B&W radios
     }
 
     // Add labels file if requested
@@ -557,7 +603,9 @@ export const createBackupFromDirectory = async (
     }
 
     if (
-      Object.keys(files).filter((f) => !f.endsWith("labels.yml")).length === 0
+      Object.keys(files).filter(
+        (f) => !f.endsWith("labels.yml") && !f.startsWith("RADIO/")
+      ).length === 0
     ) {
       throw new Error("No models found to backup");
     }

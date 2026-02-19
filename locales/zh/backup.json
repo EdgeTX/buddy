@@ -72,7 +72,7 @@
   "This feature is not supported by your browser": "This feature is not supported by your browser",
   "Verifying...": "正在验证...",
   "View differences": "View differences",
-  "When disabled, you'll be asked how to handle models that already exist on your SD card": "When disabled, you'll be asked how to handle models that already exist on your SD card",
+  "When enabled, you'll be asked how to handle models that already exist on your SD card": "When enabled, you'll be asked how to handle models that already exist on your SD card",
   "will be overwritten if you choose \"Overwrite all\"": "will be overwritten if you choose \"Overwrite all\"",
   "You can add more individual .yml files or load a full .etx/.zip backup": "You can add more individual .yml files or load a full .etx/.zip backup"
 }

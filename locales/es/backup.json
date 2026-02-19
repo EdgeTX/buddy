@@ -76,7 +76,7 @@
   "This feature is not supported by your browser": "Esta función no es compatible con su navegador",
   "Verifying...": "Verificando...",
   "View differences": "Ver diferencias",
-  "When disabled, you'll be asked how to handle models that already exist on your SD card": "Cuando esté desactivado, se te preguntará cómo manejar los modelos que ya existen en tu tarjeta SD",
+  "When enabled, you'll be asked how to handle models that already exist on your SD card": "Cuando esté activado, se te preguntará cómo manejar los modelos que ya existen en tu tarjeta SD",
   "will be overwritten if you choose \"Overwrite all\"": "se sobrescribirá si elige \"Sobrescribir todo\"",
   "You can add more individual .yml files or load a full .etx/.zip backup": "Puede agregar más archivos .yml individuales o cargar una copia .etx/.zip completa"
 }

@@ -12,6 +12,8 @@ import {
   getAllDirectories,
 } from "shared/backend/graph/backup/sdcard-directory-store";
 
+import { isValidModelFile } from "shared/firmware-constants";
+
 const builder = createBuilder();
 // TODO: Move SD card assets to own module
 
@@ -687,9 +689,7 @@ builder.objectFields(SdcardDirectory, (t) => ({
           modelFiles
             .filter(
               (file): file is FileSystemFileHandle =>
-                file.kind === "file" &&
-                file.name.endsWith(".yml") &&
-                file.name !== "labels.yml"
+                file.kind === "file" && isValidModelFile(file.name)
             )
             .map((file) => file.name.replace(".yml", ""))
         );

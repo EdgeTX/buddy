@@ -2,6 +2,8 @@ import yaml from "yaml";
 import * as unzipit from "unzipit";
 import * as base64ArrayBuffer from "base64-arraybuffer";
 
+import { isValidModelFile } from "shared/firmware-constants";
+
 export type ParsedYamlFile = {
   fileName: string;
   content: Record<string, unknown>;
@@ -19,7 +21,10 @@ export async function extractYamlFromZip(
 
     await Promise.all(
       Object.entries(entries)
-        .filter(([name]) => name.startsWith("MODELS/") && name.endsWith(".yml"))
+        .filter(([name]) => {
+          const fileName = name.split("/").pop() ?? "";
+          return name.startsWith("MODELS/") && isValidModelFile(fileName);
+        })
         .map(async ([name, entry]) => {
           const content = await entry.text();
           const modelName = name.split("/").pop()?.replace(".yml", "") ?? "";

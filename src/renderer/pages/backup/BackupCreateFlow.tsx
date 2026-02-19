@@ -248,12 +248,17 @@ const BackupCreateFlow: React.FC = () => {
       const extension = downloadFormat === "etx" ? "etx" : "zip";
       const fileName = `backup-${timestamp}.${extension}`;
 
+      // For .etx format, always include labels when the radio has them (Companion compatibility)
+      const {hasLabels} = (directoryData as { hasLabels?: boolean });
+      const effectiveIncludeLabels =
+        downloadFormat === "etx" && hasLabels ? true : includeLabels;
+
       void createBackup({
         variables: {
           directoryId: directory,
           selectedModels,
           fileName,
-          includeLabels,
+          includeLabels: effectiveIncludeLabels,
         },
       })
         .then((result) => {
@@ -430,12 +435,24 @@ const BackupCreateFlow: React.FC = () => {
 
           {(directoryData as { hasLabels?: boolean }).hasLabels && (
             <div style={{ marginTop: "16px" }}>
-              <Checkbox
-                checked={includeLabels}
-                onChange={(e) => setIncludeLabels(e.target.checked)}
-              >
-                {t(`Include labels.yml file`)}
-              </Checkbox>
+              {downloadFormat === "etx" ? (
+                <Tooltip
+                  title={t(
+                    "labels.yml is always included in .etx backups for Companion compatibility"
+                  )}
+                >
+                  <Checkbox checked disabled>
+                    {t(`Include labels.yml file`)}
+                  </Checkbox>
+                </Tooltip>
+              ) : (
+                <Checkbox
+                  checked={includeLabels}
+                  onChange={(e) => setIncludeLabels(e.target.checked)}
+                >
+                  {t(`Include labels.yml file`)}
+                </Checkbox>
+              )}
             </div>
           )}
 

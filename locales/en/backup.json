@@ -96,5 +96,6 @@
   "Step 2: Add models to restore": "Step 2: Add models to restore",
   "You can upload individual .yml files, complete .etx backups, or .zip files. Models from different sources will be combined": "You can upload individual .yml files, complete .etx backups, or .zip files. Models from different sources will be combined",
   "Collision detection": "Collision detection",
-  "When disabled, you'll be asked how to handle models that already exist on your SD card": "When disabled, you'll be asked how to handle models that already exist on your SD card"
+  "When enabled, you'll be asked how to handle models that already exist on your SD card": "When enabled, you'll be asked how to handle models that already exist on your SD card",
+  "labels.yml is always included in .etx backups for Companion compatibility": "labels.yml is always included in .etx backups for Companion compatibility"
 }
