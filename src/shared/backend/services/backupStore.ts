@@ -525,11 +525,20 @@ export const createBackupFromDirectory = async (
     if (labelsData && options?.includeLabels) {
       if (options.selectedModels) {
         // Filter labels data to only include selected models
-        const filteredLabels: Record<string, unknown> = {};
+        const filteredLabels: Record<string, unknown> = {
+          Labels: labelsData.Labels || {},
+          Sort: labelsData.Sort || 1,
+          Models: {},
+        };
 
-        for (const modelName of options.selectedModels) {
-          if (labelsData[modelName]) {
-            filteredLabels[modelName] = labelsData[modelName];
+        if (labelsData.Models && typeof labelsData.Models === "object") {
+          const modelsSection = labelsData.Models as Record<string, unknown>;
+          for (const modelName of options.selectedModels) {
+            const modelKey = `${modelName}.yml`;
+            if (modelsSection[modelKey]) {
+              (filteredLabels.Models as Record<string, unknown>)[modelKey] =
+                modelsSection[modelKey];
+            }
           }
         }
 
@@ -614,10 +623,20 @@ export const downloadIndividualModels = async (
         const labelsData = yaml.parse(labelsContent) as Record<string, unknown>;
 
         // Filter labels to only include selected models
-        const filteredLabels: Record<string, unknown> = {};
-        for (const modelName of options.selectedModels) {
-          if (labelsData[modelName]) {
-            filteredLabels[modelName] = labelsData[modelName];
+        const filteredLabels: Record<string, unknown> = {
+          Labels: labelsData.Labels || {},
+          Sort: labelsData.Sort || 1,
+          Models: {},
+        };
+
+        if (labelsData.Models && typeof labelsData.Models === "object") {
+          const modelsSection = labelsData.Models as Record<string, unknown>;
+          for (const modelName of options.selectedModels) {
+            const modelKey = `${modelName}.yml`;
+            if (modelsSection[modelKey]) {
+              (filteredLabels.Models as Record<string, unknown>)[modelKey] =
+                modelsSection[modelKey];
+            }
           }
         }
 
