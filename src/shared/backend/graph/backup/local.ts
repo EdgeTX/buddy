@@ -236,8 +236,9 @@ builder.mutationType({
             renamesMap = JSON.parse(modelRenames) as Record<string, string>;
           } catch (error) {
             throw new GraphQLError(
-              "Invalid modelRenames JSON: " +
-                (error instanceof Error ? error.message : "Unknown error")
+              `Invalid modelRenames JSON: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`
             );
           }
         }
