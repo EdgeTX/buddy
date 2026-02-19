@@ -7,7 +7,7 @@
 
 /**
  * Maximum number of model slots supported.
- * EdgeTX firmware supports up to 60 model slots (model00-model59).
- * This can actually vary depending on the radio family/type, but all radios are currently configured as 60.
+ * - Black and White Radios support up to 60 models - numbered from model00.yml to model59.yml.
+ * - ColourLCD radios have no *formal* limit, and are numbered from model1.yml to I don't know... model99.yml will do for now.
  */
 export const MAX_MODELS = 60;

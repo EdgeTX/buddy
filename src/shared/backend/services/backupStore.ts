@@ -170,11 +170,13 @@ export const restoreBackupToDirectory = async (
       Sort: 1,
     };
 
+    let labelsFileExists = false;
     try {
       const labelsHandle = await modelsDirectory.getFileHandle("labels.yml");
       const labelsFile = await labelsHandle.getFile();
       const labelsContent = await labelsFile.text();
       labelsData = yaml.parse(labelsContent) as Record<string, unknown>;
+      labelsFileExists = true;
     } catch {
       // Labels file doesn't exist, will create new one
     }
@@ -237,7 +239,7 @@ export const restoreBackupToDirectory = async (
     }
 
     // Update labels.yml with restored models
-    if (restoredModels.length > 0) {
+    if (restoredModels.length > 0 && labelsFileExists) {
       try {
         const modelsSection = labelsData.Models as Record<string, unknown>;
 
@@ -390,8 +392,8 @@ export const findAvailableModelSlots = async (
     const modelsDirectory = await directoryHandle.getDirectoryHandle("MODELS");
 
     // Check slots
-    for (let i = 0; i < MAX_MODELS && availableSlots.length < count; i++) {
-      const slotName = `model${i.toString().padStart(2, "0")}`;
+    for (let i = 1; i <= MAX_MODELS && availableSlots.length < count; i++) {
+      const slotName = `model${i}`;
       const fileName = `${slotName}.yml`;
 
       try {
