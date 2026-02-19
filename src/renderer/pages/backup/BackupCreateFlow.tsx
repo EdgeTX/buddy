@@ -249,7 +249,7 @@ const BackupCreateFlow: React.FC = () => {
       const fileName = `backup-${timestamp}.${extension}`;
 
       // For .etx format, always include labels when the radio has them (Companion compatibility)
-      const {hasLabels} = (directoryData as { hasLabels?: boolean });
+      const { hasLabels } = directoryData as { hasLabels?: boolean };
       const effectiveIncludeLabels =
         downloadFormat === "etx" && hasLabels ? true : includeLabels;
 
