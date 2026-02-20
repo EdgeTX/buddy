@@ -63,6 +63,7 @@
   "SD Card": "SD Card",
   "SD Card connected": "SD Card connected",
   "SD Card selected successfully": "SD Card selected successfully",
+  "Select an SD Card to enable restore": "Select an SD Card to enable restore",
   "Select all": "Select all",
   "Select models to backup": "Select models to backup",
   "Select SD Card": "Select SD Card",
@@ -97,5 +98,6 @@
   "You can upload individual .yml files, complete .etx backups, or .zip files. Models from different sources will be combined": "You can upload individual .yml files, complete .etx backups, or .zip files. Models from different sources will be combined",
   "Collision detection": "Collision detection",
   "When enabled, you'll be asked how to handle models that already exist on your SD card": "When enabled, you'll be asked how to handle models that already exist on your SD card",
-  "labels.yml is always included in .etx backups for Companion compatibility": "labels.yml is always included in .etx backups for Companion compatibility"
+  "labels.yml is always included in .etx backups for Companion compatibility": "labels.yml is always included in .etx backups for Companion compatibility",
+  "Radio settings — will be overwritten with \"Overwrite all\", skipped with \"Restore with renames\"": "Radio settings — will be overwritten with \"Overwrite all\", skipped with \"Restore with renames\""
 }

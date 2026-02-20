@@ -14,6 +14,7 @@ import {
   EditOutlined,
   ThunderboltOutlined,
   EyeOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
@@ -45,14 +46,19 @@ const CollisionModal: React.FC<CollisionModalProps> = ({
   const [renames, setRenames] = useState<Record<string, string>>({});
   const [editingModel, setEditingModel] = useState<string | null>(null);
 
+  const isRadioFile = (fileName: string): boolean => fileName.includes("/");
+
+  const modelCollisions = collisions.filter((c) => !isRadioFile(c.fileName));
+  const radioCollisions = collisions.filter((c) => isRadioFile(c.fileName));
+
   const handleAutoRename = (): void => {
-    if (availableSlots.length < collisions.length) {
+    if (availableSlots.length < modelCollisions.length) {
       void message.warning(t(`Not enough available slots for all models`));
       return;
     }
 
     const newRenames: Record<string, string> = {};
-    collisions.forEach((collision, index) => {
+    modelCollisions.forEach((collision, index) => {
       const slot = availableSlots[index];
       if (slot) {
         newRenames[collision.fileName] = slot;
@@ -74,8 +80,10 @@ const CollisionModal: React.FC<CollisionModalProps> = ({
   };
 
   const handleRestoreWithRenames = (): void => {
-    // Check if all collisions are resolved
-    const unresolvedCollisions = collisions.filter((c) => !renames[c.fileName]);
+    // Check if all model collisions are resolved (radio files don't need renames)
+    const unresolvedCollisions = modelCollisions.filter(
+      (c) => !renames[c.fileName]
+    );
 
     if (unresolvedCollisions.length > 0) {
       void message.warning(
@@ -106,7 +114,7 @@ const CollisionModal: React.FC<CollisionModalProps> = ({
           key="auto"
           icon={<ThunderboltOutlined />}
           onClick={handleAutoRename}
-          disabled={availableSlots.length < collisions.length}
+          disabled={availableSlots.length < modelCollisions.length}
         >
           {t(`Auto-rename all`)}
         </Button>,
@@ -122,7 +130,7 @@ const CollisionModal: React.FC<CollisionModalProps> = ({
           key="restore"
           type="primary"
           onClick={handleRestoreWithRenames}
-          disabled={collisions.some((c) => !renames[c.fileName])}
+          disabled={modelCollisions.some((c) => !renames[c.fileName])}
         >
           {t(`Restore with renames`)}
         </Button>,
@@ -134,8 +142,43 @@ const CollisionModal: React.FC<CollisionModalProps> = ({
         )}
       </Typography.Paragraph>
 
+      {radioCollisions.length > 0 && (
+        <List
+          dataSource={radioCollisions}
+          renderItem={(collision) => (
+            <List.Item
+              actions={[
+                <Tooltip title={t(`View differences`)}>
+                  <Button
+                    icon={<EyeOutlined />}
+                    size="small"
+                    onClick={() => onViewDiff(collision)}
+                  />
+                </Tooltip>,
+              ]}
+            >
+              <List.Item.Meta
+                avatar={<SettingOutlined style={{ color: "#1890ff" }} />}
+                title={
+                  <Typography.Text strong>
+                    {collision.displayName}
+                  </Typography.Text>
+                }
+                description={
+                  <Typography.Text type="secondary">
+                    {t(
+                      `Radio settings — will be overwritten with "Overwrite all", skipped with "Restore with renames"`
+                    )}
+                  </Typography.Text>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      )}
+
       <List
-        dataSource={collisions}
+        dataSource={modelCollisions}
         renderItem={(collision) => {
           const newName = renames[collision.fileName];
           const isEditing = editingModel === collision.fileName;

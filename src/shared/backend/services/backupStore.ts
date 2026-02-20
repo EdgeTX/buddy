@@ -10,6 +10,7 @@ import {
   getMaxModels,
   modelSlotName,
   isValidModelFile,
+  isModelTextFile,
 } from "shared/firmware-constants";
 
 export type Target = {
@@ -284,24 +285,77 @@ export const restoreBackupToDirectory = async (
       }
     }
 
+    // Restore MODELS/*.txt files if present in the backup
+    const txtEntries = entries.filter((entry) => {
+      const fileName = entry.name.split("/").pop() ?? "";
+      return entry.name.startsWith("MODELS/") && isModelTextFile(fileName);
+    });
+
+    for (const entry of txtEntries) {
+      try {
+        const fileName = entry.name.split("/").pop();
+        if (!fileName) continue;
+
+        // Check if file exists when not overwriting
+        if (!options?.overwriteExisting) {
+          try {
+            await modelsDirectory.getFileHandle(fileName);
+            continue; // File exists, skip
+          } catch {
+            // File doesn't exist, continue with writing
+          }
+        }
+
+        const fileHandle = await modelsDirectory.getFileHandle(fileName, {
+          create: true,
+        });
+        const writable = await fileHandle.createWritable();
+        const content = await entry.arrayBuffer();
+        await writable.write(content);
+        await writable.close();
+        filesWritten++;
+      } catch (error) {
+        const fileName = entry.name.split("/").pop() ?? "unknown";
+        errors.push(
+          `Error writing ${fileName}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
+    }
+
     // Restore RADIO/radio.yml if present in the backup
     const radioEntry = entries.find(
       (entry) => entry.name === "RADIO/radio.yml" && !entry.name.includes("/._")
     );
     if (radioEntry) {
       try {
-        const radioDirectory = await directoryHandle.getDirectoryHandle(
-          "RADIO",
-          { create: true }
-        );
-        const radioFileHandle = await radioDirectory.getFileHandle(
-          "radio.yml",
-          { create: true }
-        );
-        const writable = await radioFileHandle.createWritable();
-        const content = await radioEntry.arrayBuffer();
-        await writable.write(content);
-        await writable.close();
+        // Check if radio.yml already exists on SD card
+        let radioExists = false;
+        try {
+          const existingRadioDir = await directoryHandle.getDirectoryHandle(
+            "RADIO"
+          );
+          await existingRadioDir.getFileHandle("radio.yml");
+          radioExists = true;
+        } catch {
+          // Doesn't exist
+        }
+
+        if (!radioExists || options?.overwriteExisting) {
+          const radioDirectory = await directoryHandle.getDirectoryHandle(
+            "RADIO",
+            { create: true }
+          );
+          const radioFileHandle = await radioDirectory.getFileHandle(
+            "radio.yml",
+            { create: true }
+          );
+          const writable = await radioFileHandle.createWritable();
+          const content = await radioEntry.arrayBuffer();
+          await writable.write(content);
+          await writable.close();
+        }
       } catch (error) {
         errors.push(
           `Failed to restore RADIO/radio.yml: ${
@@ -403,6 +457,33 @@ export const checkModelCollisions = async (
         });
       } catch {
         // File doesn't exist, no collision
+      }
+    }
+
+    // Check for RADIO/radio.yml collision
+    const radioEntry = entries.find(
+      (entry) => entry.name === "RADIO/radio.yml" && !entry.name.includes("/._")
+    );
+    if (radioEntry) {
+      try {
+        const radioDirectory = await directoryHandle.getDirectoryHandle(
+          "RADIO"
+        );
+        const radioFileHandle = await radioDirectory.getFileHandle("radio.yml");
+        const existingFile = await radioFileHandle.getFile();
+        const existingContent = await existingFile.text();
+
+        const backupBlob = await radioEntry.blob();
+        const backupContent = await backupBlob.text();
+
+        collisions.push({
+          fileName: "RADIO/radio.yml",
+          existingContent,
+          backupContent,
+          displayName: "RADIO/radio.yml",
+        });
+      } catch {
+        // No collision — radio.yml doesn't exist on SD card
       }
     }
 
@@ -538,23 +619,31 @@ export const createBackupFromDirectory = async (
 
     // Iterate through MODELS directory (excluding macOS resource forks and labels)
     for await (const entry of modelsDirectory.values()) {
-      if (entry.kind === "file" && isValidModelFile(entry.name)) {
-        const modelName = entry.name.replace(".yml", "");
+      if (entry.kind === "file") {
+        if (isValidModelFile(entry.name)) {
+          const modelName = entry.name.replace(".yml", "");
 
-        // Filter by selected models if specified
-        if (
-          options?.selectedModels &&
-          !options.selectedModels.includes(modelName)
-        ) {
-          continue;
+          // Filter by selected models if specified
+          if (
+            options?.selectedModels &&
+            !options.selectedModels.includes(modelName)
+          ) {
+            continue;
+          }
+
+          const fileHandle = entry;
+          const file = await fileHandle.getFile();
+          const arrayBuffer = await file.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
+
+          files[`MODELS/${entry.name}`] = uint8Array;
+        } else if (isModelTextFile(entry.name)) {
+          // Include .txt files (Companion compatibility)
+          const fileHandle = entry;
+          const file = await fileHandle.getFile();
+          const arrayBuffer = await file.arrayBuffer();
+          files[`MODELS/${entry.name}`] = new Uint8Array(arrayBuffer);
         }
-
-        const fileHandle = entry;
-        const file = await fileHandle.getFile();
-        const arrayBuffer = await file.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-
-        files[`MODELS/${entry.name}`] = uint8Array;
       }
     }
 

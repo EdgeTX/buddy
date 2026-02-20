@@ -8,11 +8,7 @@ import tmp from "tmp-promise";
 import fs from "fs/promises";
 import path from "path";
 import { execSync } from "child_process";
-import {
-  MAX_MODELS,
-  MAX_MODELS_BW,
-  MAX_MODELS_COLOR,
-} from "shared/firmware-constants";
+import { MAX_MODELS_BW, MAX_MODELS_COLOR } from "shared/firmware-constants";
 
 const requestWritableDirectory = vitest.fn() as MockedFunction<
   typeof window.showDirectoryPicker
@@ -928,7 +924,9 @@ describe("Backup", () => {
           variables: {
             backupId,
             directoryId,
-            modelRenames: JSON.stringify({ model1: `model${MAX_MODELS - 1}` }),
+            modelRenames: JSON.stringify({
+              model1: `model${MAX_MODELS_BW - 1}`,
+            }),
           },
         });
 
@@ -937,7 +935,7 @@ describe("Backup", () => {
 
         // Verify renamed file exists
         const files = await fs.readdir(modelsPath);
-        expect(files).toContain(`model${MAX_MODELS - 1}.yml`);
+        expect(files).toContain(`model${MAX_MODELS_BW - 1}.yml`);
         expect(files).not.toContain("model1.yml");
       });
 
@@ -1856,6 +1854,627 @@ describe("Backup", () => {
         const restored = await fs.readFile(radioPath, "utf-8");
         expect(restored).toContain("baud: 115200");
       });
+
+      it("should skip RADIO/radio.yml when overwriteExisting is false and radio.yml exists", async () => {
+        await setupSdcardDirectory(tempDir.path);
+
+        // Pre-create RADIO/radio.yml on SD card
+        const radioPath = path.join(tempDir.path, "RADIO");
+        await fs.mkdir(radioPath, { recursive: true });
+        await fs.writeFile(
+          path.join(radioPath, "radio.yml"),
+          "baud: 9600\nversion: 2.8\n"
+        );
+
+        // Create backup with different RADIO/radio.yml
+        const radioContent = "baud: 115200\nversion: 2.10\n";
+        const backupZip = createBackupZip(
+          [{ name: "model1", content: createModelYaml("Test") }],
+          { "RADIO/radio.yml": radioContent }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+                overwriteExisting: false
+              ) {
+                status
+                filesWritten
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        expect((data as any)?.restoreBackupToSdcard.status).toBe("completed");
+
+        // Verify RADIO/radio.yml was NOT overwritten
+        const restoredRadio = await fs.readFile(
+          path.join(radioPath, "radio.yml"),
+          "utf-8"
+        );
+        expect(restoredRadio).toContain("baud: 9600");
+        expect(restoredRadio).not.toContain("baud: 115200");
+      });
+
+      it("should detect RADIO/radio.yml collision in checkModelCollisions", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Pre-create RADIO/radio.yml on SD card
+        const radioPath = path.join(tempDir.path, "RADIO");
+        await fs.mkdir(radioPath, { recursive: true });
+        await fs.writeFile(
+          path.join(radioPath, "radio.yml"),
+          "baud: 9600\nversion: 2.8\n"
+        );
+
+        // Create a model on SD card
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("Existing Model")
+        );
+
+        // Create backup with matching model and RADIO/radio.yml
+        const backupZip = createBackupZip(
+          [{ name: "model1", content: createModelYaml("Backup Model") }],
+          { "RADIO/radio.yml": "baud: 115200\nversion: 2.10\n" }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Check collisions
+        const { data, errors } = await backend.query({
+          query: gql`
+            query CheckCollisions($backupId: ID!, $directoryId: ID!) {
+              checkModelCollisions(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                fileName
+                displayName
+                existingContent
+                backupContent
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        const collisions = (data as any)?.checkModelCollisions;
+        expect(collisions.length).toBeGreaterThanOrEqual(2);
+
+        // Should have model collision
+        const modelCollision = collisions.find(
+          (c: any) => c.fileName === "model1"
+        );
+        expect(modelCollision).toBeDefined();
+
+        // Should have radio.yml collision
+        const radioCollision = collisions.find(
+          (c: any) => c.fileName === "RADIO/radio.yml"
+        );
+        expect(radioCollision).toBeDefined();
+        expect(radioCollision.existingContent).toContain("baud: 9600");
+        expect(radioCollision.backupContent).toContain("baud: 115200");
+      });
+
+      it("should detect all collisions even when backup contains .txt files with same base name as .yml", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Pre-create RADIO/radio.yml on SD card
+        const radioPath = path.join(tempDir.path, "RADIO");
+        await fs.mkdir(radioPath, { recursive: true });
+        await fs.writeFile(
+          path.join(radioPath, "radio.yml"),
+          "baud: 9600\nversion: 2.8\n"
+        );
+
+        // Create 3 existing models AND a .txt on SD card
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("Existing Model 1")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model1.txt"),
+          "Notes for model 1"
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model2.yml"),
+          createModelYaml("Existing Model 2")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model3.yml"),
+          createModelYaml("Existing Model 3")
+        );
+
+        // Create backup with same 3 models + model1.txt + radio.yml
+        const backupZip = createBackupZip(
+          [
+            { name: "model1", content: createModelYaml("Backup Model 1") },
+            { name: "model2", content: createModelYaml("Backup Model 2") },
+            { name: "model3", content: createModelYaml("Backup Model 3") },
+          ],
+          {
+            "MODELS/model1.txt": "Backup notes for model 1",
+            "RADIO/radio.yml": "baud: 115200\nversion: 2.10\n",
+          }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Check collisions — should find all 3 model collisions + radio.yml
+        const { data, errors } = await backend.query({
+          query: gql`
+            query CheckCollisions($backupId: ID!, $directoryId: ID!) {
+              checkModelCollisions(
+                backupId: $backupId
+                directoryId: $directoryId
+              ) {
+                fileName
+                displayName
+                existingContent
+                backupContent
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        const collisions = (data as any)?.checkModelCollisions;
+        // 3 model collisions + 1 radio.yml collision = 4 total
+        expect(collisions).toHaveLength(4);
+
+        expect(
+          collisions.find((c: any) => c.fileName === "model1")
+        ).toBeDefined();
+        expect(
+          collisions.find((c: any) => c.fileName === "model2")
+        ).toBeDefined();
+        expect(
+          collisions.find((c: any) => c.fileName === "model3")
+        ).toBeDefined();
+        expect(
+          collisions.find((c: any) => c.fileName === "RADIO/radio.yml")
+        ).toBeDefined();
+      });
+
+      it("should detect all collisions with selectedModels param and .txt files present", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Pre-create RADIO/radio.yml on SD card
+        const radioPath = path.join(tempDir.path, "RADIO");
+        await fs.mkdir(radioPath, { recursive: true });
+        await fs.writeFile(
+          path.join(radioPath, "radio.yml"),
+          "baud: 9600\nversion: 2.8\n"
+        );
+
+        // Create 3 existing models AND a .txt on SD card
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("Existing Model 1")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model1.txt"),
+          "Notes for model 1"
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model2.yml"),
+          createModelYaml("Existing Model 2")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model3.yml"),
+          createModelYaml("Existing Model 3")
+        );
+
+        // Create backup with same 3 models + model1.txt + radio.yml
+        const backupZip = createBackupZip(
+          [
+            { name: "model1", content: createModelYaml("Backup Model 1") },
+            { name: "model2", content: createModelYaml("Backup Model 2") },
+            { name: "model3", content: createModelYaml("Backup Model 3") },
+          ],
+          {
+            "MODELS/model1.txt": "Backup notes for model 1",
+            "RADIO/radio.yml": "baud: 115200\nversion: 2.10\n",
+          }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Check collisions WITH selectedModels (matching real UI flow)
+        const { data, errors } = await backend.query({
+          query: gql`
+            query CheckCollisions(
+              $backupId: ID!
+              $directoryId: ID!
+              $selectedModels: [String!]
+            ) {
+              checkModelCollisions(
+                backupId: $backupId
+                directoryId: $directoryId
+                selectedModels: $selectedModels
+              ) {
+                fileName
+                displayName
+                existingContent
+                backupContent
+              }
+            }
+          `,
+          variables: {
+            backupId,
+            directoryId,
+            selectedModels: ["model1", "model2", "model3"],
+          },
+        });
+
+        expect(errors).toBeFalsy();
+        const collisions = (data as any)?.checkModelCollisions;
+        // 3 model collisions + 1 radio.yml collision = 4 total
+        expect(collisions).toHaveLength(4);
+
+        expect(
+          collisions.find((c: any) => c.fileName === "model1")
+        ).toBeDefined();
+        expect(
+          collisions.find((c: any) => c.fileName === "model2")
+        ).toBeDefined();
+        expect(
+          collisions.find((c: any) => c.fileName === "model3")
+        ).toBeDefined();
+        expect(
+          collisions.find((c: any) => c.fileName === "RADIO/radio.yml")
+        ).toBeDefined();
+      });
+    });
+
+    describe("MODELS/*.txt file inclusion", () => {
+      it("should include MODELS/*.txt files in backup", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        await fs.writeFile(
+          path.join(modelsPath, "model1.yml"),
+          createModelYaml("My Model")
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model1.txt"),
+          "Model notes for My Model"
+        );
+        await fs.writeFile(
+          path.join(modelsPath, "model2.txt"),
+          "Notes for another model"
+        );
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation CreateBackup($directoryId: ID!) {
+              createBackupFromSdcard(directoryId: $directoryId) {
+                base64Data
+              }
+            }
+          `,
+          variables: { directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+
+        const backupBuffer = Buffer.from(
+          ((data as any)?.createBackupFromSdcard?.base64Data ?? "") as string,
+          "base64"
+        );
+        const { unzipSync } = await import("fflate");
+        const unzipped = unzipSync(new Uint8Array(backupBuffer));
+
+        const files = Object.keys(unzipped);
+        expect(files).toContain("MODELS/model1.yml");
+        expect(files).toContain("MODELS/model1.txt");
+        expect(files).toContain("MODELS/model2.txt");
+      });
+
+      it("should restore MODELS/*.txt files from backup", async () => {
+        await setupSdcardDirectory(tempDir.path);
+
+        // Create backup with model and .txt files
+        const backupZip = createBackupZip(
+          [{ name: "model1", content: createModelYaml("Test") }],
+          {
+            "MODELS/model1.txt": "Model notes content",
+            "MODELS/model2.txt": "Another notes file",
+          }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+                overwriteExisting: true
+              ) {
+                status
+                filesWritten
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        expect((data as any)?.restoreBackupToSdcard.status).toBe("completed");
+
+        // Verify .txt files were restored
+        const txt1 = await fs.readFile(
+          path.join(tempDir.path, "MODELS", "model1.txt"),
+          "utf-8"
+        );
+        expect(txt1).toBe("Model notes content");
+
+        const txt2 = await fs.readFile(
+          path.join(tempDir.path, "MODELS", "model2.txt"),
+          "utf-8"
+        );
+        expect(txt2).toBe("Another notes file");
+      });
+
+      it("should skip MODELS/*.txt files when overwriteExisting is false and they exist", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Pre-create a .txt file on SD card
+        await fs.writeFile(
+          path.join(modelsPath, "model1.txt"),
+          "Original notes"
+        );
+
+        // Create backup with same .txt file
+        const backupZip = createBackupZip(
+          [{ name: "model1", content: createModelYaml("Test") }],
+          { "MODELS/model1.txt": "Updated notes" }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+                overwriteExisting: false
+              ) {
+                status
+                filesWritten
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+
+        // Verify .txt file was NOT overwritten
+        const txt = await fs.readFile(
+          path.join(modelsPath, "model1.txt"),
+          "utf-8"
+        );
+        expect(txt).toBe("Original notes");
+      });
     });
 
     describe("firmware-constants", () => {
@@ -1865,10 +2484,6 @@ describe("Backup", () => {
 
       it("MAX_MODELS_COLOR should be 99", () => {
         expect(MAX_MODELS_COLOR).toBe(99);
-      });
-
-      it("MAX_MODELS should equal MAX_MODELS_BW for backwards compatibility", () => {
-        expect(MAX_MODELS).toBe(MAX_MODELS_BW);
       });
     });
   });

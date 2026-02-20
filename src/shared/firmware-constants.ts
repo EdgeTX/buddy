@@ -16,11 +16,6 @@ export const MAX_MODELS_BW = 60;
 export const MAX_MODELS_COLOR = 99;
 
 /**
- * @deprecated Use MAX_MODELS_BW or MAX_MODELS_COLOR with getMaxModels() instead.
- */
-export const MAX_MODELS = MAX_MODELS_BW;
-
-/**
  * Returns the maximum number of model slots based on radio type.
  * @param hasLabels - true if labels.yml exists (ColourLCD), false for B&W
  */
@@ -42,3 +37,9 @@ export const modelSlotName = (index: number, isColorLcd: boolean): string =>
  */
 export const isValidModelFile = (name: string): boolean =>
   name.endsWith(".yml") && !name.startsWith("._") && name !== "labels.yml";
+
+/**
+ * Checks if a filename is a valid model text file (e.g. notes bundled by Companion).
+ */
+export const isModelTextFile = (name: string): boolean =>
+  name.endsWith(".txt") && !name.startsWith("._");

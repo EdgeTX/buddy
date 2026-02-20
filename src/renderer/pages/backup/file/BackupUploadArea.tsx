@@ -4,7 +4,16 @@ import {
   EyeOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Upload, Button, Card, List, Checkbox, Modal, Typography } from "antd";
+import {
+  Upload,
+  Button,
+  Card,
+  List,
+  Checkbox,
+  Modal,
+  Typography,
+  Tooltip,
+} from "antd";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
@@ -363,6 +372,15 @@ const BackupUploadArea: React.FC<Props> = ({
                       ...prevSelected,
                       ...newModelIds,
                     ]);
+
+                    // Register the full .etx/.zip backup with the backend
+                    // so radio.yml and .txt files are preserved for restore
+                    const etxFileKey = `${f.name}-${base64Data.substring(
+                      0,
+                      100
+                    )}`;
+                    setLastProcessedFile(etxFileKey);
+                    onFileSelected({ name: f.name, base64Data });
                   } else if (
                     f.name.endsWith(".yml") ||
                     f.name.endsWith(".yaml")
@@ -554,7 +572,8 @@ const BackupUploadArea: React.FC<Props> = ({
                 const isValidFormat =
                   file.name.endsWith(".etx") ||
                   file.name.endsWith(".zip") ||
-                  file.name.endsWith(".yml");
+                  file.name.endsWith(".yml") ||
+                  file.name.endsWith(".yaml");
                 if (!isValidFormat) {
                   Modal.error({
                     title: t("Error"),
@@ -652,6 +671,15 @@ const BackupUploadArea: React.FC<Props> = ({
                             ...prevSelected,
                             ...newModelIds,
                           ]);
+
+                          // Register the full .etx/.zip backup with the backend
+                          // so radio.yml and .txt files are preserved for restore
+                          const etxFileKey = `${f.name}-${base64Data.substring(
+                            0,
+                            100
+                          )}`;
+                          setLastProcessedFile(etxFileKey);
+                          onFileSelected({ name: f.name, base64Data });
                         } else if (
                           f.name.endsWith(".yml") ||
                           f.name.endsWith(".yaml")
@@ -714,7 +742,7 @@ const BackupUploadArea: React.FC<Props> = ({
                 }
                 return false;
               }}
-              accept=".etx,.zip,.yml"
+              accept=".etx,.zip,.yml,.yaml"
             >
               <Button type="dashed" disabled={restoring} loading={loadingState}>
                 {t(`Add more files`)}
@@ -729,21 +757,34 @@ const BackupUploadArea: React.FC<Props> = ({
               {t(`Clear all`)}
             </Button>
 
-            {directorySelected && onRestoreModels && (
-              <Button
-                type="primary"
-                onClick={() => {
-                  const selectedItems = items.filter((item) =>
-                    selectedModels.includes(item.id)
-                  );
-                  onRestoreModels(selectedItems);
-                }}
-                disabled={selectedModels.length === 0 || restoring}
-                loading={restoring}
-                style={{ flex: 1 }}
+            {onRestoreModels && (
+              <Tooltip
+                title={
+                  !directorySelected
+                    ? t(`Select an SD Card to enable restore`)
+                    : undefined
+                }
               >
-                {t(`Restore models`)} ({selectedModels.length})
-              </Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    const selectedItems = items.filter((item) =>
+                      selectedModels.includes(item.id)
+                    );
+                    onRestoreModels(selectedItems);
+                  }}
+                  disabled={
+                    !directorySelected ||
+                    selectedModels.length === 0 ||
+                    (restoring ?? false) ||
+                    loadingState
+                  }
+                  loading={restoring}
+                  style={{ flex: 1 }}
+                >
+                  {t(`Restore models`)} ({selectedModels.length})
+                </Button>
+              </Tooltip>
             )}
           </div>
         </div>

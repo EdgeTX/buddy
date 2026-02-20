@@ -184,35 +184,34 @@ const BackupRestoreFlow: React.FC = () => {
     }
 
     // Check if we need to check collisions (when collision detection is enabled)
-    if (
-      collisionDetection &&
-      directoryData?.models &&
-      directoryData.models.length > 0
-    ) {
-      // Check for collisions with existing models on SD card
-      const existingModelNames = new Set(directoryData.models);
-      const collidingModels = models.filter((model) =>
-        existingModelNames.has(model.fileName)
-      );
+    if (collisionDetection) {
+      try {
+        // Determine which backup ID to use for collision checking
+        const backupIdForCheck = await getBackupIdForCollisionCheck(models);
+        if (!backupIdForCheck) {
+          Modal.error({
+            title: t("Error"),
+            content: t("Error creating temporary backup"),
+          });
+          return;
+        }
 
-      if (collidingModels.length > 0) {
-        try {
-          // Create temporary backup to check collisions with full content
-          const tempBackupId = await createTemporaryBackupFromModels(models);
-          if (!tempBackupId) {
-            Modal.error({
-              title: t("Error"),
-              content: t("Error creating temporary backup"),
-            });
-            return;
-          }
+        // For .etx backups, always check via backend (catches radio.yml collisions too)
+        // For individual files, only check if there are potential model collisions
+        const hasOriginalBackup = version === "local" && target;
+        const existingModelNames = new Set(directoryData?.models ?? []);
+        const collidingModelNames = models
+          .filter((model) => existingModelNames.has(model.fileName))
+          .map((m) => m.fileName);
 
+        if (hasOriginalBackup || collidingModelNames.length > 0) {
           // Query backend for collision details including YAML content
+          // Always send all model names so the backend can check all of them
           const collisionResult = await checkCollisionsQuery({
             variables: {
-              backupId: tempBackupId,
+              backupId: backupIdForCheck,
               directoryId: directory,
-              selectedModels: collidingModels.map((m) => m.fileName),
+              selectedModels: models.map((m) => m.fileName),
             },
           });
 
@@ -227,32 +226,52 @@ const BackupRestoreFlow: React.FC = () => {
             | undefined;
 
           if (collisionData && collisionData.length > 0) {
-            // Generate available slot names using appropriate naming scheme
-            const hasLabels = directoryData.hasLabels ?? false;
-            const maxModels = getMaxModels(hasLabels);
-            const existingNames = new Set(directoryData.models);
-            const slots: string[] = [];
-            for (let i = 1; i <= maxModels; i += 1) {
-              const slotName = modelSlotName(i, hasLabels);
-              if (!existingNames.has(slotName)) {
-                slots.push(slotName);
+            // Generate available slot names for model collisions only
+            const modelCollisions = collisionData.filter(
+              (c) => !c.fileName.includes("/")
+            );
+            if (modelCollisions.length > 0 && directoryData?.models) {
+              const hasLabels = directoryData.hasLabels ?? false;
+              const maxModels = getMaxModels(hasLabels);
+              const existingNames = new Set(directoryData.models);
+              const slots: string[] = [];
+              for (let i = 1; i <= maxModels; i += 1) {
+                const slotName = modelSlotName(i, hasLabels);
+                if (!existingNames.has(slotName)) {
+                  slots.push(slotName);
+                }
               }
+              setAvailableSlots(slots);
             }
 
             setCollisions(collisionData);
-            setAvailableSlots(slots);
             setPendingRestore({ models });
             setShowCollisionModal(true);
             return;
           }
-        } catch (error) {
-          // Continue with restore without collision details
         }
+      } catch (error) {
+        // Continue with restore without collision details
       }
     }
 
     // No collision check needed or no collisions found, proceed with restore
     executeRestore(models, {}, !collisionDetection);
+  };
+
+  /**
+   * Get a backup ID suitable for collision checking.
+   * Uses the original .etx backup when available, otherwise creates a temp backup.
+   */
+  const getBackupIdForCollisionCheck = async (
+    models: ModelItem[]
+  ): Promise<string | null> => {
+    // Use original .etx backup if available (includes radio.yml for collision checks)
+    if (version === "local" && target) {
+      return target;
+    }
+
+    return createTemporaryBackupFromModels(models);
   };
 
   const createTemporaryBackupFromModels = async (
@@ -300,9 +319,13 @@ const BackupRestoreFlow: React.FC = () => {
     setRestoring(true);
     setProgress(0);
 
-    // Create a temporary backup with the selected models
-    const createTemporaryBackup = async (): Promise<string> => {
-      // Create files object for the ZIP
+    // Get backup ID — use original .etx backup when available (preserves radio.yml and .txt files)
+    const getBackupId = async (): Promise<string> => {
+      if (version === "local" && target) {
+        return target;
+      }
+
+      // Create a temporary backup with the selected models
       const files: Record<string, Uint8Array> = {};
 
       models.forEach((model) => {
@@ -332,7 +355,7 @@ const BackupRestoreFlow: React.FC = () => {
       return result.data?.registerLocalBackup.id ?? "";
     };
 
-    void createTemporaryBackup()
+    void getBackupId()
       .then((backupId) => {
         if (!backupId) {
           Modal.error({

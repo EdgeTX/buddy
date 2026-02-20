@@ -58,6 +58,7 @@
   "Restoring models...": "Restoring models...",
   "SD Card": "SD Card",
   "SD Card selected successfully": "SD Card selected successfully",
+  "Select an SD Card to enable restore": "Select an SD Card to enable restore",
   "Select all": "Select all",
   "Select models to backup": "Select models to backup",
   "Select SD Card": "Select SD Card",
@@ -75,5 +76,6 @@
   "labels.yml is always included in .etx backups for Companion compatibility": "labels.yml is always included in .etx backups for Companion compatibility",
   "When enabled, you'll be asked how to handle models that already exist on your SD card": "When enabled, you'll be asked how to handle models that already exist on your SD card",
   "will be overwritten if you choose \"Overwrite all\"": "will be overwritten if you choose \"Overwrite all\"",
-  "You can add more individual .yml files or load a full .etx/.zip backup": "You can add more individual .yml files or load a full .etx/.zip backup"
+  "You can add more individual .yml files or load a full .etx/.zip backup": "You can add more individual .yml files or load a full .etx/.zip backup",
+  "Radio settings \u2014 will be overwritten with \"Overwrite all\", skipped with \"Restore with renames\"": "Radio settings \u2014 will be overwritten with \"Overwrite all\", skipped with \"Restore with renames\""
 }
