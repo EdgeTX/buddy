@@ -9,6 +9,7 @@ import type {
   FlashStagesType,
   FlashStageType,
 } from "shared/backend/graph/flash";
+import { isUF2Payload, newUF2Reader } from "shared/uf2";
 
 export const jobUpdates = new PubSub();
 
@@ -118,6 +119,43 @@ async function fetchFromCloudbuild(
     });
 }
 
+export const rebootIntoDFU = async (
+  jobId: string,
+  dfuConnection: WebDFU,
+  uf2Range: {
+    startAddress: number;
+    payload: Uint8Array;
+    rebootAddress: number;
+  },
+  { usb, dfu }: Context
+): Promise<WebDFU> => {
+  const { startAddress, payload, rebootAddress } = uf2Range;
+  const { vendorId, productId } = dfuConnection.device;
+
+  await dfuConnection.rebootIntoDFU(startAddress, payload, rebootAddress);
+  await dfuConnection.close().catch(() => {});
+  updateStageStatus(jobId, "reboot", { started: true, progress: 10 });
+
+  let progress = 0;
+  const newDfuConnection = await dfu
+    .reconnect(usb.deviceList, vendorId, productId, {
+      onPoll: () => {
+        progress += 5;
+        updateStageStatus(jobId, "reboot", { started: true, progress });
+      },
+    })
+    .catch((e: Error) => {
+      updateStageStatus(jobId, "reboot", { error: e.message });
+      throw e;
+    });
+  updateStageStatus(jobId, "reboot", {
+    progress: 100,
+    completed: true,
+  });
+
+  return newDfuConnection;
+};
+
 export const startExecution = async (
   jobId: string,
   args: {
@@ -134,7 +172,7 @@ export const startExecution = async (
   context: Context
 ): Promise<void> => {
   const { dfu, firmwareStore } = context;
-  const { firmware } = args;
+  const { device, firmware } = args;
   const isCloudBuild = firmware.source === "cloudbuild";
 
   let firmwareData = firmware.data;
@@ -167,7 +205,7 @@ export const startExecution = async (
       started: true,
     });
 
-    dfuProcess = await dfu.connect(args.device).catch((e: Error) => {
+    dfuProcess = await dfu.connect(device).catch((e: Error) => {
       updateStageStatus(jobId, "connect", {
         error: e.message,
       });
@@ -221,7 +259,32 @@ export const startExecution = async (
       return;
     }
 
-    await flash(jobId, dfuProcess, firmwareData);
+    if (!isUF2Payload(firmwareData.buffer)) {
+      await flash(jobId, dfuProcess, firmwareData);
+    } else {
+      const uf2Reader = newUF2Reader(firmwareData);
+      const ranges = Array.from(uf2Reader.addressRanges());
+      let isBootloader = true;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const range of ranges) {
+        if ("rebootAddress" in range) {
+          // eslint-disable-next-line no-await-in-loop
+          dfuProcess = await rebootIntoDFU(jobId, dfuProcess, range, context);
+          isBootloader = false;
+        } else {
+          const { payload, startAddress } = range;
+          // eslint-disable-next-line no-await-in-loop
+          await flash(
+            jobId,
+            dfuProcess,
+            Buffer.from(payload),
+            startAddress,
+            isBootloader
+          );
+        }
+      }
+    }
   })()
     .catch(async (e) => {
       console.error(e, await dfuProcess?.getStatus().catch(() => ({})));
@@ -252,10 +315,18 @@ export const updateStageStatus = (
     return;
   }
 
-  updateJob(jobId, {
+  const currentStatus = job.stages[stage] ?? {
+    started: false,
+    progress: 0,
+    completed: false,
+  };
+
+  const updatedJob = {
     ...job,
-    stages: { ...job.stages, [stage]: { ...job.stages[stage], ...status } },
-  });
+    stages: { ...job.stages, [stage]: { ...currentStatus, ...status } },
+  };
+
+  updateJob(jobId, updatedJob);
 };
 
 export const cancelJob = (jobId: string): void => {
@@ -270,13 +341,36 @@ export const cancelJob = (jobId: string): void => {
 export const flash = async (
   jobId: string,
   connection: WebDFU,
-  firmware: Buffer
+  firmware: ArrayBuffer,
+  startAddress?: number | undefined,
+  isBootloader?: boolean | undefined
 ): Promise<void> => {
+  const options = startAddress ? { startAddress, reboot: false } : undefined;
   const process = connection.write(
     connection.properties?.TransferSize ?? 1024,
     firmware,
-    true
+    options
   );
+
+  const updateJobStatus = (
+    stage: keyof FlashStagesType,
+    status: Partial<FlashStageType>
+  ): void => {
+    const effectiveStage = (
+      s: keyof FlashStagesType
+    ): keyof FlashStagesType => {
+      if (isBootloader) {
+        if (s === "erase") {
+          return "eraseBL";
+        }
+        if (s === "flash") {
+          return "flashBL";
+        }
+      }
+      return s;
+    };
+    updateStageStatus(jobId, effectiveStage(stage), status);
+  };
 
   await new Promise<void>((resolve, reject) => {
     let stage: "erase" | "flash" | "finished" = "erase";
@@ -295,16 +389,16 @@ export const flash = async (
           err.message.includes("command 65 failed") &&
           status === dfuCommands.STATUS_errVENDOR
         ) {
-          updateStageStatus(jobId, "erase", {
+          updateJobStatus("erase", {
             error: "WRITE_PROTECTED",
           });
         } else {
-          updateStageStatus(jobId, "erase", {
+          updateJobStatus("erase", {
             error: err.message,
           });
         }
       } else {
-        updateStageStatus(jobId, "flash", {
+        updateJobStatus("flash", {
           error: err.message,
         });
       }
@@ -312,17 +406,17 @@ export const flash = async (
     });
 
     process.events.on("erase/start", () => {
-      updateStageStatus(jobId, "erase", {
+      updateJobStatus("erase", {
         started: true,
       });
     });
     process.events.on("erase/process", (progress, size) => {
-      updateStageStatus(jobId, "erase", {
+      updateJobStatus("erase", {
         progress: (progress / size) * 100,
       });
     });
     process.events.on("erase/end", () => {
-      updateStageStatus(jobId, "erase", {
+      updateJobStatus("erase", {
         progress: 100,
         completed: true,
       });
@@ -330,12 +424,12 @@ export const flash = async (
 
     process.events.on("write/start", () => {
       stage = "flash";
-      updateStageStatus(jobId, "flash", {
+      updateJobStatus("flash", {
         started: true,
       });
     });
     process.events.on("write/process", (progress, size) => {
-      updateStageStatus(jobId, "flash", {
+      updateJobStatus("flash", {
         progress: (progress / size) * 100,
       });
     });
@@ -344,7 +438,7 @@ export const flash = async (
 
     const finish = (): void => {
       stage = "finished";
-      updateStageStatus(jobId, "flash", {
+      updateJobStatus("flash", {
         completed: true,
       });
       resolve();

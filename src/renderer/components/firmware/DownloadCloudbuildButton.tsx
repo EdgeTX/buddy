@@ -5,7 +5,7 @@ import { ButtonSize, ButtonType } from "antd/lib/button";
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import legacyDownload from "js-file-download";
-import isUF2Payload from "shared/uf2/uf2";
+import { isUF2Payload } from "shared/uf2";
 import useCreateFirmware from "renderer/hooks/useCreateCloudFirmware";
 import useFirmwareStatus from "renderer/hooks/useCloudFirmwareStatus";
 import { SelectedFlags } from "shared/backend/types";

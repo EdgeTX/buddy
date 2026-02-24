@@ -9,14 +9,12 @@ import SdcardEditor from "./pages/sdcard/SdcardEditor";
 import SelectSdcardScreen from "./pages/sdcard/SelectSdcardScreen";
 import CompatNoticeHandler from "./compatibility/CompatNoticeHandler";
 import DevTools from "./pages/dev/DevTools";
-import { RouteTracker } from "./tracking";
 
 const isMobileOs = isMobile({ tablet: true });
 
 const App: React.FC = () => (
   <HashRouter>
     {!environment.isElectron && !isMobileOs && <CompatNoticeHandler />}
-    <RouteTracker />
     <Layout
       macFrameless={environment.isElectron && environment.os === "Mac OS"}
       windowsFrameless={

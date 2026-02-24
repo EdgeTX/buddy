@@ -9,27 +9,18 @@ type Props = {
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
-  target?: string;
 };
-
-// Radio models that only support UF2 flashing
-const UF2_ONLY_MODELS = ["st16", "pa01", "t15pro", "tx15"];
 
 const FlashButton: React.FC<Props> = ({
   onClick,
   disabled = false,
   loading = false,
-  target,
 }) => {
   const { t } = useTranslation("flashing");
-  const isUf2OnlyModel = target && UF2_ONLY_MODELS.includes(target);
-  const flashingAvailable =
-    (environment.isElectron || checks.hasUsbApi) && !isUf2OnlyModel;
+  const flashingAvailable = environment.isElectron || checks.hasUsbApi;
 
   let tooltipTitle: string | undefined;
-  if (isUf2OnlyModel) {
-    tooltipTitle = t(`Flash this radio via Bootloader and UF2`);
-  } else if (!flashingAvailable) {
+  if (!flashingAvailable) {
     tooltipTitle = t(`Not supported by your browser`);
   }
 

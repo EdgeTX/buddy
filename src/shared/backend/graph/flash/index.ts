@@ -63,6 +63,18 @@ const FlashStages = builder.simpleObject("FlashStages", {
       type: FlashStage,
       nullable: true,
     }),
+    eraseBL: t_.field({
+      type: FlashStage,
+      nullable: true,
+    }),
+    flashBL: t_.field({
+      type: FlashStage,
+      nullable: true,
+    }),
+    reboot: t_.field({
+      type: FlashStage,
+      nullable: true,
+    }),
     erase: t_.field({
       type: FlashStage,
     }),

@@ -5,7 +5,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { fireEvent, screen } from "@testing-library/react";
 import { createCloudFirmware } from "test-utils/mocks";
 import { render } from "test-utils/testing-library";
-import isUF2Payload from "shared/uf2/uf2";
+import { isUF2Payload } from "shared/uf2";
 import DownloadCloudbuildButton from "renderer/components/firmware/DownloadCloudbuildButton";
 
 const mockDownload = vitest.mocked(download);

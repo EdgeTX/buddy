@@ -10,7 +10,6 @@ import useCreateFlashJob from "renderer/hooks/useCreateFlashJob";
 import { FullHeight } from "renderer/shared/layouts";
 import styled from "styled-components";
 import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
-import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
 import environment from "shared/environment";
 import ExecutionOverlay from "./ExecuationOverlay";
@@ -97,7 +96,6 @@ const PrBuildsFlasher: React.FC = () => {
               disabled={
                 !target || !version || !selectedDeviceId || !!flashJobId
               }
-              target={target}
               onClick={() => {
                 if (!target || !version || !selectedDeviceId) {
                   return;
@@ -111,10 +109,6 @@ const PrBuildsFlasher: React.FC = () => {
                     updateParams({ flashJob: jobId });
                   })
                   .catch((e: Error) => {
-                    exception({
-                      description: `Error creating PR flash job: ${e.message}`,
-                      fatal: true,
-                    });
                     void message.error(
                       t(`Could not create job: {{message}}`, {
                         message: e.message,
