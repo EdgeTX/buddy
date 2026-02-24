@@ -1,4 +1,3 @@
-import "antd/dist/antd.variable.min.css";
 import "../src/renderer/index.css";
 import { ConfigProvider } from "antd";
 import i18n from "../src/test-utils/i18n";
