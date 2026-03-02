@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { message } from "antd";
 import { useMutation, gql, useQuery } from "@apollo/client";
-import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
 import BackupUploadArea from "./BackupUploadArea";
 
@@ -96,10 +95,7 @@ const BackupUploader: React.FC<BackupUploaderProps> = ({
               }
             })
             .catch((e: Error) => {
-              exception({
-                description: `Error uploading local backup: ${e.message}`,
-                fatal: true,
-              });
+              console.error(`Error uploading local backup: ${e.message}`);
               void message.error(t(`Could not use backup file`));
             });
         } else {
