@@ -14,7 +14,6 @@ import useCancelFlashJob from "renderer/hooks/useCancelFlashJob";
 import FlashJobTimeline from "renderer/components/flashing/FlashJobTimeline";
 import FirmwareSummary from "renderer/components/firmware/FirmwareSummary";
 import { Trans, useTranslation } from "react-i18next";
-import { event } from "react-ga";
 import environment from "shared/environment";
 
 const Container = styled.div`
@@ -196,10 +195,6 @@ const FlashExecution: React.FC = () => {
                 // TODO: check what error we have experienced and act accordingly
                 // for now, we know the only special error we have to deal with
                 // is for protected flash
-                event({
-                  category: "flashing",
-                  action: "unlock-flash-clicked",
-                });
                 navigate("/dev/flash/unlock");
               }}
             />

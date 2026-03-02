@@ -60,6 +60,76 @@ export const downloadingRelease: React.FC = () => (
   />
 );
 
+export const downloadError: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      download: {
+        started: true,
+        progress: 100,
+        error: "Some error :(",
+        completed: false,
+      },
+      erase: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      flash: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+    }}
+  />
+);
+
+export const erasingBootloader: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      download: {
+        started: true,
+        progress: 100,
+        completed: true,
+      },
+      eraseBL: {
+        started: true,
+        progress: 25,
+        completed: false,
+      },
+      flashBL: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      reboot: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      erase: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+      flash: {
+        started: false,
+        progress: 0,
+        completed: false,
+      },
+    }}
+  />
+);
+
 export const erasing: React.FC = () => (
   <FlashJobTimeline
     state={{
@@ -115,6 +185,33 @@ export const erasingFlashProtected: React.FC = () => (
   />
 );
 
+export const flashing: React.FC = () => (
+  <FlashJobTimeline
+    state={{
+      connect: {
+        started: true,
+        progress: 0,
+        completed: true,
+      },
+      download: {
+        started: true,
+        progress: 100,
+        completed: true,
+      },
+      erase: {
+        started: true,
+        progress: 100,
+        completed: true,
+      },
+      flash: {
+        started: true,
+        progress: 30.5,
+        completed: false,
+      },
+    }}
+  />
+);
+
 export const completed: React.FC = () => (
   <FlashJobTimeline
     state={{
@@ -137,34 +234,6 @@ export const completed: React.FC = () => (
         started: true,
         progress: 0,
         completed: true,
-      },
-    }}
-  />
-);
-
-export const downloadError: React.FC = () => (
-  <FlashJobTimeline
-    state={{
-      connect: {
-        started: true,
-        progress: 0,
-        completed: true,
-      },
-      download: {
-        started: true,
-        progress: 100,
-        error: "Some error :(",
-        completed: false,
-      },
-      erase: {
-        started: false,
-        progress: 0,
-        completed: false,
-      },
-      flash: {
-        started: false,
-        progress: 0,
-        completed: false,
       },
     }}
   />
@@ -272,6 +341,21 @@ const useFlashingState = () => {
       progress: 0,
       completed: false,
     },
+    eraseBL: {
+      started: false,
+      progress: 0,
+      completed: false,
+    },
+    flashBL: {
+      started: false,
+      progress: 0,
+      completed: false,
+    },
+    reboot: {
+      started: false,
+      progress: 0,
+      completed: false,
+    },
     erase: {
       started: false,
       progress: 0,
@@ -287,9 +371,17 @@ const useFlashingState = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setState((existing) => {
-        const currentStage = ["connect", "download", "erase", "flash"].find(
-          (key) => !existing[key as keyof typeof existing].completed
-        ) as keyof typeof existing | undefined;
+        const currentStage = [
+          "connect",
+          "download",
+          "eraseBL",
+          "flashBL",
+          "reboot",
+          "erase",
+          "flash",
+        ].find((key) => !existing[key as keyof typeof existing].completed) as
+          | keyof typeof existing
+          | undefined;
 
         if (!currentStage) {
           clearInterval(interval);

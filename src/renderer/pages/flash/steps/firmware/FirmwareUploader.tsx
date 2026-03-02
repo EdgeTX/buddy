@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { message } from "antd";
 import { useMutation, gql, useQuery } from "@apollo/client";
-import { exception } from "react-ga";
 import { useTranslation } from "react-i18next";
 import FirmwareUploadArea from "./FirmwareUploadArea";
 
@@ -70,11 +69,7 @@ const FirmwareUploader: React.FC<FirmwareUploaderProps> = ({
                 onFileUploaded(result.data.registerLocalFirmware.id);
               }
             })
-            .catch((e: Error) => {
-              exception({
-                description: `Error uploading local firmware: ${e.message}`,
-                fatal: true,
-              });
+            .catch(() => {
               void message.error(t(`Could not use firmware`));
             });
         } else {

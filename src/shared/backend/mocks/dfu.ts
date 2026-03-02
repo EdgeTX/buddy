@@ -89,66 +89,96 @@ export const createDfuMock = (faster?: boolean): typeof dfu => {
     })();
   };
 
+  const mockDevice = (device: USBDevice): WebDFU =>
+    ({
+      getStatus: () => {
+        switch (device) {
+          case lockedDevice:
+            return { status: dfuCommands.STATUS_errVENDOR };
+          default:
+            throw new Error("Not implemented");
+        }
+      },
+      write: () => {
+        const events = createDfuEvents();
+
+        switch (device) {
+          case goodDevice:
+            startEmulation(events, "good");
+            break;
+          case lockedDevice:
+            startEmulation(events, "locked");
+            break;
+          case disconnectBugDevice:
+            startEmulation(events, "disconnect-bug");
+            break;
+          case errorErasingDevice:
+            startEmulation(events, "bad-erase");
+            break;
+          case errorFlashingDevice:
+            startEmulation(events, "bad-flash");
+            break;
+          default:
+            throw new Error("Device not found");
+        }
+        return {
+          events,
+        } as WriteProcess;
+      },
+      close: () => Promise.resolve(),
+      forceUnprotect: async () => {
+        switch (device) {
+          case lockedDevice:
+            await delay(5000);
+            // use this to remove the device from
+            // the mock device list
+            await device.reset();
+            break;
+          default:
+            await delay(2000);
+            throw new Error("Some error flashing");
+        }
+      },
+    } as unknown as WebDFU);
+
+  const connect = async (device: USBDevice): Promise<WebDFU> => {
+    // It does change the type...
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    await delay(faster ? 100 : 1000);
+
+    if (device === badDevice) {
+      throw new Error("Couldnt connect");
+    }
+
+    return mockDevice(device);
+  };
+
+  const reconnect = async (
+    deviceList: () => Promise<USBDevice[]>,
+    vendorId: number,
+    productId: number,
+    options?: {
+      timeoutMs?: number;
+      pollIntervalMs?: number;
+      onPoll?: () => void;
+    }
+  ): Promise<WebDFU> => {
+    options?.onPoll?.();
+    const devices = await deviceList();
+    const device = devices.find(
+      (d) => d.vendorId === vendorId && d.productId === productId
+    );
+
+    if (device) {
+      const dfuProcess = await connect(device).catch(() => undefined);
+      if (dfuProcess) return dfuProcess;
+    }
+
+    throw new Error("Couldnt reconnect");
+  };
+
   return {
-    connect: async (device) => {
-      // It does change the type...
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      await delay(faster ? 100 : 1000);
-
-      if (device === badDevice) {
-        throw new Error("Couldnt connect");
-      }
-
-      return {
-        getStatus: () => {
-          switch (device) {
-            case lockedDevice:
-              return { status: dfuCommands.STATUS_errVENDOR };
-            default:
-              throw new Error("Not implemented");
-          }
-        },
-        write: () => {
-          const events = createDfuEvents();
-
-          switch (device) {
-            case goodDevice:
-              startEmulation(events, "good");
-              break;
-            case lockedDevice:
-              startEmulation(events, "locked");
-              break;
-            case disconnectBugDevice:
-              startEmulation(events, "disconnect-bug");
-              break;
-            case errorErasingDevice:
-              startEmulation(events, "bad-erase");
-              break;
-            case errorFlashingDevice:
-              startEmulation(events, "bad-flash");
-              break;
-            default:
-              throw new Error("Device not found");
-          }
-          return {
-            events,
-          } as WriteProcess;
-        },
-        close: () => Promise.resolve(),
-        forceUnprotect: async () => {
-          switch (device) {
-            case lockedDevice:
-              await delay(5000);
-              // use this to remove the device from
-              // the mock device list
-              await device.reset();
-              break;
-            default:
-              await delay(2000);
-              throw new Error("Some error flashing");
-          }
-        },
-      } as unknown as WebDFU;
-    },
+    connect,
+    reconnect,
   };
 };
