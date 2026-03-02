@@ -1000,6 +1000,169 @@ describe("Backup", () => {
         expect((data as any)?.restoreBackupToSdcard.status).toBe("failed");
         expect((data as any)?.restoreBackupToSdcard.error).toBeTruthy();
       });
+
+      it("should restore labels.yml data from backup when SD card has no labels.yml", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Create backup with models AND labels.yml
+        const labelsYml =
+          'Labels:\n  Racing: ""\n  Fixed Wing: ""\nModels:\n  model1.yml:\n    hash: abc123\n    name: Quad Race\n    labels: Racing\n    bitmap: quad.bmp\n    lastopen: 1700000000\n  model2.yml:\n    hash: def456\n    name: Glider\n    labels: Fixed Wing\n    bitmap: glider.bmp\n    lastopen: 1700000001\nSort: 1\n';
+        const backupZip = createBackupZip(
+          [
+            { name: "model1", content: createModelYaml("Quad Race") },
+            { name: "model2", content: createModelYaml("Glider") },
+          ],
+          { "MODELS/labels.yml": labelsYml }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        // Pick directory (no labels.yml on SD card)
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Restore backup
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+                overwriteExisting: true
+              ) {
+                status
+                filesWritten
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+        expect((data as any)?.restoreBackupToSdcard.status).toBe("completed");
+
+        // Verify labels.yml was created with data from the backup
+        const labelsContent = await fs.readFile(
+          path.join(modelsPath, "labels.yml"),
+          "utf-8"
+        );
+        expect(labelsContent).toContain("Racing");
+        expect(labelsContent).toContain("Fixed Wing");
+        expect(labelsContent).toContain("model1.yml");
+        expect(labelsContent).toContain("model2.yml");
+      });
+
+      it("should restore label assignments from backup labels.yml instead of empty stubs", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Create existing labels.yml on SD card
+        await fs.writeFile(
+          path.join(modelsPath, "labels.yml"),
+          'Labels:\n  Existing: ""\nModels: {}\nSort: 1\n'
+        );
+
+        // Create backup with labels data
+        const labelsYml =
+          'Labels:\n  Racing: ""\n  Freestyle: ""\nModels:\n  model1.yml:\n    hash: abc123\n    name: My Racer\n    labels: Racing\n    bitmap: racer.bmp\n    lastopen: 1700000000\nSort: 1\n';
+        const backupZip = createBackupZip(
+          [{ name: "model1", content: createModelYaml("My Racer") }],
+          { "MODELS/labels.yml": labelsYml }
+        );
+
+        const registerResult = await backend.mutate({
+          mutation: gql`
+            mutation RegisterBackup($data: String!) {
+              registerLocalBackup(backupBase64Data: $data) {
+                id
+              }
+            }
+          `,
+          variables: { data: backupZip.toString("base64") },
+        });
+
+        const backupId = (registerResult.data?.registerLocalBackup as any)?.id;
+
+        // Pick directory
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Restore backup
+        const { errors } = await backend.mutate({
+          mutation: gql`
+            mutation RestoreBackup($backupId: ID!, $directoryId: ID!) {
+              restoreBackupToSdcard(
+                backupId: $backupId
+                directoryId: $directoryId
+                overwriteExisting: true
+              ) {
+                status
+                filesWritten
+              }
+            }
+          `,
+          variables: { backupId, directoryId },
+        });
+
+        expect(errors).toBeFalsy();
+
+        // Verify labels.yml has the backup's label assignments, not empty stubs
+        const labelsContent = await fs.readFile(
+          path.join(modelsPath, "labels.yml"),
+          "utf-8"
+        );
+        // Should have labels from backup
+        expect(labelsContent).toContain("Racing");
+        expect(labelsContent).toContain("Freestyle");
+        // Should also keep existing labels
+        expect(labelsContent).toContain("Existing");
+        // Should contain bitmap from backup (not empty)
+        expect(labelsContent).toContain("racer.bmp");
+      });
     });
 
     describe("createBackupFromSdcard", () => {
