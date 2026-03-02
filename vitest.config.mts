@@ -23,7 +23,6 @@ export default defineConfig({
     ],
     coverage: {
       reporter: ["lcov", "html", "text"],
-      all: true,
       include: ["**/src/**/*.{ts,tsx}"],
       exclude: [
         "**/e2e/**",
