@@ -2077,15 +2077,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.21.0":
-  version: 7.23.2
-  resolution: "@babel/runtime@npm:7.23.2"
-  dependencies:
-    regenerator-runtime: ^0.14.0
-  checksum: 271fcfad8574269d9967b8a1c03f2e1eab108a52ad7c96ed136eee0b11f46156f1186637bd5e79a4207163db9a00413cd70a6428e137b982d0ee8ab85eb9f438
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:^7.23.2":
   version: 7.26.7
   resolution: "@babel/runtime@npm:7.26.7"
@@ -6485,10 +6476,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/debounce@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@types/debounce@npm:1.2.1"
-  checksum: 9b472cc906546c45d0137e9d97054f45e3b5d033b2f8618b2141a6484afc29ab483bec7b12bdac16a4a7fce8595730121a588df4f23ec4a5e7d305392202891d
+"@types/debounce@npm:^3":
+  version: 3.0.0
+  resolution: "@types/debounce@npm:3.0.0"
+  checksum: 19b3852a717ede4e47b9c8ec35f48482e5852244c26ed7deaa77c1d06b3fbfcca5252251f4306b582fff739a916afd1c5082bf6c2b98259a3e581dbd13bbf97a
   languageName: node
   linkType: hard
 
@@ -7113,10 +7104,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^8.3.4":
-  version: 8.3.4
-  resolution: "@types/uuid@npm:8.3.4"
-  checksum: b9ac98f82fcf35962317ef7dc44d9ac9e0f6fdb68121d384c88fe12ea318487d5585d3480fa003cf28be86a3bbe213ca688ba786601dce4a97724765eb5b1cf2
+"@types/uuid@npm:^10":
+  version: 10.0.0
+  resolution: "@types/uuid@npm:10.0.0"
+  checksum: 9a1404bf287164481cb9b97f6bb638f78f955be57c40c6513b7655160beb29df6f84c915aaf4089a1559c216557dc4d2f79b48d978742d3ae10b937420ddac60
   languageName: node
   linkType: hard
 
@@ -11830,12 +11821,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.30.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": ^7.21.0
-  checksum: e4b521fbf22bc8c3db332bbfb7b094fd3e7627de0259a9d17c7551e2d2702608a7307a449206065916538e384f37b181565447ce2637ae09828427aed9cb5581
+"date-fns@npm:^4":
+  version: 4.1.0
+  resolution: "date-fns@npm:4.1.0"
+  checksum: b79ff32830e6b7faa009590af6ae0fb8c3fd9ffad46d930548fbb5acf473773b4712ae887e156ba91a7b3dc30591ce0f517d69fd83bd9c38650fdc03b4e0bac8
   languageName: node
   linkType: hard
 
@@ -11857,6 +11846,13 @@ __metadata:
   version: 1.2.1
   resolution: "debounce@npm:1.2.1"
   checksum: 6c9320aa0973fc42050814621a7a8a78146c1975799b5b3cc1becf1f77ba9a5aa583987884230da0842a03f385def452fad5d60db97c3d1c8b824e38a8edf500
+  languageName: node
+  linkType: hard
+
+"debounce@npm:^2":
+  version: 2.2.0
+  resolution: "debounce@npm:2.2.0"
+  checksum: 684536fe9a04c9eea46cf02f119f69aa4071813ba25b9b43370e1503ea60b34fd38d694c7145fa2be504f9d40e7e39354cb9ed155c70954a0eefa391aefe271c
   languageName: node
   linkType: hard
 
@@ -12582,7 +12578,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.1
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@types/debounce": ^1.2.1
+    "@types/debounce": ^3
     "@types/is-ci": ^3.0.4
     "@types/md5": ^2.3.5
     "@types/node": ^20.12.5
@@ -12592,7 +12588,7 @@ __metadata:
     "@types/semver": ^7.5.8
     "@types/styled-components": ^5.1.17
     "@types/testing-library__jest-dom": 5.14.9
-    "@types/uuid": ^8.3.4
+    "@types/uuid": ^10
     "@types/w3c-web-usb": ^1.0.10
     "@types/wicg-file-system-access": ^2020.9.8
     "@typescript-eslint/eslint-plugin": ^5.6.0
@@ -12611,8 +12607,8 @@ __metadata:
     copy-text-to-clipboard: ^3.2.0
     cors-anywhere: ^0.4.4
     css-loader: ^6.5.1
-    date-fns: ^2.30.0
-    debounce: ^1.2.1
+    date-fns: ^4
+    debounce: ^2
     detect-browser: ^5.3.0
     directory-tree: ^3.0.1
     dotenv: ^10.0.0
@@ -12658,7 +12654,7 @@ __metadata:
     markdown-to-jsx: 7.4.6
     md5: ^2.3.0
     mini-css-extract-plugin: ^2.8.1
-    nanoevents: ^6.0.2
+    nanoevents: ^9
     native-ext-loader: ^2.3.0
     native-file-system-adapter: ^2.0.4
     nock: ^14.0.10
@@ -12674,7 +12670,7 @@ __metadata:
     react-i18next: ^11.15.4
     react-router-dom: ^6.0.2
     react-svg-loader: ^3.0.3
-    semver: ^7.3.5
+    semver: ^7.7
     serve: ^13.0.4
     snapshot-diff: 0.9.0
     source-map-support: ^0.5.21
@@ -12688,7 +12684,7 @@ __metadata:
     unzipit: ^1.4.3
     usb: 2.12.1
     use-media: ^1.5.0
-    uuid: ^9.0.1
+    uuid: ^11
     vite-tsconfig-paths: ^5.1.4
     vitest: ^4.0.18
     web-streams-polyfill: ^3.3.3
@@ -19417,10 +19413,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoevents@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "nanoevents@npm:6.0.2"
-  checksum: fe9de511404c940a82ce34a5def4d5f00f2ce8b05303b7cb2c40b0a2b605661c903cda14b0284f4a02800f8af4707df8564e87e08f7b03b7ef913775c61adb81
+"nanoevents@npm:^9":
+  version: 9.1.0
+  resolution: "nanoevents@npm:9.1.0"
+  checksum: 5fb48e6fc1d3102daddaeffd6eada907c25b1c8554dcc648e9cb0a72979a1ab3ee56ffa2d2b3e566a8e561a9e2992a3783493c61cfaaa096b2986d56dbbc1ca5
   languageName: node
   linkType: hard
 
@@ -23621,6 +23617,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:^7.7":
+  version: 7.7.4
+  resolution: "semver@npm:7.7.4"
+  bin:
+    semver: bin/semver.js
+  checksum: 5215ad0234e2845d4ea5bb9d836d42b03499546ddafb12075566899fc617f68794bb6f146076b6881d755de17d6c6cc73372555879ec7dce2c2feee947866ad2
+  languageName: node
+  linkType: hard
+
 "send@npm:0.17.1":
   version: 0.17.1
   resolution: "send@npm:0.17.1"
@@ -26583,6 +26588,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^11":
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 34aa51b9874ae398c2b799c88a127701408cd581ee89ec3baa53509dd8728cbb25826f2a038f9465f8b7be446f0fbf11558862965b18d21c993684297628d4d3
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
@@ -26598,15 +26612,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: bcbb807a917d374a49f475fae2e87fdca7da5e5530820ef53f65ba1d12131bd81a92ecf259cc7ce317cbe0f289e7d79fdfebcef9bfa3087c8c8a2fa304c9be54
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "uuid@npm:9.0.1"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 1607dd32ac7fc22f2d8f77051e6a64845c9bce5cd3dd8aa0070c074ec73e666a1f63c7b4e0f4bf2bc8b9d59dc85a15e17807446d9d2b17c8485fbc2147b27f9b
   languageName: node
   linkType: hard
 
