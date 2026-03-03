@@ -2077,15 +2077,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.21.0":
-  version: 7.23.2
-  resolution: "@babel/runtime@npm:7.23.2"
-  dependencies:
-    regenerator-runtime: "npm:^0.14.0"
-  checksum: 10c0/271fcfad8574269d9967b8a1c03f2e1eab108a52ad7c96ed136eee0b11f46156f1186637bd5e79a4207163db9a00413cd70a6428e137b982d0ee8ab85eb9f438
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:^7.23.2":
   version: 7.26.7
   resolution: "@babel/runtime@npm:7.26.7"
@@ -6485,10 +6476,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/debounce@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@types/debounce@npm:1.2.1"
-  checksum: 10c0/9b472cc906546c45d0137e9d97054f45e3b5d033b2f8618b2141a6484afc29ab483bec7b12bdac16a4a7fce8595730121a588df4f23ec4a5e7d305392202891d
+"@types/debounce@npm:^3":
+  version: 3.0.0
+  resolution: "@types/debounce@npm:3.0.0"
+  checksum: 10c0/19b3852a717ede4e47b9c8ec35f48482e5852244c26ed7deaa77c1d06b3fbfcca5252251f4306b582fff739a916afd1c5082bf6c2b98259a3e581dbd13bbf97a
   languageName: node
   linkType: hard
 
@@ -7113,10 +7104,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^8.3.4":
-  version: 8.3.4
-  resolution: "@types/uuid@npm:8.3.4"
-  checksum: 10c0/b9ac98f82fcf35962317ef7dc44d9ac9e0f6fdb68121d384c88fe12ea318487d5585d3480fa003cf28be86a3bbe213ca688ba786601dce4a97724765eb5b1cf2
+"@types/uuid@npm:^10":
+  version: 10.0.0
+  resolution: "@types/uuid@npm:10.0.0"
+  checksum: 10c0/9a1404bf287164481cb9b97f6bb638f78f955be57c40c6513b7655160beb29df6f84c915aaf4089a1559c216557dc4d2f79b48d978742d3ae10b937420ddac60
   languageName: node
   linkType: hard
 
@@ -11839,12 +11830,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.30.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/e4b521fbf22bc8c3db332bbfb7b094fd3e7627de0259a9d17c7551e2d2702608a7307a449206065916538e384f37b181565447ce2637ae09828427aed9cb5581
+"date-fns@npm:^4":
+  version: 4.1.0
+  resolution: "date-fns@npm:4.1.0"
+  checksum: 10c0/b79ff32830e6b7faa009590af6ae0fb8c3fd9ffad46d930548fbb5acf473773b4712ae887e156ba91a7b3dc30591ce0f517d69fd83bd9c38650fdc03b4e0bac8
   languageName: node
   linkType: hard
 
@@ -11866,6 +11855,13 @@ __metadata:
   version: 1.2.1
   resolution: "debounce@npm:1.2.1"
   checksum: 10c0/6c9320aa0973fc42050814621a7a8a78146c1975799b5b3cc1becf1f77ba9a5aa583987884230da0842a03f385def452fad5d60db97c3d1c8b824e38a8edf500
+  languageName: node
+  linkType: hard
+
+"debounce@npm:^2":
+  version: 2.2.0
+  resolution: "debounce@npm:2.2.0"
+  checksum: 10c0/684536fe9a04c9eea46cf02f119f69aa4071813ba25b9b43370e1503ea60b34fd38d694c7145fa2be504f9d40e7e39354cb9ed155c70954a0eefa391aefe271c
   languageName: node
   linkType: hard
 
@@ -12591,7 +12587,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^5.16.1"
     "@testing-library/react": "npm:^12.1.2"
     "@testing-library/user-event": "npm:^13.5.0"
-    "@types/debounce": "npm:^1.2.1"
+    "@types/debounce": "npm:^3"
     "@types/is-ci": "npm:^3.0.4"
     "@types/md5": "npm:^2.3.5"
     "@types/node": "npm:^20.12.5"
@@ -12601,7 +12597,7 @@ __metadata:
     "@types/semver": "npm:^7.5.8"
     "@types/styled-components": "npm:^5.1.17"
     "@types/testing-library__jest-dom": "npm:5.14.9"
-    "@types/uuid": "npm:^8.3.4"
+    "@types/uuid": "npm:^10"
     "@types/w3c-web-usb": "npm:^1.0.10"
     "@types/wicg-file-system-access": "npm:^2020.9.8"
     "@typescript-eslint/eslint-plugin": "npm:^5.6.0"
@@ -12620,8 +12616,8 @@ __metadata:
     copy-text-to-clipboard: "npm:^3.2.0"
     cors-anywhere: "npm:^0.4.4"
     css-loader: "npm:^6.5.1"
-    date-fns: "npm:^2.30.0"
-    debounce: "npm:^1.2.1"
+    date-fns: "npm:^4"
+    debounce: "npm:^2"
     detect-browser: "npm:^5.3.0"
     directory-tree: "npm:^3.0.1"
     dotenv: "npm:^10.0.0"
@@ -12668,7 +12664,7 @@ __metadata:
     markdown-to-jsx: "npm:7.4.6"
     md5: "npm:^2.3.0"
     mini-css-extract-plugin: "npm:^2.8.1"
-    nanoevents: "npm:^6.0.2"
+    nanoevents: "npm:^9"
     native-ext-loader: "npm:^2.3.0"
     native-file-system-adapter: "npm:^2.0.4"
     nock: "npm:^14.0.10"
@@ -12684,7 +12680,7 @@ __metadata:
     react-i18next: "npm:^11.15.4"
     react-router-dom: "npm:^6.0.2"
     react-svg-loader: "npm:^3.0.3"
-    semver: "npm:^7.3.5"
+    semver: "npm:^7.7"
     serve: "npm:^13.0.4"
     snapshot-diff: "npm:0.9.0"
     source-map-support: "npm:^0.5.21"
@@ -12698,7 +12694,7 @@ __metadata:
     unzipit: "npm:^1.4.3"
     usb: "npm:2.12.1"
     use-media: "npm:^1.5.0"
-    uuid: "npm:^9.0.1"
+    uuid: "npm:^11"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^4.0.18"
     web-streams-polyfill: "npm:^3.3.3"
@@ -19428,10 +19424,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoevents@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "nanoevents@npm:6.0.2"
-  checksum: 10c0/fe9de511404c940a82ce34a5def4d5f00f2ce8b05303b7cb2c40b0a2b605661c903cda14b0284f4a02800f8af4707df8564e87e08f7b03b7ef913775c61adb81
+"nanoevents@npm:^9":
+  version: 9.1.0
+  resolution: "nanoevents@npm:9.1.0"
+  checksum: 10c0/5fb48e6fc1d3102daddaeffd6eada907c25b1c8554dcc648e9cb0a72979a1ab3ee56ffa2d2b3e566a8e561a9e2992a3783493c61cfaaa096b2986d56dbbc1ca5
   languageName: node
   linkType: hard
 
@@ -23632,6 +23628,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:^7.7":
+  version: 7.8.6
+  resolution: "semver@npm:7.8.6"
+  bin:
+    semver: bin/semver.js
+  checksum: 10c0/bf0a4d16eb067e5391323649e46b4a268644d7f8ee88e37c7668d35e861ec145b6e7df576d898007fc0d9a2cedcbc33f71460aa3bbea18eedfa5af58c064d7fe
+  languageName: node
+  linkType: hard
+
 "send@npm:0.17.1":
   version: 0.17.1
   resolution: "send@npm:0.17.1"
@@ -26594,6 +26599,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^11":
+  version: 11.1.1
+  resolution: "uuid@npm:11.1.1"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 10c0/9e3af58eba872ece5a5e76f4773a94fc78a0ef2c2444c38dbe6b42f41dadf76c01850fd783604f27986f6195e6286aef064d45987d401b2a33127b98ddf7c0c5
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
@@ -26609,15 +26623,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10c0/bcbb807a917d374a49f475fae2e87fdca7da5e5530820ef53f65ba1d12131bd81a92ecf259cc7ce317cbe0f289e7d79fdfebcef9bfa3087c8c8a2fa304c9be54
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "uuid@npm:9.0.1"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 10c0/1607dd32ac7fc22f2d8f77051e6a64845c9bce5cd3dd8aa0070c074ec73e666a1f63c7b4e0f4bf2bc8b9d59dc85a15e17807446d9d2b17c8485fbc2147b27f9b
   languageName: node
   linkType: hard
 

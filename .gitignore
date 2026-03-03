@@ -43,3 +43,4 @@ e2e-recordings/
 locales/**/*_old.json
 token
 .devcontainer/devcontainer-lock.json
+.claude/settings.local.json
