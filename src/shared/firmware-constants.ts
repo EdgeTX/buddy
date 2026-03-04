@@ -36,7 +36,10 @@ export const modelSlotName = (index: number, isColorLcd: boolean): string =>
  * Checks if a filename is a valid model file (not a macOS resource fork or labels file).
  */
 export const isValidModelFile = (name: string): boolean =>
-  name.endsWith(".yml") && !name.startsWith("._") && name !== "labels.yml";
+  name.endsWith(".yml") &&
+  !name.startsWith("._") &&
+  name !== "labels.yml" &&
+  name !== "radio.yml";
 
 /**
  * Checks if a filename is a valid model text file (e.g. notes bundled by Companion).

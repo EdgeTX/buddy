@@ -616,7 +616,9 @@ export const getModelsWithNames = async (
 
         try {
           const parsed = yaml.parse(content) as { header?: { name?: string } };
-          const displayName = parsed.header?.name ?? modelFileName;
+          const displayName = parsed.header?.name
+            ? parsed.header.name
+            : modelFileName;
 
           models.push({
             fileName: modelFileName,

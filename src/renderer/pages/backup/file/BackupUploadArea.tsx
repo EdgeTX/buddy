@@ -57,6 +57,20 @@ const BackupUploadContainer = styled.div`
   }
 `;
 
+/** Resolve display name: use header.name if non-empty, otherwise fall back to fileName */
+const resolveDisplayName = (
+  data: Record<string, unknown>,
+  fileName: string
+): string => {
+  const name = (data.header as Record<string, unknown> | undefined)?.name as
+    | string
+    | undefined;
+  if (name) {
+    return name;
+  }
+  return fileName;
+};
+
 const BackupUploadArea: React.FC<Props> = ({
   onFileSelected,
   onRestoreModels,
@@ -105,17 +119,15 @@ const BackupUploadArea: React.FC<Props> = ({
             );
 
             // Create an array with fileName (object key), displayName (header.name), and content
-            const modelList: ModelItem[] = Object.entries(extractedItems)
-              .map(([fileName, data]: [string, Record<string, unknown>]) => ({
+            const modelList: ModelItem[] = Object.entries(extractedItems).map(
+              ([fileName, data]: [string, Record<string, unknown>]) => ({
                 id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
                 fileName,
-                displayName:
-                  ((data.header as Record<string, unknown> | undefined)
-                    ?.name as string | undefined) ?? fileName,
+                displayName: resolveDisplayName(data, fileName),
                 content: data,
                 source: "individual",
-              }))
-              .filter((item) => item.fileName !== "labels"); // Exclude labels
+              })
+            );
 
             // Check for collisions with existing models and add new models
             const newModelIds: string[] = [];
@@ -169,9 +181,7 @@ const BackupUploadArea: React.FC<Props> = ({
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
               fileName: parsed.fileName,
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              displayName:
-                ((parsed.content.header as Record<string, unknown> | undefined)
-                  ?.name as string | undefined) ?? parsed.fileName,
+              displayName: resolveDisplayName(parsed.content, parsed.fileName),
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
               content: parsed.content,
               source: "individual",
@@ -318,23 +328,18 @@ const BackupUploadArea: React.FC<Props> = ({
                     // Create an array with fileName (object key), displayName (header.name), and content
                     const modelList: ModelItem[] = Object.entries(
                       extractedItems
-                    )
-                      .map(
-                        ([fileName, data]: [
-                          string,
-                          Record<string, unknown>
-                        ]) => ({
-                          id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
-                          fileName,
-                          displayName:
-                            ((
-                              data.header as Record<string, unknown> | undefined
-                            )?.name as string | undefined) ?? fileName,
-                          content: data,
-                          source: "individual",
-                        })
-                      )
-                      .filter((item) => item.fileName !== "labels"); // Exclude labels
+                    ).map(
+                      ([fileName, data]: [
+                        string,
+                        Record<string, unknown>
+                      ]) => ({
+                        id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
+                        fileName,
+                        displayName: resolveDisplayName(data, fileName),
+                        content: data,
+                        source: "individual",
+                      })
+                    );
 
                     // Check for collisions with existing models and add new models
                     const newModelIds: string[] = [];
@@ -397,12 +402,10 @@ const BackupUploadArea: React.FC<Props> = ({
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                       fileName: parsed.fileName,
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-                      displayName:
-                        ((
-                          parsed.content.header as
-                            | Record<string, unknown>
-                            | undefined
-                        )?.name as string | undefined) ?? parsed.fileName,
+                      displayName: resolveDisplayName(
+                        parsed.content,
+                        parsed.fileName
+                      ),
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                       content: parsed.content,
                       source: "individual",
@@ -615,25 +618,18 @@ const BackupUploadArea: React.FC<Props> = ({
                           // Create an array with fileName (object key), displayName (header.name), and content
                           const modelList: ModelItem[] = Object.entries(
                             extractedItems
-                          )
-                            .map(
-                              ([fileName, data]: [
-                                string,
-                                Record<string, unknown>
-                              ]) => ({
-                                id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
-                                fileName,
-                                displayName:
-                                  ((
-                                    data.header as
-                                      | Record<string, unknown>
-                                      | undefined
-                                  )?.name as string | undefined) ?? fileName,
-                                content: data,
-                                source: "individual",
-                              })
-                            )
-                            .filter((item) => item.fileName !== "labels"); // Exclude labels
+                          ).map(
+                            ([fileName, data]: [
+                              string,
+                              Record<string, unknown>
+                            ]) => ({
+                              id: `individual-${fileName}-${Date.now()}-${Math.random()}`,
+                              fileName,
+                              displayName: resolveDisplayName(data, fileName),
+                              content: data,
+                              source: "individual",
+                            })
+                          );
 
                           // Check for collisions with existing models and add new models
                           const newModelIds: string[] = [];
@@ -698,12 +694,10 @@ const BackupUploadArea: React.FC<Props> = ({
                             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                             fileName: parsed.fileName,
                             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-                            displayName:
-                              ((
-                                parsed.content.header as
-                                  | Record<string, unknown>
-                                  | undefined
-                              )?.name as string | undefined) ?? parsed.fileName,
+                            displayName: resolveDisplayName(
+                              parsed.content,
+                              parsed.fileName
+                            ),
                             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                             content: parsed.content,
                             source: "individual",

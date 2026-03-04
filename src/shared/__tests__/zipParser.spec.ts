@@ -132,6 +132,24 @@ describe("zipParser", () => {
       expect(result.model02).toBeUndefined();
     });
 
+    it("should exclude labels.yml and radio.yml from MODELS folder", async () => {
+      const zipBuffer = createZipWithFiles([
+        { path: "MODELS/model00.yml", content: createModelYaml("Model1") },
+        { path: "MODELS/labels.yml", content: "Labels: {}\nModels: {}" },
+        { path: "MODELS/radio.yml", content: "header:\n  name: ''" },
+        { path: "MODELS/model01.yml", content: createModelYaml("Model2") },
+      ]);
+      const base64Data = zipBuffer.toString("base64");
+
+      const result = await extractYamlFromZip(base64Data);
+
+      expect(Object.keys(result)).toHaveLength(2);
+      expect(result.model00).toBeDefined();
+      expect(result.model01).toBeDefined();
+      expect(result.labels).toBeUndefined();
+      expect(result.radio).toBeUndefined();
+    });
+
     it("should handle empty ZIP file", async () => {
       const zipBuffer = createZipWithFiles([]);
       const base64Data = zipBuffer.toString("base64");
