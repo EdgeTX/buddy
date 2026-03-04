@@ -23,7 +23,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable --mode=skip-build
+        run: yarn --immutable
 
       - name: Lint
         run: yarn lint:all
@@ -61,7 +61,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable --mode=skip-build
+        run: yarn --immutable
 
       - name: Test
         run: yarn test --coverage
@@ -87,7 +87,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable --mode=skip-build
+        run: yarn --immutable
 
       - name: Test types
         run: yarn test:types
@@ -108,7 +108,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "true"
-        run: yarn --immutable --mode=skip-build
+        run: yarn --immutable
 
       - name: Build
         run: yarn build:storybook
