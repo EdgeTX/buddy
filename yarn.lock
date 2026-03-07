@@ -6960,7 +6960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^17.0.0":
+"@types/react@npm:^17.0.0":
   version: 17.0.34
   resolution: "@types/react@npm:17.0.34"
   dependencies:
@@ -12635,6 +12635,7 @@ __metadata:
     eslint-plugin-testing-library: ^5.0.4
     favicons: ^7.2.0
     favicons-webpack-plugin: ^6.0.1
+    fflate: ^0.8.2
     fork-ts-checker-webpack-plugin: ^6.5.3
     get-stream: ^6.0.1
     got: ^11.8.6
@@ -12697,6 +12698,7 @@ __metadata:
     webpack-cli: ^4.10.0
     webpack-dev-server: ^4.15.2
     webpackbar: ^5.0.2
+    yaml: ^2.7.0
   languageName: unknown
   linkType: soft
 
@@ -20911,7 +20913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.29.1":
+"playwright@npm:1.29.1":
   version: 1.29.1
   resolution: "playwright@npm:1.29.1"
   dependencies:
@@ -27821,6 +27823,15 @@ __metadata:
   bin:
     yaml: bin.mjs
   checksum: 816057dbaea16a7dfb0b868ace930f143dece96bbb4c4fbb6f38aa389166f897240d9fa535dbfd6b1b0d9442416f4abcc698e63f82394d0c67b329aa6c2be576
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.7.0":
+  version: 2.8.2
+  resolution: "yaml@npm:2.8.2"
+  bin:
+    yaml: bin.mjs
+  checksum: 703e4dc1e34b324aa66876d63618dcacb9ed49f7e7fe9b70f1e703645be8d640f68ab84f12b86df8ac960bac37acf5513e115de7c970940617ce0343c8c9cd96
   languageName: node
   linkType: hard
 

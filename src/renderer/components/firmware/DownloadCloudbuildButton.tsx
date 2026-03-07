@@ -73,6 +73,7 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
       }));
       createFirmware(fwParams)
         .then((buildStatus) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           onStatus(buildStatus);
         })
         .catch((err: Error) => {
@@ -81,6 +82,7 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
     } else {
       firmwareStatus(fwParams)
         .then((buildStatus) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           onStatus(buildStatus);
         })
         .catch((err: Error) => {
@@ -122,8 +124,8 @@ const DownloadCloudbuildButton: React.FC<Props> = ({
       stopPolling();
     } else if (completed) {
       stopPolling();
-      startFirmwareDownload(downloadUrl).catch((err) => {
-        console.log(err);
+      void startFirmwareDownload(downloadUrl).catch(() => {
+        // Error handled by startFirmwareDownload
       });
     }
   };

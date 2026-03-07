@@ -111,7 +111,6 @@ Promise<void> => {
           return true;
         })
         .catch((e: Error) => {
-          console.error(e);
           updateStageStatus(jobId, "erase", { error: e.message });
           return false;
         });
@@ -155,11 +154,10 @@ Promise<void> => {
         updateStageStatus(jobId, "write", { completed: true });
       })
       .catch((e: Error) => {
-        console.error(e);
         updateStageStatus(jobId, "write", { error: e.message });
       });
-  })().catch((e) => {
-    console.error(e);
+  })().catch(() => {
+    // Error handled above
     cancelSdcardJob(jobId);
   });
 };

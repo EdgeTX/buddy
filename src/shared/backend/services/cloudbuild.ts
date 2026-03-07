@@ -136,7 +136,7 @@ export const waitForJobSuccess = async (
     } catch (err) {
       // ignore controller abort error, it's timeout
       if (err instanceof Error && err.name === "AbortError") {
-        console.error(err);
+        // Expected timeout abort
       } else {
         throw err;
       }

@@ -6,6 +6,7 @@ import compatibility from "../locales/zh/compatibility.json";
 import flashing from "../locales/zh/flashing.json";
 import sdcard from "../locales/zh/sdcard.json";
 import devtools from "../locales/zh/devtools.json";
+import backup from "../locales/zh/backup.json";
 
 // react-i18next versions higher than 11.11.0
 declare module "react-i18next" {
@@ -20,6 +21,7 @@ declare module "react-i18next" {
       flashing: typeof flashing;
       sdcard: typeof sdcard;
       devtools: typeof devtools;
+      backup: typeof backup;
     };
   }
 }
