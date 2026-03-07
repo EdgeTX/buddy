@@ -383,7 +383,7 @@ const BackupRestoreFlow: React.FC = () => {
             setProgress(100);
 
             const filesWritten =
-              result.data?.restoreBackupToSdcard.filesWritten ?? models.length;
+              result.data?.restoreBackupToSdcard.totalFiles ?? models.length;
 
             Modal.success({
               title: t("Done"),

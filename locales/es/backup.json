@@ -72,7 +72,7 @@
   "Single .zip file": "Archivo .zip único",
   "Supports .etx, .zip (full backup) or .yml (individual model) files": "Admite archivos .etx, .zip (copia completa) o .yml (modelo individual)",
   "The following models already exist on your SD card. Choose how to handle each conflict:": "Los siguientes modelos ya existen en tu tarjeta SD. Elige cómo manejar cada conflicto:",
-  "The following models were skipped because they already exist": "Los siguientes modelos se omitieron porque ya existen",
+  "The following models were skipped because they already exist": "Los siguientes modelos se omitieron porque ya están en la lista de restauración",
   "This feature is not supported by your browser": "Esta función no es compatible con su navegador",
   "Verifying...": "Verificando...",
   "View differences": "Ver diferencias",

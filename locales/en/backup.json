@@ -87,7 +87,7 @@
   "Error processing file": "Error processing file",
   "Error creating temporary backup": "Error creating temporary backup",
   "Error preparing restore": "Error preparing restore",
-  "The following models were skipped because they already exist": "The following models were skipped because they already exist",
+  "The following models were skipped because they already exist": "The following models were skipped because they are already in the restore list",
   "Model already exists in the list": "Model already exists in the list",
   "Load from USB/SD Card": "Load from USB/SD Card",
   "SD Card selected": "SD Card selected",
