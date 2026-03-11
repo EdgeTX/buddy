@@ -201,7 +201,7 @@ const BackupCreateFlow: React.FC = () => {
           includeLabels,
         },
       })
-        .then((result) => {
+        .then(async (result) => {
           clearInterval(interval);
           setProgress(100);
 
@@ -211,20 +211,33 @@ const BackupCreateFlow: React.FC = () => {
               base64Data: string;
             }[];
 
-            // Download each file
-            files.forEach((file: { fileName: string; base64Data: string }) => {
-              const blob = new Blob([Buffer.from(file.base64Data, "base64")], {
-                type: "application/octet-stream",
-              });
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = file.fileName;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-            });
+            // Download each file sequentially with a delay to avoid
+            // Chromium's rapid download blocking (limits ~10 concurrent
+            // programmatic downloads)
+            await files.reduce(
+              (chain, file) =>
+                chain.then(
+                  () =>
+                    new Promise<void>((resolve) => {
+                      const blob = new Blob(
+                        [Buffer.from(file.base64Data, "base64")],
+                        {
+                          type: "application/octet-stream",
+                        }
+                      );
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement("a");
+                      link.href = url;
+                      link.download = file.fileName;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      URL.revokeObjectURL(url);
+                      setTimeout(resolve, 200);
+                    })
+                ),
+              Promise.resolve()
+            );
 
             void message.success(
               t(`{{count}} files downloaded`, { count: files.length })
