@@ -1,9 +1,19 @@
 import React from "react";
 import { render } from "test-utils/testing-library";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import BackupCreateFlow from "renderer/pages/backup/BackupCreateFlow";
-import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  afterEach,
+} from "vitest";
+import gql from "graphql-tag";
 
 // Mock environment
 vi.mock("shared/environment", () => ({
@@ -198,4 +208,188 @@ describe("<BackupCreateFlow />", () => {
       expect(button).toBeInstanceOf(HTMLElement);
     });
   });
+});
+
+describe("<BackupCreateFlow /> sequential individual download", () => {
+  let downloadedFiles: string[];
+
+  beforeEach(() => {
+    downloadedFiles = [];
+
+    // Track which files are downloaded via link.click
+    const originalCreateElement = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation(((
+      tagName: string
+    ) => {
+      const element = originalCreateElement(tagName);
+      if (tagName === "a") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+        (element as any).click = vi.fn(() => {
+          downloadedFiles.push((element as HTMLAnchorElement).download);
+        });
+      }
+      return element;
+    }) as typeof document.createElement);
+
+    global.URL.createObjectURL = vi.fn(() => "mock-url");
+    global.URL.revokeObjectURL = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should download all selected individual model files, not just the first 10", async () => {
+    const directoryId = "test-dir-id";
+    const modelCount = 11;
+    const modelNames = Array.from(
+      { length: modelCount },
+      (_, i) => `model${i + 1}`
+    );
+    const base64 = Buffer.from("content").toString("base64");
+
+    const mocks = [
+      {
+        request: {
+          query: gql`
+            mutation PickSdcardDirectory {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        },
+        result: {
+          data: {
+            pickSdcardDirectory: { id: directoryId },
+          },
+        },
+      },
+      {
+        request: {
+          query: gql`
+            query SdcardDirectoryInfo($directoryId: ID!) {
+              sdcardModelsDirectory(id: $directoryId) {
+                id
+                name
+                isValid
+                hasLabels
+                pack {
+                  target
+                  version
+                }
+              }
+            }
+          `,
+          variables: { directoryId },
+        },
+        result: {
+          data: {
+            sdcardModelsDirectory: {
+              id: directoryId,
+              name: "MODELS",
+              isValid: true,
+              hasLabels: false,
+              pack: null,
+            },
+          },
+        },
+      },
+      {
+        request: {
+          query: gql`
+            query SdcardModelsWithNames($directoryId: ID!) {
+              sdcardModelsWithNames(directoryId: $directoryId) {
+                fileName
+                displayName
+              }
+            }
+          `,
+          variables: { directoryId },
+        },
+        result: {
+          data: {
+            sdcardModelsWithNames: modelNames.map((name) => ({
+              fileName: name,
+              displayName: `Model ${name}`,
+            })),
+          },
+        },
+      },
+      {
+        request: {
+          query: gql`
+            mutation DownloadIndividualModels(
+              $directoryId: ID!
+              $selectedModels: [String!]!
+              $includeLabels: Boolean
+            ) {
+              downloadIndividualModels(
+                directoryId: $directoryId
+                selectedModels: $selectedModels
+                includeLabels: $includeLabels
+              ) {
+                fileName
+                base64Data
+              }
+            }
+          `,
+          variables: {
+            directoryId,
+            selectedModels: modelNames,
+            includeLabels: false,
+          },
+        },
+        result: {
+          data: {
+            downloadIndividualModels: modelNames.map((name) => ({
+              fileName: `${name}.yml`,
+              base64Data: base64,
+            })),
+          },
+        },
+      },
+    ];
+
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <BackupCreateFlow />
+      </MockedProvider>
+    );
+
+    // Trigger SD card selection
+    fireEvent.click(screen.getByText("Select SD Card"));
+
+    // Wait for Apollo mutation response and models to load
+    await waitFor(
+      () => {
+        expect(screen.getByText("Select all")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
+
+    // Select all models
+    fireEvent.click(screen.getByText("Select all"));
+
+    // Switch to individual .yml format
+    fireEvent.click(screen.getByText("Individual .yml files"));
+
+    // Trigger backup download
+    fireEvent.click(screen.getByRole("button", { name: /create backup/i }));
+
+    // All 11 files should be downloaded (proves the 10-file Chromium limit is
+    // bypassed by downloading sequentially with a delay between each file).
+    // Allow enough time for 11 * 200ms sequential downloads.
+    await waitFor(
+      () => {
+        expect(downloadedFiles).toHaveLength(modelCount);
+      },
+      { timeout: 4000 }
+    );
+
+    // Verify each model file was included
+    modelNames.forEach((name) => {
+      expect(downloadedFiles).toContain(`${name}.yml`);
+    });
+  }, 10000); // extend test timeout to accommodate 11 * 200ms sequential downloads
 });
