@@ -3,17 +3,11 @@ import { render } from "test-utils/testing-library";
 import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import BackupCreateFlow from "renderer/pages/backup/BackupCreateFlow";
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeAll,
-  afterAll,
-  beforeEach,
-  afterEach,
-} from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import gql from "graphql-tag";
+import legacyDownload from "js-file-download";
+
+vi.mock("js-file-download");
 
 // Mock environment
 vi.mock("shared/environment", () => ({
@@ -30,29 +24,6 @@ vi.mock("renderer/compatibility/checks", () => ({
 }));
 
 describe("<BackupCreateFlow />", () => {
-  beforeAll(() => {
-    // Mock document.createElement for download links
-    const originalCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, "createElement").mockImplementation(((
-      tagName: string
-    ) => {
-      const element = originalCreateElement(tagName);
-      if (tagName === "a") {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        (element as any).click = vi.fn();
-      }
-      return element;
-    }) as typeof document.createElement);
-
-    // Mock URL.createObjectURL and revokeObjectURL
-    global.URL.createObjectURL = vi.fn(() => "mock-url");
-    global.URL.revokeObjectURL = vi.fn();
-  });
-
-  afterAll(() => {
-    vi.restoreAllMocks();
-  });
-
   it("should render the component", () => {
     render(
       <MockedProvider mocks={[]}>
@@ -212,27 +183,13 @@ describe("<BackupCreateFlow />", () => {
 
 describe("<BackupCreateFlow /> sequential individual download", () => {
   let downloadedFiles: string[];
+  const mockLegacyDownload = vi.mocked(legacyDownload);
 
   beforeEach(() => {
     downloadedFiles = [];
-
-    // Track which files are downloaded via link.click
-    const originalCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, "createElement").mockImplementation(((
-      tagName: string
-    ) => {
-      const element = originalCreateElement(tagName);
-      if (tagName === "a") {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        (element as any).click = vi.fn(() => {
-          downloadedFiles.push((element as HTMLAnchorElement).download);
-        });
-      }
-      return element;
-    }) as typeof document.createElement);
-
-    global.URL.createObjectURL = vi.fn(() => "mock-url");
-    global.URL.revokeObjectURL = vi.fn();
+    mockLegacyDownload.mockImplementation((data: unknown, filename: string) => {
+      downloadedFiles.push(filename);
+    });
   });
 
   afterEach(() => {
