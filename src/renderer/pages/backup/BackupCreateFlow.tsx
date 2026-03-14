@@ -215,17 +215,19 @@ const BackupCreateFlow: React.FC = () => {
             }[];
 
             // Limit concurrent downloads to avoid Chromium's rapid
-            // simultaneous download blocking (~10 at a time)
-            const limit = pLimit(5);
+            // simultaneous download blocking (~10 at a time). Each slot
+            // holds for 200ms after triggering so Chromium registers it
+            // before the next batch starts.
+            const limit = pLimit(10);
             await Promise.all(
-              files.map((file, i) =>
+              files.map((file) =>
                 limit(async () => {
-                  await delay(i * 200);
                   legacyDownload(
                     Buffer.from(file.base64Data, "base64"),
                     file.fileName,
                     "application/octet-stream"
                   );
+                  await delay(200);
                 })
               )
             );
