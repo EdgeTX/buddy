@@ -21,6 +21,9 @@ import { useMutation, gql, useQuery } from "@apollo/client";
 import environment from "shared/environment";
 import checks from "renderer/compatibility/checks";
 import { useTranslation } from "react-i18next";
+import legacyDownload from "js-file-download";
+import pLimit from "p-limit";
+import { delay } from "shared/tools";
 
 const notAvailable = !environment.isElectron && !checks.hasFilesystemApi;
 
@@ -201,7 +204,7 @@ const BackupCreateFlow: React.FC = () => {
           includeLabels,
         },
       })
-        .then((result) => {
+        .then(async (result) => {
           clearInterval(interval);
           setProgress(100);
 
@@ -211,20 +214,23 @@ const BackupCreateFlow: React.FC = () => {
               base64Data: string;
             }[];
 
-            // Download each file
-            files.forEach((file: { fileName: string; base64Data: string }) => {
-              const blob = new Blob([Buffer.from(file.base64Data, "base64")], {
-                type: "application/octet-stream",
-              });
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = file.fileName;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-            });
+            // Limit concurrent downloads to avoid Chromium's rapid
+            // simultaneous download blocking (~10 at a time). Each slot
+            // holds for 200ms after triggering so Chromium registers it
+            // before the next batch starts.
+            const limit = pLimit(10);
+            await Promise.all(
+              files.map((file) =>
+                limit(async () => {
+                  legacyDownload(
+                    Buffer.from(file.base64Data, "base64"),
+                    file.fileName,
+                    "application/octet-stream"
+                  );
+                  await delay(200);
+                })
+              )
+            );
 
             void message.success(
               t(`{{count}} files downloaded`, { count: files.length })
