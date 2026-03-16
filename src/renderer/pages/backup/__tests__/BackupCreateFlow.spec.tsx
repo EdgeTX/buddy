@@ -334,19 +334,19 @@ describe("<BackupCreateFlow /> sequential individual download", () => {
     // Trigger backup download
     fireEvent.click(screen.getByRole("button", { name: /create backup/i }));
 
-    // All 11 files should be downloaded (proves the 10-file Chromium limit is
-    // bypassed by downloading in batches of 10 with a 200ms delay per slot).
-    // With pLimit(10), 11 files need 2 batches (~400ms total).
+    // All 11 files should be downloaded. Chromium blocks simultaneous
+    // programmatic downloads above ~10; the sequential approach (one every
+    // 200ms) avoids that entirely. 11 files → ~2200ms total.
     await waitFor(
       () => {
         expect(downloadedFiles).toHaveLength(modelCount);
       },
-      { timeout: 4000 }
+      { timeout: 5000 }
     );
 
     // Verify each model file was included
     modelNames.forEach((name) => {
       expect(downloadedFiles).toContain(`${name}.yml`);
     });
-  }, 10000); // extend test timeout to accommodate batched downloads with 200ms delay per slot
+  }, 15000); // 11 files × 200ms = ~2200ms, plus test overhead
 });

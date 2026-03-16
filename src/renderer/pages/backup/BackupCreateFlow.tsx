@@ -22,7 +22,6 @@ import environment from "shared/environment";
 import checks from "renderer/compatibility/checks";
 import { useTranslation } from "react-i18next";
 import legacyDownload from "js-file-download";
-import pLimit from "p-limit";
 import { delay } from "shared/tools";
 
 const notAvailable = !environment.isElectron && !checks.hasFilesystemApi;
@@ -214,23 +213,19 @@ const BackupCreateFlow: React.FC = () => {
               base64Data: string;
             }[];
 
-            // Limit concurrent downloads to avoid Chromium's rapid
-            // simultaneous download blocking (~10 at a time). Each slot
-            // holds for 200ms after triggering so Chromium registers it
-            // before the next batch starts.
-            const limit = pLimit(10);
-            await Promise.all(
-              files.map((file) =>
-                limit(async () => {
-                  legacyDownload(
-                    Buffer.from(file.base64Data, "base64"),
-                    file.fileName,
-                    "application/octet-stream"
-                  );
-                  await delay(200);
-                })
-              )
-            );
+            // Trigger downloads sequentially with a 200ms gap between each.
+            // Chromium blocks programmatic downloads when more than ~10 are
+            // fired simultaneously; a sequential approach avoids that entirely.
+            // eslint-disable-next-line no-restricted-syntax
+            for (const file of files) {
+              legacyDownload(
+                Buffer.from(file.base64Data, "base64"),
+                file.fileName,
+                "application/octet-stream"
+              );
+              // eslint-disable-next-line no-await-in-loop
+              await delay(200);
+            }
 
             void message.success(
               t(`{{count}} files downloaded`, { count: files.length })
