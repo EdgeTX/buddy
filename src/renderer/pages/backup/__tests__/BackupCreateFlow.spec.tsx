@@ -9,6 +9,12 @@ import legacyDownload from "js-file-download";
 
 vi.mock("js-file-download");
 
+// Make delay a no-op so sequential downloads complete instantly in tests
+vi.mock("shared/tools", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("shared/tools")>()),
+  delay: () => Promise.resolve(),
+}));
+
 // Mock environment
 vi.mock("shared/environment", () => ({
   default: {
@@ -335,18 +341,15 @@ describe("<BackupCreateFlow /> sequential individual download", () => {
     fireEvent.click(screen.getByRole("button", { name: /create backup/i }));
 
     // All 11 files should be downloaded. Chromium blocks simultaneous
-    // programmatic downloads above ~10; the sequential approach (one every
-    // 200ms) avoids that entirely. 11 files → ~2200ms total.
-    await waitFor(
-      () => {
-        expect(downloadedFiles).toHaveLength(modelCount);
-      },
-      { timeout: 5000 }
-    );
+    // programmatic downloads above ~10; the sequential approach (one per
+    // 200ms in production, instant in tests) avoids that entirely.
+    await waitFor(() => {
+      expect(downloadedFiles).toHaveLength(modelCount);
+    });
 
     // Verify each model file was included
     modelNames.forEach((name) => {
       expect(downloadedFiles).toContain(`${name}.yml`);
     });
-  }, 15000); // 11 files × 200ms = ~2200ms, plus test overhead
+  });
 });
