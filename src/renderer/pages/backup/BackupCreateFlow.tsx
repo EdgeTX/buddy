@@ -224,7 +224,7 @@ const BackupCreateFlow: React.FC = () => {
                 "application/octet-stream"
               );
               // eslint-disable-next-line no-await-in-loop
-              await delay(200);
+              await delay(process.env.NODE_ENV === "test" ? 1 : 200);
             }
 
             void message.success(

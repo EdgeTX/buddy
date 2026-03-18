@@ -9,12 +9,6 @@ import legacyDownload from "js-file-download";
 
 vi.mock("js-file-download");
 
-// Make delay a no-op so sequential downloads complete instantly in tests
-vi.mock("shared/tools", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("shared/tools")>()),
-  delay: () => Promise.resolve(),
-}));
-
 // Mock environment
 vi.mock("shared/environment", () => ({
   default: {
