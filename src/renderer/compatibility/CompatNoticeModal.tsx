@@ -51,6 +51,7 @@ const WebCompatInfo: React.FC<Props> = ({
               <Typography.Link
                 href="https://caniuse.com/webusb"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 WebUSB support
               </Typography.Link>
