@@ -6,5 +6,7 @@
   "Don't show again": "Не показувати знову",
   "Go to app releases": "Перейти до випусків застосунку",
   "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "Ви можете встановити застосунок або скористатись браузером з підтримкою <1>WebUSB</1> та <3>File System Access API</3>",
-  "Your browser doesn't support EdgeTX Buddy": "Ваш браузер не підтримує EdgeTX Buddy"
+  "Your browser doesn't support EdgeTX Buddy": "Ваш браузер не підтримує EdgeTX Buddy",
+  "for firmware flashing": "для прошивання",
+  "for radio storage": "для сховища пристрою"
 }

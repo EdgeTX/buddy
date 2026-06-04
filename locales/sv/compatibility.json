@@ -6,5 +6,7 @@
   "Don't show again": "Visa inte igen",
   "Go to app releases": "Gå till app-versioner",
   "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "Du kan installera appen, eller använda en browser med <1>WebUSB</1>- och <3>File System Access API</3>-stöd",
-  "Your browser doesn't support EdgeTX Buddy": "Din browser stödjer inte EdgeTX Buddy"
+  "Your browser doesn't support EdgeTX Buddy": "Din browser stödjer inte EdgeTX Buddy",
+  "for firmware flashing": "för firmware-flashing",
+  "for radio storage": "för radio-lagring"
 }

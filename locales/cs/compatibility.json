@@ -6,5 +6,7 @@
   "Don't show again": "Příště nezobrazovat",
   "Go to app releases": "Přejít na stažení aplikace",
   "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "Aplikaci můžete nainstalovat na Váš počítač a nebo použít prohlížeč s podporou <1>WebUSB</1> a <3>File System Access API</3>",
-  "Your browser doesn't support EdgeTX Buddy": "Váš prohlížeč nepodporuje EdgeTX Buddy"
+  "Your browser doesn't support EdgeTX Buddy": "Váš prohlížeč nepodporuje EdgeTX Buddy",
+  "for firmware flashing": "pro nahrání firmware",
+  "for radio storage": "pro přístup k úložišti"
 }

@@ -6,5 +6,7 @@
   "Don't show again": "Non mostrarlo ancora",
   "Go to app releases": "Vai alle release app",
   "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "Puoi installare l'app, o usare un browser con supporto <1>WebUSB</1> e <3>File System Access API</3>",
-  "Your browser doesn't support EdgeTX Buddy": "Il tuo browser non supporta EdgeTX Buddy"
+  "Your browser doesn't support EdgeTX Buddy": "Il tuo browser non supporta EdgeTX Buddy",
+  "for firmware flashing": "per il flashing del firmware",
+  "for radio storage": "per la memoria della radio"
 }

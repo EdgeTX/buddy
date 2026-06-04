@@ -96,7 +96,8 @@ const WebCompatInfo: React.FC<Props> = ({
                 />{" "}
                 We have WebUSB API access
               </Trans>
-            )}
+            )}{" "}
+            ({t("for firmware flashing")})
           </Typography.Paragraph>
           <Typography.Paragraph>
             {missingFilesystemApi ? (
@@ -117,7 +118,8 @@ const WebCompatInfo: React.FC<Props> = ({
                 />{" "}
                 We have File System Access API access
               </Trans>
-            )}
+            )}{" "}
+            ({t("for radio storage")})
           </Typography.Paragraph>
         </Result>
       </FullHeightCentered>
