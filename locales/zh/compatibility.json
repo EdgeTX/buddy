@@ -5,6 +5,6 @@
   "<0></0> We have WebUSB API access": "<0></0> 有 WebUSB API 访问权限",
   "Don't show again": "不再显示",
   "Go to app releases": "前往应用程序发布页",
-  "You can install the app, or use an update-to-date Chromium based browser": "您可以安装应用程序，或使用最新版基于 Chrome 的浏览器",
+  "You can install the app, or use a browser with <1>WebUSB support</1>": "您可以安装应用程序，或使用支持 <1>WebUSB</1> 的浏览器",
   "Your browser doesn't support EdgeTX Buddy": "您的浏览器不支持 EdgeTX Buddy"
 }

@@ -5,6 +5,6 @@
   "<0></0> We have WebUSB API access": "<0></0> Podporuje WebUSB API",
   "Don't show again": "Příště nezobrazovat",
   "Go to app releases": "Přejít na stažení aplikace",
-  "You can install the app, or use an update-to-date Chromium based browser": "Aplikaci můžete nainstalovat na Váš počítač a nebo použít aktuální prohlížeč založený na jádře Chromium",
+  "You can install the app, or use a browser with <1>WebUSB support</1>": "Aplikaci můžete nainstalovat na Váš počítač a nebo použít prohlížeč s podporou <1>WebUSB</1>",
   "Your browser doesn't support EdgeTX Buddy": "Váš prohlížeč nepodporuje EdgeTX Buddy"
 }

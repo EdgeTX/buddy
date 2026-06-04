@@ -5,6 +5,6 @@
   "<0></0> We have WebUSB API access": "<0></0> Abbiamo accesso all'API WebUSB",
   "Don't show again": "Non mostrarlo ancora",
   "Go to app releases": "Vai alle release app",
-  "You can install the app, or use an update-to-date Chromium based browser": "Puoi installare un'app, o usare un browser aggiornato basta su Chromium",
+  "You can install the app, or use a browser with <1>WebUSB support</1>": "Puoi installare l'app, o usare un browser con supporto <1>WebUSB</1>",
   "Your browser doesn't support EdgeTX Buddy": "Il tuo browser non supporta EdgeTX Buddy"
 }

@@ -45,9 +45,17 @@ const WebCompatInfo: React.FC<Props> = ({
         <Result
           status="warning"
           title={t(`Your browser doesn't support EdgeTX Buddy`)}
-          subTitle={t(
-            `You can install the app, or use an update-to-date Chromium based browser`
-          )}
+          subTitle={
+            <Trans t={t}>
+              You can install the app, or use a browser with{" "}
+              <Typography.Link
+                href="https://caniuse.com/webusb"
+                target="_blank"
+              >
+                WebUSB support
+              </Typography.Link>
+            </Trans>
+          }
           extra={
             <Button
               href="https://github.com/EdgeTX/buddy/releases/tag/latest"
