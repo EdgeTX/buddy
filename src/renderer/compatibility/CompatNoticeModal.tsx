@@ -53,8 +53,17 @@ const WebCompatInfo: React.FC<Props> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                WebUSB support
-              </Typography.Link>
+                WebUSB
+              </Typography.Link>{" "}
+              and{" "}
+              <Typography.Link
+                href="https://caniuse.com/native-filesystem-api"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                File System Access API
+              </Typography.Link>{" "}
+              support
             </Trans>
           }
           extra={
