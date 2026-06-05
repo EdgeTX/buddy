@@ -22,7 +22,9 @@ RUN apt-get update \
        esac \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz" -o /tmp/node.tar.xz \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o /tmp/SHASUMS256.txt \
-    && grep "node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz" /tmp/SHASUMS256.txt | sha256sum --check --status \
+    && EXPECTED_SHA256="$(awk '/node-v'"${NODE_VERSION}"'-linux-'"${NODE_ARCH}"'\.tar\.xz$/ {print $1}' /tmp/SHASUMS256.txt)" \
+    && [ -n "$EXPECTED_SHA256" ] \
+    && echo "$EXPECTED_SHA256  /tmp/node.tar.xz" | sha256sum --check --status \
     && rm -f /tmp/SHASUMS256.txt \
     && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
     && rm -f /tmp/node.tar.xz \
