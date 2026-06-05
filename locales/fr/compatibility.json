@@ -5,6 +5,8 @@
   "<0></0> We have WebUSB API access": "<0></0> We have WebUSB API access",
   "Don't show again": "Don't show again",
   "Go to app releases": "Go to app releases",
-  "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "Vous pouvez installer l'application ou utiliser un navigateur prenant en charge <1>WebUSB</1> et <3>File System Access API</3>",
-  "Your browser doesn't support EdgeTX Buddy": "Your browser doesn't support EdgeTX Buddy"
+  "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support",
+  "Your browser doesn't support EdgeTX Buddy": "Your browser doesn't support EdgeTX Buddy",
+  "for firmware flashing": "for firmware flashing",
+  "for radio storage": "for radio storage"
 }
