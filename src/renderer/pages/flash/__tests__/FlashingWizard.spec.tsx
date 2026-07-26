@@ -41,7 +41,15 @@ describe("pages/FlashingWizard", () => {
       expect(stepIndicator).toHaveTextContent("Select a firmware");
     });
 
-    describe("Cloud firmware", () => {
+    it("should default to the CloudBuild tab", () => {
+      renderPage();
+
+      expect(screen.getByRole("tab", { selected: true })).toHaveTextContent(
+        "CloudBuild"
+      );
+    });
+
+    describe("GitHub firmware", () => {
       const releases = exampleReleasesList.filter(
         (release) => !release.isPrerelease
       )!;
@@ -50,28 +58,20 @@ describe("pages/FlashingWizard", () => {
         (release) => release.isPrerelease
       )!;
 
-      it("should be the default selected tab", () => {
-        renderPage();
-
-        expect(screen.getByRole("tab", { selected: true })).toHaveTextContent(
-          "Cloud"
-        );
-      });
-
       it("should auto select the latest available firmware", async () => {
-        renderPage();
+        renderPage("/?source=releases");
 
         expect(
           await screen.findByText(latestReleaseVersion.name)
         ).toBeVisible();
         fireEvent.click(screen.getByText("Copy URL"));
         expect(copyMock).toHaveBeenCalledWith(
-          `localhost:3000/#/?version=${latestReleaseVersion.id}`
+          `localhost:3000/#/?source=releases&version=${latestReleaseVersion.id}`
         );
       });
 
       it("should render all releases and targets, and allow release and target to be selected", async () => {
-        renderPage();
+        renderPage("/?source=releases");
 
         const versionDropdown = screen.getByLabelText("Firmware version");
         await waitFor(() => expect(versionDropdown).toBeEnabled());
@@ -128,12 +128,12 @@ describe("pages/FlashingWizard", () => {
 
         fireEvent.click(screen.getByText("Copy URL"));
         expect(copyMock).toHaveBeenCalledWith(
-          `localhost:3000/#/?version=${latestReleaseVersion.id}&target=${target.code}`
+          `localhost:3000/#/?source=releases&version=${latestReleaseVersion.id}&target=${target.code}`
         );
       });
 
       it("should allow prerelease to be selected if filter is enabled", async () => {
-        renderPage();
+        renderPage("/?source=releases");
 
         const filtersDropdown = screen.getByText("Filters");
 
@@ -166,7 +166,7 @@ describe("pages/FlashingWizard", () => {
 
         fireEvent.click(screen.getByText("Copy URL"));
         expect(copyMock).toHaveBeenCalledWith(
-          `localhost:3000/#/?version=${preRelease.id}`
+          `localhost:3000/#/?source=releases&version=${preRelease.id}`
         );
       });
 
@@ -174,7 +174,7 @@ describe("pages/FlashingWizard", () => {
         const target = exampleTargetsList[3]!;
 
         renderPage(
-          `/?version=${latestReleaseVersion.id}&target=${target.code}`
+          `/?version=${latestReleaseVersion.id}&target=${target.code}&source=releases`
         );
 
         expect(
@@ -197,7 +197,7 @@ describe("pages/FlashingWizard", () => {
 
       it("should pre select the pre release version based off the URL", async () => {
         const release = preReleases[2]!;
-        renderPage(`/?version=${release.id}`);
+        renderPage(`/?version=${release.id}&source=releases`);
 
         expect(
           await screen.findByText(release.name, {

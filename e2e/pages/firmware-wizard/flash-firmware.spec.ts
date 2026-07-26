@@ -4,6 +4,7 @@ test.beforeEach(async ({ queries }) => {
   await (
     await queries.findByText("Radio firmware", undefined, { timeout: 10000 })
   ).click();
+  await (await queries.findByRole("tab", { name: "GitHub" })).click();
 });
 
 test.describe.parallel("Flashing", () => {
