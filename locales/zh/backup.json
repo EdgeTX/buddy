@@ -31,6 +31,7 @@
   "Include labels.yml file": "包含 labels.yml 文件",
   "Individual .yml files": "独立的 .yml 文件",
   "Labels file found, no models": "已发现 labels 文件，无模型",
+  "labels.yml is always included in .etx backups for Companion compatibility": "labels.yml 总是被包含在 .etx 备份中以确保 Companion 兼容性",
   "Lines highlighted in red differ between versions": "不同版本间的区别已用红色标记",
   "Model already exists in the list": "模型已在列表中存在",
   "Model name conflicts detected": "检测到模型名称冲突",
@@ -49,6 +50,7 @@
   "Please select at least one model": "请至少选择一个模型",
   "Please select SD Card first": "请先选择 SD 卡",
   "Preview": "预览",
+  "Radio settings — will be overwritten with \"Overwrite all\", skipped with \"Restore with renames\"": "如果您选择 \"覆盖全部\"，遥控器设置 — 将被覆盖，如果选择 \"重命名并恢复\" 则跳过",
   "Ready to restore": "恢复已就绪",
   "Remove": "删除",
   "Rename model": "重命名模型",
@@ -58,8 +60,8 @@
   "Restoring models...": "正在恢复模型...",
   "SD Card": "SD 卡",
   "SD Card selected successfully": "已成功选择 SD 卡",
-  "Select an SD Card to enable restore": "选择一个 SD 卡以启用恢复",
   "Select all": "选择全部",
+  "Select an SD Card to enable restore": "选择一个 SD 卡以启用恢复",
   "Select models to backup": "选择模型以备份",
   "Select SD Card": "选择 SD 卡",
   "Select your SD Card to create a backup": "选择您的 SD 卡以创建一个备份",
@@ -73,9 +75,7 @@
   "This feature is not supported by your browser": "您的浏览器不支持此功能",
   "Verifying...": "正在验证...",
   "View differences": "查看区别",
-  "labels.yml is always included in .etx backups for Companion compatibility": "labels.yml 总是被包含在 .etx 备份中以确保 Companion 兼容性",
   "When enabled, you'll be asked how to handle models that already exist on your SD card": "当启用后，您将被询问如何处理已存在于您的 SD 卡中的模型",
   "will be overwritten if you choose \"Overwrite all\"": "将被覆盖如果您选择 \"覆盖全部\"",
-  "You can add more individual .yml files or load a full .etx/.zip backup": "您可以添加更多独立的 .yml 文件或加载一份完整的 .etx/.zip 备份",
-  "Radio settings \u2014 will be overwritten with \"Overwrite all\", skipped with \"Restore with renames\"": "如果您选择 \"覆盖全部\"，遥控器设置 \u2014 将被覆盖，如果选择 \"重命名并恢复\" 则跳过"
+  "You can add more individual .yml files or load a full .etx/.zip backup": "您可以添加更多独立的 .yml 文件或加载一份完整的 .etx/.zip 备份"
 }
