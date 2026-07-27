@@ -5,11 +5,11 @@ import fs from "fs/promises";
 import path from "path";
 import { test, expect, waitFor } from "../pageTest";
 
-test.beforeEach(async ({ queries }) => {
+test.beforeEach(async ({ queries, page }) => {
   await (
     await queries.findByText("Radio firmware", undefined, { timeout: 10000 })
   ).click();
-  await (await queries.findByRole("tab", { name: "GitHub" })).click();
+  await page.click('.ant-tabs-tab:has-text("GitHub")');
 });
 
 test("Latest firmware is pre selected by default", async ({
