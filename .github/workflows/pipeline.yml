@@ -12,9 +12,9 @@ jobs:
   lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -31,9 +31,9 @@ jobs:
   format:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -50,9 +50,9 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -69,16 +69,16 @@ jobs:
           CI: true
 
       - name: Publish Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   test-types:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -97,9 +97,9 @@ jobs:
   storybook:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -114,7 +114,7 @@ jobs:
         run: yarn build:storybook
 
       - name: Store storybook
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: storybook-static
           retention-days: 1
@@ -129,15 +129,15 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-22.04, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
 
       - name: Setup Python 3.9
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.9"
 
@@ -159,7 +159,7 @@ jobs:
         run: yarn compile:production
 
       - name: Store compiled source
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: compiled-${{ matrix.os }}
           retention-days: 1
@@ -177,9 +177,9 @@ jobs:
         os: [macos-latest, ubuntu-22.04, windows-latest]
     needs: compile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -191,7 +191,7 @@ jobs:
         run: yarn --immutable
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: compiled-${{ matrix.os }}
           path: build
@@ -213,7 +213,7 @@ jobs:
         run: yarn run pack
 
       - name: Upload build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: app-builds-${{ matrix.os }}
           retention-days: 15
@@ -243,14 +243,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-test-results
           path: playwright-report
 
       - name: Upload video recordings
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: electron-${{ matrix.os }}-recordings
@@ -260,9 +260,9 @@ jobs:
     needs: compile
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: "yarn"
@@ -277,7 +277,7 @@ jobs:
         run: yarn playwright install --with-deps
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: compiled-ubuntu-22.04
           path: build
@@ -289,7 +289,7 @@ jobs:
           PWTEST_VIDEO: "true"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: video-web-linux-test-results
@@ -307,29 +307,29 @@ jobs:
     steps:
       - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}}
         name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - if: ${{ github.event_name == 'push' }}
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: compiled-ubuntu-22.04
           path: build
 
       - name: Fetch storybook build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: storybook-static
           path: build/renderer/storybook
 
       - name: Deploy preview
         id: cloudflare-preview
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -337,7 +337,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find preview comment if present
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@v4
         id: find-preview-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -345,7 +345,7 @@ jobs:
           body-includes: Buddy has been automatically deployed to Cloudflare
 
       - name: Create or update preview URL comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ steps.find-preview-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -364,14 +364,14 @@ jobs:
       deployments: write
     steps:
       - name: Fetch compiled source
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: compiled-ubuntu-22.04
           path: build
 
       - name: Publish
         id: cloudflare-publish
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -386,12 +386,12 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Fetch binaries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: app-builds-*
           path: app-builds
@@ -427,7 +427,7 @@ jobs:
 
       - name: Release latest build
         if: startsWith(github.ref, 'refs/tags/v') != true
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: "Latest Build"
           files: |
@@ -440,7 +440,7 @@ jobs:
 
       - name: Release tagged build
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: "Release Build"
           files: |
