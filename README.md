@@ -39,6 +39,18 @@ $ sudo apt-get install build-essential libudev-dev
 
 This software is designed to run on `node@20` which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
 
+### Devcontainer
+
+This repository includes a devcontainer configuration that is intended to work from scratch.
+
+- Node.js version is sourced from [`.node-version`](./.node-version)
+- Container base image targets Ubuntu 22.04 to align with CI environments
+- Linux build prerequisites are installed in the container image (`build-essential`, `libudev-dev`, `python3`, `python3-setuptools`)
+- Corepack is enabled in the image build, and `yarn install` runs automatically on first container create
+- Husky pre-commit hooks are installed during dependency install and checked on container start
+
+Default devcontainer setup is intentionally focused on lint/test/compile/commit workflows. e2e runtime dependencies (for example xvfb/playwright browsers) are not preinstalled by default.
+
 ### Commands
 
 Enable or install yarn package manager
