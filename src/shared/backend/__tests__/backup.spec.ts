@@ -1395,6 +1395,92 @@ describe("Backup", () => {
         expect(content).toContain("My Quad");
       });
 
+      it("should download all models when many are selected (e.g. 43)", async () => {
+        const modelsPath = await setupSdcardDirectory(tempDir.path);
+
+        // Create 43 model files to simulate a real-world scenario
+        const modelNames: string[] = [];
+        for (let i = 1; i <= 43; i += 1) {
+          const modelName = `model${i}`;
+          modelNames.push(modelName);
+          await fs.writeFile(
+            path.join(modelsPath, `${modelName}.yml`),
+            createModelYaml(`Model ${i}`)
+          );
+        }
+
+        // Pick directory
+        const handle = await getOriginPrivateDirectory(
+          nodeAdapter,
+          tempDir.path
+        );
+        // @ts-expect-error readonly but testing
+        handle.name = tempDir.path;
+        requestWritableDirectory.mockResolvedValueOnce(handle);
+
+        const pickResult = await backend.mutate({
+          mutation: gql`
+            mutation {
+              pickSdcardDirectory {
+                id
+              }
+            }
+          `,
+        });
+
+        const directoryId = (pickResult.data?.pickSdcardDirectory as any)?.id;
+
+        // Download all 43 models
+        const { data, errors } = await backend.mutate({
+          mutation: gql`
+            mutation DownloadModels(
+              $directoryId: ID!
+              $selectedModels: [String!]!
+            ) {
+              downloadIndividualModels(
+                directoryId: $directoryId
+                selectedModels: $selectedModels
+              ) {
+                fileName
+                base64Data
+              }
+            }
+          `,
+          variables: {
+            directoryId,
+            selectedModels: modelNames,
+          },
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data?.downloadIndividualModels).toHaveLength(43);
+
+        // Verify all 43 files are present
+        const downloadedFiles = (
+          data?.downloadIndividualModels as {
+            fileName: string;
+            base64Data: string;
+          }[]
+        ).map((m) => m.fileName);
+
+        for (let i = 1; i <= 43; i += 1) {
+          expect(downloadedFiles).toContain(`model${i}.yml`);
+        }
+
+        // Verify content of a few samples
+        const model25 = (
+          data?.downloadIndividualModels as {
+            fileName: string;
+            base64Data: string;
+          }[]
+        ).find((m) => m.fileName === "model25.yml");
+        const content = Buffer.from(
+          model25?.base64Data ?? "",
+          "base64"
+        ).toString("utf-8");
+        expect(content).toContain("Model 25");
+      });
+
       it("should include labels file when requested", async () => {
         const modelsPath = await setupSdcardDirectory(tempDir.path);
 
