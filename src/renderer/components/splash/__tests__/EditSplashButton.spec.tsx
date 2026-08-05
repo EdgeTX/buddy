@@ -5,7 +5,10 @@ import { fireEvent, screen } from "@testing-library/react";
 import {
   createCloudFirmware,
   splashCapabilityByTargetQuery,
+  splashCapabilityByFirmwareQuery,
   registerLocalFirmwareForSplashMutation,
+  releaseFirmwareDataForSplashQuery,
+  firmwareSplashInfoQuery,
 } from "test-utils/mocks";
 import { render } from "test-utils/testing-library";
 import EditSplashButton from "renderer/components/splash/EditSplashButton";
@@ -31,6 +34,10 @@ describe("<EditSplashButton /> - CloudBuild flow", () => {
             Buffer.from(fakeFirmwareBytes()).toString("base64"),
             "patched-firmware-id"
           ),
+          firmwareSplashInfoQuery("patched-firmware-id", {
+            ...monoCapability,
+            currentSplashBase64: null,
+          }),
         ]}
       >
         <EditSplashButton
@@ -64,6 +71,13 @@ describe("<EditSplashButton /> - CloudBuild flow", () => {
       selector: ".ant-modal-title",
     });
     expect(screen.queryByText("Cloudbuild download")).not.toBeInTheDocument();
+
+    // Origin was CloudBuild, not the Local file tab, so re-applying would
+    // silently overwrite the original release/target selection with no
+    // easy way back - "Apply and continue" must not be offered here.
+    expect(
+      screen.queryByRole("button", { name: /Apply and continue/i })
+    ).not.toBeInTheDocument();
   });
 
   it("does not render when the CloudBuild target has no splash capability", () => {
@@ -81,5 +95,89 @@ describe("<EditSplashButton /> - CloudBuild flow", () => {
     expect(
       screen.queryByRole("button", { name: /Edit splash screen/i })
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("<EditSplashButton /> - GitHub releases flow", () => {
+  it("eagerly fetches and registers the release firmware, then opens the splash editor", async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          splashCapabilityByTargetQuery("x7", monoCapability),
+          releaseFirmwareDataForSplashQuery(
+            "v2.11.0",
+            "x7",
+            Buffer.from(fakeFirmwareBytes()).toString("base64")
+          ),
+          registerLocalFirmwareForSplashMutation(
+            "x7-v2.11.0.bin",
+            Buffer.from(fakeFirmwareBytes()).toString("base64"),
+            "patched-firmware-id"
+          ),
+          firmwareSplashInfoQuery("patched-firmware-id", {
+            ...monoCapability,
+            currentSplashBase64: null,
+          }),
+        ]}
+      >
+        <EditSplashButton
+          activeTab="releases"
+          version="v2.11.0"
+          target="x7"
+          onApplied={() => {}}
+        />
+      </MockedProvider>
+    );
+
+    await screen.findByRole("button", { name: /Edit splash screen/i });
+    fireEvent.click(
+      screen.getByRole("button", { name: /Edit splash screen/i })
+    );
+
+    await screen.findByText("Edit splash screen", {
+      selector: ".ant-modal-title",
+    });
+
+    // Origin was the GitHub tab, not the Local file tab, so "Apply and
+    // continue" must not be offered here either.
+    expect(
+      screen.queryByRole("button", { name: /Apply and continue/i })
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("<EditSplashButton /> - Local file flow", () => {
+  it("opens the splash editor directly, with Apply and continue available", async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          splashCapabilityByFirmwareQuery("local-firmware-id", monoCapability),
+          firmwareSplashInfoQuery("local-firmware-id", {
+            ...monoCapability,
+            currentSplashBase64: null,
+          }),
+        ]}
+      >
+        <EditSplashButton
+          activeTab="file"
+          target="local-firmware-id"
+          onApplied={() => {}}
+        />
+      </MockedProvider>
+    );
+
+    await screen.findByRole("button", { name: /Edit splash screen/i });
+    fireEvent.click(
+      screen.getByRole("button", { name: /Edit splash screen/i })
+    );
+
+    await screen.findByText("Edit splash screen", {
+      selector: ".ant-modal-title",
+    });
+
+    const applyButton = await screen.findByRole("button", {
+      name: /Apply and continue/i,
+    });
+    expect(applyButton).toBeInTheDocument();
   });
 });
