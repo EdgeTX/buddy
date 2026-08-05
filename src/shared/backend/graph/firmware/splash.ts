@@ -1,6 +1,11 @@
 import { GraphQLError } from "graphql";
 import { createBuilder } from "shared/backend/utils/builder";
-import { findSplash, patchSplash, getSplashBoardInfo } from "shared/splash";
+import {
+  findSplash,
+  patchSplash,
+  decodeSplash,
+  getSplashBoardInfo,
+} from "shared/splash";
 
 const builder = createBuilder();
 
@@ -10,6 +15,11 @@ const SplashCapability = builder.simpleObject("SplashCapability", {
     width: t.int(),
     height: t.int(),
     maxBytes: t.int(),
+    // Base64-encoded raw grayscale pixels (width*height bytes) of the
+    // splash currently embedded in the firmware. Only firmwareSplashInfo
+    // has real bytes to decode this from - the static targetCode lookup
+    // never has any.
+    currentSplashBase64: t.string({ nullable: true }),
   }),
 });
 
@@ -32,7 +42,10 @@ builder.queryType({
       args: {
         targetCode: t.arg.string({ required: true }),
       },
-      resolve: (_, { targetCode }) => getSplashBoardInfo(targetCode) ?? null,
+      resolve: (_, { targetCode }) => {
+        const info = getSplashBoardInfo(targetCode);
+        return info ? { ...info, currentSplashBase64: null } : null;
+      },
     }),
     // Detects the splash format directly from a registered local
     // firmware's bytes - used for locally-uploaded firmware, which has
@@ -54,11 +67,13 @@ builder.queryType({
         if (!location) {
           return null;
         }
+        const currentPixels = decodeSplash(firmware.data, location);
         return {
           format: location.format,
           width: location.width,
           height: location.height,
           maxBytes: location.reservedSize,
+          currentSplashBase64: Buffer.from(currentPixels).toString("base64"),
         };
       },
     }),

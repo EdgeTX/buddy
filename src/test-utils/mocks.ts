@@ -733,3 +733,104 @@ export const registerLocalFirmwareForSplashMutation = (
   },
   delay,
 });
+
+export const releaseFirmwareDataForSplashQuery = (
+  version: string,
+  target: string,
+  base64Data: string,
+  delay = 100
+): MockedResponse => ({
+  request: {
+    query: gql`
+      query ReleaseFirmwareDataForSplash($version: ID!, $target: ID!) {
+        edgeTxRelease(id: $version) {
+          id
+          firmwareBundle {
+            id
+            target(code: $target) {
+              id
+              base64Data
+            }
+          }
+        }
+      }
+    `,
+    variables: { version, target },
+  },
+  result: {
+    data: {
+      edgeTxRelease: {
+        id: version,
+        firmwareBundle: {
+          id: "",
+          target: { id: target, base64Data },
+        },
+      },
+    },
+  },
+  delay,
+});
+
+export const splashCapabilityByFirmwareQuery = (
+  firmwareId: string,
+  capability: {
+    format: string;
+    width: number;
+    height: number;
+    maxBytes: number;
+  } | null,
+  delay = 100
+): MockedResponse => ({
+  request: {
+    query: gql`
+      query SplashCapabilityByFirmware($firmwareId: ID!) {
+        firmwareSplashInfo(firmwareId: $firmwareId) {
+          format
+          width
+          height
+          maxBytes
+        }
+      }
+    `,
+    variables: { firmwareId },
+  },
+  result: {
+    data: {
+      firmwareSplashInfo: capability,
+    },
+  },
+  delay,
+});
+
+export const firmwareSplashInfoQuery = (
+  firmwareId: string,
+  capability: {
+    format: string;
+    width: number;
+    height: number;
+    maxBytes: number;
+    currentSplashBase64: string | null;
+  } | null,
+  delay = 100
+): MockedResponse => ({
+  request: {
+    query: gql`
+      query SplashEditorFirmwareInfo($firmwareId: ID!) {
+        firmwareSplashInfo(firmwareId: $firmwareId) {
+          format
+          width
+          height
+          maxBytes
+          currentSplashBase64
+        }
+      }
+    `,
+    variables: { firmwareId },
+  },
+  result: {
+    data: {
+      firmwareSplashInfo: capability,
+    },
+  },
+  delay,
+});
