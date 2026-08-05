@@ -43,7 +43,7 @@ const CopyUrlButton: React.FC<Props> = ({ version, target }) => {
                 environment.isElectron
                   ? "buddy.edgetx.org"
                   : window.location.host
-              }/#${location.pathname}?version=${version}${
+              }/#${location.pathname}?source=releases&version=${version}${
                 target ? `&target=${target}` : ""
               }`
             );
