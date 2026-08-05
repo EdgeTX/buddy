@@ -4,9 +4,9 @@
   "<0></0> We have File System Access API access": "<0></0> 有文件系统访问 API 权限",
   "<0></0> We have WebUSB API access": "<0></0> 有 WebUSB API 访问权限",
   "Don't show again": "不再显示",
-  "Go to app releases": "前往应用程序发布页",
-  "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "您可以安装应用程序，或使用支持 <1>WebUSB</1> 和 <3>File System Access API</3> 的浏览器",
-  "Your browser doesn't support EdgeTX Buddy": "您的浏览器不支持 EdgeTX Buddy",
   "for firmware flashing": "用于固件刷写",
-  "for radio storage": "用于遥控器存储"
+  "for radio storage": "用于遥控器存储",
+  "Go to app releases": "前往应用程序发布页",
+  "You can install the app, or use a browser with <2>WebUSB</2> and <6>File System Access API</6> support": "You can install the app, or use a browser with <2>WebUSB</2> and <6>File System Access API</6> support",
+  "Your browser doesn't support EdgeTX Buddy": "您的浏览器不支持 EdgeTX Buddy"
 }

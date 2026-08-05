@@ -4,9 +4,9 @@
   "<0></0> We have File System Access API access": "<0></0> У нас є доступ до File System Access API",
   "<0></0> We have WebUSB API access": "<0></0> У нас є доступ до WebUSB API",
   "Don't show again": "Не показувати знову",
-  "Go to app releases": "Перейти до випусків застосунку",
-  "You can install the app, or use a browser with <1>WebUSB</1> and <3>File System Access API</3> support": "Ви можете встановити застосунок або скористатись браузером з підтримкою <1>WebUSB</1> та <3>File System Access API</3>",
-  "Your browser doesn't support EdgeTX Buddy": "Ваш браузер не підтримує EdgeTX Buddy",
   "for firmware flashing": "для прошивання",
-  "for radio storage": "для сховища пристрою"
+  "for radio storage": "для сховища пристрою",
+  "Go to app releases": "Перейти до випусків застосунку",
+  "You can install the app, or use a browser with <2>WebUSB</2> and <6>File System Access API</6> support": "You can install the app, or use a browser with <2>WebUSB</2> and <6>File System Access API</6> support",
+  "Your browser doesn't support EdgeTX Buddy": "Ваш браузер не підтримує EdgeTX Buddy"
 }
