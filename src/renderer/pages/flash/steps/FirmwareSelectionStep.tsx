@@ -16,6 +16,7 @@ import DownloadFirmwareButton from "renderer/components/firmware/DownloadFirmwar
 import DownloadCloudbuildButton from "renderer/components/firmware/DownloadCloudbuildButton";
 import CopyUrlButton from "renderer/components/firmware/CopyUrlButton";
 import FlashButton from "renderer/components/flashing/FlashButton";
+import EditSplashButton from "renderer/components/splash/EditSplashButton";
 import { useTranslation } from "react-i18next";
 import useFlags from "renderer/hooks/useFlags";
 import FirmwareReleasesPicker from "./firmware/FirmwareReleasesPicker";
@@ -235,6 +236,16 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
         </Container>
       </StepContentContainer>
       <StepControlsContainer>
+        <EditSplashButton
+          activeTab={activeTab}
+          version={version}
+          target={target}
+          selectedFlags={selectedFlags}
+          onApplied={(patchedFirmwareId) => {
+            updateParams({ target: patchedFirmwareId, version: "local" });
+            setActiveTab("file");
+          }}
+        />
         {activeTab === "cloudbuild" && (
           <DownloadCloudbuildButton
             target={target}

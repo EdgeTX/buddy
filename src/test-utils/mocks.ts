@@ -678,3 +678,58 @@ export const createCloudFirmware = (
   },
   delay,
 });
+
+export const splashCapabilityByTargetQuery = (
+  targetCode: string,
+  capability: {
+    format: string;
+    width: number;
+    height: number;
+    maxBytes: number;
+  } | null,
+  delay = 100
+): MockedResponse => ({
+  request: {
+    query: gql`
+      query SplashCapabilityByTarget($targetCode: String!) {
+        splashCapability(targetCode: $targetCode) {
+          format
+          width
+          height
+          maxBytes
+        }
+      }
+    `,
+    variables: { targetCode },
+  },
+  result: {
+    data: {
+      splashCapability: capability,
+    },
+  },
+  delay,
+});
+
+export const registerLocalFirmwareForSplashMutation = (
+  name: string,
+  data: string,
+  id = "patched-firmware-id",
+  delay = 100
+): MockedResponse => ({
+  request: {
+    query: gql`
+      mutation RegisterLocalFirmwareForSplash($name: String!, $data: String!) {
+        registerLocalFirmware(firmwareBase64Data: $data, fileName: $name) {
+          id
+        }
+      }
+    `,
+    variables: { name, data },
+  },
+  result: {
+    data: {
+      registerLocalFirmware: { id },
+    },
+  },
+  delay,
+});
