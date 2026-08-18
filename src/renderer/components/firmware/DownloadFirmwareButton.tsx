@@ -5,12 +5,9 @@ import React, { useState } from "react";
 import { decodePrVersion, isPrVersion } from "shared/tools";
 import * as base64ArrayBuffer from "base64-arraybuffer";
 import { ButtonSize, ButtonType } from "antd/lib/button";
-import checks from "renderer/compatibility/checks";
-import legacyDownload from "js-file-download";
-import config from "shared/config";
 import { useTranslation } from "react-i18next";
-import environment from "shared/environment";
 import { isUF2Payload } from "shared/uf2";
+import saveFirmwareFile from "renderer/components/firmware/saveFirmwareFile";
 
 type Props = {
   target?: string;
@@ -39,31 +36,7 @@ const DownloadFirmwareButton: React.FC<Props> = ({
   const promptAndDownload = async (
     name: string,
     data: ArrayBufferLike
-  ): Promise<void> => {
-    if (
-      !checks.hasFilesystemApi ||
-      environment.isElectron ||
-      config.startParams.isE2e
-    ) {
-      legacyDownload(data, name, "application/octet-stream");
-      return;
-    }
-    const fileExt = name.split(".").pop() ?? "";
-    const fileHandle = await window.showSaveFilePicker({
-      suggestedName: name,
-      types: [
-        {
-          description: t(`Firmware data`),
-          accept: {
-            "application/octet-stream": [`.${fileExt}`],
-          },
-        },
-      ],
-    });
-    const writable = await fileHandle.createWritable();
-    await writable.write(data);
-    await writable.close();
-  };
+  ): Promise<void> => saveFirmwareFile(name, data, t(`Firmware data`));
 
   const download = async (): Promise<void> => {
     if (validPrVersion) {
