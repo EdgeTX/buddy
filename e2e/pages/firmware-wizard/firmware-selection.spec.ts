@@ -5,10 +5,11 @@ import fs from "fs/promises";
 import path from "path";
 import { test, expect, waitFor } from "../pageTest";
 
-test.beforeEach(async ({ queries }) => {
+test.beforeEach(async ({ queries, page }) => {
   await (
     await queries.findByText("Radio firmware", undefined, { timeout: 10000 })
   ).click();
+  await page.click('.ant-tabs-tab:has-text("GitHub")');
 });
 
 test("Latest firmware is pre selected by default", async ({
@@ -181,9 +182,11 @@ test("Copy URL button copies a link to the selected firmware", async ({
 
   if (isElectron) {
     expect(copiedUrl).toBe(
-      "buddy.edgetx.org/#/flash?version=v2.10.6&target=x10"
+      "buddy.edgetx.org/#/flash?source=releases&version=v2.10.6&target=x10"
     );
   } else {
-    expect(copiedUrl).toBe("localhost:8081/#/flash?version=v2.10.6&target=x10");
+    expect(copiedUrl).toBe(
+      "localhost:8081/#/flash?source=releases&version=v2.10.6&target=x10"
+    );
   }
 });

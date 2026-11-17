@@ -80,7 +80,7 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
     !!target &&
     (selectedFlags?.every((flag) => flag.name && flag.value) ?? true);
 
-  const [activeTab, setActiveTab] = useState<string>(source ?? "releases");
+  const [activeTab, setActiveTab] = useState<string>(source ?? "cloudbuild");
 
   useEffect(() => {
     if (version === "local" && activeTab !== "file") {
@@ -127,27 +127,29 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <RocketOutlined />
-                  {t(`Cloud`)}
+                  CloudBuild
                 </span>
               }
-              key="releases"
+              key="cloudbuild"
+              style={{ overflowY: "auto" }}
             >
-              <FirmwareReleasesPicker
+              <CloudFirmwareReleasesPicker
+                filters={filters}
                 version={version}
                 target={target}
-                filters={filters}
+                selectedFlags={selectedFlags}
                 onChanged={(params) => {
-                  if (activeTab === "releases") {
+                  if (activeTab === "cloudbuild") {
                     updateParams({
-                      ...params,
-                      source: activeTab,
+                      source: "cloudbuild",
+                      version: params.version,
+                      target: params.target,
+                      selectedFlags: encodeFlags(params.selectedFlags),
                       filters: encodeFilters(params.filters),
                     });
                   }
                 }}
               />
-              <Divider />
-              <CopyUrlButton target={target} version={version} />
             </Tabs.TabPane>
             ,
             <Tabs.TabPane
@@ -186,29 +188,27 @@ const FirmwareStep: StepComponent = ({ onNext }) => {
               tab={
                 <span>
                   <RocketOutlined />
-                  CloudBuild
+                  GitHub
                 </span>
               }
-              key="cloudbuild"
-              style={{ overflowY: "auto" }}
+              key="releases"
             >
-              <CloudFirmwareReleasesPicker
-                filters={filters}
+              <FirmwareReleasesPicker
                 version={version}
                 target={target}
-                selectedFlags={selectedFlags}
+                filters={filters}
                 onChanged={(params) => {
-                  if (activeTab === "cloudbuild") {
+                  if (activeTab === "releases") {
                     updateParams({
-                      source: "cloudbuild",
-                      version: params.version,
-                      target: params.target,
-                      selectedFlags: encodeFlags(params.selectedFlags),
+                      ...params,
+                      source: activeTab,
                       filters: encodeFilters(params.filters),
                     });
                   }
                 }}
               />
+              <Divider />
+              <CopyUrlButton target={target} version={version} />
             </Tabs.TabPane>
           </Tabs>
           <Divider className="divider" type="vertical" />

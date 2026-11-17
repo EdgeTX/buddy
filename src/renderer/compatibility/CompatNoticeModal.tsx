@@ -45,9 +45,27 @@ const WebCompatInfo: React.FC<Props> = ({
         <Result
           status="warning"
           title={t(`Your browser doesn't support EdgeTX Buddy`)}
-          subTitle={t(
-            `You can install the app, or use an update-to-date Chromium based browser`
-          )}
+          subTitle={
+            <Trans t={t}>
+              You can install the app, or use a browser with{" "}
+              <Typography.Link
+                href="https://caniuse.com/webusb"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WebUSB
+              </Typography.Link>{" "}
+              and{" "}
+              <Typography.Link
+                href="https://caniuse.com/native-filesystem-api"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                File System Access API
+              </Typography.Link>{" "}
+              support
+            </Trans>
+          }
           extra={
             <Button
               href="https://github.com/EdgeTX/buddy/releases/tag/latest"
@@ -78,7 +96,8 @@ const WebCompatInfo: React.FC<Props> = ({
                 />{" "}
                 We have WebUSB API access
               </Trans>
-            )}
+            )}{" "}
+            ({t("for firmware flashing")})
           </Typography.Paragraph>
           <Typography.Paragraph>
             {missingFilesystemApi ? (
@@ -99,7 +118,8 @@ const WebCompatInfo: React.FC<Props> = ({
                 />{" "}
                 We have File System Access API access
               </Trans>
-            )}
+            )}{" "}
+            ({t("for radio storage")})
           </Typography.Paragraph>
         </Result>
       </FullHeightCentered>

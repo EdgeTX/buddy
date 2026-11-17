@@ -23,7 +23,7 @@ describe("CopyUrlButton", () => {
     fireEvent.click(screen.getByText("Copy URL"));
 
     expect(copyMock).toHaveBeenCalledWith(
-      "localhost:3000/#/current-page?version=v2.7.0&target=nv14"
+      "localhost:3000/#/current-page?source=releases&version=v2.7.0&target=nv14"
     );
   });
 
@@ -37,7 +37,7 @@ describe("CopyUrlButton", () => {
     fireEvent.click(screen.getByText("Copy URL"));
 
     expect(copyMock).toHaveBeenCalledWith(
-      "localhost:3000/#/current-page?version=v2.7.0"
+      "localhost:3000/#/current-page?source=releases&version=v2.7.0"
     );
   });
 

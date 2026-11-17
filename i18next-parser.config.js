@@ -6,9 +6,17 @@ module.exports = {
   indentation: 2,
   keepRemoved: false,
 
+  // Input files to parse
+  input: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.spec.{ts,tsx}",
+    "!src/**/__tests__/**",
+  ],
+
   // see below for more details
   lexers: {
     tsx: ["JsxLexer"],
+    ts: ["JavascriptLexer"],
   },
 
   lineEnding: "auto",

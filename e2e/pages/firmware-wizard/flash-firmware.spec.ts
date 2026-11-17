@@ -1,9 +1,10 @@
 import { test, expect } from "../pageTest";
 
-test.beforeEach(async ({ queries }) => {
+test.beforeEach(async ({ queries, page }) => {
   await (
     await queries.findByText("Radio firmware", undefined, { timeout: 10000 })
   ).click();
+  await page.click('.ant-tabs-tab:has-text("GitHub")');
 });
 
 test.describe.parallel("Flashing", () => {

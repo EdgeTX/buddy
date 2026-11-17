@@ -69,67 +69,69 @@ const ExecutionOverlay: React.FC<{ jobId?: string; onClose: () => void }> = ({
 
   return (
     <Outside>
-      <Container>
-        <Overlay
-          visible={!!jobId}
-          onClick={() => {
-            if (!active) {
-              onClose();
-            }
-          }}
-        />
-        <Card
-          style={{
-            width: jobId ? "400px" : "0px",
-            overflow: "hidden",
-            visibility: !jobId ? "hidden" : undefined,
-            opacity: !jobId ? "0" : undefined,
-            pointerEvents: "all",
-            transition: "width 0.3s",
-          }}
-          bodyStyle={{
-            height: "100%",
-          }}
-        >
-          <FullHeightCentered style={{ width: "350px" }}>
-            <FullHeight>
-              {data?.flashJobStatus && (
-                <FullHeightCentered>
-                  <FlashJobTimeline
-                    state={data.flashJobStatus.stages}
-                    hideSpecialOptions
-                  />
-                </FullHeightCentered>
-              )}
-              {loading && !data?.flashJobStatus && (
-                <Skeleton paragraph={{ rows: 3 }} />
-              )}
-            </FullHeight>
-            <div>
-              {active && (
-                <Button
-                  onClick={() => {
-                    cancelJob().catch(() => {});
-                    onClose();
-                  }}
-                >
-                  {t(`Cancel`)}
-                </Button>
-              )}
-              {!active && (
-                <Button
-                  onClick={() => {
-                    onClose();
-                  }}
-                >
-                  {t(`Done`)}
-                </Button>
-              )}
-            </div>
-          </FullHeightCentered>
-        </Card>
-      </Container>
-      {children}
+      <>
+        <Container>
+          <Overlay
+            visible={!!jobId}
+            onClick={() => {
+              if (!active) {
+                onClose();
+              }
+            }}
+          />
+          <Card
+            style={{
+              width: jobId ? "400px" : "0px",
+              overflow: "hidden",
+              visibility: !jobId ? "hidden" : undefined,
+              opacity: !jobId ? "0" : undefined,
+              pointerEvents: "all",
+              transition: "width 0.3s",
+            }}
+            bodyStyle={{
+              height: "100%",
+            }}
+          >
+            <FullHeightCentered style={{ width: "350px" }}>
+              <FullHeight>
+                {data?.flashJobStatus && (
+                  <FullHeightCentered>
+                    <FlashJobTimeline
+                      state={data.flashJobStatus.stages}
+                      hideSpecialOptions
+                    />
+                  </FullHeightCentered>
+                )}
+                {loading && !data?.flashJobStatus && (
+                  <Skeleton paragraph={{ rows: 3 }} />
+                )}
+              </FullHeight>
+              <div>
+                {active && (
+                  <Button
+                    onClick={() => {
+                      cancelJob().catch(() => {});
+                      onClose();
+                    }}
+                  >
+                    {t(`Cancel`)}
+                  </Button>
+                )}
+                {!active && (
+                  <Button
+                    onClick={() => {
+                      onClose();
+                    }}
+                  >
+                    {t(`Done`)}
+                  </Button>
+                )}
+              </div>
+            </FullHeightCentered>
+          </Card>
+        </Container>
+        {children}
+      </>
     </Outside>
   );
 };

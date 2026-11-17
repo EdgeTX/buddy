@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import CloudVersionTargetForm from "renderer/components/CloudVersionTargetForm";
 import { VersionFilters } from "renderer/components/VersionTargetForm";
 import { SelectedFlags } from "shared/backend/types";
+import { compareFirmwareReleases } from "shared/firmwareVersions";
 
 type Props = {
   onChanged: (values: {
@@ -62,7 +63,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
 
   const releases = targetsQuery.data?.cloudTargets.releases
     .filter(({ isPrerelease }) => !isPrerelease || filters.includePrereleases)
-    .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
+    .sort(compareFirmwareReleases);
   const selectedRelease = releases?.find(({ id }) => id === version);
 
   // Select first release if none is selected or current version not in releases.

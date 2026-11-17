@@ -5,6 +5,7 @@ import VersionTargetForm, {
   VersionFilters,
 } from "renderer/components/VersionTargetForm";
 import { useTranslation } from "react-i18next";
+import { compareFirmwareReleases } from "shared/firmwareVersions";
 
 type Props = {
   onChanged: (values: {
@@ -68,8 +69,7 @@ const FirmwareReleasesPicker: React.FC<Props> = ({
     (release) => release.id === version
   )?.isPrerelease;
 
-  // TODO: sort releases by date, need to add date to schema
-  const sortedReleases = useSorted(releases, () => 0);
+  const sortedReleases = useSorted(releases, compareFirmwareReleases);
   const selectedFirmware = releases?.find((release) => release.id === version);
   const targets =
     releaseTargetsQuery.data?.edgeTxRelease?.firmwareBundle.targets.map(

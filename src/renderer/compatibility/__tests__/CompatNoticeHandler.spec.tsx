@@ -72,17 +72,17 @@ describe("<CompatNoticeHandler />", () => {
     setHasUsbApi(true);
     render(<CompatNoticeHandler />);
 
-    expect(screen.getByText("Missing File System Access API -")).toBeVisible();
-    expect(screen.getByText("We have WebUSB API access")).toBeVisible();
+    expect(screen.getByText(/Missing File System Access API -/)).toBeVisible();
+    expect(screen.getByText(/We have WebUSB API access/)).toBeVisible();
   });
 
   it("should display when the usb api is missing", () => {
     setHasFsApi(true);
     render(<CompatNoticeHandler />);
 
-    expect(screen.getByText("Missing WebUSB API -")).toBeVisible();
+    expect(screen.getByText(/Missing WebUSB API -/)).toBeVisible();
     expect(
-      screen.getByText("We have File System Access API access")
+      screen.getByText(/We have File System Access API access/)
     ).toBeVisible();
   });
 });

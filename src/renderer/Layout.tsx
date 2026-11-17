@@ -193,6 +193,9 @@ const AppLayout: React.FC<Props> = ({
             <Menu.Item key="flash">
               <Link to="/flash">{t(`Radio firmware`)}</Link>
             </Menu.Item>
+            <Menu.Item key="backup">
+              <Link to="/backup">{t(`Radio backup`)}</Link>
+            </Menu.Item>
             <Menu.Item key="sdcard">
               <Link to="/sdcard">{t(`SD Card content`)}</Link>
             </Menu.Item>
