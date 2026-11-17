@@ -37,7 +37,7 @@ Linux
 $ sudo apt-get install build-essential libudev-dev
 ```
 
-This software is designed to run on `node@22` which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
+This software is designed to run on `node@24` (see [`.node-version`](./.node-version)) which can be installed with [`Fast Node Manager`](https://github.com/Schniz/fnm)
 
 ### Devcontainer
 
@@ -45,7 +45,7 @@ This repository includes a devcontainer configuration that is intended to work f
 
 - Node.js version is sourced from [`.node-version`](./.node-version)
 - Container base image targets Ubuntu 22.04 to align with CI environments
-- Linux build prerequisites are installed in the container image (`build-essential`, `libudev-dev`, `python3`, `python3-setuptools`)
+- Linux build prerequisites are installed in the container image (`build-essential`, `libudev-dev`, `python3`)
 - Corepack is enabled in the image build, and `yarn install` runs automatically on first container create
 - Husky pre-commit hooks are installed during dependency install and checked on container start
 
@@ -53,13 +53,12 @@ Default devcontainer setup is intentionally focused on lint/test/compile/commit 
 
 ### Commands
 
-Enable or install yarn package manager
+Enable the yarn package manager via Corepack. The Yarn release itself is committed in `.yarn/releases`, so the version always matches the project.
 
 ```bash
-# For Node.js <16.10
-$ npm i -g corepack
+# Corepack ships with Node.js 24; on Node.js 25+ install it first
+$ npm install -g corepack
 
-# For Node.js >=16.10
 $ corepack enable
 ```
 
