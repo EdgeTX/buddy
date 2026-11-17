@@ -1,9 +1,16 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import { JobStatus } from "shared/backend/types";
-import { format } from "date-fns";
 import { TFunction, useTranslation } from "react-i18next";
 import type { FlashingBuildStageStatus } from "./FlashJobTimeline";
+
+const pad2 = (n: number): string => n.toString().padStart(2, "0");
+
+/** Formats an elapsed duration in seconds as mm:ss (minutes keep counting past 59). */
+export const formatElapsed = (seconds: number): string => {
+  const total = Math.max(0, Math.floor(seconds));
+  return `${pad2(Math.floor(total / 60))}:${pad2(total % 60)}`;
+};
 
 function jobStatusText(
   status: JobStatus,
@@ -50,7 +57,7 @@ const FlashBuildStatus: React.FC<Props> = ({ status }) => {
       />{" "}
       <p style={{ color: "gray", border: "black" }}>
         {jobStatusText(status.jobStatus as JobStatus, t)} -{"  "}
-        {format(sinceTime * 1000, "mm:ss")}
+        {formatElapsed(sinceTime)}
       </p>
     </div>
   );
