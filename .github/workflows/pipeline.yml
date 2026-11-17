@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -51,10 +51,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -77,10 +77,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -98,10 +98,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -130,10 +130,10 @@ jobs:
         os: [macos-latest, ubuntu-22.04, windows-latest]
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Setup Python 3.9
@@ -178,10 +178,10 @@ jobs:
     needs: compile
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -261,10 +261,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "yarn"
 
       - name: Install
@@ -305,16 +305,9 @@ jobs:
       deployments: write
       pull-requests: write
     steps:
-      - if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target'}}
-        name: Checkout PR
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - if: ${{ github.event_name == 'push' }}
-        name: Checkout
-        uses: actions/checkout@v7
-
+      # No checkout: wrangler-action installs wrangler with npm in the working
+      # directory, and inside the repo npm >= 10.9 crashes resolving Buddy's
+      # dependency tree. Pass the git details wrangler would read instead.
       - name: Fetch compiled source
         uses: actions/download-artifact@v8
         with:
@@ -333,7 +326,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build/renderer --project-name=buddy
+          command: pages deploy build/renderer --project-name=buddy --branch=${{ github.head_ref }} --commit-hash=${{ github.event.pull_request.head.sha }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find preview comment if present
