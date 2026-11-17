@@ -7,7 +7,6 @@ RUN apt-get update \
         build-essential \
         libudev-dev \
         python3 \
-        python3-setuptools \
         ca-certificates \
         curl \
         xz-utils \
@@ -28,6 +27,7 @@ RUN apt-get update \
     && rm -f /tmp/SHASUMS256.txt \
     && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
     && rm -f /tmp/node.tar.xz \
+    && (command -v corepack >/dev/null || npm install -g corepack) \
     && corepack enable \
     && node --version \
     && npm --version \
