@@ -10,7 +10,6 @@ import electron, {
   session,
 } from "electron";
 import path from "path";
-import WindowControls from "electron-window-controls";
 
 import {
   createBusLinkBackend,
@@ -25,6 +24,7 @@ import type { FileSystemApi, UsbApi } from "shared/backend";
 import config from "shared/config";
 import backendConfig from "shared/backend/config";
 import { createGithubClient } from "shared/api/github";
+import { WINDOW_CLOSE, WINDOW_MINIMIZE } from "./windowControls";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -50,6 +50,7 @@ const main = async (): Promise<void> => {
 
   await app.whenReady();
 
+  registerWindowControls();
   await startBackend();
   createWindow();
 };
@@ -138,8 +139,15 @@ const createWindow = (): void => {
       mainWindow?.webContents.openDevTools({ mode: "detach" });
     }
   });
+};
 
-  WindowControls.initMain();
+const registerWindowControls = (): void => {
+  ipcMain.on(WINDOW_MINIMIZE, (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.minimize();
+  });
+  ipcMain.on(WINDOW_CLOSE, (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.close();
+  });
 };
 
 const startBackend = async (): Promise<void> => {
