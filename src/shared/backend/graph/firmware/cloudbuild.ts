@@ -6,6 +6,13 @@ const builder = createBuilder();
 
 // Targets data
 
+const Flag = builder.simpleObject("Flag", {
+  fields: (t) => ({
+    id: t.string(),
+    values: t.stringList(),
+  }),
+});
+
 const Release = builder.simpleObject("Release", {
   fields: (t) => ({
     id: t.string(),
@@ -13,15 +20,10 @@ const Release = builder.simpleObject("Release", {
     description: t.string({ nullable: true }),
     timestamp: t.string(),
     excludeTargets: t.stringList(),
+    // flag values not supported by this release
+    excludeFlags: t.field({ type: [Flag] }),
     sha: t.string(),
     isPrerelease: t.boolean(),
-  }),
-});
-
-const Flag = builder.simpleObject("Flag", {
-  fields: (t) => ({
-    id: t.string(),
-    values: t.stringList(),
   }),
 });
 
@@ -108,6 +110,9 @@ builder.queryType({
               timestamp: release.published_at ?? release.created_at,
               sha: cloudRelease.sha,
               excludeTargets: cloudRelease.exclude_targets ?? [],
+              excludeFlags: Object.entries(
+                cloudRelease.exclude_flags ?? {}
+              ).map(([id, values]) => ({ id, values })),
             };
           });
 

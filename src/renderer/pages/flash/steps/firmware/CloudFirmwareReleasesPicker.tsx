@@ -28,6 +28,10 @@ const GET_FIRMWARES = gql(/* GraphQL */ `
         isPrerelease
         timestamp
         excludeTargets
+        excludeFlags {
+          id
+          values
+        }
       }
       targets {
         id
@@ -124,6 +128,17 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
     flags?.push({ id: flagId, values });
   });
 
+  // remove values not supported by the selected release
+  const excludedFlagValues = new Map(
+    selectedRelease?.excludeFlags.map(({ id, values }) => [id, new Set(values)])
+  );
+  const releaseFlags = flags
+    ?.map(({ id, values }) => ({
+      id,
+      values: values.filter((value) => !excludedFlagValues.get(id)?.has(value)),
+    }))
+    .filter(({ values }) => values.length > 0);
+
   // only update flags
   const updateSelectedFlags = (newSelectedFlags: SelectedFlags): void => {
     onChanged({
@@ -186,7 +201,7 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
         loading: targetsQuery.loading,
         tooltip: t(`The type of radio you want to flash`),
       }}
-      flags={flags}
+      flags={releaseFlags}
       selectedFlags={selectedFlags}
     />
   );

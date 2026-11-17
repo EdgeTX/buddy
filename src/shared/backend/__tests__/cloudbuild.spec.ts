@@ -21,6 +21,10 @@ describe("Cloudbuild Query", () => {
                 isPrerelease
                 timestamp
                 excludeTargets
+                excludeFlags {
+                  id
+                  values
+                }
               }
               targets {
                 id
@@ -69,6 +73,7 @@ describe("Cloudbuild Query", () => {
           ],
           "releases": [
             {
+              "excludeFlags": [],
               "excludeTargets": [],
               "id": "nightly",
               "isPrerelease": true,
@@ -76,6 +81,7 @@ describe("Cloudbuild Query", () => {
               "timestamp": "2023-09-01T02:28:49Z",
             },
             {
+              "excludeFlags": [],
               "excludeTargets": [
                 "tlitef4",
               ],
@@ -261,6 +267,68 @@ describe("Cloudbuild Query", () => {
         }
       `);
       nockDone();
+    });
+
+    it("should return the flag values excluded by each release", async () => {
+      nock("https://cloudbuild.edgetx.org")
+        .get("/api/targets")
+        .reply(200, {
+          releases: {
+            nightly: { sha: "000" },
+            "v2.12.5": {
+              sha: "211",
+              exclude_flags: { language: ["AR", "FR"] },
+            },
+          },
+          flags: { language: { values: ["EN", "FR"] } },
+          tags: {},
+          targets: {},
+        });
+      nock("https://api.github.com")
+        .get("/repos/EdgeTX/edgetx/releases")
+        .query(true)
+        .reply(200, [
+          {
+            tag_name: "nightly",
+            name: "nightly",
+            prerelease: true,
+            created_at: "2026-11-01T00:00:00Z",
+          },
+          {
+            tag_name: "v2.12.5",
+            name: "v2.12.5",
+            prerelease: false,
+            created_at: "2026-10-01T00:00:00Z",
+          },
+        ]);
+
+      const { data, errors } = await backend.query({
+        query: gql`
+          query {
+            cloudTargets {
+              releases {
+                id
+                excludeFlags {
+                  id
+                  values
+                }
+              }
+            }
+          }
+        `,
+      });
+      expect(errors).toBeFalsy();
+      expect(data).toEqual({
+        cloudTargets: {
+          releases: [
+            { id: "nightly", excludeFlags: [] },
+            {
+              id: "v2.12.5",
+              excludeFlags: [{ id: "language", values: ["AR", "FR"] }],
+            },
+          ],
+        },
+      });
     });
   });
 
