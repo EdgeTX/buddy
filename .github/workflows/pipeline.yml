@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
@@ -51,10 +51,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
@@ -77,10 +77,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
@@ -98,10 +98,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
@@ -130,19 +130,11 @@ jobs:
         os: [macos-latest, ubuntu-22.04, windows-latest]
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
-
-      - name: Setup Python 3.9
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.9"
-
-      - name: Install required python deps
-        run: python3 -m pip install setuptools
 
       - name: Install
         env:
@@ -178,10 +170,10 @@ jobs:
     needs: compile
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
@@ -261,10 +253,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "yarn"
 
       - name: Install
