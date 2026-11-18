@@ -248,6 +248,10 @@ const VersionFiltersDropdown: React.FC<{
   );
 };
 
+// Natural order, so e.g. "X9" sorts before "X10"
+const naturalCompare = (a: string, b: string): number =>
+  a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+
 type FormTagProps = {
   value: FormListFieldData;
   flags?: Flags;
@@ -269,7 +273,9 @@ const FormTag: React.FC<FormTagProps> = ({
   const flagNames =
     flags
       ?.filter((flag) => !selectedFlagsName.has(flag.id))
-      .map((flag) => ({ name: flag.id, value: flag.id })) ?? [];
+      .map((flag) => flag.id)
+      .sort(naturalCompare)
+      .map((id) => ({ name: id, value: id })) ?? [];
 
   const unfilteredFlagValues = useMemo(
     () => flags?.find((flag) => flag.id === currentFlag)?.values ?? [],
@@ -281,10 +287,9 @@ const FormTag: React.FC<FormTagProps> = ({
     () => new Set(unfilteredFlagValues),
     [unfilteredFlagValues]
   );
-  const flagValues = [...flagValuesSet].map((flagValue) => ({
-    name: flagValue,
-    value: flagValue,
-  }));
+  const flagValues = [...flagValuesSet]
+    .sort(naturalCompare)
+    .map((flagValue) => ({ name: flagValue, value: flagValue }));
 
   // reset the flag value if the target or flag name doesn't support it
   useEffect(() => {
