@@ -12429,7 +12429,6 @@ __metadata:
     "@ant-design/icons": "npm:^4.7.0"
     "@apollo/client": "npm:3.5.5"
     "@babel/core": "npm:^7.16.0"
-    "@electron/rebuild": "npm:^4.2.1"
     "@graphql-codegen/cli": "npm:5.0.2"
     "@graphql-codegen/gql-tag-operations": "npm:^4.0.6"
     "@graphql-codegen/gql-tag-operations-preset": "npm:^2.1.0"
