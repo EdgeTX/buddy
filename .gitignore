@@ -30,6 +30,9 @@ yarn-error.log*
 !.yarn/sdks
 !.yarn/versions
 
+# Yarn is the package manager; don't commit npm's lockfile
+package-lock.json
+
 __generated__
 schema.graphql
 .env
