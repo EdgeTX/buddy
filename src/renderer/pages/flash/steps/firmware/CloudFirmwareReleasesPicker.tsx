@@ -29,7 +29,7 @@ const GET_FIRMWARES = gql(/* GraphQL */ `
         timestamp
         excludeTargets
         excludeFlags {
-          id
+          name
           values
         }
       }
@@ -130,7 +130,10 @@ const CloudFirmwareReleasesPicker: React.FC<Props> = ({
 
   // remove values not supported by the selected release
   const excludedFlagValues = new Map(
-    selectedRelease?.excludeFlags.map(({ id, values }) => [id, new Set(values)])
+    selectedRelease?.excludeFlags.map(({ name, values }) => [
+      name,
+      new Set(values),
+    ])
   );
   const releaseFlags = flags
     ?.map(({ id, values }) => ({

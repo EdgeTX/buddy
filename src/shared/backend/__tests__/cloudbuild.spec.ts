@@ -22,7 +22,7 @@ describe("Cloudbuild Query", () => {
                 timestamp
                 excludeTargets
                 excludeFlags {
-                  id
+                  name
                   values
                 }
               }
@@ -309,7 +309,7 @@ describe("Cloudbuild Query", () => {
               releases {
                 id
                 excludeFlags {
-                  id
+                  name
                   values
                 }
               }
@@ -324,7 +324,7 @@ describe("Cloudbuild Query", () => {
             { id: "nightly", excludeFlags: [] },
             {
               id: "v2.12.5",
-              excludeFlags: [{ id: "language", values: ["AR", "FR"] }],
+              excludeFlags: [{ name: "language", values: ["AR", "FR"] }],
             },
           ],
         },

@@ -24,7 +24,7 @@ const cloudTargets = {
             timestamp
             excludeTargets
             excludeFlags {
-              id
+              name
               values
             }
           }
@@ -48,11 +48,15 @@ const cloudTargets = {
       }
     `,
   },
+  // __typename on every object, like Buddy's GraphQL server returns, so
+  // Apollo normalizes the cache exactly as in the app
   result: {
     data: {
       cloudTargets: {
+        __typename: "CloudTargets",
         releases: [
           {
+            __typename: "Release",
             id: "nightly",
             name: "nightly",
             isPrerelease: true,
@@ -61,33 +65,47 @@ const cloudTargets = {
             excludeFlags: [],
           },
           {
+            __typename: "Release",
             id: "v2.12.5",
             name: "v2.12.5",
             isPrerelease: false,
             timestamp: "2026-10-01T00:00:00Z",
             excludeTargets: [],
             excludeFlags: [
-              { id: "language", values: ["AR"] },
-              { id: "new_feature", values: ["YES"] },
+              { __typename: "ExcludedFlag", name: "language", values: ["AR"] },
+              {
+                __typename: "ExcludedFlag",
+                name: "new_feature",
+                values: ["YES"],
+              },
             ],
           },
         ],
-        targets: [{ id: "tx16s", name: "TX16S", tags: ["colorlcd"] }],
+        targets: [
+          {
+            __typename: "Target",
+            id: "tx16s",
+            name: "TX16S",
+            tags: ["colorlcd"],
+          },
+        ],
         flags: [
-          { id: "language", values: ["EN", "FR"] },
-          { id: "new_feature", values: ["YES"] },
+          { __typename: "Flag", id: "language", values: ["EN", "FR"] },
+          { __typename: "Flag", id: "new_feature", values: ["YES"] },
         ],
         tags: [
           {
+            __typename: "Tag",
             id: "colorlcd",
-            tagFlags: [{ id: "language", values: ["AR", "CN"] }],
+            tagFlags: [
+              { __typename: "TagFlag", id: "language", values: ["AR", "CN"] },
+            ],
           },
         ],
       },
     },
   },
 };
-
 const renderedFlags = async (): Promise<unknown> => {
   const el = await screen.findByTestId("flags");
   await vi.waitFor(() => expect(el.textContent).not.toBe(""));
@@ -97,7 +115,7 @@ const renderedFlags = async (): Promise<unknown> => {
 describe("<CloudFirmwareReleasesPicker />", () => {
   it("should hide the flag values the selected release excludes", async () => {
     render(
-      <MockedProvider mocks={[cloudTargets]} addTypename={false}>
+      <MockedProvider mocks={[cloudTargets]}>
         <CloudFirmwareReleasesPicker
           onChanged={vi.fn()}
           filters={{ includePrereleases: false }}
@@ -115,7 +133,7 @@ describe("<CloudFirmwareReleasesPicker />", () => {
 
   it("should offer all flag values for a release without exclusions", async () => {
     render(
-      <MockedProvider mocks={[cloudTargets]} addTypename={false}>
+      <MockedProvider mocks={[cloudTargets]}>
         <CloudFirmwareReleasesPicker
           onChanged={vi.fn()}
           filters={{ includePrereleases: true }}
