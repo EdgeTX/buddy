@@ -73,4 +73,48 @@ describe("CloudVersionTargetForm", () => {
     fireEvent.click(screen.getByText("Add flag"));
     expect(screen.getAllByRole("combobox")).toHaveLength(4); // Two dropdowns for flag & value
   });
+
+  // Texts of the options in the open dropdown, in display order. Testing
+  // Library queries don't expose antd's rendered option order.
+  const openOptions = (): string[] =>
+    Array.from(
+      // eslint-disable-next-line testing-library/no-node-access
+      document.querySelectorAll(
+        ".ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option-content"
+      )
+    ).map((el) => el.textContent ?? "");
+
+  test("lists flag names in natural order", () => {
+    render(
+      <CloudVersionTargetForm
+        {...mockProps}
+        flags={[
+          { id: "pxx2", values: ["YES"] },
+          { id: "language", values: ["EN"] },
+          { id: "afhds3", values: ["YES"] },
+          { id: "pxx1", values: ["YES"] },
+        ]}
+      />
+    );
+    fireEvent.click(screen.getByText("Add flag"));
+    const [, , flagSelect] = screen.getAllByRole("combobox");
+    fireEvent.mouseDown(flagSelect as HTMLElement);
+    expect(openOptions()).toEqual(["afhds3", "language", "pxx1", "pxx2"]);
+  });
+
+  test("lists flag values in natural order", () => {
+    render(
+      <CloudVersionTargetForm
+        {...mockProps}
+        // global values followed by the ones a colorlcd tag adds
+        flags={[
+          { id: "language", values: ["EN", "FR", "X10", "AR", "CN", "X9"] },
+        ]}
+        selectedFlags={[{ name: "language", value: "" }]}
+      />
+    );
+    const [, , , valueSelect] = screen.getAllByRole("combobox");
+    fireEvent.mouseDown(valueSelect as HTMLElement);
+    expect(openOptions()).toEqual(["AR", "CN", "EN", "FR", "X9", "X10"]);
+  });
 });
