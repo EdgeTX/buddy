@@ -6,6 +6,23 @@ const builder = createBuilder();
 
 // Targets data
 
+const Flag = builder.simpleObject("Flag", {
+  fields: (t) => ({
+    id: t.string(),
+    values: t.stringList(),
+  }),
+});
+
+// Flag values a release doesn't support. A separate type keyed by `name`
+// rather than `id`: Apollo normalizes objects with an `id`, so reusing `Flag`
+// would merge these into the actual flags (e.g. Flag:language).
+const ExcludedFlag = builder.simpleObject("ExcludedFlag", {
+  fields: (t) => ({
+    name: t.string(),
+    values: t.stringList(),
+  }),
+});
+
 const Release = builder.simpleObject("Release", {
   fields: (t) => ({
     id: t.string(),
@@ -13,15 +30,9 @@ const Release = builder.simpleObject("Release", {
     description: t.string({ nullable: true }),
     timestamp: t.string(),
     excludeTargets: t.stringList(),
+    excludeFlags: t.field({ type: [ExcludedFlag] }),
     sha: t.string(),
     isPrerelease: t.boolean(),
-  }),
-});
-
-const Flag = builder.simpleObject("Flag", {
-  fields: (t) => ({
-    id: t.string(),
-    values: t.stringList(),
   }),
 });
 
@@ -108,6 +119,9 @@ builder.queryType({
               timestamp: release.published_at ?? release.created_at,
               sha: cloudRelease.sha,
               excludeTargets: cloudRelease.exclude_targets ?? [],
+              excludeFlags: Object.entries(
+                cloudRelease.exclude_flags ?? {}
+              ).map(([name, values]) => ({ name, values })),
             };
           });
 

@@ -5,6 +5,8 @@ import { delay } from "shared/tools";
 type Release = {
   sha: string;
   exclude_targets?: string[];
+  // flag name -> values not supported by this release
+  exclude_flags?: Record<string, string[]>;
 };
 
 type Tag = {
