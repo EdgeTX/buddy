@@ -2,6 +2,8 @@
   "name": "edgetx-buddy",
   "version": "0.2.0",
   "private": true,
+  "description": "Flash firmware and manage SD card content for EdgeTX radios",
+  "author": "EdgeTX",
   "license": "MIT",
   "main": "./build/main/main.js",
   "build": {
@@ -22,7 +24,7 @@
       "publish": [
         "github"
       ],
-      "category": "your.app.category.type",
+      "category": "public.app-category.utilities",
       "artifactName": "edgetx-buddy-${version}-${arch}.${ext}"
     },
     "linux": {
@@ -119,7 +121,7 @@
     "compile:web": "webpack --config webpack/renderer.config.js",
     "compile:web:production": "yarn compile:web --mode production",
     "compile:main": "yarn run compile:deps && webpack --config webpack/main.config.js",
-    "compile:deps": "electron-rebuild",
+    "compile:deps": "electron-builder install-app-deps",
     "codegen": "graphql-codegen --config codegen.yml",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx",
     "lint:all": "yarn lint '**/*.{ts,tsx,js,jsx}'",
@@ -142,7 +144,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
-    "@electron/rebuild": "^4.2.1",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/gql-tag-operations": "^4.0.6",
     "@graphql-codegen/gql-tag-operations-preset": "^2.1.0",
